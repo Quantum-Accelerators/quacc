@@ -96,6 +96,10 @@ jobs:
           pip install uv
           uv pip install --system -r tests/requirements.txt -r tests/requirements-${{ matrix.wflow_engine }}.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
 
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
+
       - name: Start Covalent server
         if: matrix.wflow_engine == 'covalent'
         run: covalent start
@@ -152,6 +156,10 @@ jobs:
           pip install uv
           uv pip install --system -r tests/requirements.txt "quacc[dev] @ ."
 
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
+
       - name: Run tests with pytest
         run: pytest -k 'psi4' --durations=10 --cov=quacc --cov-report=xml
 
@@ -195,6 +203,10 @@ jobs:
         run: |
           pip install uv
           uv pip install --system -r tests/requirements.txt -r tests/requirements-defects.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
       - name: Run tests with pytest
         run: pytest -k 'defects or phonon or espresso' --durations=10 --cov=quacc --cov-report=xml
@@ -240,6 +252,10 @@ jobs:
           pip install uv
           uv pip install --system -r tests/requirements.txt -r tests/requirements-tblite.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
 
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
+
       - name: Run tests with pytest
         run: pytest -k 'dftb or tblite' --durations=10 --cov=quacc --cov-report=xml
 
@@ -284,6 +300,10 @@ jobs:
           pip install uv
           uv pip install --system -r tests/requirements.txt -r tests/requirements-sella.txt "quacc[dev] @ ."
 
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
+
       - name: Run tests with pytest
         run: pytest -k 'qchem or sella' --durations=10 --cov=quacc --cov-report=xml
 
@@ -319,6 +339,10 @@ jobs:
           pip install uv
           uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
 
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
+
       - name: Run tests with pytest
         run: pytest -k 'mlp or newtonnet' --durations=10 --cov=quacc --cov-report=xml
 
@@ -353,6 +377,10 @@ jobs:
         run: |
           pip install uv
           uv pip install --system -r tests/requirements.txt -r tests/requirements-mp.txt "quacc[dev] @ ."
+
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
       - name: Run tests with pytest
         run: pytest -k 'mp_' --durations=10 --cov=quacc --cov-report=xml
