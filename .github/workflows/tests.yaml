@@ -41,12 +41,7 @@ jobs:
           uv pip install --system -r tests/requirements.txt "quacc[dev] @ ."
 
       - name: Run tests with pytest (w/ coverage)
-        if: matrix.python-version != '3.12'
         run: pytest --durations=10 --cov=quacc --cov-report=xml
-
-      - name: Run tests with pytest (w/o coverage)
-        if: matrix.python-version == '3.12'
-        run: pytest --durations=10
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v4
