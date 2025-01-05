@@ -4,7 +4,7 @@ from functools import partial
 from typing import TYPE_CHECKING, Any
 
 from prefect.futures import PrefectFuture
-from prefect.results import BaseResult, ResultRecord
+from prefect.results import ResultRecord
 from prefect.utilities.annotations import quote
 from prefect.utilities.collections import StopVisiting, visit_collection
 from typing_extensions import TypeVar
@@ -35,7 +35,7 @@ def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
     def _collect_futures(futures, expr, context):
         # Expressions inside quotes should not be traversed
         if isinstance(context.get("annotation"), quote):
-            raise StopVisiting()
+            raise StopVisiting
 
         if isinstance(expr, PrefectFuture):
             futures.add(expr)
@@ -62,12 +62,12 @@ def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
         else:
             raise BaseException("At least one result did not complete successfully")
 
-    states_by_future = dict(zip(futures, results))
+    states_by_future = dict(zip(futures, results, strict=False))
 
     def replace_futures_with_states(expr, context):
         # Expressions inside quotes should not be modified
         if isinstance(context.get("annotation"), quote):
-            raise StopVisiting()
+            raise StopVisiting
 
         if isinstance(expr, PrefectFuture):
             return states_by_future[expr]
@@ -125,12 +125,12 @@ async def resolve_futures_to_results_async(expr: PrefectFuture | Any) -> State |
         else:
             raise BaseException("At least one result did not complete successfully")
 
-    states_by_future = dict(zip(futures, results))
+    states_by_future = dict(zip(futures, results, strict=False))
 
     def replace_futures_with_states(expr, context):
         # Expressions inside quotes should not be modified
         if isinstance(context.get("annotation"), quote):
-            raise StopVisiting()
+            raise StopVisiting
 
         if isinstance(expr, PrefectFuture):
             return states_by_future[expr]
