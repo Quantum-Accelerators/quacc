@@ -168,7 +168,9 @@ def test_ase_relax_job(patch_metallic_taskdoc):
 def test_ase_relax_job2(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
-    output = ase_relax_job(atoms, relax_cell=True, opt_params={"store_intermediate_results": True})
+    output = ase_relax_job(
+        atoms, relax_cell=True, opt_params={"store_intermediate_results": True}
+    )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] is False
