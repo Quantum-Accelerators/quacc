@@ -76,7 +76,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.wflow_engine == 'covalent' && '3.10' || '3.11' }}
+          python-version: ${{ matrix.wflow_engine == 'covalent' && '3.10' || '3.12' }}
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -84,7 +84,7 @@ jobs:
         if: matrix.wflow_engine == 'dask'
         uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           activate-environment: quacc-env
 
       - name: Install conda packages
@@ -132,7 +132,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -178,7 +178,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -222,7 +222,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -266,7 +266,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -310,7 +310,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -345,7 +345,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
