@@ -1,4 +1,8 @@
 name: tests
+
+env:
+  PY_COLORS: 1
+
 on:
   push:
     branches: [main]
@@ -40,13 +44,12 @@ jobs:
           pip install uv
           uv pip install --system -r tests/requirements.txt "quacc[dev] @ ."
 
-      - name: Run tests with pytest (w/ coverage)
-        if: matrix.python-version != '3.12'
-        run: pytest --durations=10 --cov=quacc --cov-report=xml
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
-      - name: Run tests with pytest (w/o coverage)
-        if: matrix.python-version == '3.12'
-        run: pytest --durations=10
+      - name: Run tests with pytest (w/ coverage)
+        run: pytest --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v4
