@@ -35,7 +35,7 @@ def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
     def _collect_futures(futures, expr, context):
         # Expressions inside quotes should not be traversed
         if isinstance(context.get("annotation"), quote):
-            raise StopVisiting
+            raise StopVisiting()
 
         if isinstance(expr, PrefectFuture):
             futures.add(expr)
@@ -56,20 +56,18 @@ def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
         future.wait()
         if future.state.is_completed():
             result = future.state.result()
-            if isinstance(result, BaseResult):
-                result = result.get()
-            elif isinstance(result, ResultRecord):
+            if isinstance(result, ResultRecord):
                 result = result.result
             results.append(result)
         else:
             raise BaseException("At least one result did not complete successfully")
 
-    states_by_future = dict(zip(futures, results, strict=False))
+    states_by_future = dict(zip(futures, results))
 
     def replace_futures_with_states(expr, context):
         # Expressions inside quotes should not be modified
         if isinstance(context.get("annotation"), quote):
-            raise StopVisiting
+            raise StopVisiting()
 
         if isinstance(expr, PrefectFuture):
             return states_by_future[expr]
@@ -121,20 +119,18 @@ async def resolve_futures_to_results_async(expr: PrefectFuture | Any) -> State |
         future.wait()
         if future.state.is_completed():
             result = future.state.result()
-            if isinstance(result, BaseResult):
-                result = result.get()
-            elif isinstance(result, ResultRecord):
+            if isinstance(result, ResultRecord):
                 result = result.result
             results.append(result)
         else:
             raise BaseException("At least one result did not complete successfully")
 
-    states_by_future = dict(zip(futures, results, strict=False))
+    states_by_future = dict(zip(futures, results))
 
     def replace_futures_with_states(expr, context):
         # Expressions inside quotes should not be modified
         if isinstance(context.get("annotation"), quote):
-            raise StopVisiting
+            raise StopVisiting()
 
         if isinstance(expr, PrefectFuture):
             return states_by_future[expr]
