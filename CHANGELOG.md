@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [0.11.10]
 
+### Fixed
+
+- Fixed compatability with Prefect 3.1.11
+
 ## [0.11.9]
 
 ### Changed
