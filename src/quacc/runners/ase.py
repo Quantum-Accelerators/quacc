@@ -483,7 +483,7 @@ def run_neb(
     for i, image in enumerate(images):
         calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
 
-    os.makedirs(str(neb_results_dir), exist_ok=True)
+    neb_results_dir.mkdir(parents=True, exist_ok=True)
 
     # Move NEB-specific files to the results directory
     for item in neb_tmpdir.iterdir():
