@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.atoms import Atoms
+    from ase.io.trajectory import TrajectoryWriter
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.vibrations import Vibrations
@@ -293,6 +294,89 @@ class Summarize:
             store=store,
         )
 
+    def neb(
+        self,
+        dyn: Optimizer,
+        n_images: int,
+        n_iter_return: int = -1,
+        trajectory: TrajectoryWriter | list[Atoms] | None = None,
+        store: Store | None | DefaultSetting = QuaccDefault,
+    ) -> OptSchema:
+        """
+        Summarize the NEB run results and store them in a database-friendly format.
+
+        Parameters
+        ----------
+        dyn
+            ASE Optimizer object used for the NEB run.
+        n_images
+            Number of images in the NEB run.
+        n_iter_return
+            Number of iterations to return. If -1, all iterations are returned.
+        trajectory
+            Trajectory of the NEB run, either as a Trajectory object or a list of Atoms objects.
+        store
+            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`.
+
+        Returns
+        -------
+        OptSchema
+            A dictionary containing the summarized NEB run results.
+        """
+        store = self._settings.STORE if store == QuaccDefault else store
+
+        # Get trajectory
+        if trajectory:
+            atoms_trajectory = trajectory
+        else:
+            atoms_trajectory = read(dyn.trajectory.filename, index=":")  # type: ignore[union-attr]
+
+        if n_iter_return == -1:
+            atoms_trajectory = atoms_trajectory[-(n_images):]
+        else:
+            atoms_trajectory = _get_nth_iteration(
+                atoms_trajectory,
+                int(len(atoms_trajectory) / n_images),
+                n_images,
+                n_iter_return,
+            )
+        trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
+        ts_index = (
+            np.argmax(
+                [
+                    result["energy"]
+                    for result in trajectory_results[-(n_images - 1) : -1]
+                ]
+            )
+            + 1
+        )
+        ts_atoms = atoms_trajectory[ts_index]
+        base_task_doc = atoms_to_metadata(
+            atoms_trajectory[0], charge_and_multiplicity=self.charge_and_multiplicity
+        )
+
+        # Clean up the opt parameters
+        parameters_opt = dyn.todict()
+        parameters_opt.pop("logfile", None)
+        parameters_opt.pop("restart", None)
+
+        opt_fields = {
+            "parameters_opt": parameters_opt,
+            "trajectory": atoms_trajectory,
+            "trajectory_results": trajectory_results,
+            "ts_atoms": ts_atoms,
+        }
+
+        # Create a dictionary of the inputs/outputs
+        unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
+
+        return finalize_dict(
+            unsorted_task_doc,
+            directory=None,
+            gzip_file=self._settings.GZIP_FILES,
+            store=store,
+        )
+
 
 class VibSummarize:
     """
@@ -516,3 +600,37 @@ class VibSummarize:
             gzip_file=self._settings.GZIP_FILES,
             store=store,
         )
+
+
+def _get_nth_iteration(
+    neb_trajectory: list[Atoms], n_iter: int, n_images: int, interval: int
+) -> list[Atoms]:
+    """
+    Extract every nth iteration from the NEB trajectory.
+
+    Parameters
+    ----------
+    neb_trajectory
+        List of configurations (length: n_iter * n_images).
+    n_iter
+        Total number of iterations.
+    n_images
+        Number of images per iteration.
+    interval
+        Interval to get every nth iteration.
+
+    Returns
+    -------
+    list[Atoms]
+        List of configurations from every nth iteration.
+    """
+    result = []
+    start_idx, end_idx = 0, 0
+    for i in range(0, n_iter, interval):
+        start_idx = i * n_images
+        end_idx = start_idx + n_images
+
+        result.extend(neb_trajectory[start_idx:end_idx])
+    if end_idx < len(neb_trajectory) - 1:
+        result.extend(neb_trajectory[-(n_images):])
+    return result
