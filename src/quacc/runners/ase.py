@@ -1,9 +1,9 @@
 """Utility functions for running ASE calculators with ASE-based methods."""
+
 from __future__ import annotations
 
-import os
-import time
 import shutil
+import time
 from collections.abc import Callable
 from importlib.util import find_spec
 from logging import getLogger
