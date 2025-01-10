@@ -360,8 +360,12 @@ def neb_job(
 
     for image in images:
         image.calc = NewtonNet(**calc_flags)
-
-    dyn = run_neb(images, neb_kwargs=neb_flags)
+    if 'max_steps' in neb_flags:
+        max_steps = neb_flags['max_steps']
+        del neb_flags['max_steps']
+        dyn = run_neb(images, max_steps=max_steps, neb_kwargs=neb_flags)
+    else:
+        dyn = run_neb(images, neb_kwargs=neb_flags)
 
     return {
         "relax_reactant": relax_summary_r,
