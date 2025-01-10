@@ -477,7 +477,7 @@ def run_neb(
     traj.close()
 
     logfile = dyn.logfile
-    if hasattr(logfile, 'close'):
+    if hasattr(logfile, "close"):
         logfile.close()
 
     # Perform cleanup operations
