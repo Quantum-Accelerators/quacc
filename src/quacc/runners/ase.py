@@ -481,7 +481,7 @@ def run_neb(
     dir_lists = []
     for i, image in enumerate(images):
         image_tmpdir = neb_tmpdir / f"image_{i}"
-        image_tmpdir.mkdir(parents=True, exist_ok=True)
+        image_tmpdir.mkdir(parents=True)
         tmpdir_i, job_results_dir_i = calc_setup(image, copy_files=copy_files)
 
         # Move contents from tmpdir_i to image_tmpdir
