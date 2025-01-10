@@ -332,7 +332,7 @@ def test_neb_job_linear(setup_test_environment):
     reactant, product = setup_test_environment
 
     neb_summary = neb_job(
-        reactant, product, interpolation_method="linear", neb_kwargs={"max_steps": 10},
+        reactant, product, interpolation_method="linear", neb_kwargs={"max_steps": 10}
     )
 
     assert len(neb_summary["neb_results"]["trajectory_results"]) == 20
@@ -352,8 +352,8 @@ def test_neb_job_idpp(setup_test_environment):
     reactant, product = setup_test_environment
 
     neb_summary = neb_job(
-            reactant, product, interpolation_method="idpp", neb_kwargs={"max_steps": 10},
-            )
+        reactant, product, interpolation_method="idpp", neb_kwargs={"max_steps": 10}
+    )
 
     assert len(neb_summary["neb_results"]["trajectory_results"]) == 20
     assert neb_summary["relax_reactant"]["atoms"].positions[0, 0] == pytest.approx(
