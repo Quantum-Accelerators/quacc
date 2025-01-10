@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os
 import shutil
 from collections.abc import Callable
 from importlib.util import find_spec
