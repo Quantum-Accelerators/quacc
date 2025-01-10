@@ -11,7 +11,7 @@ from monty.dev import requires
 
 from quacc import change_settings, get_settings, job, strip_decorator
 from quacc.recipes.newtonnet.core import _add_stdev_and_hess, freq_job, relax_job
-from quacc.runners.ase import Runner, run_neb
+from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -311,11 +311,7 @@ def neb_job(
     Returns
     -------
     NebSchema
-        A dictionary containing the following keys:
-            - 'relax_reactant': Summary of the relaxed reactant structure ([quacc.schemas.ase.Summarize.opt][]).
-            - 'relax_product': Summary of the relaxed product structure ([quacc.schemas.ase.Summarize.opt][]).
-            - 'initial_images': The interpolated images between reactant and product.
-            - 'neb_results': Summary of the NEB optimization ([quacc.schemas.ase.Summarize.neb][]).
+        A dictionary containing the NEB results
     """
     relax_job_kwargs = relax_job_kwargs or {}
     settings = get_settings()
@@ -334,8 +330,7 @@ def neb_job(
     neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
 
     # Define calculator
-    reactant_atoms.calc = NewtonNet(**calc_flags)
-    product_atoms.calc = NewtonNet(**calc_flags)
+    calc = NewtonNet(**calc_flags)
 
     # Run relax job
     relax_summary_r = strip_decorator(relax_job)(reactant_atoms, **relax_job_kwargs)
@@ -348,22 +343,17 @@ def neb_job(
     else:
         images = [reactant_atoms]
         images += [
-            reactant_atoms.copy() for i in range(interpolate_flags["n_images"] - 2)
+            reactant_atoms.copy() for _ in range(interpolate_flags["n_images"] - 2)
         ]
         images += [product_atoms]
         neb = NEB(images)
+
         # Interpolate linearly the positions of the middle images:
         neb.interpolate(method=interpolation_method)
         images = neb.images
 
-    for image in images:
-        image.calc = NewtonNet(**calc_flags)
-    if "max_steps" in neb_flags:
-        max_steps = neb_flags["max_steps"]
-        del neb_flags["max_steps"]
-        dyn = run_neb(images, max_steps=max_steps, neb_kwargs=neb_flags)
-    else:
-        dyn = run_neb(images, neb_kwargs=neb_flags)
+    max_steps = neb_flags.pop("max_steps", None)
+    dyn = Runner(images, calc).run_neb(max_steps=max_steps, neb_kwargs=neb_flags)
 
     return {
         "relax_reactant": relax_summary_r,

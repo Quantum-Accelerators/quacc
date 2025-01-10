@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from copy import deepcopy
 from importlib.util import find_spec
 from logging import getLogger
 from pathlib import Path
@@ -27,7 +28,6 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
-from quacc.atoms.core import copy_atoms
 from quacc.runners._base import BaseRunner
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 from quacc.utils.dicts import recursive_dict_merge
@@ -62,7 +62,7 @@ class Runner(BaseRunner):
 
     def __init__(
         self,
-        atoms: Atoms,
+        atoms: Atoms | list[Atoms],
         calculator: Calculator,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     ) -> None:
@@ -72,7 +72,7 @@ class Runner(BaseRunner):
         Parameters
         ----------
         atoms
-            The Atoms object to run calculations on.
+            The Atoms object to run calculations on. A list[Atoms] is used for NEB.
         calculator
             The instantiated ASE calculator object to attach to the Atoms object.
         copy_files
@@ -82,10 +82,15 @@ class Runner(BaseRunner):
         -------
         None
         """
-        self.atoms = copy_atoms(atoms)
-        self.atoms.calc = calculator
         self.copy_files = copy_files
-        self.setup()
+        if isinstance(atoms, list):
+            self.atoms = [image.copy() for image in atoms]
+            for image in self.atoms:
+                image.calc = deepcopy(calculator)
+        else:
+            self.atoms = atoms.copy()
+            self.atoms.calc = calculator
+            self.setup()
 
     def run_calc(
         self, geom_file: str | None = None, properties: list[str] | None = None
@@ -351,6 +356,97 @@ class Runner(BaseRunner):
             optimizer_kwargs=dynamics_kwargs,
         )
 
+    def run_neb(
+        self,
+        relax_cell: bool = False,
+        fmax: float = 0.01,
+        max_steps: int | None = 1000,
+        optimizer: Optimizer = NEBOptimizer,
+        optimizer_kwargs: dict[str, Any] | None = None,
+        neb_kwargs: dict[str, Any] | None = None,
+        run_kwargs: dict[str, Any] | None = None,
+    ) -> Dynamics:
+        """
+        Run an NEB calculations.
+
+        Parameters
+        ----------
+        relax_cell
+            Whether to relax the unit cell shape and volume.
+        fmax
+            Tolerance for the force convergence (in eV/A).
+        max_steps
+            Maximum number of steps to take.
+        optimizer
+            Optimizer class to use.
+        optimizer_kwargs
+            Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
+            Optimizer classes.
+        neb_kwargs
+            Dictionary of kwargs for the NEB class.
+        run_kwargs
+            Dictionary of kwargs for the `run()` method of the optimizer.
+
+        Returns
+        -------
+        Dynamics
+            The ASE Dynamics object following an NEB calculation.
+        """
+        images = self.atoms
+        run_kwargs = run_kwargs or {}
+        neb_kwargs = neb_kwargs or {}
+        traj_filename = "opt.traj"
+
+        # Create a parent temporary directory for the NEB run
+        neb_tmpdir, neb_results_dir = calc_setup(None)
+
+        # Adjust optimizer_kwargs to use the parent directory
+        optimizer_kwargs = recursive_dict_merge(
+            {
+                "logfile": str(neb_tmpdir / "opt.log"),
+                "restart": str(neb_tmpdir / "opt.json"),
+            },
+            optimizer_kwargs,
+        )
+
+        if "trajectory" in optimizer_kwargs:
+            msg = "Quacc does not support setting the `trajectory` kwarg."
+            raise ValueError(msg)
+
+        if optimizer == BFGSLineSearch:
+            raise ValueError("BFGSLineSearch is not allowed as optimizer with NEB.")
+
+        # Copy atoms so we don't modify it in-place
+        neb = NEB(images, **neb_kwargs)
+
+        # Perform staging operations
+        for i, image in enumerate(images):
+            image_tmpdir = neb_tmpdir / f"image_{i}"
+            image_tmpdir.mkdir()
+            image.calc.directory = image_tmpdir
+
+        # Define the Trajectory object
+        traj_file = neb_tmpdir / traj_filename
+        traj = Trajectory(traj_file, "w", atoms=neb)
+
+        # Set volume relaxation constraints, if relevant
+        if relax_cell:
+            for i in range(len(images)):
+                if images[i].pbc.any():
+                    images[i] = FrechetCellFilter(images[i])
+
+        dyn = optimizer(neb, **optimizer_kwargs)
+        dyn.attach(traj.write)
+        dyn.run(fmax, max_steps)
+        traj.close()
+        dyn.logfile.close()
+
+        calc_cleanup(None, neb_tmpdir, neb_results_dir)
+        traj.filename = zpath(str(neb_results_dir / traj_filename))
+        dyn.trajectory = traj
+
+        return dyn
+
     def _copy_intermediate_files(
         self, step_number: int, files_to_ignore: list[Path] | None = None
     ) -> None:
@@ -406,102 +502,3 @@ class Runner(BaseRunner):
 
         if not self.atoms.pbc.any() and "internal" not in optimizer_kwargs:
             optimizer_kwargs["internal"] = True
-
-
-def run_neb(
-    images: list[Atoms],
-    relax_cell: bool = False,
-    fmax: float = 0.01,
-    max_steps: int | None = 1000,
-    optimizer: Optimizer = NEBOptimizer,
-    optimizer_kwargs: dict[str, Any] | None = None,
-    neb_kwargs: dict[str, Any] | None = None,
-    run_kwargs: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> Dynamics:
-    """
-    Run an NEB calculations.
-
-    Parameters
-    ----------
-    images
-        List of images for the NEB calculation.
-    relax_cell
-        Whether to relax the unit cell shape and volume.
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
-    optimizer
-        Optimizer class to use.
-    optimizer_kwargs
-        Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
-        Optimizer classes.
-    neb_kwargs
-        Dictionary of kwargs for the NEB class.
-    run_kwargs
-        Dictionary of kwargs for the `run()` method of the optimizer.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-
-    Returns
-    -------
-    Dynamics
-        The ASE Dynamics object following an NEB calculation.
-    """
-    run_kwargs = run_kwargs or {}
-    neb_kwargs = neb_kwargs or {}
-    traj_filename = "opt.traj"
-
-    # Create a parent temporary directory for the NEB run
-    neb_tmpdir, neb_results_dir = calc_setup(None, copy_files=None)
-
-    # Adjust optimizer_kwargs to use the parent directory
-    optimizer_kwargs = recursive_dict_merge(
-        {
-            "logfile": str(neb_tmpdir / "opt.log"),
-            "restart": str(neb_tmpdir / "opt.json"),
-        },
-        optimizer_kwargs,
-    )
-
-    if "trajectory" in optimizer_kwargs:
-        msg = "Quacc does not support setting the `trajectory` kwarg."
-        raise ValueError(msg)
-
-    if optimizer == BFGSLineSearch:
-        raise ValueError("BFGSLineSearch is not allowed as optimizer with NEB.")
-
-    # Copy atoms so we don't modify it in-place
-    images = [copy_atoms(image) for image in images]
-    neb = NEB(images, **neb_kwargs)
-
-    # Perform staging operations
-    for i, image in enumerate(images):
-        image_tmpdir = neb_tmpdir / f"image_{i}"
-        image_tmpdir.mkdir()
-        image.calc.directory = image_tmpdir
-
-    # Define the Trajectory object
-    traj_file = neb_tmpdir / traj_filename
-    traj = Trajectory(traj_file, "w", atoms=neb)
-
-    # Set volume relaxation constraints, if relevant
-    if relax_cell:
-        for i in range(len(images)):
-            if images[i].pbc.any():
-                images[i] = FrechetCellFilter(images[i])
-
-    dyn = optimizer(neb, **optimizer_kwargs)
-    dyn.attach(traj.write)
-    dyn.run(fmax, max_steps)
-    traj.close()
-
-    if hasattr(dyn.logfile, "close"):
-        dyn.logfile.close()
-
-    calc_cleanup(None, neb_tmpdir, neb_results_dir)
-    traj.filename = zpath(str(neb_results_dir / traj_filename))
-    dyn.trajectory = traj
-
-    return dyn

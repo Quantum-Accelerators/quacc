@@ -27,7 +27,7 @@ from ase.optimize.sciopt import SciPyFminBFGS
 
 from quacc import JobFailure, change_settings, get_settings
 from quacc.runners._base import BaseRunner
-from quacc.runners.ase import Runner, run_neb
+from quacc.runners.ase import Runner
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 test_files_path = Path(__file__).parent / "test_files"
@@ -298,11 +298,9 @@ def test_run_neb(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     geodesic_path = test_files_path / "geodesic_path.xyz"
     images = read(geodesic_path, index=":")
-    for image in images:
-        image.calc = EMT()
 
     neb_kwargs = {"method": "aseneb", "precon": None}
-    dyn = run_neb(images, optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
+    dyn = Runner(images, EMT()).run_neb(optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
     traj = read(dyn.trajectory.filename, index=":")
 
     assert traj[-1].calc.results is not None
@@ -314,29 +312,20 @@ def test_run_neb2():
 
     images = read(geodesic_path, index=":")
 
-    for image in images:
-        image.calc = EMT()
-
     with pytest.raises(
         ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
     ):
-        run_neb(
-            images,
-            optimizer=BFGSLineSearch,
-            neb_kwargs={"method": "aseneb", "precon": None},
+        Runner(images, EMT()).run_neb(
+            optimizer=BFGSLineSearch, neb_kwargs={"method": "aseneb", "precon": None}
         )
 
 
 def test_run_neb_raises_value_error_for_trajectory_kwarg():
     images = [Atoms("H2", positions=[[0, 0, 0], [0, 0, 0.74]])]
-    for image in images:
-        image.calc = EMT()
 
     with pytest.raises(
         ValueError, match="Quacc does not support setting the `trajectory` kwarg."
     ):
-        run_neb(
-            images=images,
-            optimizer=NEBOptimizer,
-            optimizer_kwargs={"trajectory": "some_traj.traj"},
+        Runner(images, EMT()).run_neb(
+            optimizer=NEBOptimizer, optimizer_kwargs={"trajectory": "some_traj.traj"}
         )
