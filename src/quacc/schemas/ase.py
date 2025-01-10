@@ -625,8 +625,6 @@ def _get_nth_iteration(
         List of configurations from every nth iteration.
     """
     result = []
-    if interval > n_iter:
-        pass
     start_idx, end_idx = 0, 0
     for i in range(0, n_iter, interval):
         start_idx = i * n_images
