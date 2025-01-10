@@ -4,11 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.11.10]
+
+### Fixed
+
+- Fixed compatability with Prefect 3.1.11
+
+## [0.11.9]
+
+### Changed
+
+- ASE>=3.24.0 is required due to upstream breaking changes
+
+### Fixed
+
+- Fixed a bug where DFT+U parameters might not be set appropriately if the `Atoms` object is sorted when using MP input sets
+
 ## [0.11.8]
 
 ### Added
 
-- Support for SevenNet as an MLP
+- Support for SevenNet and Orb models as MLPs
 
 ## [0.11.7]
 

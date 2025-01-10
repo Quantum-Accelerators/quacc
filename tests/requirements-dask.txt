@@ -1,2 +1,2 @@
-dask[distributed]==2024.11.2
+dask[distributed]==2024.12.1
 dask-jobqueue==0.9.0
