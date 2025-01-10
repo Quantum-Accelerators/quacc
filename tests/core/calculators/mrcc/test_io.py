@@ -49,8 +49,11 @@ O   3.0 0.0 0.0
 """
     with open(tmp_path / "MINP", "w") as fd:
         fd.write(reference_inputfile)
-    with pytest.raises(ValueError, match="Geometry incorrectly provided in MRCC input file"):
+    with pytest.raises(
+        ValueError, match="Geometry incorrectly provided in MRCC input file"
+    ):
         atoms = read_geom_mrccinp(tmp_path / "MINP")
+
 
 def test_write_mrcc(tmp_path):
     atoms = Atoms("H2O", positions=[[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]])
@@ -274,9 +277,7 @@ def test_read_mrcc_outputs(tmp_path):
         assert generated_dft_mrcc_outputs[key] == pytest.approx(ref_output)
 
     for key, ref_output in reference_cwft_outputs.items():
-        assert generated_cwft_mrcc_outputs[key] == pytest.approx(
-            ref_output
-        )
+        assert generated_cwft_mrcc_outputs[key] == pytest.approx(ref_output)
 
     # Check if both CCSD and MP2 energies are read in
     reference_cwft_outputfile = """...............................................................................
@@ -320,12 +321,16 @@ def test_read_mrcc_outputs(tmp_path):
 
     generated_cwft_mrcc_outputs = read_mrcc_outputs(tmp_path / "mrcc_cwft.out")
 
-    reference_cwft_outputs = {"energy": -2067.269532772986, "scf_energy": -2061.028349030339, "mp2_corr_energy": -5.5819155543014425, "ccsd_corr_energy": -6.241183742647235, "ccsdt_corr_energy": None}
+    reference_cwft_outputs = {
+        "energy": -2067.269532772986,
+        "scf_energy": -2061.028349030339,
+        "mp2_corr_energy": -5.5819155543014425,
+        "ccsd_corr_energy": -6.241183742647235,
+        "ccsdt_corr_energy": None,
+    }
 
     for key, ref_output in reference_cwft_outputs.items():
-        assert generated_cwft_mrcc_outputs[key] == pytest.approx(
-            ref_output
-        )
+        assert generated_cwft_mrcc_outputs[key] == pytest.approx(ref_output)
 
     reference_cwft_outputfile = """...............................................................................
  ======================================================================
@@ -355,12 +360,16 @@ def test_read_mrcc_outputs(tmp_path):
 
     generated_cwft_mrcc_outputs = read_mrcc_outputs(tmp_path / "mrcc_cwft.out")
 
-    reference_cwft_outputs = {"energy": -2066.6102645846404, "scf_energy": -2061.028349030339, "mp2_corr_energy": -5.5819155543014425, "ccsd_corr_energy": None, "ccsdt_corr_energy": None}
+    reference_cwft_outputs = {
+        "energy": -2066.6102645846404,
+        "scf_energy": -2061.028349030339,
+        "mp2_corr_energy": -5.5819155543014425,
+        "ccsd_corr_energy": None,
+        "ccsdt_corr_energy": None,
+    }
 
     for key, ref_output in reference_cwft_outputs.items():
-        assert generated_cwft_mrcc_outputs[key] == pytest.approx(
-            ref_output
-        )
+        assert generated_cwft_mrcc_outputs[key] == pytest.approx(ref_output)
 
     # Test if error raised when SCF energy is None
     wrong_outputfile = """...............................................................................
@@ -379,6 +388,5 @@ def test_read_mrcc_outputs(tmp_path):
  """
     with open(tmp_path / "mrcc.out", "w") as fd:
         fd.write(wrong_outputfile)
-    with pytest.raises(ValueError,
-                       match="SCF energy not found in MRCC output file"):
+    with pytest.raises(ValueError, match="SCF energy not found in MRCC output file"):
         read_mrcc_outputs(tmp_path / "mrcc.out")
