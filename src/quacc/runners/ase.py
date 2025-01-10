@@ -478,18 +478,9 @@ def run_neb(
     neb = NEB(images, **neb_kwargs)
 
     # Perform staging operations
-    dir_lists = []
     for i, image in enumerate(images):
         image_tmpdir = neb_tmpdir / f"image_{i}"
-        image_tmpdir.mkdir(parents=True)
-        tmpdir_i, job_results_dir_i = calc_setup(image, copy_files=copy_files)
-
-        # Move contents from tmpdir_i to image_tmpdir
-        for item in tmpdir_i.iterdir():
-            shutil.move(str(item), str(image_tmpdir))
-        dir_lists.append([image_tmpdir, job_results_dir_i])
-
-        # Update calculator directory
+        image_tmpdir.mkdir()
         image.calc.directory = image_tmpdir
 
     # Define the Trajectory object
@@ -507,21 +498,11 @@ def run_neb(
     dyn.run(fmax, max_steps)
     traj.close()
 
-    logfile = dyn.logfile
-    if hasattr(logfile, "close"):
-        logfile.close()
+    if hasattr(dyn.logfile, "close"):
+        dyn.logfile.close()
 
-    # Perform cleanup operations
-    for i, image in enumerate(images):
-        calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
-
-    neb_results_dir.mkdir(parents=True, exist_ok=True)
-
-    # Move NEB-specific files to the results directory
-    for item in neb_tmpdir.iterdir():
-        if item.is_file():  # Only move files, not directories
-            shutil.move(str(item), str(neb_results_dir))
-
+    calc_cleanup(None, neb_tmpdir, neb_results_dir)
     traj.filename = zpath(str(neb_results_dir / traj_filename))
     dyn.trajectory = traj
+
     return dyn
