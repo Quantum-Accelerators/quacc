@@ -435,9 +435,9 @@ def run_neb(
     optimizer_kwargs = recursive_dict_merge(
         {
             "logfile": str(neb_tmpdir / "opt.log"),
-            "restart": str(neb_tmpdir / "opt.json")
+            "restart": str(neb_tmpdir / "opt.json"),
         },
-        optimizer_kwargs or {}
+        optimizer_kwargs or {},
     )
 
     if "trajectory" in optimizer_kwargs:
@@ -585,4 +585,3 @@ def run_neb(
     dyn.trajectory = traj
     return dyn
 '''
-
