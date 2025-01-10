@@ -7,6 +7,11 @@ from importlib.util import find_spec
 from logging import getLogger
 from shutil import copy, copytree
 from typing import TYPE_CHECKING, Any
+import os
+from pathlib import Path
+import tempfile
+import shutil
+
 
 import numpy as np
 from ase.calculators import calculator
@@ -406,11 +411,6 @@ class Runner(BaseRunner):
         if not self.atoms.pbc.any() and "internal" not in optimizer_kwargs:
             optimizer_kwargs["internal"] = True
 
-
-import os
-from pathlib import Path
-import tempfile
-import shutil
 
 
 def run_neb(
