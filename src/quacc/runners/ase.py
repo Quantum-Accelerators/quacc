@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import time
 import shutil
 from collections.abc import Callable
 from importlib.util import find_spec
@@ -479,6 +480,9 @@ def run_neb(
     # Perform cleanup operations
     for i, image in enumerate(images):
         calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
+
+    # Ensure all file handles are closed
+    time.sleep(0.1)  # Short delay to allow file handles to close
 
     neb_results_dir.mkdir(parents=True, exist_ok=True)
 
