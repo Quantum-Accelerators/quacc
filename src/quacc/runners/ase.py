@@ -420,6 +420,36 @@ def run_neb(
     run_kwargs: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> Dynamics:
+    """
+    Run an NEB calculations.
+
+    Parameters
+    ----------
+    images
+        List of images for the NEB calculation.
+    relax_cell
+        Whether to relax the unit cell shape and volume.
+    fmax
+        Tolerance for the force convergence (in eV/A).
+    max_steps
+        Maximum number of steps to take.
+    optimizer
+        Optimizer class to use.
+    optimizer_kwargs
+        Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
+        Optimizer classes.
+    neb_kwargs
+        Dictionary of kwargs for the NEB class.
+    run_kwargs
+        Dictionary of kwargs for the `run()` method of the optimizer.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+
+    Returns
+    -------
+    Dynamics
+        The ASE Dynamics object following an NEB calculation.
+    """
     run_kwargs = run_kwargs or {}
     neb_kwargs = neb_kwargs or {}
     traj_filename = "opt.traj"
