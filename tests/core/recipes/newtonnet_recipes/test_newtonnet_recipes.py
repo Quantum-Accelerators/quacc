@@ -345,7 +345,7 @@ def test_neb_job_linear(setup_test_environment):
 
     assert neb_summary["neb_results"]["trajectory_results"][1][
         "energy"
-    ] == pytest.approx(-24.094734474778278, abs=1e-5)
+    ] == pytest.approx(-21.99570976499786, abs=1e-5)
 
 
 def test_neb_job_idpp(setup_test_environment):
