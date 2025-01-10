@@ -224,9 +224,10 @@ def test_read_mrcc_outputs(tmp_path):
         "ccsdt_corr_energy": -6.430030273565713,
     }
 
-    for key in reference_dft_output:
-        assert generated_dft_output[key] == pytest.approx(reference_dft_output[key])
-        assert generated_cwft_output[key] == pytest.approx(reference_cwft_output[key])
+    for key, ref_output in reference_dft_output.items():
+        assert generated_dft_output[key] == pytest.approx(ref_output)
+    for key, ref_output in reference_cwft_output.items():
+        assert generated_cwft_output[key] == pytest.approx(ref_output)
 
     with open(tmp_path / "mrcc_cwft.out", "w") as fd:
         fd.write(reference_cwft_outputfile)
@@ -253,12 +254,12 @@ def test_read_mrcc_outputs(tmp_path):
         "ccsdt_corr_energy": -6.4300297894207326,
     }
 
-    for key in reference_dft_outputs:
+    for key, ref_output in reference_dft_outputs.items():
         assert generated_dft_mrcc_outputs[key] == pytest.approx(
-            reference_dft_outputs[key]
+            ref_output
         )
 
-    for key in reference_cwft_outputs:
+    for key, ref_output in reference_cwft_outputs.items():
         assert generated_cwft_mrcc_outputs[key] == pytest.approx(
-            reference_cwft_outputs[key]
+            ref_output
         )
