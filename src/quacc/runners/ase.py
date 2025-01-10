@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import shutil
 from collections.abc import Callable
 from importlib.util import find_spec
 from logging import getLogger
