@@ -318,8 +318,6 @@ def neb_job(
             - 'neb_results': Summary of the NEB optimization ([quacc.schemas.ase.Summarize.neb][]).
     """
     relax_job_kwargs = relax_job_kwargs or {}
-    neb_kwargs = neb_kwargs or {}
-    interpolate_kwargs = interpolate_kwargs or {}
     settings = get_settings()
 
     calc_defaults = {
@@ -424,7 +422,6 @@ def geodesic_job(
             - 'ts_atoms': ASE atoms object for the highest energy structure for the geodesic path
     """
     relax_job_kwargs = relax_job_kwargs or {}
-    geodesic_interpolate_kwargs = geodesic_interpolate_kwargs or {}
     settings = get_settings()
 
     calc_defaults = {
