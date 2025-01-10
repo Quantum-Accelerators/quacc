@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
+from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
 
@@ -16,21 +17,28 @@ LOGGER = getLogger(__name__)
 
 @lru_cache
 def pick_calculator(
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet"], **kwargs
+    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb"], **kwargs
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
 
+    !!! Note
+
+        To use `orb` method, `pynanoflann` must be installed. To install `pynanoflann`,
+        run `pip install "pynanoflann@git+https://github.com/dwastberg/pynanoflann"`.
+        The `orb_models` are licensed under the APACHE license as found at the following
+        link: https://github.com/orbital-materials/orb-models
+
     Parameters
     ----------
     method
-        Name of the calculator to use
+        Name of the calculator to use.
     **kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
-        `matgl.ext.ase.M3GNetCalculator`, or `sevenn.sevennet_calculator.SevenNetCalculator`
-        calculators.
+        `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`, or
+        `orb_models.forcefield.calculator.ORBCalculator` calculators.
 
     Returns
     -------
@@ -70,6 +78,21 @@ def pick_calculator(
         from sevenn.sevennet_calculator import SevenNetCalculator
 
         calc = SevenNetCalculator(**kwargs)
+
+    elif method.lower() == "orb":
+        if not find_spec("pynanoflann"):
+            raise ImportError(
+                """orb-models requires pynanoflann.
+                Install pynanoflann with `pip install "pynanoflann@git+https://github.com/dwastberg/pynanoflann"`.
+                """
+            )
+        from orb_models import __version__
+        from orb_models.forcefield import pretrained
+        from orb_models.forcefield.calculator import ORBCalculator
+
+        orb_model = kwargs.get("model", "orb_v2")
+        orbff = getattr(pretrained, orb_model)()
+        calc = ORBCalculator(model=orbff, **kwargs)
 
     else:
         raise ValueError(f"Unrecognized {method=}.")

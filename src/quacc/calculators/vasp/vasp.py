@@ -289,7 +289,7 @@ class Vasp(Vasp_):
         command: str | None = None,
         out: Path | str | None = None,
         directory: Path | str | None = None,
-    ) -> int:
+    ) -> tuple[int, str]:
         """
         Override the Vasp calculator's run method to use Custodian if necessary.
 
@@ -306,8 +306,8 @@ class Vasp(Vasp_):
 
         Returns
         -------
-        int
-            The return code.
+        int, str
+            The return code and stderr.
         """
         if command is None:
             command = self.command
@@ -316,10 +316,16 @@ class Vasp(Vasp_):
 
         if self.use_custodian:
             run_custodian(directory=directory)
-            return 0
+            return 0, None
 
-        if out:
-            with Path(out).open("w") as file:
-                return subprocess.call(command, shell=True, stdout=file, cwd=directory)
-        else:
-            return subprocess.call(command, shell=True, stdout=None, cwd=directory)
+        result = subprocess.run(
+            command,
+            shell=True,
+            cwd=directory,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if out is not None:
+            out.write(result.stdout)
+        return result.returncode, result.stderr
