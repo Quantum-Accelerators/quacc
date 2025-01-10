@@ -367,7 +367,7 @@ class Runner(BaseRunner):
         run_kwargs: dict[str, Any] | None = None,
     ) -> Dynamics:
         """
-        Run an NEB calculations.
+        Run an NEB calculation.
 
         Parameters
         ----------
