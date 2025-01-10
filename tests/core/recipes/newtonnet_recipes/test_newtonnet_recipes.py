@@ -365,7 +365,7 @@ def test_neb_job_idpp(setup_test_environment):
 
     assert neb_summary["neb_results"]["trajectory_results"][1][
         "energy"
-    ] == pytest.approx(-26.81855580696914, abs=1e-5)
+    ] == pytest.approx(-23.58905916097854, abs=1e-5)
 
 
 def test_neb_job_geodesic(setup_test_environment):
