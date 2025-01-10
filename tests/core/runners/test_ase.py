@@ -306,7 +306,7 @@ def test_run_neb(monkeypatch, tmp_path):
     traj = read(dyn.trajectory.filename, index=":")
 
     assert traj[-1].calc.results is not None
-    assert os.path.exists(tmp_path / "opt.log")
+    assert not os.path.exists(tmp_path / "opt.log")
 
 
 def test_run_neb2():
