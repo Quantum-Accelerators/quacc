@@ -476,6 +476,10 @@ def run_neb(
     dyn.run(fmax, max_steps)
     traj.close()
 
+    logfile = dyn.logfile
+    if hasattr(logfile, 'close'):
+        logfile.close()
+
     # Perform cleanup operations
     for i, image in enumerate(images):
         calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
