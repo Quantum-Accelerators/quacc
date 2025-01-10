@@ -34,6 +34,23 @@ O   3.0 0.0 0.0
     )
     assert not compare_atoms(atoms, atoms_ref, tol=1e-7)
 
+    # Check that error is raised when multiple xyz lines are present
+    reference_inputfile = """calc=LNO-CCSD(T)
+basis=cc-pVDZ
+charge=0
+mult=1
+geom=xyz
+xyz
+3
+
+H   1.0 0.0 0.0
+H   2.0 0.0 0.0
+O   3.0 0.0 0.0
+"""
+    with open(tmp_path / "MINP", "w") as fd:
+        fd.write(reference_inputfile)
+    with pytest.raises(ValueError, match="Geometry incorrectly provided in MRCC input file"):
+        atoms = read_geom_mrccinp(tmp_path / "MINP")
 
 def test_write_mrcc(tmp_path):
     atoms = Atoms("H2O", positions=[[1.0, 0.0, 0.0], [2.0, 0.0, 0.0], [3.0, 0.0, 0.0]])
@@ -58,7 +75,6 @@ def test_write_mrcc(tmp_path):
 
     with open(tmp_path / "MINP") as fd:
         generated_inputfile = fd.readlines()
-        # print(generated_inputfile)
 
     reference_inputfile = [
         "charge=0\n",
@@ -258,4 +274,115 @@ def test_read_mrcc_outputs(tmp_path):
         assert generated_dft_mrcc_outputs[key] == pytest.approx(ref_output)
 
     for key, ref_output in reference_cwft_outputs.items():
+<<<<<<< HEAD
+        assert generated_cwft_mrcc_outputs[key] == pytest.approx(
+            ref_output
+        )
+
+    # Check if both CCSD and MP2 energies are read in
+    reference_cwft_outputfile = """...............................................................................
+ ======================================================================
+
+ SUCCESS...
+ THE SCF ITERATION HAS CONVERGED!
+
+                   A
+ FINAL ALPHA OCC:   5
+ FINAL BETA  OCC:   5
+
+ ***FINAL HARTREE-FOCK ENERGY:        -75.7413954285433988 [AU]
+...............................................................................
+ LMP2 correlation energy [au]:                             -0.205131614733
+ Total LMP2 energy [au]:                                  -75.946527043277
+
+ Total MP2 correction for dropped NAFs [au]:                0.000018777971
+ Total MP2 correction [au]:                                 0.000018777971
+
+ CPU time for CCSD calculations [min]:                      0.124
+ Total CPU time for CCSD [min]:                             0.414
+ Wall time for CCSD calculations [min]:                     0.010
+ Total wall time for CCSD [min]:                            0.050
+
+ CCSD correlation energy [au]:                             -0.229368662969
+ Total CCSD energy [au]:                                  -75.970764091513
+ CCSD correlation energy + 0.5 MP2 corrections [au]:       -0.229359273984
+ Total LNO-CCSD energy with MP2 corrections [au]:         -75.970754702527
+
+ ======================================================================
+ ======================================================================
+
+ ************************ 2024-05-27 13:39:19 *************************
+                      Normal termination of mrcc.
+ **********************************************************************
+ """
+
+    with open(tmp_path / "mrcc_cwft.out", "w") as fd:
+        fd.write(reference_cwft_outputfile)
+
+    generated_cwft_mrcc_outputs = read_mrcc_outputs(tmp_path / "mrcc_cwft.out")
+
+    reference_cwft_outputs = {"energy": -2067.269532772986, "scf_energy": -2061.028349030339, "mp2_corr_energy": -5.5819155543014425, "ccsd_corr_energy": -6.241183742647235, "ccsdt_corr_energy": None}
+
+    for key, ref_output in reference_cwft_outputs.items():
+        assert generated_cwft_mrcc_outputs[key] == pytest.approx(
+            ref_output
+        )
+
+    reference_cwft_outputfile = """...............................................................................
+ ======================================================================
+
+ SUCCESS...
+ THE SCF ITERATION HAS CONVERGED!
+
+                   A
+ FINAL ALPHA OCC:   5
+ FINAL BETA  OCC:   5
+
+ ***FINAL HARTREE-FOCK ENERGY:        -75.7413954285433988 [AU]
+...............................................................................
+ LMP2 correlation energy [au]:                             -0.205131614733
+ Total LMP2 energy [au]:                                  -75.946527043277
+
+ ======================================================================
+ ======================================================================
+
+ ************************ 2024-05-27 13:39:19 *************************
+                      Normal termination of mrcc.
+ **********************************************************************
+ """
+
+    with open(tmp_path / "mrcc_cwft.out", "w") as fd:
+        fd.write(reference_cwft_outputfile)
+
+    generated_cwft_mrcc_outputs = read_mrcc_outputs(tmp_path / "mrcc_cwft.out")
+
+    reference_cwft_outputs = {"energy": -2066.6102645846404, "scf_energy": -2061.028349030339, "mp2_corr_energy": -5.5819155543014425, "ccsd_corr_energy": None, "ccsdt_corr_energy": None}
+
+    for key, ref_output in reference_cwft_outputs.items():
+        assert generated_cwft_mrcc_outputs[key] == pytest.approx(
+            ref_output
+        )
+
+    # Test if error raised when SCF energy is None
+    wrong_outputfile = """...............................................................................
+
+ SUCCESS...
+ THE SCF ITERATION HAS CONVERGED!
+
+                   A1  B1  B2  A2
+ FINAL ALPHA OCC:   3   1   1   0
+ FINAL BETA  OCC:   3   1   1   0
+
+
+ ************************ 2024-05-28 16:10:52 *************************
+                      Normal termination of mrcc.
+ **********************************************************************
+ """
+    with open(tmp_path / "mrcc.out", "w") as fd:
+        fd.write(wrong_outputfile)
+    with pytest.raises(ValueError,
+                       match="SCF energy not found in MRCC output file"):
+        read_mrcc_outputs(tmp_path / "mrcc.out")
+=======
         assert generated_cwft_mrcc_outputs[key] == pytest.approx(ref_output)
+>>>>>>> ca2169cc206dbdbd8e53f69331567e831de00505
