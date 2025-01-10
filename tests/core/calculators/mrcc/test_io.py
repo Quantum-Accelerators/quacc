@@ -255,11 +255,7 @@ def test_read_mrcc_outputs(tmp_path):
     }
 
     for key, ref_output in reference_dft_outputs.items():
-        assert generated_dft_mrcc_outputs[key] == pytest.approx(
-            ref_output
-        )
+        assert generated_dft_mrcc_outputs[key] == pytest.approx(ref_output)
 
     for key, ref_output in reference_cwft_outputs.items():
-        assert generated_cwft_mrcc_outputs[key] == pytest.approx(
-            ref_output
-        )
+        assert generated_cwft_mrcc_outputs[key] == pytest.approx(ref_output)
