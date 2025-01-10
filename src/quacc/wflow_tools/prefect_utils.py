@@ -4,7 +4,7 @@ from functools import partial
 from typing import TYPE_CHECKING, Any
 
 from prefect.futures import PrefectFuture
-from prefect.results import BaseResult, ResultRecord
+from prefect.results import ResultRecord
 from prefect.utilities.annotations import quote
 from prefect.utilities.collections import StopVisiting, visit_collection
 from typing_extensions import TypeVar
@@ -56,9 +56,7 @@ def resolve_futures_to_results(expr: PrefectFuture | Any) -> State | Any:
         future.wait()
         if future.state.is_completed():
             result = future.state.result()
-            if isinstance(result, BaseResult):
-                result = result.get()
-            elif isinstance(result, ResultRecord):
+            if isinstance(result, ResultRecord):
                 result = result.result
             results.append(result)
         else:
@@ -121,9 +119,7 @@ async def resolve_futures_to_results_async(expr: PrefectFuture | Any) -> State |
         future.wait()
         if future.state.is_completed():
             result = future.state.result()
-            if isinstance(result, BaseResult):
-                result = result.get()
-            elif isinstance(result, ResultRecord):
+            if isinstance(result, ResultRecord):
                 result = result.result
             results.append(result)
         else:
