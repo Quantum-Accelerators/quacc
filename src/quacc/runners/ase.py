@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import shutil
-import time
 from collections.abc import Callable
 from importlib.util import find_spec
 from logging import getLogger
@@ -484,9 +483,6 @@ def run_neb(
     for i, image in enumerate(images):
         calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
 
-    # Ensure all file handles are closed
-    time.sleep(0.1)  # Short delay to allow file handles to close
-
     neb_results_dir.mkdir(parents=True, exist_ok=True)
 
     # Move NEB-specific files to the results directory
@@ -497,95 +493,3 @@ def run_neb(
     traj.filename = zpath(str(neb_results_dir / traj_filename))
     dyn.trajectory = traj
     return dyn
-
-
-'''
-def run_neb(
-    images: list[Atoms],
-    relax_cell: bool = False,
-    fmax: float = 0.01,
-    max_steps: int | None = 1000,
-    optimizer: Optimizer = NEBOptimizer,
-    optimizer_kwargs: dict[str, Any] | None = None,
-    neb_kwargs: dict[str, Any] | None = None,
-    run_kwargs: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> Dynamics:
-    """
-    Run NEB optimization.
-
-    Parameters
-    ----------
-    images
-        List of images representing the initial path.
-    relax_cell
-        Whether to relax the unit cell shape and volume.
-    fmax
-        Tolerance for the force convergence (in eV/A).
-    max_steps
-        Maximum number of steps to take.
-    optimizer
-        Optimizer class to use. All Optimizers except BFGSLineSearch
-    optimizer_kwargs
-        Dictionary of kwargs for the optimizer.
-    run_kwargs
-        Dictionary of kwargs for the run() method of the optimizer.
-    neb_kwargs
-        Dictionary of kwargs for the NEB.
-    copy_files
-        Files to copy before running the calculation.
-
-    Returns
-    -------
-    Dynamics
-        The ASE Dynamics object following an optimization.
-    """
-    run_kwargs = run_kwargs or {}
-    neb_kwargs = neb_kwargs or {}
-    traj_filename = "opt.traj"
-    optimizer_kwargs = recursive_dict_merge(
-        {"logfile": "opt.log", "restart": "opt.json"}, optimizer_kwargs
-    )
-
-    # Check if trajectory kwarg is specified
-    if "trajectory" in optimizer_kwargs:
-        msg = "Quacc does not support setting the `trajectory` kwarg."
-        raise ValueError(msg)
-
-    if optimizer == BFGSLineSearch:
-        raise ValueError("BFGSLineSearch is not allowed as optimizer with NEB.")
-
-    # Copy atoms so we don't modify it in-place
-    images = [copy_atoms(image) for image in images]
-    neb = NEB(images, **neb_kwargs)
-
-    # Perform staging operations
-    dir_lists = []
-    for image in images:
-        tmpdir_i, job_results_dir_i = calc_setup(image, copy_files=copy_files)
-        dir_lists.append([tmpdir_i, job_results_dir_i])
-
-    # Define the Trajectory object
-    traj_file = dir_lists[0][0] / traj_filename
-    traj = Trajectory(traj_file, "w", atoms=neb)
-
-    # Set volume relaxation constraints, if relevant
-    if relax_cell:
-        for i in range(len(images)):
-            if images[i].pbc.any():
-                images[i] = FrechetCellFilter(images[i])
-
-    dyn = optimizer(neb, **optimizer_kwargs)
-    dyn.attach(traj.write)
-    dyn.run(fmax, max_steps)
-    traj.close()
-
-    # Perform cleanup operations
-    # The first images's results directory contains traj file.
-    for i, image in enumerate(images):
-        calc_cleanup(image, dir_lists[i][0], dir_lists[i][1])
-
-    traj.filename = zpath(str(dir_lists[0][1] / traj_filename))
-    dyn.trajectory = traj
-    return dyn
-'''
