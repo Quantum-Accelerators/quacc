@@ -274,7 +274,6 @@ def test_read_mrcc_outputs(tmp_path):
         assert generated_dft_mrcc_outputs[key] == pytest.approx(ref_output)
 
     for key, ref_output in reference_cwft_outputs.items():
-<<<<<<< HEAD
         assert generated_cwft_mrcc_outputs[key] == pytest.approx(
             ref_output
         )
@@ -383,6 +382,3 @@ def test_read_mrcc_outputs(tmp_path):
     with pytest.raises(ValueError,
                        match="SCF energy not found in MRCC output file"):
         read_mrcc_outputs(tmp_path / "mrcc.out")
-=======
-        assert generated_cwft_mrcc_outputs[key] == pytest.approx(ref_output)
->>>>>>> ca2169cc206dbdbd8e53f69331567e831de00505
