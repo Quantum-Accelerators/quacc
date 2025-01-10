@@ -453,12 +453,12 @@ def run_neb(
         image_tmpdir = neb_tmpdir / f"image_{i}"
         image_tmpdir.mkdir(parents=True, exist_ok=True)
         tmpdir_i, job_results_dir_i = calc_setup(image, copy_files=copy_files)
-        
+
         # Move contents from tmpdir_i to image_tmpdir
         for item in tmpdir_i.iterdir():
             shutil.move(str(item), str(image_tmpdir))
         dir_lists.append([image_tmpdir, job_results_dir_i])
-    
+
         # Update calculator directory
         image.calc.directory = image_tmpdir
 
