@@ -170,6 +170,21 @@ if TYPE_CHECKING:
         terminate_func: Callable | None  # default = None
         terminate_on_nonzero_returncode: bool  # default = False
 
+    # ----------- MRCC calculator type hints -----------
+
+    class MRCCParamsInfo(TypedDict):
+        mrccinput: dict[str, str]
+        mrccblocks: str | None
+        charge: int
+        mult: int
+
+    class MRCCEnergyInfo(TypedDict):
+        energy: float | None
+        scf_energy: float | None
+        mp2_corr_energy: float | None
+        ccsd_corr_energy: float | None
+        ccsdt_corr_energy: float | None
+
     # ----------- ASE calculator type hints -----------
 
     class Results(TypedDict):
