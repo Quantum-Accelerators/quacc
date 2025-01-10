@@ -42,6 +42,7 @@ def _get_version_from_mrcc_header(mrcc_header: str) -> str:
 
 
 class MrccProfile(BaseProfile):
+    """The MRCC calculator profile"""
     def version(self) -> str:
         """
         Gives the version of the MRCC executable.
