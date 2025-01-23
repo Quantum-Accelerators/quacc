@@ -167,7 +167,7 @@ lint.pydocstyle.convention = "numpy"
 lint.isort.known-first-party = ["quacc"]
 lint.isort.required-imports = ["from __future__ import annotations"]
 lint.isort.split-on-trailing-comma=false
-lint.extend-include = ["*.ipynb"]
+extend-include = ["*.ipynb"]
 
 [tool.ruff.format]
 docstring-code-format = true
