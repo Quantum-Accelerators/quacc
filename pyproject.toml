@@ -160,7 +160,6 @@ lint.ignore = [
   "ISC001",   # single-line-implicit-string-concatenation
   "PLR",    # Design related pylint codes
   "PERF203",  # try-except-in-loop
-  "PT004",  # Fixture does not return anything
   "RET505", # Unnecessary `elif` after `return`
 ]
 src = ["src"]
@@ -168,7 +167,7 @@ lint.pydocstyle.convention = "numpy"
 lint.isort.known-first-party = ["quacc"]
 lint.isort.required-imports = ["from __future__ import annotations"]
 lint.isort.split-on-trailing-comma=false
-extend-include = ["*.ipynb"]
+lint.extend-include = ["*.ipynb"]
 
 [tool.ruff.format]
 docstring-code-format = true
