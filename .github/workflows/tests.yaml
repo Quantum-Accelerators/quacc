@@ -76,7 +76,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.wflow_engine == 'covalent' && '3.10' || '3.12' }}
+          python-version: 3.12
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
