@@ -39,7 +39,7 @@ dependencies = [
     "pymatgen>=2024.10.22", # for structure manipulation and I/O
     "ruamel.yaml>=0.17.40", # for YAML
     "typer>=0.12.1", # for the CLI
-    "pymongo<=4.10.1", # TODO: remove pending maggma fix
+    "pymongo<=4.11", # TODO: remove pending maggma fix
 ]
 
 [project.optional-dependencies]
