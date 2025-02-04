@@ -157,6 +157,7 @@ lint.select = [
   "YTT",    # flake8-2020
 ]
 lint.ignore = [
+  "A005",  # Module shadows
   "E501",   # Line too long
   "ISC001",   # single-line-implicit-string-concatenation
   "PLR",    # Design related pylint codes
