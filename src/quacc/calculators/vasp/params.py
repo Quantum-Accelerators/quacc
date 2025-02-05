@@ -218,10 +218,7 @@ def get_param_swaps(
         )
         calc.set(isym=-1)
 
-    if (
-        (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
-        or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
-    ) and (calc.bool_params["lelf"] is True):
+    if calc.bool_params["lelf"] is True:
         LOGGER.info(
             "Recommending NPAR = 1 because NCORE/NPAR is not compatible with this job type."
         )
