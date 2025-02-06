@@ -393,7 +393,7 @@ class QuaccSettings(BaseSettings):
         description="Compute-node local scratch directory in which Q-Chem should perform IO.",
     )
     QCHEM_NUM_CORES: int = Field(
-        psutil.cpu_count(logical=False),
+        psutil.cpu_count(logical=False) or 1,
         description="Number of cores to use for the Q-Chem calculation.",
     )
 
@@ -416,10 +416,10 @@ class QuaccSettings(BaseSettings):
     # NewtonNet Settings
     # ---------------------------
     NEWTONNET_MODEL_PATH: Union[Path, list[Path]] = Field(
-        "best_model_state.tar", description="Path to NewtonNet .tar model"
+        Path("best_model_state.tar"), description="Path to NewtonNet .tar model"
     )
     NEWTONNET_CONFIG_PATH: Union[Path, list[Path]] = Field(
-        "config.yml", description="Path to NewtonNet YAML settings file"
+        Path("config.yml"), description="Path to NewtonNet YAML settings file"
     )
 
     # ---------------------------

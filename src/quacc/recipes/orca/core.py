@@ -68,7 +68,7 @@ def static_job(
         Dictionary of results
     """
     additional_fields = {"name": "ORCA Static"} | (additional_fields or {})
-    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
+    nprocs = (psutil.cpu_count(logical=False) if nprocs == "max" else nprocs) or 1
     default_inputs = [xc, basis, "engrad", "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
@@ -137,7 +137,7 @@ def relax_job(
         Dictionary of results
     """
     additional_fields = {"name": "ORCA Relax"} | (additional_fields or {})
-    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
+    nprocs = (psutil.cpu_count(logical=False) if nprocs == "max" else nprocs) or 1
 
     default_inputs = [xc, basis, "normalprint", "opt"]
     if run_freq:
@@ -209,7 +209,7 @@ def freq_job(
     RunSchema
         Dictionary of results
     """
-    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
+    nprocs = (psutil.cpu_count(logical=False) if nprocs == "max" else nprocs) or 1
     default_inputs = [xc, basis, "normalprint", "numfreq" if numerical else "freq"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
@@ -278,7 +278,7 @@ def ase_relax_job(
     OptSchema
         Dictionary of results
     """
-    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
+    nprocs = (psutil.cpu_count(logical=False) if nprocs == "max" else nprocs) or 1
     default_inputs = [xc, basis, "engrad", "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
@@ -360,7 +360,7 @@ def ase_quasi_irc_job(
     OptSchema
         Dictionary of results
     """
-    nprocs = psutil.cpu_count(logical=False) if nprocs == "max" else nprocs
+    nprocs = (psutil.cpu_count(logical=False) if nprocs == "max" else nprocs) or 1
     default_inputs = [xc, basis, "engrad", "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
