@@ -828,16 +828,15 @@ def test_logging(caplog):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text
-    assert (
-        "The following parameters were changed: {'ismear': -5, 'lmaxmix': 4}"
-        in caplog.text
-    )
+    assert "ismear': -5" in caplog.text
+    assert "lmaxmix': 4" in caplog.text
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text
-    assert "The following parameters were changed: {'lmaxmix': 4}" in caplog.text
+    assert "lmaxmix': 4" in caplog.text
+    assert "ismear: -5" not in caplog.text
 
 
 def test_bad_pmg_converter():

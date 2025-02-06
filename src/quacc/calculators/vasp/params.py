@@ -7,6 +7,7 @@ from logging import getLogger
 from typing import TYPE_CHECKING
 
 import numpy as np
+import psutil
 from ase.calculators.vasp import Vasp as Vasp_
 from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -182,6 +183,16 @@ def get_param_swaps(
         )
         calc.set(lorbit=11)
 
+    if not calc.int_params["npar"] and not calc.int_params["ncore"]:
+        ncores = psutil.cpu_count(logical=False) or 1
+        for ncore in range(int(np.sqrt(ncores)), ncores):
+            if ncores % ncore == 0:
+                LOGGER.info(
+                    f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
+                )
+                calc.set(ncore=ncore)
+                break
+
     if (
         (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
         or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
@@ -221,9 +232,7 @@ def get_param_swaps(
     if calc.bool_params["lelf"] is True and (
         calc.int_params["npar"] != 1 or calc.int_params["ncore"] != 1
     ):
-        LOGGER.info(
-            "Recommending NPAR = 1 because NCORE/NPAR is not compatible with this job type."
-        )
+        LOGGER.info("Recommending NPAR = 1 per the VASP manual.")
         calc.set(npar=1, ncore=None)
 
     new_parameters = (

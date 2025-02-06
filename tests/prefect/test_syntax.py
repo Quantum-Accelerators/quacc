@@ -10,7 +10,7 @@ import psutil
 
 from quacc import change_settings, flow, job, subflow
 
-n_cpus = psutil.cpu_count()
+n_cpus = psutil.cpu_count() or 1
 
 
 def test_patch():
