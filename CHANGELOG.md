@@ -4,11 +4,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.11.13]
+## [0.11.16]
 
 ### Changed
 
 - VASP: Automatic setting of `NCORE` to sqrt(# of cores) unless otherwise specified
+
+## [0.11.15]
+
+### Fixed
+
+- Sets NPAR = 1 for LEFL = True
+
+## [0.11.14]
+
+### Fixed
+
+- Fixed incompatability with PyMongo
+
+## [0.11.13]
+
+### Fixed
+
+- No changes. Fixed PyPI release
 
 ## [0.11.12]
 
