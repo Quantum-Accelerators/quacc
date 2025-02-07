@@ -178,6 +178,8 @@ class VaspSummarize:
         if run_bader:
             try:
                 bader_results = bader_runner(directory)
+            except FileNotFoundError:
+                pass
             except Exception:
                 bader_results = None
                 LOGGER.warning("Bader analysis could not be performed.", exc_info=True)
@@ -189,6 +191,8 @@ class VaspSummarize:
         if run_chargemol:
             try:
                 chargemol_results = chargemol_runner(directory)
+            except FileNotFoundError:
+                pass
             except Exception:
                 chargemol_results = None
                 LOGGER.warning(
