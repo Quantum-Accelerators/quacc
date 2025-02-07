@@ -710,6 +710,7 @@ def test_d4():
     calc = Vasp(atoms, metagga="r2scan", vdw_s6=2.0)
     assert calc.float_params["vdw_s6"] == 2.0
 
+
 def test_setups():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="BulkSet")
