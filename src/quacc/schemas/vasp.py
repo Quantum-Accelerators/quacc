@@ -178,29 +178,23 @@ class VaspSummarize:
         if run_bader:
             try:
                 bader_results = bader_runner(directory)
+                vasp_task_doc["bader"] = bader_results
             except FileNotFoundError:
                 pass
             except Exception:
-                bader_results = None
                 LOGGER.warning("Bader analysis could not be performed.", exc_info=True)
-
-            if bader_results:
-                vasp_task_doc["bader"] = bader_results
 
         # Get the Chargemol analysis
         if run_chargemol:
             try:
                 chargemol_results = chargemol_runner(directory)
+                vasp_task_doc["chargemol"] = chargemol_results
             except FileNotFoundError:
                 pass
             except Exception:
-                chargemol_results = None
                 LOGGER.warning(
                     "Chargemol analysis could not be performed.", exc_info=True
                 )
-
-            if chargemol_results:
-                vasp_task_doc["chargemol"] = chargemol_results
 
         # Make task document
         unsorted_task_doc = (
