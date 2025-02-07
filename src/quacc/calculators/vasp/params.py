@@ -235,6 +235,12 @@ def get_param_swaps(
         LOGGER.info("Recommending NPAR = 1 per the VASP manual.")
         calc.set(npar=1, ncore=None)
 
+    if calc.string_params["metagga"] and calc.string_params["metagga"].lower() == "r2scan" and not calc.float_params["vdw_s6"] and not calc.float_params["vdw_s8"] and not calc.float_params["vdw_a1"] and not and not calc.float_params["vdw_a2"]:
+        LOGGER.info(
+            "Setting VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN."
+        )
+        calc.set(vdw_s6=1.0, vdw_s8=0.60187490, vdw_a1=0.51559235, vdw_a2=5.77342911)
+
     new_parameters = (
         calc.parameters
         if incar_copilot == "aggressive"
