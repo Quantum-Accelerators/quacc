@@ -235,7 +235,7 @@ def get_param_swaps(
         LOGGER.info("Recommending NPAR = 1 per the VASP manual.")
         calc.set(npar=1, ncore=None)
 
-    if calc.string_params["metagga"] and calc.string_params["metagga"].lower() == "r2scan" and not calc.float_params["vdw_s6"] and not calc.float_params["vdw_s8"] and not calc.float_params["vdw_a1"] and not and not calc.float_params["vdw_a2"]:
+    if calc.string_params["metagga"] and calc.string_params["metagga"].lower() == "r2scan" and not calc.float_params["vdw_s6"] and not calc.float_params["vdw_s8"] and not calc.float_params["vdw_a1"] and not calc.float_params["vdw_a2"]:
         LOGGER.info(
             "Setting VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN."
         )
