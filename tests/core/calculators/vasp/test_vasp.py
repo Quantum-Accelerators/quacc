@@ -695,13 +695,13 @@ def test_lorbit():
 
 def test_d4():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, xc="r2scan")
+    calc = Vasp(atoms, xc="r2scan", ivdw=13)
     assert calc.float_params["vdw_s6"] == 1.0
     assert calc.float_params["vdw_s8"] == 0.60187490
     assert calc.float_params["vdw_a1"] == 0.51559235
     assert calc.float_params["vdw_a2"] == 5.77342911
 
-    calc = Vasp(atoms, metagga="r2scan")
+    calc = Vasp(atoms, metagga="r2scan", ivdw=13)
     assert calc.float_params["vdw_s6"] == 1.0
     assert calc.float_params["vdw_s8"] == 0.60187490
     assert calc.float_params["vdw_a1"] == 0.51559235
@@ -710,6 +710,8 @@ def test_d4():
     calc = Vasp(atoms, metagga="r2scan", vdw_s6=2.0)
     assert calc.float_params["vdw_s6"] == 2.0
 
+    calc = Vasp(atoms, metagga="r2scan")
+    assert calc.float_params["vdw_s6"] is None
 
 def test_setups():
     atoms = bulk("Cu")
