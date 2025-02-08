@@ -238,6 +238,7 @@ def get_param_swaps(
     if (
         calc.string_params["metagga"]
         and calc.string_params["metagga"].lower() == "r2scan"
+        and calc.int_params["ivdw"] == 13
         and not calc.float_params["vdw_s6"]
         and not calc.float_params["vdw_s8"]
         and not calc.float_params["vdw_a1"]
