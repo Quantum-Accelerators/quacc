@@ -228,7 +228,7 @@ def test_no_bader(tmp_path, monkeypatch, run1, caplog):
     copytree(run1, p)
     atoms = read(p / "OUTCAR.gz")
     with caplog.at_level(WARNING):
-        VaspSummarize(directory=p, run_bader=True, run_chargemol=False).run(atoms)
+        results = VaspSummarize(directory=p, run_bader=True, run_chargemol=False).run(atoms)
     assert "bader" not in results
 
 
@@ -238,5 +238,5 @@ def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
     copytree(run1, p)
     atoms = read(p / "OUTCAR.gz")
     with caplog.at_level(WARNING):
-        VaspSummarize(directory=p, run_bader=False, run_chargemol=True).run(atoms)
+        results = VaspSummarize(directory=p, run_bader=False, run_chargemol=True).run(atoms)
     assert "chargemol" not in results
