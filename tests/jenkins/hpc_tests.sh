@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Fail fast
+# Fail qucickly
 set -e
 
 # Define path to directories on Adroit
