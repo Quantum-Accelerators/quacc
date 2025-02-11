@@ -237,7 +237,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     GULP_CMD: str = Field("gulp", description=("Path to the GULP executable."))
     GULP_LIB: Optional[Path] = Field(
-        None,
+        os.environ.get("GULP_LIB"),
         description=(
             "Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."
         ),
@@ -265,11 +265,11 @@ class QuaccSettings(BaseSettings):
         "vasp_gam", description="Command to run the gamma-point only version of VASP."
     )
     VASP_PP_PATH: Optional[Path] = Field(
-        None,
+        os.environ.get("VASP_PP_PATH"),
         description="Path to the VASP pseudopotential library. Must contain the directories `potpaw_PBE` and `potpaw` for PBE and LDA pseudopotentials, respectively. If ASE's VASP_PP_PATH is set, you do not need to set this.",
     )
     VASP_VDW: Optional[Path] = Field(
-        None,
+        os.environ.get("ASE_VASP_VDW"),
         description="Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals. If ASE's ASE_VASP_VDW is set, you do not need to set this.",
     )
 
