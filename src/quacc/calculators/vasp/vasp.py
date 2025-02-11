@@ -177,6 +177,7 @@ class Vasp(Vasp_):
         """
 
         # Set the VASP pseudopotential directory
+        raise ValueError(self._settings.VASP_PP_PATH, os.environ.get("VASP_PP_PATH"))
         if self._settings.VASP_PP_PATH:
             os.environ["VASP_PP_PATH"] = str(self._settings.VASP_PP_PATH)
 
