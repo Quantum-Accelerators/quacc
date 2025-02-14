@@ -1,2 +1,2 @@
 jobflow==0.1.19
-jobflow-remote[gui]==0.1.6
+jobflow-remote==0.1.6
