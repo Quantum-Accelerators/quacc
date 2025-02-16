@@ -936,7 +936,7 @@ def test_ldau_mp():
     atoms.pbc = True
     atoms[0].position += 0.1
     atoms[1].position -= 0.1
-    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet)
+    parameters = MPtoASEParams(atoms=atoms).convert_dict_set(MPRelaxSet)
     assert len(parameters["ldauu"]) == 3
     assert parameters["ldauu"] == [0, 0, 3.9]
     assert len(parameters["magmom"]) == 4
