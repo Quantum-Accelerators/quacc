@@ -1,3 +1,2 @@
 jobflow==0.1.19
-jobflow-remote==0.1.4
-fireworks==2.0.3
+jobflow-remote[gui]==0.1.6

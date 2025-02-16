@@ -4,6 +4,83 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.12.1]
+
+### Changed
+
+- Clarifies handling of ASE environment variables by defining them at import time rather than calculator instantiation time. Can help with debugging rare edge cases.
+
+## [0.11.19]
+
+### Fixed
+
+- Fixed automatic setting of D4 parameters for r2SCAN
+
+## [0.11.18]
+
+### Changed
+
+- Decrease the verbosity of the bader and chargemol analyses when they don't run.
+
+## [0.11.17]
+
+### Added
+
+- Added automatic r2SCAN D4 parameter settings for Vasp calculator
+
+## [0.11.16]
+
+### Changed
+
+- VASP: Automatic setting of `NCORE` to sqrt(# of cores) unless otherwise specified
+
+## [0.11.15]
+
+### Fixed
+
+- Sets NPAR = 1 for LEFL = True
+
+## [0.11.14]
+
+### Fixed
+
+- Fixed incompatability with PyMongo
+
+## [0.11.13]
+
+### Fixed
+
+- No changes. Fixed PyPI release
+
+## [0.11.12]
+
+### Added
+
+- MRCC calculator and basic recipes
+
+## [0.11.11]
+
+### Added
+
+- NEB runner
+- NEB-based TS job for NewtonNet
+
+## [0.11.10]
+
+### Fixed
+
+- Fixed compatability with Prefect 3.1.11
+
+## [0.11.9]
+
+### Changed
+
+- ASE>=3.24.0 is required due to upstream breaking changes
+
+### Fixed
+
+- Fixed a bug where DFT+U parameters might not be set appropriately if the `Atoms` object is sorted when using MP input sets
+
 ## [0.11.8]
 
 ### Added

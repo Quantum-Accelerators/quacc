@@ -111,7 +111,7 @@ def calc_cleanup(
     settings = get_settings()
 
     # Safety check
-    if "tmp-" not in str(tmpdir):
+    if "tmp-" not in tmpdir.name:
         msg = f"{tmpdir} does not appear to be a tmpdir... exiting for safety!"
         raise ValueError(msg)
 

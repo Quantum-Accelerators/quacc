@@ -1,2 +1,2 @@
-phonopy==2.33.3
+phonopy==2.37.0
 seekpath==2.1.0
