@@ -84,7 +84,7 @@ jobs:
         if: matrix.wflow_engine == 'dask'
         uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.12"
+          python-version: "3.11"
           activate-environment: quacc-env
 
       - name: Install conda packages
