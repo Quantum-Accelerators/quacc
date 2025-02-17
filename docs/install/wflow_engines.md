@@ -97,7 +97,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     To install Jobflow with support for FireWorks, run the following:
 
     ```bash
-    pip install quacc[jobflow]
+    pip install quacc[jobflow] fireworks
     ```
 
     **MongoDB Setup**
