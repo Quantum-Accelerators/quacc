@@ -693,6 +693,27 @@ def test_lorbit():
     assert calc.int_params["lorbit"] == 11
 
 
+def test_d4():
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, xc="r2scan", ivdw=13)
+    assert calc.float_params["vdw_s6"] == 1.0
+    assert calc.float_params["vdw_s8"] == 0.60187490
+    assert calc.float_params["vdw_a1"] == 0.51559235
+    assert calc.float_params["vdw_a2"] == 5.77342911
+
+    calc = Vasp(atoms, metagga="r2scan", ivdw=13)
+    assert calc.float_params["vdw_s6"] == 1.0
+    assert calc.float_params["vdw_s8"] == 0.60187490
+    assert calc.float_params["vdw_a1"] == 0.51559235
+    assert calc.float_params["vdw_a2"] == 5.77342911
+
+    calc = Vasp(atoms, metagga="r2scan", vdw_s6=2.0)
+    assert calc.float_params["vdw_s6"] == 2.0
+
+    calc = Vasp(atoms, metagga="r2scan")
+    assert calc.float_params["vdw_s6"] is None
+
+
 def test_setups():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="BulkSet")
@@ -828,16 +849,15 @@ def test_logging(caplog):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text
-    assert (
-        "The following parameters were changed: {'ismear': -5, 'lmaxmix': 4}"
-        in caplog.text
-    )
+    assert "ismear': -5" in caplog.text
+    assert "lmaxmix': 4" in caplog.text
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text
-    assert "The following parameters were changed: {'lmaxmix': 4}" in caplog.text
+    assert "lmaxmix': 4" in caplog.text
+    assert "ismear: -5" not in caplog.text
 
 
 def test_bad_pmg_converter():

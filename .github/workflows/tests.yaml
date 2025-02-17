@@ -76,7 +76,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.wflow_engine == 'covalent' && '3.10' || '3.12' }}
+          python-version: 3.12
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -89,7 +89,7 @@ jobs:
 
       - name: Install conda packages
         if: matrix.wflow_engine == 'dask'
-        run: conda install -c conda-forge qe
+        run: conda install -c conda-forge qe=7.4
 
       - name: Install pip packages
         run: |
@@ -197,7 +197,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: conda install -c conda-forge qe
+        run: conda install -c conda-forge qe=7.4
 
       - name: Install pip packages
         run: |
