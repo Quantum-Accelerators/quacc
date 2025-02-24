@@ -8,6 +8,7 @@ from shutil import which
 
 import numpy as np
 import pytest
+from ase.atoms import Atoms
 from ase.build import bulk
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.calculators.vasp import Vasp as Vasp_
@@ -692,6 +693,27 @@ def test_lorbit():
     assert calc.int_params["lorbit"] == 11
 
 
+def test_d4():
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, xc="r2scan", ivdw=13)
+    assert calc.float_params["vdw_s6"] == 1.0
+    assert calc.float_params["vdw_s8"] == 0.60187490
+    assert calc.float_params["vdw_a1"] == 0.51559235
+    assert calc.float_params["vdw_a2"] == 5.77342911
+
+    calc = Vasp(atoms, metagga="r2scan", ivdw=13)
+    assert calc.float_params["vdw_s6"] == 1.0
+    assert calc.float_params["vdw_s8"] == 0.60187490
+    assert calc.float_params["vdw_a1"] == 0.51559235
+    assert calc.float_params["vdw_a2"] == 5.77342911
+
+    calc = Vasp(atoms, metagga="r2scan", vdw_s6=2.0)
+    assert calc.float_params["vdw_s6"] == 2.0
+
+    calc = Vasp(atoms, metagga="r2scan")
+    assert calc.float_params["vdw_s6"] is None
+
+
 def test_setups():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="BulkSet")
@@ -827,16 +849,15 @@ def test_logging(caplog):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text
-    assert (
-        "The following parameters were changed: {'ismear': -5, 'lmaxmix': 4}"
-        in caplog.text
-    )
+    assert "ismear': -5" in caplog.text
+    assert "lmaxmix': 4" in caplog.text
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
     assert "Recommending LMAXMIX = 4" in caplog.text
     assert "Recommending ISMEAR = -5" in caplog.text
-    assert "The following parameters were changed: {'lmaxmix': 4}" in caplog.text
+    assert "lmaxmix': 4" in caplog.text
+    assert "ismear: -5" not in caplog.text
 
 
 def test_bad_pmg_converter():
@@ -909,13 +930,26 @@ def test_pmg_input_set2():
     }
 
 
+def test_ldau_mp():
+    atoms = Atoms("HOHMn")
+    atoms.center(vacuum=10)
+    atoms.pbc = True
+    atoms[0].position += 0.1
+    atoms[1].position -= 0.1
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet)
+    assert len(parameters["ldauu"]) == 3
+    assert parameters["ldauu"] == [0, 0, 3.9]
+    assert len(parameters["magmom"]) == 4
+    assert parameters["magmom"] == [0.6, 0.6, 0.6, 5.0]
+
+
 @pytest.mark.skipif(which(get_settings().VASP_CMD), reason="VASP is installed")
 def test_run(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, xc="PBE", use_custodian=False)
-    assert calc._run() > 0
+    assert calc._run()[0] > 0
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, xc="PBE", use_custodian=True)

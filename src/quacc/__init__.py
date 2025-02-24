@@ -22,19 +22,19 @@ if TYPE_CHECKING:
 
 
 __all__ = [
-    "flow",
-    "job",
-    "subflow",
     "Flow",
     "Job",
-    "Subflow",
-    "redecorate",
-    "change_settings",
-    "strip_decorator",
-    "Remove",
-    "get_settings",
-    "QuaccDefault",
     "JobFailure",
+    "QuaccDefault",
+    "Remove",
+    "Subflow",
+    "change_settings",
+    "flow",
+    "get_settings",
+    "job",
+    "redecorate",
+    "strip_decorator",
+    "subflow",
 ]
 
 
@@ -151,3 +151,10 @@ if _settings.WORKFLOW_ENGINE == "prefect":
 
     PrefectFuture.__getitem__ = _patched_getitem
     State.__getitem__ = _patched_getitem
+
+if _settings.WORKFLOW_ENGINE == "parsl":
+    from parsl.dataflow.memoization import id_for_memo
+
+    from quacc.atoms.core import get_atoms_id_parsl
+
+    id_for_memo.register(Atoms)(get_atoms_id_parsl)

@@ -6,9 +6,9 @@
 
     If you are on a Windows machine, we recommend using the [Windows Subsystem for Linux (WSL)](https://ubuntu.com/wsl) to benefit from all the features of quacc.
 
-1. Install Python 3.9+, preferably in conjunction with an environment manager. For instance, download and run the [Miniconda installer](https://docs.conda.io/en/latest/miniconda.html)
+1. Install Python 3.10+, preferably in conjunction with an environment manager. For instance, download and run the [Miniconda installer](https://docs.conda.io/en/latest/miniconda.html)
 2. When asked to add Miniconda to your `PATH`, select yes
-3. Create a fresh Python environment by running `conda create -n quacc python=3.10`
+3. Create a fresh Python environment by running `conda create -n quacc python=3.11`
 4. Activate this environment via `conda activate quacc`
 
 ## Installing quacc

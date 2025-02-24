@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    method: Literal["mace-mp-0", "m3gnet", "chgnet"],
+    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb"],
     properties: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -43,7 +43,8 @@ def static_job(
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
-        or `matgl.ext.ase.M3GNetCalculator` calculators.
+        `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`, or
+        `orb_models.forcefield.calculator.ORBCalculator` calculators.
 
     Returns
     -------
@@ -63,7 +64,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    method: Literal["mace-mp-0", "m3gnet", "chgnet"],
+    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb"],
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -89,7 +90,8 @@ def relax_job(
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
-        or `matgl.ext.ase.M3GNetCalculator` calculators.
+        `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`, or
+        `orb_models.forcefield.calculator.ORBCalculator` calculators.
 
     Returns
     -------

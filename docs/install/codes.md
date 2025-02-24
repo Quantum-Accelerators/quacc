@@ -126,7 +126,7 @@ If you plan to use TBLite with quacc, you will need to install the tblite interf
 === "Conda"
 
     ```bash
-    pip install -c conda-forge tblite-python
+    conda install -c conda-forge tblite-python
     ```
 
 === "Pip"
@@ -148,6 +148,6 @@ export QUACC_VASP_PP_PATH="/path/to/POTCARs"
 
 The `VASP_PARALLEL_CMD` setting tells Custodian and/or ASE how to parallelize VASP. Note that it does not include the executable.
 
-The `VASP_PP_PATH` setting should point to the directory containing your VASP pseudopotentials. There should be two subdirectories named `potpaw_PBE` and `potpaw` for the PBE and LDA pseudopotentials, respectively. If your pseudopotential directories have a different name, create a symbolic link with the required naming scheme. We recommend setting `QUACC_VASP_PP_PATH` in your `~/.bashrc` file since this rarely changes.
+The `QUACC_VASP_PP_PATH` setting should be defined as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials) such that it is a directory containing your VASP pseudopotentials. There should be two subdirectories named `potpaw_PBE` and `potpaw` for the PBE and LDA pseudopotentials, respectively. If your pseudopotential directories have a different name, create a symbolic link with the required naming scheme. We recommend setting `QUACC_VASP_PP_PATH` in your `~/.bashrc` file since this rarely changes.
 
 Additional settings can be specified as well, such as the name of the VASP executables if they differ from the default values (i.e. `vasp_std`, `vasp_gam`).

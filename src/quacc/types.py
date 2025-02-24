@@ -170,6 +170,21 @@ if TYPE_CHECKING:
         terminate_func: Callable | None  # default = None
         terminate_on_nonzero_returncode: bool  # default = False
 
+    # ----------- MRCC calculator type hints -----------
+
+    class MRCCParamsInfo(TypedDict):
+        mrccinput: dict[str, str]
+        mrccblocks: str | None
+        charge: int
+        mult: int
+
+    class MRCCEnergyInfo(TypedDict):
+        energy: float | None
+        scf_energy: float | None
+        mp2_corr_energy: float | None
+        ccsd_corr_energy: float | None
+        ccsdt_corr_energy: float | None
+
     # ----------- ASE calculator type hints -----------
 
     class Results(TypedDict):
@@ -684,6 +699,31 @@ if TYPE_CHECKING:
     class NewtonNetQuasiIRCSchema(OptSchema):
         irc_job: NewtonNetIRCSchema
         freq_job: VibThermoSchema | None
+
+    class NebSchema(TypedDict):
+        relax_reactant: OptSchema
+        relax_product: OptSchema
+        initial_images: list[Atoms]
+        neb_results: dict
+
+    class NebTsSchema(TypedDict):
+        relax_reactant: OptSchema
+        relax_product: OptSchema
+        initial_images: list[Atoms]
+        neb_results: dict
+        ts_results: OptSchema
+
+    class GeodesicSchema(TypedDict):
+        relax_reactant: OptSchema
+        relax_product: OptSchema
+        initial_images: list[Atoms]
+        ts_atoms: Atoms
+
+    class GeodesicTsSchema(TypedDict):
+        relax_reactant: OptSchema
+        relax_product: OptSchema
+        initial_images: list[Atoms]
+        ts_results: NewtonNetTSSchema
 
     # ----------- Recipe (Q-Chem) type hints -----------
 

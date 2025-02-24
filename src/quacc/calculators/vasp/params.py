@@ -7,6 +7,7 @@ from logging import getLogger
 from typing import TYPE_CHECKING
 
 import numpy as np
+import psutil
 from ase.calculators.vasp import Vasp as Vasp_
 from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -182,6 +183,16 @@ def get_param_swaps(
         )
         calc.set(lorbit=11)
 
+    if not calc.int_params["npar"] and not calc.int_params["ncore"]:
+        ncores = psutil.cpu_count(logical=False) or 1
+        for ncore in range(int(np.sqrt(ncores)), ncores):
+            if ncores % ncore == 0:
+                LOGGER.info(
+                    f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
+                )
+                calc.set(ncore=ncore)
+                break
+
     if (
         (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
         or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
@@ -218,14 +229,23 @@ def get_param_swaps(
         )
         calc.set(isym=-1)
 
-    if (
-        (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
-        or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
-    ) and (calc.bool_params["lelf"] is True):
-        LOGGER.info(
-            "Recommending NPAR = 1 because NCORE/NPAR is not compatible with this job type."
-        )
+    if calc.bool_params["lelf"] is True and (
+        calc.int_params["npar"] != 1 or calc.int_params["ncore"] != 1
+    ):
+        LOGGER.info("Recommending NPAR = 1 per the VASP manual.")
         calc.set(npar=1, ncore=None)
+
+    if (
+        calc.string_params["metagga"]
+        and calc.string_params["metagga"].lower() == "r2scan"
+        and calc.int_params["ivdw"] == 13
+        and not calc.float_params["vdw_s6"]
+        and not calc.float_params["vdw_s8"]
+        and not calc.float_params["vdw_a1"]
+        and not calc.float_params["vdw_a2"]
+    ):
+        LOGGER.info("Setting VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN.")
+        calc.set(vdw_s6=1.0, vdw_s8=0.60187490, vdw_a1=0.51559235, vdw_a2=5.77342911)
 
     new_parameters = (
         calc.parameters
@@ -399,7 +419,9 @@ class MPtoASEConverter:
             raise ValueError("Either atoms or prev_dir must be provided.")
         self.atoms = atoms
         self.prev_dir = prev_dir
-        self.structure = AseAtomsAdaptor.get_structure(atoms)
+        if self.atoms:
+            self.ase_sort, self.ase_resort = Vasp_()._make_sort(self.atoms)
+            self.structure = AseAtomsAdaptor.get_structure(self.atoms[self.ase_sort])
 
     def convert_dict_set(self, dict_set: DictSet) -> dict:
         """

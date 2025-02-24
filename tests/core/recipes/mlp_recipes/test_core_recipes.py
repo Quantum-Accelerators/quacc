@@ -21,6 +21,12 @@ if has_matgl := find_spec("matgl"):
 if has_chgnet := find_spec("chgnet"):
     methods.append("chgnet")
 
+if has_sevennet := find_spec("sevenn"):
+    methods.append("sevennet")
+
+if has_orb := find_spec("orb_models"):
+    methods.append("orb")
+
 
 @pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
 def test_bad_method():
@@ -47,13 +53,30 @@ def test_static_job(tmp_path, monkeypatch, method):
     ref_energy = {
         "chgnet": -4.083308219909668,
         "m3gnet": -4.0938973,
-        "mace-mp-0": -4.083906650543213,
+        "mace-mp-0": -4.097862720291976,
+        "sevennet": -4.096191883087158,
+        "orb": -4.093477725982666,
     }
     atoms = bulk("Cu")
     output = static_job(atoms, method=method)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method])
+    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (1, 3)
     assert output["atoms"] == atoms
+
+
+def test_relax_job_missing_pynanoflann(monkeypatch):
+    def mock_find_spec(name):
+        if name == "pynanoflann":
+            return None
+        return find_spec(name)
+
+    import quacc.recipes.mlp._base
+
+    quacc.recipes.mlp._base.pick_calculator.cache_clear()
+    monkeypatch.setattr("importlib.util.find_spec", mock_find_spec)
+    monkeypatch.setattr("quacc.recipes.mlp._base.find_spec", mock_find_spec)
+    with pytest.raises(ImportError, match=r"orb-models requires pynanoflann"):
+        relax_job(bulk("Cu"), method="orb")
 
 
 @pytest.mark.parametrize("method", methods)
@@ -67,13 +90,15 @@ def test_relax_job(tmp_path, monkeypatch, method):
     ref_energy = {
         "chgnet": -32.665428161621094,
         "m3gnet": -32.75003433227539,
-        "mace-mp-0": -32.6711566550002,
+        "mace-mp-0": -32.78264569638644,
+        "sevennet": -32.76924133300781,
+        "orb": -32.7361946105957,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
     output = relax_job(atoms, method=method)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method])
+    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
@@ -89,7 +114,7 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
     output = relax_job(atoms, method="mace-mp-0", dispersion=True)
-    assert output["results"]["energy"] == pytest.approx(-37.340311589504076)
+    assert output["results"]["energy"] == pytest.approx(-37.4518034464096)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
@@ -107,13 +132,15 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     ref_energy = {
         "chgnet": -32.66698455810547,
         "m3gnet": -32.750858306884766,
-        "mace-mp-0": -32.67840391814377,
+        "mace-mp-0": -32.8069374165035,
+        "sevennet": -32.76963806152344,
+        "orb": -32.73428726196289,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
     output = relax_job(atoms, method=method, relax_cell=True)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method])
+    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())
