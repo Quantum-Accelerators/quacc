@@ -86,12 +86,33 @@ def test_relax_job(tmp_path, monkeypatch):
     atoms[0].position += [0.1, 0.1, 0.1]
     c = FixAtoms(indices=[0, 1])
     atoms.set_constraint(c)
-    output = relax_job(
+    output_fire = relax_job(
         atoms, opt_params={"fmax": 0.03, "optimizer": FIRE}, asap_cutoff=True
     )
-    assert output["nsites"] == len(atoms)
-    assert output["parameters"]["asap_cutoff"] is True
-    assert output["results"]["energy"] == pytest.approx(0.04996032884581858)
+    assert output_fire["nsites"] == len(atoms)
+    assert output_fire["parameters"]["asap_cutoff"] is True
+    assert output_fire["results"]["energy"] == pytest.approx(0.04996032884581858)
+
+    # Add a test that passes through kwargs to the FrechetCellFilter
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].position += [0.1, 0.1, 0.1]
+    c = FixAtoms(indices=[0, 1])
+    atoms.set_constraint(c)
+    output_fire_pressure = relax_job(
+        atoms,
+        relax_cell=True,
+        opt_params={
+            "fmax": 0.03,
+            "optimizer": FIRE,
+            "filter_kwargs": {"scalar_pressure": 0.01},
+        },
+        asap_cutoff=True,
+    )
+
+    # Check that volume is smaller with a pressure applied than without!
+    assert output_fire_pressure["volume"] < output_fire["volume"]
+    assert output_fire_pressure["nsites"] == len(atoms)
+    assert output_fire_pressure["parameters"]["asap_cutoff"] is True
 
 
 def test_md_job1():

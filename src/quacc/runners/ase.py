@@ -162,6 +162,7 @@ class Runner(BaseRunner):
         store_intermediate_results: bool = False,
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
+        filter_kwargs: dict[str, Any] | None = None,
     ) -> Dynamics:
         """
         This is a wrapper around the optimizers in ASE.
@@ -190,6 +191,8 @@ class Runner(BaseRunner):
             its only argument.
         run_kwargs
             Dictionary of kwargs for the `run()` method of the optimizer.
+        filter_kwargs
+            Dictionary of kwargs for the `FrechetCellFilter` if relax_cell is True.
 
         Returns
         -------
@@ -202,6 +205,7 @@ class Runner(BaseRunner):
             optimizer_kwargs,
         )
         run_kwargs = run_kwargs or {}
+        filter_kwargs = filter_kwargs or {}
         traj_filename = "opt.traj"
 
         # Check if trajectory kwarg is specified
@@ -227,7 +231,7 @@ class Runner(BaseRunner):
 
         # Set volume relaxation constraints, if relevant
         if relax_cell and self.atoms.pbc.any():
-            self.atoms = FrechetCellFilter(self.atoms)
+            self.atoms = FrechetCellFilter(self.atoms, **filter_kwargs)
 
         # Run optimization
         full_run_kwargs = {"fmax": fmax, "steps": max_steps, **run_kwargs}
