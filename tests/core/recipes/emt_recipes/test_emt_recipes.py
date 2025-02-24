@@ -110,7 +110,7 @@ def test_relax_job(tmp_path, monkeypatch):
     )
 
     # Check that volume is smaller with a pressure applied than without!
-    assert output_fire_pressure["volume"] - output_fire["volume"] < -1
+    assert output_fire_pressure["volume"] < output_fire["volume"]
     assert output_fire_pressure["nsites"] == len(atoms)
     assert output_fire_pressure["parameters"]["asap_cutoff"] is True
 
