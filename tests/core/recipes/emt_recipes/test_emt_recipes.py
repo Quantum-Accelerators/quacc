@@ -99,7 +99,14 @@ def test_relax_job(tmp_path, monkeypatch):
     c = FixAtoms(indices=[0, 1])
     atoms.set_constraint(c)
     output = relax_job(
-        atoms, relax_cell=True, opt_params={"fmax": 0.03, "optimizer": FIRE, "filter_kwargs":{"scalar_pressure":0.001}}, asap_cutoff=True
+        atoms,
+        relax_cell=True,
+        opt_params={
+            "fmax": 0.03,
+            "optimizer": FIRE,
+            "filter_kwargs": {"scalar_pressure": 0.001},
+        },
+        asap_cutoff=True,
     )
     assert output["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
