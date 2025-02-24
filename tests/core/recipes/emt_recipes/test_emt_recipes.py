@@ -109,7 +109,10 @@ def test_relax_job(tmp_path, monkeypatch):
         asap_cutoff=True,
     )
 
-    assert output_fire_pressure["results"]["energy"] - output_fire["results"]["energy"]< 0.1 
+    assert (
+        output_fire_pressure["results"]["energy"] - output_fire["results"]["energy"]
+        < 0.1
+    )
     assert output_fire_pressure["nsites"] == len(atoms)
     assert output_fire_pressure["parameters"]["asap_cutoff"] is True
 
