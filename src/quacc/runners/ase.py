@@ -205,6 +205,7 @@ class Runner(BaseRunner):
             optimizer_kwargs,
         )
         run_kwargs = run_kwargs or {}
+        filter_kwargs = filter_kwargs or {}
         traj_filename = "opt.traj"
 
         # Check if trajectory kwarg is specified
