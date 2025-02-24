@@ -38,7 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 
-- Sets NPAR = 1 for LEFL = True
+- Sets NPAR = 1 for LELF = True
 
 ## [0.11.14]
 
