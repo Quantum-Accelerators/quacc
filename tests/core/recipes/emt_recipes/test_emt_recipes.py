@@ -104,12 +104,13 @@ def test_relax_job(tmp_path, monkeypatch):
         opt_params={
             "fmax": 0.03,
             "optimizer": FIRE,
-            "filter_kwargs": {"scalar_pressure": 0.001},
+            "filter_kwargs": {"scalar_pressure": 0.01},
         },
         asap_cutoff=True,
     )
 
-    assert output_fire_pressure["results"]["energy"] - output_fire["results"]["energy"]< 0.1 
+    # Check that volume is smaller with a pressure applied than without!
+    assert output_fire_pressure["volume"] - output_fire["volume"] < -1 
     assert output_fire_pressure["nsites"] == len(atoms)
     assert output_fire_pressure["parameters"]["asap_cutoff"] is True
 
