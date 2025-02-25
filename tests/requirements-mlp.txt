@@ -3,4 +3,5 @@ mace-torch==0.3.10
 torch-dftd==0.5.1
 sevenn==0.10.4
 orb-models==0.4.2
+fairchem-core==1.4.0
 pynanoflann@git+https://github.com/dwastberg/pynanoflann
