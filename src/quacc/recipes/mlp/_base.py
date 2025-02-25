@@ -5,6 +5,7 @@ from __future__ import annotations
 from functools import lru_cache
 from importlib.util import find_spec
 from logging import getLogger
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -17,7 +18,7 @@ LOGGER = getLogger(__name__)
 
 @lru_cache
 def pick_calculator(
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb"], **kwargs
+    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"], **kwargs
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
