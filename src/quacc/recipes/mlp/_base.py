@@ -105,9 +105,7 @@ def pick_calculator(
         if checkpoint_path is None:
             from fairchem.core.models import model_name_to_local_file
 
-            checkpoint_path = model_name_to_local_file(
-                model_name
-            ) 
+            checkpoint_path = model_name_to_local_file(model_name)
 
         if isinstance(checkpoint_path, str):
             checkpoint_path = Path(checkpoint_path)
