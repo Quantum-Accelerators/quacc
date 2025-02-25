@@ -27,6 +27,9 @@ if has_sevennet := find_spec("sevenn"):
 if has_orb := find_spec("orb_models"):
     methods.append("orb")
 
+if has_fairchem := find_spec("fairchem-core"):
+    methods.append("fairchem")
+
 
 @pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
 def test_bad_method():

@@ -94,6 +94,32 @@ def pick_calculator(
         orbff = getattr(pretrained, orb_model)()
         calc = ORBCalculator(model=orbff, **kwargs)
 
+    elif method.lower() == "fairchem":
+        from fairchem.core import OCPCalculator, __version__
+
+        if model_name is None and checkpoint_path is None:
+            raise ValueError(
+                "A valid value for model_name, checkpoint_path, or checkpoint_dict must be provided for "
+                "FAIRChem calculators!"
+            )
+        if checkpoint_path is None:
+            from fairchem.core.models import model_name_to_local_file
+
+            checkpoint_path = model_name_to_local_file(
+                model_name
+            ) 
+
+        if isinstance(checkpoint_path, str):
+            checkpoint_path = Path(checkpoint_path)
+
+        disable_amp = kwargs.get("disable_amp", False)
+        kwargs.pop("disable_amp", None)
+
+        calc = OCPCalculator(checkpoint_path=checkpoint_path, **kwargs)
+
+        if disable_amp:
+            calc.trainer.scaler = None
+
     else:
         raise ValueError(f"Unrecognized {method=}.")
 
