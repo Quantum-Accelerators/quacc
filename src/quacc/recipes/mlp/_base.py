@@ -97,6 +97,9 @@ def pick_calculator(
     elif method.lower() == "fairchem":
         from fairchem.core import OCPCalculator, __version__
 
+        model_name = kwargs.pop('model_name', None)
+        checkpoint_path = kwargs.pop('checkpoint_path', None)
+
         if model_name is None and checkpoint_path is None:
             raise ValueError(
                 "A valid value for model_name, checkpoint_path, or checkpoint_dict must be provided for "
@@ -110,8 +113,7 @@ def pick_calculator(
         if isinstance(checkpoint_path, str):
             checkpoint_path = Path(checkpoint_path)
 
-        disable_amp = kwargs.get("disable_amp", False)
-        kwargs.pop("disable_amp", None)
+        disable_amp = kwargs.pop("disable_amp", False)
 
         calc = OCPCalculator(checkpoint_path=checkpoint_path, **kwargs)
 
