@@ -98,8 +98,8 @@ def pick_calculator(
     elif method.lower() == "fairchem":
         from fairchem.core import OCPCalculator, __version__
 
-        model_name = kwargs.pop('model_name', None)
-        checkpoint_path = kwargs.pop('checkpoint_path', None)
+        model_name = kwargs.pop("model_name", None)
+        checkpoint_path = kwargs.pop("checkpoint_path", None)
 
         if model_name is None and checkpoint_path is None:
             raise ValueError(
