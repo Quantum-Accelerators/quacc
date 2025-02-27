@@ -104,7 +104,7 @@ def pick_calculator(
 
         if model_name is None and checkpoint_path is None:
             raise ValueError(
-                "A valid value for model_name, checkpoint_path, or checkpoint_dict must be provided for "
+                "A valid value for model_name, checkpoint_path must be provided for "
                 "FAIRChem calculators!"
             )
         if checkpoint_path is None:
