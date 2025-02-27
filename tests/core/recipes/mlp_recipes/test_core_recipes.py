@@ -53,15 +53,21 @@ def test_static_job(tmp_path, monkeypatch, method):
     else:
         _set_dtype(32)
 
+    if method == "fairchem":
+        calc_kwargs = {"checkpoint_path": "eqV2_31M_omat_mp_salex.pt"}
+    else:
+        calc_kwargs = {}
+
     ref_energy = {
         "chgnet": -4.083308219909668,
         "m3gnet": -4.0938973,
         "mace-mp-0": -4.097862720291976,
         "sevennet": -4.096191883087158,
         "orb": -4.093477725982666,
+        "fairchem":-4.09,
     }
     atoms = bulk("Cu")
-    output = static_job(atoms, method=method)
+    output = static_job(atoms, method=method, **calc_kwargs)
     assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (1, 3)
     assert output["atoms"] == atoms

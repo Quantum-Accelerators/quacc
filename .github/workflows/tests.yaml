@@ -343,6 +343,10 @@ jobs:
         run: |
           echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
+      - name: Download OMAT24 small checkpoint
+        run: |
+          curl "https://huggingface.co/fairchem/OMAT24/resolve/main/eqV2_31M_omat_mp_salex.pt" -H "Authorization: Bearer $HUGGING_FACE_TOKEN" -L --output eqV2_31M_omat.pt
+
       - name: Run tests with pytest
         run: pytest -k 'mlp or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
 
