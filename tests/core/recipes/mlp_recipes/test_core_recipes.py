@@ -108,7 +108,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
         "mace-mp-0": -32.78264569638644,
         "sevennet": -32.76924133300781,
         "orb": -32.7361946105957,
-         "fairchem": -32.7361946105957,
+        "fairchem": -32.7361946105957,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
@@ -156,7 +156,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         "mace-mp-0": -32.8069374165035,
         "sevennet": -32.76963806152344,
         "orb": -32.73428726196289,
-         "fairchem": -32.73428726196289,
+        "fairchem": -32.73428726196289,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
