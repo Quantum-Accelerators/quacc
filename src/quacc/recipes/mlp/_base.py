@@ -19,7 +19,7 @@ LOGGER = getLogger(__name__)
 @lru_cache
 def pick_calculator(
     method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
-    **kwargs,
+    **calc_kwargs,
 ) -> Calculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
@@ -35,7 +35,7 @@ def pick_calculator(
     ----------
     method
         Name of the calculator to use.
-    **kwargs
+    **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
@@ -58,28 +58,28 @@ def pick_calculator(
         from matgl.ext.ase import PESCalculator
 
         model = matgl.load_model("M3GNet-MP-2021.2.8-DIRECT-PES")
-        kwargs.setdefault("stress_weight", 1.0 / 160.21766208)
-        calc = PESCalculator(potential=model, **kwargs)
+        calc_kwargs.setdefault("stress_weight", 1.0 / 160.21766208)
+        calc = PESCalculator(potential=model, **calc_kwargs)
 
     elif method.lower() == "chgnet":
         from chgnet import __version__
         from chgnet.model.dynamics import CHGNetCalculator
 
-        calc = CHGNetCalculator(**kwargs)
+        calc = CHGNetCalculator(**calc_kwargs)
 
     elif method.lower() == "mace-mp-0":
         from mace import __version__
         from mace.calculators import mace_mp
 
-        if "default_dtype" not in kwargs:
-            kwargs["default_dtype"] = "float64"
-        calc = mace_mp(**kwargs)
+        if "default_dtype" not in calc_kwargs:
+            calc_kwargs["default_dtype"] = "float64"
+        calc = mace_mp(**calc_kwargs)
 
     elif method.lower() == "sevennet":
         from sevenn import __version__
         from sevenn.sevennet_calculator import SevenNetCalculator
 
-        calc = SevenNetCalculator(**kwargs)
+        calc = SevenNetCalculator(**calc_kwargs)
 
     elif method.lower() == "orb":
         if not find_spec("pynanoflann"):
@@ -92,22 +92,14 @@ def pick_calculator(
         from orb_models.forcefield import pretrained
         from orb_models.forcefield.calculator import ORBCalculator
 
-        orb_model = kwargs.get("model", "orb_v2")
+        orb_model = calc_kwargs.get("model", "orb_v2")
         orbff = getattr(pretrained, orb_model)()
-        calc = ORBCalculator(model=orbff, **kwargs)
+        calc = ORBCalculator(model=orbff, **calc_kwargs)
 
     elif method.lower() == "fairchem":
         from fairchem.core import OCPCalculator, __version__
 
-        # Make sure checkpoint_path is a Path to make FAIR Chem calc happy
-        checkpoint_path = Path(checkpoint_path)
-
-        disable_amp = kwargs.pop("disable_amp", False)
-
-        calc = OCPCalculator(checkpoint_path=checkpoint_path, **kwargs)
-
-        if disable_amp:
-            calc.trainer.scaler = None
+        calc = OCPCalculator(**calc_kwargs)
 
     else:
         raise ValueError(f"Unrecognized {method=}.")
