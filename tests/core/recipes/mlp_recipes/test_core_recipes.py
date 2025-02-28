@@ -55,7 +55,7 @@ def test_static_job(tmp_path, monkeypatch, method):
         _set_dtype(32)
 
     if method == "fairchem":
-        calc_kwargs = {"checkpoint_path": Path(__file__) /  "eqV2_31M_omat_mp_salex.pt"}
+        calc_kwargs = {"checkpoint_path": Path(__file__) / "eqV2_31M_omat_mp_salex.pt"}
     else:
         calc_kwargs = {}
 
@@ -99,7 +99,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
         _set_dtype(32)
 
     if method == "fairchem":
-        calc_kwargs = {"checkpoint_path": Path(__file__) /  "eqV2_31M_omat_mp_salex.pt"}
+        calc_kwargs = {"checkpoint_path": Path(__file__) / "eqV2_31M_omat_mp_salex.pt"}
     else:
         calc_kwargs = {}
 
@@ -147,7 +147,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         _set_dtype(32)
 
     if method == "fairchem":
-        calc_kwargs = {"checkpoint_path": Path(__file__) /  "eqV2_31M_omat_mp_salex.pt"}
+        calc_kwargs = {"checkpoint_path": Path(__file__) / "eqV2_31M_omat_mp_salex.pt"}
     else:
         calc_kwargs = {}
 
