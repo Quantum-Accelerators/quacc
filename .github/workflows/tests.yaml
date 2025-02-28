@@ -344,6 +344,8 @@ jobs:
           echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
       - name: Download OMAT24 small checkpoint
+        env:
+          HUGGING_FACE_TOKEN: ${{ secrets.HUGGING_FACE_TOKEN }}
         run: |
           curl "https://huggingface.co/fairchem/OMAT24/resolve/main/eqV2_31M_omat_mp_salex.pt" -H "Authorization: Bearer $HUGGING_FACE_TOKEN" -L --output tests/core/recipes/mlp_recipes/eqV2_31M_omat_mp_salex.pt
 
