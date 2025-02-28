@@ -99,21 +99,8 @@ def pick_calculator(
     elif method.lower() == "fairchem":
         from fairchem.core import OCPCalculator, __version__
 
-        model_name = kwargs.pop("model_name", None)
-        checkpoint_path = kwargs.pop("checkpoint_path", None)
-
-        if model_name is None and checkpoint_path is None:
-            raise ValueError(
-                "A valid value for model_name, checkpoint_path must be provided for "
-                "FAIRChem calculators!"
-            )
-        if checkpoint_path is None:
-            from fairchem.core.models import model_name_to_local_file
-
-            checkpoint_path = model_name_to_local_file(model_name)
-
-        if isinstance(checkpoint_path, str):
-            checkpoint_path = Path(checkpoint_path)
+        # Make sure checkpoint_path is a Path to make FAIR Chem calc happy
+        checkpoint_path = Path(checkpoint_path)
 
         disable_amp = kwargs.pop("disable_amp", False)
 
