@@ -27,7 +27,7 @@ if has_sevennet := find_spec("sevenn"):
 if has_orb := find_spec("orb_models"):
     methods.append("orb")
 
-if has_fairchem := find_spec("fairchem-core"):
+if has_fairchem := find_spec("fairchem.core"):
     methods.append("fairchem")
 
 
