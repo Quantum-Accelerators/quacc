@@ -345,7 +345,7 @@ jobs:
 
       - name: Download OMAT24 small checkpoint
         run: |
-          curl "https://huggingface.co/fairchem/OMAT24/resolve/main/eqV2_31M_omat_mp_salex.pt" -H "Authorization: Bearer $HUGGING_FACE_TOKEN" -L --output eqV2_31M_omat_mp_salex.pt
+          curl "https://huggingface.co/fairchem/OMAT24/resolve/main/eqV2_31M_omat_mp_salex.pt" -H "Authorization: Bearer $HUGGING_FACE_TOKEN" -L --output tests/core/recipes/mlp_recipes/eqV2_31M_omat_mp_salex.pt
 
       - name: Run tests with pytest
         run: pytest -k 'mlp or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
