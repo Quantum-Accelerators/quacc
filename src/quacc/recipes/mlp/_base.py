@@ -5,7 +5,6 @@ from __future__ import annotations
 from functools import lru_cache
 from importlib.util import find_spec
 from logging import getLogger
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
