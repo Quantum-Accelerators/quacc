@@ -96,6 +96,12 @@ def test_relax_job(tmp_path, monkeypatch, method):
         _set_dtype(64)
     else:
         _set_dtype(32)
+
+    if method == "fairchem":
+        calc_kwargs = {"checkpoint_path": "eqV2_31M_omat_mp_salex.pt"}
+    else:
+        calc_kwargs = {}
+
     ref_energy = {
         "chgnet": -32.665428161621094,
         "m3gnet": -32.75003433227539,
@@ -106,7 +112,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method=method)
+    output = relax_job(atoms, method=method, **calc_kwargs)
     assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
@@ -138,6 +144,11 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     else:
         _set_dtype(32)
 
+    if method == "fairchem":
+        calc_kwargs = {"checkpoint_path": "eqV2_31M_omat_mp_salex.pt"}
+    else:
+        calc_kwargs = {}
+
     ref_energy = {
         "chgnet": -32.66698455810547,
         "m3gnet": -32.750858306884766,
@@ -148,7 +159,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method=method, relax_cell=True)
+    output = relax_job(atoms, method=method, relax_cell=True, **calc_kwargs)
     assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
