@@ -1,2 +1,2 @@
 mace-torch==0.3.10
-matgl==1.1.2
+matgl @ git+https://github.com/materialsvirtuallab/matgl.git
