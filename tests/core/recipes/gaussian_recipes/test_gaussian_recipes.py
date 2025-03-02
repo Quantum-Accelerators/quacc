@@ -25,9 +25,7 @@ def test_static_job(tmp_path, monkeypatch):
         "2/9=2000",
     ]  # see ASE issue #660
 
-    output = static_job(
-        atoms, -2, 3, xc="pbepbe", basis="def2svp"
-    )
+    output = static_job(atoms, -2, 3, xc="pbepbe", basis="def2svp")
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
@@ -60,9 +58,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert "freq" not in output["parameters"]
     assert "sp" not in output["parameters"]
 
-    output = relax_job(
-        atoms, -2, 3, xc="pbepbe", basis="def2svp", freq=True
-    )
+    output = relax_job(atoms, -2, 3, xc="pbepbe", basis="def2svp", freq=True)
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
