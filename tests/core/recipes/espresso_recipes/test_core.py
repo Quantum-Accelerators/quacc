@@ -300,7 +300,6 @@ def test_ase_relax_job(tmp_path, monkeypatch):
 def test_ase_relax_cell_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
-
     copy_decompress_files(DATA_DIR, ["Si.upf.gz"], tmp_path)
 
     atoms = bulk("Si")
