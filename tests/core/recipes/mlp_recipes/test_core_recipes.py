@@ -5,6 +5,7 @@ import pytest
 torch = pytest.importorskip("torch")
 
 from importlib.util import find_spec
+from pathlib import Path
 
 import numpy as np
 from ase.build import bulk
@@ -26,6 +27,9 @@ if has_sevennet := find_spec("sevenn"):
 
 if has_orb := find_spec("orb_models"):
     methods.append("orb")
+
+if has_fairchem := find_spec("fairchem"):
+    methods.append("fairchem")
 
 
 @pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
@@ -50,15 +54,23 @@ def test_static_job(tmp_path, monkeypatch, method):
     else:
         _set_dtype(32)
 
+    if method == "fairchem":
+        calc_kwargs = {
+            "checkpoint_path": Path(__file__).parent / "eqV2_31M_omat_mp_salex.pt"
+        }
+    else:
+        calc_kwargs = {}
+
     ref_energy = {
         "chgnet": -4.083308219909668,
         "m3gnet": -4.0938973,
         "mace-mp-0": -4.097862720291976,
         "sevennet": -4.096191883087158,
         "orb": -4.093477725982666,
+        "fairchem": -4.098316669464111,
     }
     atoms = bulk("Cu")
-    output = static_job(atoms, method=method)
+    output = static_job(atoms, method=method, **calc_kwargs)
     assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (1, 3)
     assert output["atoms"] == atoms
@@ -87,17 +99,26 @@ def test_relax_job(tmp_path, monkeypatch, method):
         _set_dtype(64)
     else:
         _set_dtype(32)
+
+    if method == "fairchem":
+        calc_kwargs = {
+            "checkpoint_path": Path(__file__).parent / "eqV2_31M_omat_mp_salex.pt"
+        }
+    else:
+        calc_kwargs = {}
+
     ref_energy = {
         "chgnet": -32.665428161621094,
         "m3gnet": -32.75003433227539,
         "mace-mp-0": -32.78264569638644,
         "sevennet": -32.76924133300781,
         "orb": -32.7361946105957,
+        "fairchem": -32.80327224731445,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method=method)
+    output = relax_job(atoms, method=method, **calc_kwargs)
     assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
@@ -129,17 +150,25 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     else:
         _set_dtype(32)
 
+    if method == "fairchem":
+        calc_kwargs = {
+            "checkpoint_path": Path(__file__).parent / "eqV2_31M_omat_mp_salex.pt"
+        }
+    else:
+        calc_kwargs = {}
+
     ref_energy = {
         "chgnet": -32.66698455810547,
         "m3gnet": -32.750858306884766,
         "mace-mp-0": -32.8069374165035,
         "sevennet": -32.76963806152344,
         "orb": -32.73428726196289,
+        "fairchem": -32.82823944091797,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method=method, relax_cell=True)
+    output = relax_job(atoms, method=method, relax_cell=True, **calc_kwargs)
     assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
