@@ -314,7 +314,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-mlps:
+  tests-mlp1:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -337,7 +337,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp1.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
@@ -359,7 +359,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-mlps-mace:
+  tests-mlp2:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -382,7 +382,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp-mace.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp2.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
@@ -445,8 +445,8 @@ jobs:
       - tests-defects-phonons-espresso
       - tests-tblite-dftbplus
       - tests-qchem-sella
-      - tests-mlps
-      - tests-mlps-mace
+      - tests-mlp1
+      - tests-mlp2
       - tests-mp
     runs-on: ubuntu-latest
     steps:
