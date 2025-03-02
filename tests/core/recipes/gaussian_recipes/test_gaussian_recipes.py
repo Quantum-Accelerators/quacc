@@ -26,7 +26,7 @@ def test_static_job(tmp_path, monkeypatch):
     ]  # see ASE issue #660
 
     output = static_job(
-        atoms, -2, 3, xc="pbepbe", basis="def2svp", integral="superfinegrid"
+        atoms, -2, 3, xc="pbepbe", basis="def2svp"
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
@@ -34,7 +34,6 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["parameters"]["force"] == ""
     assert output["parameters"]["xc"] == "pbepbe"
     assert output["parameters"]["basis"] == "def2svp"
-    assert output["parameters"]["integral"] == "superfinegrid"
     assert output["parameters"]["gfinput"] == ""
     assert output["parameters"]["ioplist"] == [
         "6/7=3",
@@ -62,7 +61,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert "sp" not in output["parameters"]
 
     output = relax_job(
-        atoms, -2, 3, xc="pbepbe", basis="def2svp", freq=True, integral="superfinegrid"
+        atoms, -2, 3, xc="pbepbe", basis="def2svp", freq=True
     )
     assert output["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
@@ -71,7 +70,6 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["freq"] == ""
     assert output["parameters"]["xc"] == "pbepbe"
     assert output["parameters"]["basis"] == "def2svp"
-    assert output["parameters"]["integral"] == "superfinegrid"
     assert output["parameters"]["ioplist"] == ["2/9=2000"]  # see ASE issue #660
     assert_array_equal(output["atoms"].get_initial_magnetic_moments(), [0, 0])
 
