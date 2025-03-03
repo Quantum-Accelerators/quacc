@@ -494,7 +494,7 @@ if TYPE_CHECKING:
         nfree: int
 
     class VibResults(TypedDict):
-        imag_vib_freqs: int
+        imag_vib_freqs: list[float]
         n_imag: int
         vib_energies: list[float]
         vib_freqs: list[float]
