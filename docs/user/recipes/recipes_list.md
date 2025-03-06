@@ -87,7 +87,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 !!! Info
 
-    Machine-learned interatomic potentials are a class of machine learning models that are trained to reproduce the potential energy surface of a system. The following pre-trained, "universal" MLPs are supported: [CHGNet](https://doi.org/10.1038/s42256-023-00716-3), [M3GNet](https://doi.org/10.1038/s43588-022-00349-3), and [MACE](https://mace-docs.readthedocs.io/en/latest/examples/foundation_models.html).
+    Machine-learned interatomic potentials are a class of machine learning models that are trained to reproduce the potential energy surface of a system. The following pre-trained, "universal" MLPs are supported: [CHGNet](https://doi.org/10.1038/s42256-023-00716-3), [M3GNet](https://doi.org/10.1038/s43588-022-00349-3), [MACE](https://mace-docs.readthedocs.io/en/latest/examples/foundation_models.html), and [FAIR-Chem](https://github.com/FAIR-Chem/fairchem).
 
 <center>
 
