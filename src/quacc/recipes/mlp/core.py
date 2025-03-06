@@ -44,7 +44,7 @@ def static_job(
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`,
-        `orb_models.forcefield.calculator.ORBCalculator`, 
+        `orb_models.forcefield.calculator.ORBCalculator`,
         `fairchem.core.common.relaxation.ase_utils.OCPCalculator` calculators.
 
     Returns
@@ -92,7 +92,7 @@ def relax_job(
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`,
-        `orb_models.forcefield.calculator.ORBCalculator`, 
+        `orb_models.forcefield.calculator.ORBCalculator`,
         `fairchem.core.common.relaxation.ase_utils.OCPCalculator` calculators.
 
     Returns
