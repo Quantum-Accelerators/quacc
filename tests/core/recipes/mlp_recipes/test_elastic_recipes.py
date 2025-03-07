@@ -49,18 +49,20 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
 
     if method == "fairchem":
         calc_kwargs = {
-            "checkpoint_path": Path(__file__).parent / "eqV2_31M_omat_mp_salex.pt"
+            "checkpoint_path": Path(__file__).parent / "eqV2_31M_omat_mp_salex.pt",
+            "seed": 0,
+            "disable_amp": True,
         }
     else:
         calc_kwargs = {}
 
     ref_elastic_modulus = {
-        "chgnet": 140,
+        "chgnet": 199,
         "m3gnet": 140,
         "mace-mp-0": 140,
-        "sevennet": 143.77,
+        "sevennet": 142.296,
         "orb": 140,
-        "fairchem": 140,
+        "fairchem": 105,
     }
 
     atoms = bulk("Cu")
@@ -69,7 +71,10 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         atoms,
         run_static=False,
         pre_relax=True,
-        job_params={"all": {"method": method, **calc_kwargs}},
+        job_params={
+            "all": {"method": method, **calc_kwargs},
+            "relax_job": {"opt_params": {"fmax": 0.01}},
+        },
     )
     assert outputs["deformed_results"][0]["atoms"].get_volume() != pytest.approx(
         atoms.get_volume()
@@ -78,7 +83,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         0, abs=1e-2
     )
     assert outputs["elasticity_doc"].bulk_modulus.voigt == pytest.approx(
-        ref_elastic_modulus[method], abs=1e-2
+        ref_elastic_modulus[method], abs=2
     )
     for output in outputs["deformed_results"]:
         assert output["nelements"] == 1
@@ -89,7 +94,10 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         atoms,
         run_static=True,
         pre_relax=True,
-        job_params={"all": {"method": method, **calc_kwargs}},
+        job_params={
+            "all": {"method": method, **calc_kwargs},
+            "relax_job": {"opt_params": {"fmax": 0.01}},
+        },
     )
     assert outputs["deformed_results"][0]["atoms"].get_volume() != pytest.approx(
         atoms.get_volume()

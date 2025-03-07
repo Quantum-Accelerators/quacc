@@ -46,8 +46,8 @@ def deformations_to_elastic_tensor(
             Stress(
                 (
                     voigt_6_to_full_3x3_stress(relax_result["results"]["stress"])
-                    if len(undeformed_result["results"]["stress"]) == 6
-                    else undeformed_result["results"]["stress"]
+                    if len(relax_result["results"]["stress"]) == 6
+                    else relax_result["results"]["stress"]
                 )
                 / units.GPa
             )
