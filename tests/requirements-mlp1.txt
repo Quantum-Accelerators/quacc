@@ -2,7 +2,7 @@ chgnet==0.4.0
 torch-dftd==0.5.1
 sevenn==0.10.4
 orb-models==0.4.2
-fairchem-core==1.6.0
+fairchem-core==1.7.0
 pynanoflann@git+https://github.com/dwastberg/pynanoflann
 # Requirements from fairchem-core
 torch_geometric==2.6.1
