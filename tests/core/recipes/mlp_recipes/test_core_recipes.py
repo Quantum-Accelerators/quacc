@@ -54,6 +54,7 @@ def test_static_job(tmp_path, monkeypatch, method):
         _set_dtype(32)
 
     if method == "fairchem":
+        # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {"model_name": "EquiformerV2-31M-OMAT24-mp-salex"}
     else:
         calc_kwargs = {}
