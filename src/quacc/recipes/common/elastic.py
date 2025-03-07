@@ -11,13 +11,12 @@ from emmet.core.mpid import MPID
 from pymatgen.analysis.elasticity.stress import Stress
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc import job
+from quacc import job, subflow
 from quacc.atoms.deformation import make_deformations_from_bulk
 
 if TYPE_CHECKING:
     from typing import Any
 
-    from ase.atoms import Atoms
     from pymatgen.analysis.elasticity.strain import DeformedStructureSet
 
     from quacc import Job
@@ -57,12 +56,12 @@ def deformations_to_elastic_tensor(
     )
 
 
+@subflow
 def bulk_to_deformations_subflow(
-    atoms: Atoms,
+    undeformed_result: OptSchema | RunSchema,
     relax_job: Job,
     static_job: Job,
     run_static: bool = False,
-    pre_relax: bool = True,
     deform_kwargs: dict[str, Any] | None = None,
 ) -> ElasticSchema:
     """
@@ -76,14 +75,12 @@ def bulk_to_deformations_subflow(
 
     Parameters
     ----------
-    atoms
-        Atoms object
+    undeformed_result
+        Result of a static or optimization calculation
     relax_job
         The relaxation function.
     static_job
         The static function
-    pre_relax
-        Whether to pre-relax the input atoms as is common
     static_job
         The static function.
     deform_kwargs
@@ -96,11 +93,6 @@ def bulk_to_deformations_subflow(
         List of schemas.
     """
     deform_kwargs = deform_kwargs or {}
-
-    if pre_relax:
-        undeformed_result = relax_job(atoms, relax_cell=True)
-    else:
-        undeformed_result = static_job(atoms)
 
     deformed_structure_set = make_deformations_from_bulk(
         undeformed_result["atoms"], **deform_kwargs

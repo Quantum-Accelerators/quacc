@@ -7,15 +7,12 @@ from typing import TYPE_CHECKING
 from pymatgen.analysis.elasticity.strain import DeformedStructureSet
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc import job
-
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from ase.atoms import Atoms
 
 
-@job
 def make_deformations_from_bulk(
     atoms: Atoms,
     norm_strains: Sequence[float] = (-0.01, -0.005, 0.005, 0.01),

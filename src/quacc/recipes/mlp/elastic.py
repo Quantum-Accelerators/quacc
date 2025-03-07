@@ -71,11 +71,15 @@ def bulk_to_deformations_flow(
         decorators=job_decorators,
     )  # type: ignore
 
+    if pre_relax:
+        undeformed_result = relax_job_(atoms, relax_cell=True)
+    else:
+        undeformed_result = static_job_(atoms)
+
     return bulk_to_deformations_subflow(
-        atoms,
-        relax_job_,
+        undeformed_result=undeformed_result,
+        relax_job=relax_job_,
         static_job=static_job_,
-        pre_relax=pre_relax,
         run_static=run_static,
         deform_kwargs=deform_kwargs,
     )
