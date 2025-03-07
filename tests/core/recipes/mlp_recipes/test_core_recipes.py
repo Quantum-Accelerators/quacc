@@ -76,6 +76,7 @@ def test_static_job(tmp_path, monkeypatch, method):
     assert output["atoms"] == atoms
 
 
+@pytest.mark.skipif(has_sevennet is None, reason="sevennet not installed")
 def test_static_job_with_dict_kwargs(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
