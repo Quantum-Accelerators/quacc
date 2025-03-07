@@ -7,18 +7,21 @@ from typing import TYPE_CHECKING
 from pymatgen.analysis.elasticity.strain import DeformedStructureSet
 from pymatgen.io.ase import AseAtomsAdaptor
 
+from quacc import job
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
     from ase.atoms import Atoms
 
 
+@job
 def make_deformations_from_bulk(
     atoms: Atoms,
     norm_strains: Sequence[float] = (-0.01, -0.005, 0.005, 0.01),
     shear_strains: Sequence[float] = (-0.06, -0.03, 0.03, 0.06),
     symmetry: bool = False,
-) -> list[Atoms]:
+) -> DeformedStructureSet:
     """
     Function to generate deformed structures from a bulk atoms object.
 
@@ -38,13 +41,11 @@ def make_deformations_from_bulk(
     list[Atoms]
         All generated deformed structures
     """
-    struct = AseAtomsAdaptor.get_structure(atoms)
+    struct = AseAtomsAdaptor.get_structure(atoms)  # type: ignore
 
-    deformed_set = DeformedStructureSet(
+    return DeformedStructureSet(
         struct,
         norm_strains=norm_strains,
         shear_strains=shear_strains,
         symmetry=symmetry,
     )
-
-    return [structure.to_ase_atoms() for structure in deformed_set]
