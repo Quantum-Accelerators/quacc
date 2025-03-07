@@ -343,9 +343,12 @@ jobs:
         run: |
           echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
-      - name: Run tests with pytest
+      - name: huggingface hub login
         env:
           HF_TOKEN: ${{ secrets.HUGGING_FACE_TOKEN }}
+        run: huggingface-cli login --token $HF_TOKEN
+
+      - name: Run tests with pytest
         run: pytest -k 'mlp or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
