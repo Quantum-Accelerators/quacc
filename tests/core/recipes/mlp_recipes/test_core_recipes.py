@@ -82,7 +82,7 @@ def test_static_job_with_dict_kwargs(tmp_path, monkeypatch, method):
     atoms = bulk("Cu")
 
     # Make sure that pick_calculator works even with dictionary kwargs
-    output = static_job(atoms, method="sevennet", sevennet_config={"test": 1})
+    static_job(atoms, method="sevennet", sevennet_config={"test": 1})
 
 
 def test_relax_job_missing_pynanoflann(monkeypatch):
