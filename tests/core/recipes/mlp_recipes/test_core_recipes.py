@@ -5,7 +5,6 @@ import pytest
 torch = pytest.importorskip("torch")
 
 from importlib.util import find_spec
-from pathlib import Path
 
 import numpy as np
 from ase.build import bulk
