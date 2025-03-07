@@ -76,6 +76,15 @@ def test_static_job(tmp_path, monkeypatch, method):
     assert output["atoms"] == atoms
 
 
+def test_static_job_with_dict_kwargs(tmp_path, monkeypatch, method):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Cu")
+
+    # Make sure that pick_calculator works even with dictionary kwargs
+    output = static_job(atoms, method="sevennet", sevennet_config={"test": 1})
+
+
 def test_relax_job_missing_pynanoflann(monkeypatch):
     def mock_find_spec(name):
         if name == "pynanoflann":
