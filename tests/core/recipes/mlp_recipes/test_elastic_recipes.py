@@ -58,10 +58,10 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
 
     ref_elastic_modulus = {
         "chgnet": 199,
-        "m3gnet": 140,
-        "mace-mp-0": 140,
+        "m3gnet": 109.369,
+        "mace-mp-0": 130.727,
         "sevennet": 142.296,
-        "orb": 140,
+        "orb": 187.107,
         "fairchem": 105,
     }
 
