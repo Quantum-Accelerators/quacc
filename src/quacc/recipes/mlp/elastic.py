@@ -1,4 +1,4 @@
-"""Elastic constants recipes for EMT."""
+"""Elastic constants recipes for MLPs."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow
 from quacc.recipes.common.elastic import bulk_to_deformations_subflow
-from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.mlp.core import relax_job, static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
@@ -34,18 +34,20 @@ def bulk_to_deformations_flow(
 
     2. Deformed structures relaxations
         - name: "relax_job"
-        - job: [quacc.recipes.emt.core.relax_job][]
+        - job: [quacc.recipes.mlp.core.relax_job][]
 
     3. Deformed structures statics (optional)
         - name: "static_job"
-        - job: [quacc.recipes.emt.core.static_job][]
+        - job: [quacc.recipes.mlp.core.static_job][]
 
     Parameters
     ----------
     atoms
         Atoms object
     run_static
-        Whether to run static calculations.
+        Whether to run static calculations after the relaxations
+    pre_relax
+        Whether to pre-relax the input atoms as is common
     deform_kwargs
         Additional keyword arguments to pass to [quacc.atoms.deformation.make_deformations_from_bulk][]
     job_params
