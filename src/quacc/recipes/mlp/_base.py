@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
-from functools import lru_cache
+from functools import lru_cache, wraps
 from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
+
+from frozendict import frozendict
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -15,6 +17,24 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
+def freezeargs(func):
+    """Convert a mutable dictionary into immutable.
+    Useful to make sure dictionary args are compatible with cache
+    From https://stackoverflow.com/a/53394430
+    """
+
+    @wraps(func)
+    def wrapped(*args, **kwargs):
+        args = (frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
+        kwargs = {
+            k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()
+        }
+        return func(*args, **kwargs)
+
+    return wrapped
+
+
+@freezeargs
 @lru_cache
 def pick_calculator(
     method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
