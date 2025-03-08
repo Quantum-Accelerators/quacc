@@ -5,7 +5,6 @@ import pytest
 torch = pytest.importorskip("torch")
 
 from importlib.util import find_spec
-from pathlib import Path
 
 import numpy as np
 from ase.build import bulk
@@ -55,8 +54,10 @@ def test_static_job(tmp_path, monkeypatch, method):
         _set_dtype(32)
 
     if method == "fairchem":
+        # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "checkpoint_path": Path(__file__).parent / "eqV2_31M_omat_mp_salex.pt"
+            "model_name": "EquiformerV2-31M-OMAT24-mp-salex",
+            "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:
         calc_kwargs = {}
@@ -111,8 +112,10 @@ def test_relax_job(tmp_path, monkeypatch, method):
         _set_dtype(32)
 
     if method == "fairchem":
+        # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "checkpoint_path": Path(__file__).parent / "eqV2_31M_omat_mp_salex.pt"
+            "model_name": "EquiformerV2-31M-OMAT24-mp-salex",
+            "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:
         calc_kwargs = {}
@@ -161,8 +164,10 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         _set_dtype(32)
 
     if method == "fairchem":
+        # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "checkpoint_path": Path(__file__).parent / "eqV2_31M_omat_mp_salex.pt"
+            "model_name": "EquiformerV2-31M-OMAT24-mp-salex",
+            "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:
         calc_kwargs = {}
