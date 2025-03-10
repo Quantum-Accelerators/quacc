@@ -27,8 +27,12 @@ if has_sevennet := find_spec("sevenn"):
 if has_orb := find_spec("orb_models"):
     methods.append("orb")
 
-if has_fairchem := find_spec("fairchem"):
-    methods.append("fairchem")
+if find_spec("fairchem"):
+    from huggingface_hub.utils._auth import get_token
+
+    if get_token() is not None:
+        has_fairchem_and_huggingface_token = True
+        methods.append("fairchem")
 
 
 @pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
