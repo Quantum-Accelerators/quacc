@@ -347,6 +347,8 @@ jobs:
         run: |
           if [ -n "${{ secrets.HUGGING_FACE_TOKEN }}" ]; then
             huggingface-cli login --token "${{ secrets.HUGGING_FACE_TOKEN }}"
+          else
+            echo "Hugging Face token not found. Skipping login."
           fi
 
       - name: Run tests with pytest
