@@ -1,3 +1,2 @@
 mace-torch==0.3.10
 matgl @ git+https://github.com/materialsvirtuallab/matgl.git
-frozendict==2.4.6
