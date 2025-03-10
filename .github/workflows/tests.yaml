@@ -343,10 +343,11 @@ jobs:
         run: |
           echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
-      - name: huggingface hub login
-        env:
-          HF_TOKEN: ${{ secrets.HUGGING_FACE_TOKEN }}
-        run: [ -n "$HF_TOKEN" ] && huggingface-cli login --token $HF_TOKEN
+      - name: Hugging Face Hub Login
+        run: |
+          if [ -n "${{ secrets.HUGGING_FACE_TOKEN }}" ]; then
+            huggingface-cli login --token "${{ secrets.HUGGING_FACE_TOKEN }}"
+          fi
 
       - name: Run tests with pytest
         run: pytest -k 'mlp or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
