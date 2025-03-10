@@ -531,9 +531,11 @@ if TYPE_CHECKING:
         results: ThermoResults
 
     class ElasticSchema(TypedDict):
+        """Elastic properties and fitting schema"""
+
         deformed_structure_set: DeformedStructureSet
         deformed_results: list[RunSchema | OptSchema]
-        undeformed_result: RunSchema | OptSchema
+        undeformed_static: RunSchema | OptSchema
         elasticity_doc: ElasticityDoc
 
     class VibThermoSchema(VibSchema, ThermoSchema):

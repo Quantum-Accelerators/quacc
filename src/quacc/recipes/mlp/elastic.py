@@ -21,8 +21,8 @@ if TYPE_CHECKING:
 @flow
 def bulk_to_deformations_flow(
     atoms: Atoms,
-    run_static: bool = False,
     pre_relax: bool = True,
+    run_static: bool = False,
     deform_kwargs: dict[str, Any] | None = None,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
@@ -44,10 +44,10 @@ def bulk_to_deformations_flow(
     ----------
     atoms
         Atoms object
-    run_static
-        Whether to run static calculations after the relaxations
     pre_relax
         Whether to pre-relax the input atoms as is common
+    run_static
+        Whether to run static calculations after the relaxations
     deform_kwargs
         Additional keyword arguments to pass to [quacc.atoms.deformation.make_deformations_from_bulk][]
     job_params
@@ -72,7 +72,11 @@ def bulk_to_deformations_flow(
     )  # type: ignore
 
     if pre_relax:
-        undeformed_result = relax_job_(atoms, relax_cell=True)
+        if run_static:
+            undeformed_relax = relax_job_(atoms, relax_cell=True)
+            undeformed_result = static_job_(undeformed_relax["atoms"])
+        else:
+            undeformed_result = relax_job_(atoms, relax_cell=True)
     else:
         undeformed_result = static_job_(atoms)
 

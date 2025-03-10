@@ -20,19 +20,37 @@ if TYPE_CHECKING:
     from pymatgen.analysis.elasticity.strain import DeformedStructureSet
 
     from quacc import Job
-    from quacc.types import ElasticSchema, OptSchema, RunSchema
+    from quacc.types import ElasticSchema, RunSchema
 
 
 @job
 def deformations_to_elastic_tensor(
-    undeformed_result: OptSchema | RunSchema,
+    undeformed_result: RunSchema,
     deformed_structure_set: DeformedStructureSet,
-    results: list[dict],
+    results: list[RunSchema],
 ) -> ElasticityDoc:
+    """
+    Function to fit a DeformedStructureSet and result documents to an elastic tensor
+
+    Parameters
+    ----------
+    undeformed_result
+        Single point or relaxation of the undeformed result (for the relaxed stress, if it's not quite 0)
+    deformed_structure_set
+        The pymatgen DeformedStructureSet with information on the strains of each structure
+    results
+        A list of results (one per deformed structure) corresponding to single points or relaxations
+        on the deformed structures.
+
+    Returns
+    -------
+    ElasticityDoc
+        An emmet (i.e. MaterialsProject) ElasticityDoc with information about the final elastic tensor fit
+    """
     structure = AseAtomsAdaptor.get_structure(undeformed_result["atoms"])  # type: ignore
     return ElasticityDoc.from_deformations_and_stresses(
         structure,
-        material_id=MPID("quacc-00"),
+        MPID("quacc-00"),
         deformations=deformed_structure_set.deformations,
         equilibrium_stress=Stress(
             (
@@ -58,7 +76,7 @@ def deformations_to_elastic_tensor(
 
 @subflow
 def bulk_to_deformations_subflow(
-    undeformed_result: OptSchema | RunSchema,
+    undeformed_result: RunSchema,
     relax_job: Job,
     static_job: Job,
     run_static: bool = False,
