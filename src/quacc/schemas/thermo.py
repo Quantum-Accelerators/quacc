@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from ase.thermochemistry import HarmonicThermo, IdealGasThermo
 from ase.units import invcm
 from emmet.core.symmetry import PointGroupData
+from pymatgen.core import Molecule
 
 from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_spin_multiplicity_attribute
