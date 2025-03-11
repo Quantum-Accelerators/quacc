@@ -43,7 +43,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from ase.calculators.calculator import Calculator
+    from ase.calculators.calculator import BaseCalculator
     from ase.optimize.optimize import Dynamics, Optimizer
 
     from quacc.types import (
@@ -63,7 +63,7 @@ class Runner(BaseRunner):
     def __init__(
         self,
         atoms: Atoms | list[Atoms],
-        calculator: Calculator,
+        calculator: BaseCalculator,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     ) -> None:
         """
