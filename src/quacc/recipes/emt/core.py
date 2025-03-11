@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
+    from quacc.types import OptParams, OptSchema, RunSchema
 
 
 @job
@@ -59,7 +59,6 @@ def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -75,8 +74,6 @@ def relax_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -95,6 +92,5 @@ def relax_job(
         EMT(**calc_kwargs),
         relax_cell=relax_cell,
         opt_params=opt_params,
-        copy_files=copy_files,
         additional_fields={"name": "EMT Relax"} | (additional_fields or {}),
     )
