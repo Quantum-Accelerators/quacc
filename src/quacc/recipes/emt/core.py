@@ -13,8 +13,6 @@ from ase.calculators.emt import EMT
 from quacc import job
 from quacc.recipes.common.core import relax_job as relax_job_
 from quacc.recipes.common.core import static_job as static_job_
-from quacc.runners.ase import Runner
-from quacc.schemas.ase import Summarize
 
 if TYPE_CHECKING:
     from typing import Any
