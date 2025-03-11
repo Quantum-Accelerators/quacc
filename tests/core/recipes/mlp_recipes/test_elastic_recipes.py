@@ -107,3 +107,39 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         assert output["nelements"] == 1
         assert output["nsites"] == 1
     assert len(outputs["deformed_results"]) == 24
+
+    outputs = bulk_to_deformations_flow(
+        atoms,
+        run_static=True,
+        pre_relax=False,
+        job_params={
+            "all": {"method": method, **calc_kwargs},
+            "relax_job": {"opt_params": {"fmax": 0.01}},
+        },
+    )
+    assert outputs["deformed_results"][0]["atoms"].get_volume() != pytest.approx(
+        atoms.get_volume()
+    )
+
+    for output in outputs["deformed_results"]:
+        assert output["nelements"] == 1
+        assert output["nsites"] == 1
+    assert len(outputs["deformed_results"]) == 24
+
+    outputs = bulk_to_deformations_flow(
+        atoms,
+        run_static=False,
+        pre_relax=False,
+        job_params={
+            "all": {"method": method, **calc_kwargs},
+            "relax_job": {"opt_params": {"fmax": 0.01}},
+        },
+    )
+    assert outputs["deformed_results"][0]["atoms"].get_volume() != pytest.approx(
+        atoms.get_volume()
+    )
+
+    for output in outputs["deformed_results"]:
+        assert output["nelements"] == 1
+        assert output["nsites"] == 1
+    assert len(outputs["deformed_results"]) == 24
