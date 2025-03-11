@@ -45,24 +45,24 @@ __version__ = version("quacc")
 
 # Make Atoms MSONable
 Atoms.as_dict = MSONAtoms.as_dict  # type: ignore[attr-defined]
-Atoms.from_dict = MSONAtoms.from_dict  # type: ignore[attr-defined]
+Atoms.from_dict = classmethod(MSONAtoms.from_dict)  # type: ignore[attr-defined]
 
 
 # Make Calculator MSONable
-class MSONCalculator(BaseCalculator, MSONable):
-    def as_dict(self: BaseCalculator) -> dict[str, Any]:
-        return {
-            "@module": self.__module__,
-            "@class": self.__class__.__name__,
-            "calc_json": encode(self.todict()),
-        }
-
-    def from_dict(self, dct: dict[str, Any]) -> Self:
-        return self.__class__(**decode(dct["calc_json"]))
+def calc_as_dict(self: BaseCalculator) -> dict[str, Any]:
+    return {
+        "@module": self.__module__,
+        "@class": self.__class__.__name__,
+        "parameters": self.parameters,
+    }
 
 
-BaseCalculator.as_dict = MSONCalculator.as_dict  # type: ignore[attr-defined]
-BaseCalculator.from_dict = MSONCalculator.from_dict  # type: ignore[attr-defined]
+def calc_from_dict(cls, dct: dict[str, Any]) -> BaseCalculator:
+    return cls(**dct["parameters"])
+
+
+BaseCalculator.as_dict = calc_as_dict  # type: ignore[attr-defined]
+BaseCalculator.from_dict = classmethod(calc_from_dict)  # type: ignore[attr-defined]
 
 # Load the settings
 _thread_local = threading.local()
