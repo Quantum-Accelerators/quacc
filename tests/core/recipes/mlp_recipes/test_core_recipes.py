@@ -30,8 +30,7 @@ if has_orb := find_spec("orb_models"):
 if find_spec("fairchem"):
     from huggingface_hub.utils._auth import get_token
 
-    if get_token() is not None:
-        has_fairchem_and_huggingface_token = True
+    if get_token():
         methods.append("fairchem")
 
 
