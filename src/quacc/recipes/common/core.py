@@ -85,8 +85,6 @@ def relax_job(
         See the type-hint for the data structure.
     """
     opt_params = opt_params or {}
-    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(
-        relax_cell=relax_cell, **opt_params
-    )
-
+    opt_params.setdefault("relax_cell", relax_cell)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)  # type: ignore
     return Summarize(additional_fields=additional_fields).opt(dyn)
