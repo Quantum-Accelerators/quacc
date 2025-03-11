@@ -8,9 +8,8 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
-from pymatgen.core.structure import Structure
+from pymatgen.core.structure import Molecule, Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
-from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import copy_atoms
 
@@ -51,7 +50,7 @@ def flip_atoms(
     new_atoms.wrap()
 
     if return_struct:
-        new_atoms = AseAtomsAdaptor.get_structure(new_atoms)
+        new_atoms = Structure.from_ase_atoms(new_atoms)
 
     return new_atoms
 
@@ -102,7 +101,7 @@ def make_slabs_from_bulk(
     # https://github.com/oxana-a/atomate/blob/ads_wf/atomate/vasp/firetasks/adsorption_tasks.py
 
     # Use pymatgen to generate slabs
-    struct = AseAtomsAdaptor.get_structure(atoms)
+    struct = Structure.from_ase_atoms(atoms)
 
     # Make all the slabs
     slabs = generate_all_slabs(
@@ -277,8 +276,8 @@ def make_adsorbate_structures(
         atoms.set_initial_magnetic_moments([0.0] * len(atoms))
 
     # Make a Pymatgen structure and molecule
-    struct = AseAtomsAdaptor.get_structure(atoms)
-    mol = AseAtomsAdaptor.get_molecule(adsorbate, charge_spin_check=False)
+    struct = Structure.from_ase_atoms(atoms)
+    mol = Molecule.from_ase_atoms(adsorbate, charge_spin_check=False)
 
     # Get the adsorption sites
     ads_finder = AdsorbateSiteFinder(struct, **ads_site_finder_kwargs)

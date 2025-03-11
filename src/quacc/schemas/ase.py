@@ -8,7 +8,7 @@ import numpy as np
 from ase.io import read
 from ase.vibrations.data import VibrationsData
 from emmet.core.symmetry import PointGroupData
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Molecule
 
 from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
@@ -484,9 +484,7 @@ class VibSummarize:
             vib_energies = []
         elif is_molecule:
             is_linear = (
-                PointGroupData()
-                .from_molecule(AseAtomsAdaptor().get_molecule(atoms))
-                .linear
+                PointGroupData().from_molecule(Molecule.from_ase_atoms(atoms)).linear
                 if atoms.pbc.any()
                 else atoms_metadata["symmetry"]["linear"]
             )

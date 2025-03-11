@@ -10,7 +10,7 @@ import numpy as np
 import psutil
 from ase.calculators.vasp import Vasp as Vasp_
 from monty.dev import requires
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Structure
 
 from quacc.atoms.core import check_is_metal
 from quacc.utils.dicts import sort_dict
@@ -421,7 +421,7 @@ class MPtoASEConverter:
         self.prev_dir = prev_dir
         if self.atoms:
             self.ase_sort, self.ase_resort = Vasp_()._make_sort(self.atoms)
-            self.structure = AseAtomsAdaptor.get_structure(self.atoms[self.ase_sort])
+            self.structure = Structure.from_ase_atoms(self.atoms[self.ase_sort])
 
     def convert_dict_set(self, dict_set: DictSet) -> dict:
         """
