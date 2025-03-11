@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 import numpy as np
 import pytest
 from ase.build import bulk
@@ -28,8 +26,11 @@ if has_sevennet := find_spec("sevenn"):
 if has_orb := find_spec("orb_models"):
     methods.append("orb")
 
-if has_fairchem := find_spec("fairchem"):
-    methods.append("fairchem")
+if find_spec("fairchem"):
+    from huggingface_hub.utils._auth import get_token
+
+    if get_token():
+        methods.append("fairchem")
 
 
 def _set_dtype(size, type_="float"):
@@ -49,9 +50,8 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
 
     if method == "fairchem":
         calc_kwargs = {
-            "checkpoint_path": Path(__file__).parent / "eqV2_31M_omat_mp_salex.pt",
-            "seed": 0,
-            "disable_amp": True,
+            "model_name": "EquiformerV2-31M-OMAT24-mp-salex",
+            "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:
         calc_kwargs = {}
