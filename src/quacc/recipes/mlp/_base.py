@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Literal
 
-    from ase.calculators.calculator import Calculator
+    from ase.calculators.calculator import BaseCalculator
 
 LOGGER = getLogger(__name__)
 
@@ -19,7 +19,7 @@ LOGGER = getLogger(__name__)
 def pick_calculator(
     method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
     **calc_kwargs,
-) -> Calculator:
+) -> BaseCalculator:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
 

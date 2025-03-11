@@ -9,6 +9,9 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.atoms import Atoms
+from ase.calculators.calculator import BaseCalculator
+from ase.io.jsonio import decode, encode
+from monty.json import MSONable
 from pymatgen.io.ase import MSONAtoms
 
 from quacc.settings import QuaccSettings, change_settings
@@ -18,8 +21,7 @@ from quacc.wflow_tools.customizers import redecorate, strip_decorator
 from quacc.wflow_tools.decorators import Flow, Job, Subflow, flow, job, subflow
 
 if TYPE_CHECKING:
-    from typing import Any
-
+    from typing import Any, Self
 
 __all__ = [
     "Flow",
@@ -44,6 +46,23 @@ __version__ = version("quacc")
 # Make Atoms MSONable
 Atoms.as_dict = MSONAtoms.as_dict  # type: ignore[attr-defined]
 Atoms.from_dict = MSONAtoms.from_dict  # type: ignore[attr-defined]
+
+
+# Make Calculator MSONable
+class MSONCalculator(BaseCalculator, MSONable):
+    def as_dict(self: BaseCalculator) -> dict[str, Any]:
+        return {
+            "@module": self.__module__,
+            "@class": self.__class__.__name__,
+            "calc_json": encode(self.todict()),
+        }
+
+    def from_dict(self, dct: dict[str, Any]) -> Self:
+        return self.__class__(**decode(dct["calc_json"]))
+
+
+BaseCalculator.as_dict = MSONCalculator.as_dict  # type: ignore[attr-defined]
+BaseCalculator.from_dict = MSONCalculator.from_dict  # type: ignore[attr-defined]
 
 # Load the settings
 _thread_local = threading.local()
