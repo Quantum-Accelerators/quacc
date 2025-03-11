@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 from pymatgen.core.periodic_table import DummySpecies
+from pymatgen.core.structure import Structure
 from pymatgen.entries.computed_entries import ComputedStructureEntry
 
 has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
@@ -21,7 +22,6 @@ if has_shakenbreak:
 if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
-    from pymatgen.core.structure import Structure
 
     if has_pmg_defects:
         from pymatgen.analysis.defects.core import Defect
