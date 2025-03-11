@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Molecule, Structure
 
 from quacc.atoms.core import (
     copy_atoms,
@@ -78,12 +78,12 @@ def atoms_to_metadata(
     # generating pymatgen Structure/Molecule metadata, so we'll just use that.
     if get_metadata:
         if atoms.pbc.any():
-            struct = AseAtomsAdaptor().get_structure(atoms)
+            struct = Structure.from_ase_atoms(atoms)
             metadata = StructureMetadata().from_structure(struct).model_dump()
             if store_pmg:
                 results["structure"] = struct
         else:
-            mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
+            mol = Molecule.from_ase_atoms(atoms, charge_spin_check=False)
             metadata = MoleculeMetadata().from_molecule(mol).model_dump()
             if store_pmg:
                 results["molecule"] = mol

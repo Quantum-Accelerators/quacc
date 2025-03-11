@@ -5,7 +5,7 @@ from __future__ import annotations
 from logging import getLogger
 from typing import TYPE_CHECKING
 
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Molecule
 from pymatgen.io.qchem.inputs import QCInput
 from pymatgen.io.qchem.sets import QChemDictSet
 from pymatgen.io.qchem.utils import lower_and_check_unique
@@ -41,7 +41,7 @@ def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:
     """
     atoms.charge = qchem.charge  # type: ignore[attr-defined]
     atoms.spin_multiplicity = qchem.spin_multiplicity  # type: ignore[attr-defined]
-    molecule = AseAtomsAdaptor().get_molecule(atoms)
+    molecule = Molecule.from_ase_atoms(atoms)
 
     if qchem.qchem_dict_set_params:
         # Get minimal parameters needed to instantiate a QChemDictSet

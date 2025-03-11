@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 from pymatgen.core.periodic_table import DummySpecies
 from pymatgen.entries.computed_entries import ComputedStructureEntry
-from pymatgen.io.ase import AseAtomsAdaptor
 
 has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
 has_shakenbreak = bool(find_spec("shakenbreak"))
@@ -89,7 +88,7 @@ def make_defects_from_bulk(
         All generated defects
     """
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
-    struct = AseAtomsAdaptor.get_structure(atoms)
+    struct = Structure.from_ase_atoms(atoms)
 
     # Make all the defects
     defects = defect_gen().get_defects(struct, **defect_gen_kwargs)

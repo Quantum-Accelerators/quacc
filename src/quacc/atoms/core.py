@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.filters import Filter
 from ase.io.jsonio import encode
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Molecule, Structure
 
 if TYPE_CHECKING:
     from hashlib import _Hash
@@ -103,9 +103,9 @@ def check_is_metal(atoms: Atoms) -> bool:
         True if the structure is likely a metal; False otherwise
     """
     struct = (
-        AseAtomsAdaptor().get_structure(atoms)
+        Structure.from_ase_atoms(atoms)
         if atoms.pbc.any()
-        else AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
+        else Molecule.from_ase_atoms(atoms, charge_spin_check=False)
     )
 
     return all(k.is_metal for k in struct.composition)
@@ -227,14 +227,14 @@ def check_charge_and_spin(
         charge = 0
 
     try:
-        mol = AseAtomsAdaptor.get_molecule(atoms)
+        mol = Molecule.from_ase_atoms(atoms)
         if charge is not None:
             if spin_multiplicity is not None:
                 mol.set_charge_and_spin(charge, spin_multiplicity)
             else:
                 mol.set_charge_and_spin(charge)
     except ValueError:
-        mol = AseAtomsAdaptor.get_molecule(atoms, charge_spin_check=False)
+        mol = Molecule.from_ase_atoms(atoms, charge_spin_check=False)
         nelectrons = mol.nelectrons - charge if charge else mol.nelectrons
         default_spin_multiplicity = 1 if nelectrons % 2 == 0 else 2
         mol.set_charge_and_spin(

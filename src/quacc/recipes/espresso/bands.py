@@ -8,7 +8,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase.dft.kpoints import bandpath
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Structure
 from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
 
 from quacc import flow, job
@@ -97,7 +97,7 @@ def bands_pw_job(
         "input_data": {"control": {"calculation": "bands", "verbosity": "high"}}
     }
     if make_bandpath:
-        structure = AseAtomsAdaptor.get_structure(atoms)
+        structure = Structure.from_ase_atoms(atoms)
         primitive = SpacegroupAnalyzer(structure).get_primitive_standard_structure()
         atoms = primitive.to_ase_atoms()
         calc_defaults["kpts"] = bandpath(

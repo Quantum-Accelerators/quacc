@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 from ase.thermochemistry import HarmonicThermo, IdealGasThermo
 from ase.units import invcm
 from emmet.core.symmetry import PointGroupData
-from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_spin_multiplicity_attribute
@@ -250,7 +249,7 @@ class ThermoSummarize:
         spin = round((spin_multiplicity - 1) / 2, 1) if spin_multiplicity else 0
 
         # Get symmetry for later use
-        mol = AseAtomsAdaptor().get_molecule(self.atoms, charge_spin_check=False)
+        mol = Molecule.from_ase_atoms(self.atoms, charge_spin_check=False)
         point_group_data = PointGroupData().from_molecule(mol)
 
         # Get the geometry

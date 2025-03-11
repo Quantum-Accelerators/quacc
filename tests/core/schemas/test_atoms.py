@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 from ase.build import bulk, molecule
 from monty.json import MontyDecoder, jsanitize
-from pymatgen.io.ase import AseAtomsAdaptor
+from pymatgen.core import Molecule, Structure
 
 from quacc.schemas.atoms import atoms_to_metadata
 
@@ -22,7 +22,7 @@ def test_atoms_to_metadata():
     atoms.info["test"] = "hi"
     results = atoms_to_metadata(atoms)
     assert results["atoms"].info.get("test", None) == "hi"
-    assert results["structure"] == AseAtomsAdaptor.get_structure(atoms)
+    assert results["structure"] == Structure.from_ase_atoms(atoms)
     assert "molecule" not in results
     assert "pymatgen_version" in results["builder_meta"]
 
@@ -33,7 +33,7 @@ def test_atoms_to_metadata():
     del atoms_no_dummy[[atom.index for atom in atoms if atom.symbol == "X"]]
     results = atoms_to_metadata(atoms)
     assert results["atoms"].info.get("test", None) == "hi"
-    assert results["structure"] == AseAtomsAdaptor.get_structure(atoms_no_dummy)
+    assert results["structure"] == Structure.from_ase_atoms(atoms_no_dummy)
 
     atoms = bulk("Cu")
     results = atoms_to_metadata(atoms, get_metadata=False)
@@ -45,7 +45,7 @@ def test_atoms_to_metadata():
     results = atoms_to_metadata(atoms)
     assert "structure" not in results
     assert results["atoms"].info.get("test", None) == "hi"
-    assert results["molecule"] == AseAtomsAdaptor().get_molecule(atoms)
+    assert results["molecule"] == Molecule.from_ase_atoms(atoms)
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
