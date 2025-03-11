@@ -13,6 +13,7 @@ from ase.calculators.emt import EMT
 from quacc import job
 from quacc.recipes.common.core import relax_job as relax_job_
 from quacc.recipes.common.core import static_job as static_job_
+from quacc.wflow_tools.customizers import strip_decorator
 
 if TYPE_CHECKING:
     from typing import Any
@@ -46,7 +47,7 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    return static_job_(
+    return strip_decorator(static_job_)(
         atoms,
         EMT(**calc_kwargs),
         additional_fields={"name": "EMT Static"} | (additional_fields or {}),
@@ -89,7 +90,7 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
-    return relax_job_(
+    return strip_decorator(relax_job_)(
         atoms,
         EMT(**calc_kwargs),
         relax_cell=relax_cell,
