@@ -96,7 +96,7 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 | MLP Static     | `#!Python @job`  | [quacc.recipes.mlp.core.static_job][]                        | `quacc[mlp]`         |
 | MLP Relax      | `#!Python @job`  | [quacc.recipes.mlp.core.relax_job][]                         | `quacc[mlp]`         |
 | MLP Phonons    | `#!Python @flow` | [quacc.recipes.mlp.phonons.phonon_flow][]                    | `quacc[mlp,phonons]` |
-| MLP Elasticity | `#!Python @flow` | [quacc.recipes.mlp.elasticity.bulk_to_elastic_tensor_flow][] | `quacc[mlp]` |
+| MLP Elasticity | `#!Python @flow` | [quacc.recipes.mlp.elastic.bulk_to_elastic_tensor_flow][] | `quacc[mlp]` |
 
 </center>
 
