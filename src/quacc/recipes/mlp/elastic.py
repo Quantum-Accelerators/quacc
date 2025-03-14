@@ -1,4 +1,4 @@
-"""Elastic constants recipes for EMT."""
+"""Elastic constants recipes for MLPs."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow
 from quacc.recipes.common.elastic import bulk_to_elastic_tensor_subflow
-from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.mlp.core import relax_job, static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:
@@ -41,6 +41,7 @@ def bulk_to_elastic_tensor_flow(
         - job: [quacc.recipes.emt.core.static_job][]
 
     4. Elastic tensor calculation
+
 
     Parameters
     ----------
