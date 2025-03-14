@@ -44,10 +44,11 @@ def bulk_to_deformations_flow(
     ----------
     atoms
         Atoms object
-    pre_relax:
-        Whether to run a relaxation on the bulk structure before deformation.
+    pre_relax
+        Whether to run a relaxation on the bulk structure before deformation (true) or run a static
+        calculation (false)
     run_static
-        Whether to run static calculations.
+        Whether to run static calculations after any relaxations on the undeformed or deformed structures
     deform_kwargs
         Additional keyword arguments to pass to [quacc.atoms.deformation.make_deformations_from_bulk][]
     job_params
@@ -72,11 +73,9 @@ def bulk_to_deformations_flow(
     )  # type: ignore
 
     if pre_relax:
+        undeformed_result = relax_job_(atoms, relax_cell=True)
         if run_static:
-            undeformed_relax = relax_job_(atoms, relax_cell=True)
-            undeformed_result = static_job_(undeformed_relax["atoms"])
-        else:
-            undeformed_result = relax_job_(atoms, relax_cell=True)
+            undeformed_result = static_job_(undeformed_result["atoms"])
     else:
         undeformed_result = static_job_(atoms)
 
