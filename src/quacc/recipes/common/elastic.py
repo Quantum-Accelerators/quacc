@@ -75,7 +75,7 @@ def deformations_to_elastic_tensor(
 
 
 @subflow
-def bulk_to_deformations_subflow(
+def bulk_to_elastic_tensor_subflow(
     undeformed_result: RunSchema,
     relax_job: Job,
     static_job: Job | None = None,
@@ -89,6 +89,8 @@ def bulk_to_deformations_subflow(
     2. Deformed structures relaxations
 
     3. Deformed structures statics (optional)
+
+    4. Elastic tensor calculation
 
     Parameters
     ----------
