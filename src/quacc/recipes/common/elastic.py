@@ -99,8 +99,8 @@ def bulk_to_deformations_subflow(
         The relaxation function.
     static_job
         The static function
-    static_job
-        The static function.
+    run_static
+        Whether to run a static job after each relaxation
     deform_kwargs
         Additional keyword arguments to pass to
         [quacc.atoms.deformation.make_deformations_from_bulk][]
