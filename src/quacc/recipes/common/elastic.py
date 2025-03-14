@@ -78,7 +78,7 @@ def deformations_to_elastic_tensor(
 def bulk_to_deformations_subflow(
     undeformed_result: RunSchema,
     relax_job: Job,
-    static_job: Job,
+    static_job: Job | None = None,
     run_static: bool = False,
     deform_kwargs: dict[str, Any] | None = None,
 ) -> ElasticSchema:
