@@ -82,7 +82,6 @@ def bulk_to_deformations_flow(
     return bulk_to_deformations_subflow(
         undeformed_result=undeformed_result,
         relax_job=relax_job_,
-        static_job=static_job_,
-        run_static=run_static,
+        static_job=static_job_ if run_static else None,
         deform_kwargs=deform_kwargs,
     )

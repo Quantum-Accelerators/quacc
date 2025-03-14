@@ -79,7 +79,6 @@ def bulk_to_deformations_subflow(
     undeformed_result: RunSchema,
     relax_job: Job,
     static_job: Job | None = None,
-    run_static: bool = False,
     deform_kwargs: dict[str, Any] | None = None,
 ) -> ElasticSchema:
     """
@@ -99,8 +98,6 @@ def bulk_to_deformations_subflow(
         The relaxation function.
     static_job
         The static function
-    run_static
-        Whether to run a static job after each relaxation
     deform_kwargs
         Additional keyword arguments to pass to
         [quacc.atoms.deformation.make_deformations_from_bulk][]
@@ -120,7 +117,7 @@ def bulk_to_deformations_subflow(
     for deformed in deformed_structure_set:
         result = relax_job(deformed.to_ase_atoms())
 
-        if run_static:
+        if static_job is not None:
             result = static_job(result["atoms"])
 
         results.append(result)
