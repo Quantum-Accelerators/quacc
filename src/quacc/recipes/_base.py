@@ -82,14 +82,14 @@ class Recipe:
         RunSchema
             Results dictionary
         """
+        additional_fields = additional_fields or {}
+        additional_fields.setdefault({"name": f"{self.calculator_class.__name__}"})
+
         calc = self._prepare_calculator(**calc_kwargs)
         final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
             geom_file=geom_file
         )
-        return Summarize(
-            additional_fields={"name": f"{self.calculator_class.__name__} Static"}
-            | (additional_fields or {})
-        ).run(final_atoms, atoms)
+        return Summarize(additional_fields=additional_fields).run(final_atoms, atoms)
 
     def static(
         self,
@@ -116,6 +116,11 @@ class Recipe:
         RunSchema
             Results dictionary
         """
+        additional_fields = additional_fields or {}
+        additional_fields.setdefault(
+            {"name": f"{self.calculator_class.__name__} Static"}
+        )
+
         return self.calculate(
             atoms,
             copy_files=copy_files,
@@ -132,7 +137,7 @@ class Recipe:
         additional_fields: dict[str, Any] | None = None,
         **calc_kwargs,
     ) -> OptSchema:
-        """Run a geometry optimization.
+        """Run a geometry optimization with ASE as the optimizer.
 
         Parameters
         ----------
@@ -154,11 +159,13 @@ class Recipe:
         OptSchema
             Results dictionary
         """
-        calc = self._prepare_calculator(**calc_kwargs)
+        additional_fields = additional_fields or {}
+        additional_fields.setdefault(
+            {"name": f"{self.calculator_class.__name__} Relax"}
+        )
         opt_params = opt_params or {}
         opt_params.setdefault("relax_cell", relax_cell)
+
+        calc = self._prepare_calculator(**calc_kwargs)
         dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
-        return Summarize(
-            additional_fields={"name": f"{self.calculator_class.__name__} Relax"}
-            | (additional_fields or {})
-        ).opt(dyn)
+        return Summarize(additional_fields=additional_fields).opt(dyn)

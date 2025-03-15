@@ -47,7 +47,6 @@ class Summarize:
 
     def __init__(
         self,
-        directory: str | Path | None = None,
         charge_and_multiplicity: tuple[int, int] | None = None,
         move_magmoms: bool = False,
         additional_fields: dict[str, Any] | None = None,
@@ -57,8 +56,6 @@ class Summarize:
 
         Parameters
         ----------
-        directory
-            Path to the directory where the calculation was run and results will be stored.
         charge_and_multiplicity
             Charge and spin multiplicity of the Atoms object, only used for Molecule
             metadata.
@@ -72,7 +69,6 @@ class Summarize:
         -------
         None
         """
-        self.directory = directory
         self.charge_and_multiplicity = charge_and_multiplicity
         self.move_magmoms = move_magmoms
         self.additional_fields = additional_fields or {}
@@ -111,7 +107,7 @@ class Summarize:
             raise ValueError(msg)
 
         store = self._settings.STORE if store == QuaccDefault else store
-        directory = self.directory or final_atoms.calc.directory
+        directory = final_atoms.calc.directory
 
         # Generate input atoms metadata
         if input_atoms:
