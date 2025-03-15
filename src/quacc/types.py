@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Dynamics
+    from emmet.core.elasticity import ElasticityDoc
     from emmet.core.math import ListMatrix3D, Matrix3D, Vector3D
     from emmet.core.symmetry import CrystalSystem
     from emmet.core.vasp.calc_types import CalcType
@@ -32,6 +33,7 @@ if TYPE_CHECKING:
     from emmet.core.vasp.task_valid import TaskState
     from numpy.random import Generator
     from numpy.typing import ArrayLike, NDArray
+    from pymatgen.analysis.elasticity.strain import DeformedStructureSet
     from pymatgen.core.composition import Composition
     from pymatgen.core.lattice import Lattice
     from pymatgen.core.periodic_table import Element
@@ -527,6 +529,14 @@ if TYPE_CHECKING:
     class ThermoSchema(AtomsSchema):
         parameters_thermo: ParametersThermo
         results: ThermoResults
+
+    class ElasticSchema(TypedDict):
+        """Elastic properties and fitting schema"""
+
+        deformed_structure_set: DeformedStructureSet
+        deformed_results: list[RunSchema | OptSchema]
+        undeformed_static: RunSchema | OptSchema
+        elasticity_doc: ElasticityDoc
 
     class VibThermoSchema(VibSchema, ThermoSchema):
         """Combined Vibrations and Thermo schema"""

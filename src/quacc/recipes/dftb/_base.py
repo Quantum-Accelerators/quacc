@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
 
-LOG_FILE = "dftb.out"
 GEOM_FILE = "geo_end.gen"
 
 
