@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 
 
-class BaseRecipe:
+class Recipe:
     """Base class for all recipes."""
 
     def __init__(
@@ -51,7 +51,7 @@ class BaseRecipe:
         calc_flags = recursive_dict_merge(self.calc_defaults, calc_kwargs)
         return self.calculator_class(**calc_flags)
 
-    def run_static(
+    def static(
         self,
         atoms: Atoms,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
@@ -83,7 +83,7 @@ class BaseRecipe:
             | (additional_fields or {})
         ).run(final_atoms, atoms)
 
-    def run_relax(
+    def relax(
         self,
         atoms: Atoms,
         relax_cell: bool = False,

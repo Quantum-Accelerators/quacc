@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.emt import EMT
 
 from quacc import job
-from quacc.recipes._base import BaseRecipe
+from quacc.recipes._base import Recipe
 
 if TYPE_CHECKING:
     from typing import Any
@@ -19,14 +19,6 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import OptParams, OptSchema, RunSchema
-
-
-class EMTRecipe(BaseRecipe):
-    """Base class for EMT recipes."""
-
-    def __init__(self):
-        """Initialize EMT recipe."""
-        super().__init__(EMT)
 
 
 @job
@@ -49,9 +41,7 @@ def static_job(
     RunSchema
         Results dictionary
     """
-    return EMTRecipe().run_static(
-        atoms, additional_fields=additional_fields, **calc_kwargs
-    )
+    return Recipe(EMT).static(atoms, additional_fields=additional_fields, **calc_kwargs)
 
 
 @job
@@ -82,7 +72,7 @@ def relax_job(
     OptSchema
         Results dictionary
     """
-    return EMTRecipe().run_relax(
+    return Recipe(EMT).relax(
         atoms,
         relax_cell=relax_cell,
         opt_params=opt_params,

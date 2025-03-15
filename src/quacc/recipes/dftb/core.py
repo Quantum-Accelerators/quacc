@@ -7,127 +7,14 @@ from typing import TYPE_CHECKING, Literal
 from ase.calculators.dftb import Dftb
 
 from quacc import job
-from quacc.recipes._base import BaseRecipe
+from quacc.recipes._base import Recipe
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
-
-
-class DFTBRecipe(BaseRecipe):
-    """Base class for DFTB+ recipes."""
-
-    def __init__(self, method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB"):
-        """Initialize DFTB+ recipe.
-
-        Parameters
-        ----------
-        method
-            Method to use
-        """
-        calc_defaults = {
-            "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-            "Hamiltonian_MaxSccIterations": 200,
-        }
-        if "xtb" in method.lower():
-            calc_defaults["Hamiltonian_Method"] = method
-
-        super().__init__(Dftb, calc_defaults)
-
-    def run_static(
-        self,
-        atoms: Atoms,
-        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-        additional_fields: dict[str, Any] | None = None,
-        **calc_kwargs,
-    ) -> RunSchema:
-        """Run a static calculation.
-
-        Parameters
-        ----------
-        atoms
-            Atoms object
-        copy_files
-            Files to copy to runtime directory
-        additional_fields
-            Additional fields for results
-        **calc_kwargs
-            Calculator parameters that override defaults
-
-        Returns
-        -------
-        RunSchema
-            Results dictionary
-        """
-        # Handle k-points
-        kpts = calc_kwargs.pop("kpts", None)
-        if kpts is None and atoms.pbc.any():
-            calc_kwargs["kpts"] = (1, 1, 1)
-
-        return super().run_static(
-            atoms,
-            copy_files=copy_files,
-            additional_fields=additional_fields,
-            **calc_kwargs,
-        )
-
-    def run_relax(
-        self,
-        atoms: Atoms,
-        relax_cell: bool = False,
-        opt_params: OptParams | None = None,
-        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-        additional_fields: dict[str, Any] | None = None,
-        **calc_kwargs,
-    ) -> RunSchema:
-        """Run a geometry optimization.
-
-        Parameters
-        ----------
-        atoms
-            Atoms object
-        relax_cell
-            Whether to relax the cell
-        opt_params
-            Optimization parameters
-        copy_files
-            Files to copy to runtime directory
-        additional_fields
-            Additional fields for results
-        **calc_kwargs
-            Calculator parameters that override defaults
-
-        Returns
-        -------
-        RunSchema
-            Results dictionary
-        """
-        # Handle k-points
-        kpts = calc_kwargs.pop("kpts", None)
-        if kpts is None and atoms.pbc.any():
-            calc_kwargs["kpts"] = (1, 1, 1)
-
-        # Add DFTB-specific relaxation parameters
-        calc_kwargs.update(
-            {
-                "Driver_": "GeometryOptimization",
-                "Driver_AppendGeometries": "Yes",
-                "Driver_LatticeOpt": "Yes" if relax_cell else "No",
-                "Driver_MaxSteps": 2000,
-            }
-        )
-
-        return super().run_relax(
-            atoms,
-            relax_cell=relax_cell,
-            opt_params=opt_params,
-            copy_files=copy_files,
-            additional_fields=additional_fields,
-            **calc_kwargs,
-        )
+    from quacc.types import Filenames, RunSchema, SourceDirectory
 
 
 @job
@@ -161,8 +48,13 @@ def static_job(
     RunSchema
         Results dictionary
     """
-    recipe = DFTBRecipe(method=method)
-    return recipe.run_static(
+    calc_defaults = {
+        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_MaxSccIterations": 200,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+    }
+    recipe = Recipe(Dftb, calc_defaults)
+    return recipe.static(
         atoms,
         copy_files=copy_files,
         additional_fields=additional_fields,
@@ -205,8 +97,19 @@ def relax_job(
     RunSchema
         Results dictionary
     """
-    recipe = DFTBRecipe(method=method)
-    return recipe.run_relax(
+    calc_defaults = {
+        "Driver_": "GeometryOptimization",
+        "Driver_AppendGeometries": "Yes",
+        "Driver_LatticeOpt": "Yes" if relax_cell else "No",
+        "Driver_MaxSteps": 2000,
+        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_MaxSccIterations": 200,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+    }
+    if "xtb" in method.lower():
+        calc_defaults["Hamiltonian_Method"] = method
+    recipe = Recipe(Dftb, calc_defaults)
+    return recipe.relax(
         atoms,
         relax_cell=relax_cell,
         copy_files=copy_files,
