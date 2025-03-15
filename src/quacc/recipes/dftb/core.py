@@ -25,8 +25,6 @@ class DFTBRecipe(BaseRecipe):
 
         Parameters
         ----------
-        name
-            Name of the recipe
         method
             Method to use
         """
@@ -42,7 +40,6 @@ class DFTBRecipe(BaseRecipe):
     def run_static(
         self,
         atoms: Atoms,
-        calc_swaps: dict[str, Any] | None = None,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
         additional_fields: dict[str, Any] | None = None,
         **calc_kwargs,
@@ -53,14 +50,12 @@ class DFTBRecipe(BaseRecipe):
         ----------
         atoms
             Atoms object
-        calc_swaps
-            Dictionary of custom kwargs that override defaults
         copy_files
             Files to copy to runtime directory
         additional_fields
             Additional fields for results
         **calc_kwargs
-            Additional calculator kwargs
+            Calculator parameters that override defaults
 
         Returns
         -------
@@ -69,12 +64,11 @@ class DFTBRecipe(BaseRecipe):
         """
         # Handle k-points
         kpts = calc_kwargs.pop("kpts", None)
-        if "kpts" not in self.calc_defaults:
-            calc_kwargs["kpts"] = kpts or ((1, 1, 1) if atoms.pbc.any() else None)
+        if kpts is None and atoms.pbc.any():
+            calc_kwargs["kpts"] = (1, 1, 1)
 
         return super().run_static(
             atoms,
-            calc_swaps=calc_swaps,
             copy_files=copy_files,
             additional_fields=additional_fields,
             **calc_kwargs,
@@ -85,7 +79,6 @@ class DFTBRecipe(BaseRecipe):
         atoms: Atoms,
         relax_cell: bool = False,
         opt_params: OptParams | None = None,
-        calc_swaps: dict[str, Any] | None = None,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
         additional_fields: dict[str, Any] | None = None,
         **calc_kwargs,
@@ -100,14 +93,12 @@ class DFTBRecipe(BaseRecipe):
             Whether to relax the cell
         opt_params
             Optimization parameters
-        calc_swaps
-            Dictionary of custom kwargs that override defaults
         copy_files
             Files to copy to runtime directory
         additional_fields
             Additional fields for results
         **calc_kwargs
-            Additional calculator kwargs
+            Calculator parameters that override defaults
 
         Returns
         -------
@@ -116,8 +107,8 @@ class DFTBRecipe(BaseRecipe):
         """
         # Handle k-points
         kpts = calc_kwargs.pop("kpts", None)
-        if "kpts" not in self.calc_defaults:
-            calc_kwargs["kpts"] = kpts or ((1, 1, 1) if atoms.pbc.any() else None)
+        if kpts is None and atoms.pbc.any():
+            calc_kwargs["kpts"] = (1, 1, 1)
 
         # Add DFTB-specific relaxation parameters
         calc_kwargs.update(
@@ -133,7 +124,6 @@ class DFTBRecipe(BaseRecipe):
             atoms,
             relax_cell=relax_cell,
             opt_params=opt_params,
-            calc_swaps=calc_swaps,
             copy_files=copy_files,
             additional_fields=additional_fields,
             **calc_kwargs,

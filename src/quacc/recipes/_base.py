@@ -31,12 +31,13 @@ class BaseRecipe:
         calculator_class
             The ASE calculator class to use
         name
-            Name of the recipe (e.g. "DFTB+ Static")
+            Name of the recipe (e.g. "DFTB+ Static"). If not provided,
+            will be derived from the calculator class name.
         calc_defaults
             Default calculator parameters
         """
         self.calculator_class = calculator_class
-        self.name = name
+        self.name = name or calculator_class.__name__
         self.calc_defaults = calc_defaults or {}
 
     def _prepare_calculator(self, **calc_kwargs) -> BaseCalculator:

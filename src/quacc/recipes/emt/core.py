@@ -18,23 +18,26 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
+    from quacc.types import OptParams, OptSchema, RunSchema
 
 
 class EMTRecipe(BaseRecipe):
     """Base class for EMT recipes."""
 
     def __init__(self):
-        """Initialize EMT recipe."""
+        """Initialize EMT recipe.
+
+        Parameters
+        ----------
+        name
+            Optional name override
+        """
         super().__init__(EMT)
 
 
 @job
 def static_job(
-    atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, additional_fields: dict[str, Any] | None = None, **calc_kwargs
 ) -> RunSchema:
     """Carry out a static calculation.
 
@@ -42,12 +45,10 @@ def static_job(
     ----------
     atoms
         Atoms object
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
     additional_fields
         Additional fields for results
     **calc_kwargs
-        Custom calculator kwargs
+        Calculator parameters that override defaults
 
     Returns
     -------
@@ -57,17 +58,12 @@ def static_job(
     recipe = EMTRecipe()
     return recipe.run_static(atoms, additional_fields=additional_fields, **calc_kwargs)
 
-    return Summarize(
-        additional_fields={"name": "EMT Static"} | (additional_fields or {})
-    ).run(final_atoms, atoms)
-
 
 @job
 def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -84,7 +80,7 @@ def relax_job(
     additional_fields
         Additional fields for results
     **calc_kwargs
-        Additional calculator kwargs
+        Calculator parameters that override defaults
 
     Returns
     -------
@@ -99,7 +95,3 @@ def relax_job(
         additional_fields=additional_fields,
         **calc_kwargs,
     )
-
-    return Summarize(
-        additional_fields={"name": "EMT Relax"} | (additional_fields or {})
-    ).opt(dyn)
