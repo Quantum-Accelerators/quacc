@@ -114,7 +114,7 @@ class Runner(BaseRunner):
             The updated Atoms object.
         """
         if properties is None:
-            properties = ["energy"]
+            properties = ["energy", "forces"]
 
         # Run calculation
         try:
