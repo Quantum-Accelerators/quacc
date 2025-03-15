@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
 
+_GEOM_FILE = "geo_end.gen"
+
 
 @job
 def static_job(
@@ -56,8 +58,12 @@ def static_job(
     if "xtb" in method.lower():
         calc_defaults["Hamiltonian_Method"] = method
     recipe = Recipe(Dftb, calc_defaults)
-    return recipe.static(
-        atoms, copy_files=copy_files, additional_fields=additional_fields, **calc_kwargs
+    return recipe.calculate(
+        atoms,
+        geom_file=_GEOM_FILE,
+        copy_files=copy_files,
+        additional_fields=additional_fields,
+        **calc_kwargs,
     )
 
 
@@ -107,9 +113,9 @@ def relax_job(
     if "xtb" in method.lower():
         calc_defaults["Hamiltonian_Method"] = method
     recipe = Recipe(Dftb, calc_defaults)
-    return recipe.relax(
+    return recipe.calculate(
         atoms,
-        relax_cell=relax_cell,
+        geom_file=_GEOM_FILE,
         copy_files=copy_files,
         additional_fields=additional_fields,
         **calc_kwargs,

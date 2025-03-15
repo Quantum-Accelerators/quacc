@@ -51,6 +51,46 @@ class Recipe:
         calc_flags = recursive_dict_merge(self.calc_defaults, calc_kwargs)
         return self.calculator_class(**calc_flags)
 
+    def calculate(
+        self,
+        atoms: Atoms,
+        geom_file: str | None = None,
+        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+        additional_fields: dict[str, Any] | None = None,
+        **calc_kwargs,
+    ) -> RunSchema:
+        """Run the executable with the parameters.
+
+        Parameters
+        ----------
+        atoms
+            Atoms object
+        geom_file
+            The filename of the log file that contains the output geometry, used to
+            update the atoms object's positions and cell after a job. It is better
+            to specify this rather than relying on ASE to update the positions, as the
+            latter behavior varies between codes.
+        copy_files
+            Files to copy to runtime directory
+        additional_fields
+            Additional fields for results
+        **calc_kwargs
+            Calculator parameters that override defaults
+
+        Returns
+        -------
+        RunSchema
+            Results dictionary
+        """
+        calc = self._prepare_calculator(**calc_kwargs)
+        final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
+            geom_file=geom_file
+        )
+        return Summarize(
+            additional_fields={"name": f"{self.calculator_class.__name__} Static"}
+            | (additional_fields or {})
+        ).run(final_atoms, atoms)
+
     def static(
         self,
         atoms: Atoms,
@@ -76,12 +116,12 @@ class Recipe:
         RunSchema
             Results dictionary
         """
-        calc = self._prepare_calculator(**calc_kwargs)
-        final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
-        return Summarize(
-            additional_fields={"name": f"{self.calculator_class.__name__} Static"}
-            | (additional_fields or {})
-        ).run(final_atoms, atoms)
+        return self.calculate(
+            atoms,
+            copy_files=copy_files,
+            additional_fields=additional_fields,
+            **calc_kwargs,
+        )
 
     def relax(
         self,
