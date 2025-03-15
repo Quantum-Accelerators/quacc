@@ -51,7 +51,7 @@ def static_job(
         See the type-hint for the data structure.
     """
     calc = pick_calculator(method, **calc_kwargs)
-    final_atoms = Runner(atoms, calc).run_calc(properties=properties)
+    final_atoms = Runner(atoms, calc).run_calc()
     return Summarize(
         additional_fields={"name": f"{method} Static"} | (additional_fields or {})
     ).run(final_atoms, atoms)

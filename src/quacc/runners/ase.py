@@ -118,7 +118,9 @@ class Runner(BaseRunner):
 
         # Run calculation
         try:
-            self.atoms.calc.calculate(self.atoms, properties=properties, calculator.all_changes)
+            self.atoms.calc.calculate(
+                self.atoms, properties=properties, system_changes=calculator.all_changes
+            )
         except Exception as exception:
             terminate(self.tmpdir, exception)
 
