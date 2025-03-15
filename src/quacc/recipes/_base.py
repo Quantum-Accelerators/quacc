@@ -83,7 +83,7 @@ class Recipe:
             Results dictionary
         """
         additional_fields = additional_fields or {}
-        additional_fields.setdefault({"name": f"{self.calculator_class.__name__}"})
+        additional_fields.setdefault("name", f"{self.calculator_class.__name__}")
 
         calc = self._prepare_calculator(**calc_kwargs)
         final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
@@ -117,9 +117,7 @@ class Recipe:
             Results dictionary
         """
         additional_fields = additional_fields or {}
-        additional_fields.setdefault(
-            {"name": f"{self.calculator_class.__name__} Static"}
-        )
+        additional_fields.setdefault("name", f"{self.calculator_class.__name__} Static")
 
         return self.calculate(
             atoms,
@@ -160,9 +158,8 @@ class Recipe:
             Results dictionary
         """
         additional_fields = additional_fields or {}
-        additional_fields.setdefault(
-            {"name": f"{self.calculator_class.__name__} Relax"}
-        )
+        additional_fields.setdefault("name", f"{self.calculator_class.__name__} Relax")
+
         opt_params = opt_params or {}
         opt_params.setdefault("relax_cell", relax_cell)
 
