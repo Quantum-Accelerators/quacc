@@ -11,8 +11,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.emt import EMT
 
 from quacc import job
-from quacc.runners.ase import Runner
-from quacc.schemas.ase import Summarize
+from quacc.recipes._base import BaseRecipe
 
 if TYPE_CHECKING:
     from typing import Any
@@ -22,6 +21,14 @@ if TYPE_CHECKING:
     from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 
 
+class EMTRecipe(BaseRecipe):
+    """Base class for EMT recipes."""
+
+    def __init__(self):
+        """Initialize EMT recipe."""
+        super().__init__(EMT)
+
+
 @job
 def static_job(
     atoms: Atoms,
@@ -29,8 +36,7 @@ def static_job(
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
-    """
-    Carry out a static calculation.
+    """Carry out a static calculation.
 
     Parameters
     ----------
@@ -39,20 +45,17 @@ def static_job(
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
-        Additional fields to add to the results dictionary.
+        Additional fields for results
     **calc_kwargs
-        Custom kwargs for the EMT calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [ase.calculators.emt.EMT][] calculator.
+        Custom calculator kwargs
 
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
-        See the type-hint for the data structure.
+        Results dictionary
     """
-    calc = EMT(**calc_kwargs)
-    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
+    recipe = EMTRecipe()
+    return recipe.run_static(atoms, additional_fields=additional_fields, **calc_kwargs)
 
     return Summarize(
         additional_fields={"name": "EMT Static"} | (additional_fields or {})
@@ -68,8 +71,7 @@ def relax_job(
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
-    """
-    Carry out a geometry optimization.
+    """Carry out a geometry optimization.
 
     Parameters
     ----------
@@ -78,28 +80,24 @@ def relax_job(
     relax_cell
         Whether to relax the cell
     opt_params
-        Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Dictionary of custom kwargs for the optimization process
     additional_fields
-        Additional fields to add to the results dictionary.
+        Additional fields for results
     **calc_kwargs
-        Custom kwargs for the EMT calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [ase.calculators.emt.EMT][] calculator.
+        Additional calculator kwargs
 
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in [quacc.schemas.ase.Summarize.opt][].
-        See the type-hint for the data structure.
+        Results dictionary
     """
-    opt_params = opt_params or {}
-
-    calc = EMT(**calc_kwargs)
-    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(
-        relax_cell=relax_cell, **opt_params
+    recipe = EMTRecipe()
+    return recipe.run_relax(
+        atoms,
+        relax_cell=relax_cell,
+        opt_params=opt_params,
+        additional_fields=additional_fields,
+        **calc_kwargs,
     )
 
     return Summarize(
