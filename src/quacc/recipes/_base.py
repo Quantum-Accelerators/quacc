@@ -21,7 +21,6 @@ class BaseRecipe:
     def __init__(
         self,
         calculator_class: type[BaseCalculator],
-        name: str | None = None,
         calc_defaults: dict[str, Any] | None = None,
     ):
         """Initialize the recipe.
@@ -30,14 +29,10 @@ class BaseRecipe:
         ----------
         calculator_class
             The ASE calculator class to use
-        name
-            Name of the recipe (e.g. "DFTB+ Static"). If not provided,
-            will be derived from the calculator class name.
         calc_defaults
             Default calculator parameters
         """
         self.calculator_class = calculator_class
-        self.name = name or calculator_class.__name__
         self.calc_defaults = calc_defaults or {}
 
     def _prepare_calculator(self, **calc_kwargs) -> BaseCalculator:
@@ -84,7 +79,7 @@ class BaseRecipe:
         calc = self._prepare_calculator(**calc_kwargs)
         final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
         return Summarize(
-            additional_fields={"name": f"{self.name} Static"}
+            additional_fields={"name": f"{self.calculator_class.__name__} Static"}
             | (additional_fields or {})
         ).run(final_atoms, atoms)
 
@@ -124,5 +119,6 @@ class BaseRecipe:
         opt_params.setdefault("relax_cell", relax_cell)
         dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
         return Summarize(
-            additional_fields={"name": f"{self.name} Relax"} | (additional_fields or {})
+            additional_fields={"name": f"{self.calculator_class.__name__} Relax"}
+            | (additional_fields or {})
         ).opt(dyn)

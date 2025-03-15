@@ -25,13 +25,7 @@ class EMTRecipe(BaseRecipe):
     """Base class for EMT recipes."""
 
     def __init__(self):
-        """Initialize EMT recipe.
-
-        Parameters
-        ----------
-        name
-            Optional name override
-        """
+        """Initialize EMT recipe."""
         super().__init__(EMT)
 
 
@@ -55,8 +49,9 @@ def static_job(
     RunSchema
         Results dictionary
     """
-    recipe = EMTRecipe()
-    return recipe.run_static(atoms, additional_fields=additional_fields, **calc_kwargs)
+    return EMTRecipe().run_static(
+        atoms, additional_fields=additional_fields, **calc_kwargs
+    )
 
 
 @job
@@ -87,8 +82,7 @@ def relax_job(
     OptSchema
         Results dictionary
     """
-    recipe = EMTRecipe()
-    return recipe.run_relax(
+    return EMTRecipe().run_relax(
         atoms,
         relax_cell=relax_cell,
         opt_params=opt_params,
