@@ -53,13 +53,11 @@ def static_job(
         "Hamiltonian_MaxSccIterations": 200,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
+    if "xtb" in method.lower():
+        calc_defaults["Hamiltonian_Method"] = method
     recipe = Recipe(Dftb, calc_defaults)
     return recipe.static(
-        atoms,
-        copy_files=copy_files,
-        additional_fields=additional_fields,
-        kpts=kpts,
-        **calc_kwargs,
+        atoms, copy_files=copy_files, additional_fields=additional_fields, **calc_kwargs
     )
 
 
@@ -114,6 +112,5 @@ def relax_job(
         relax_cell=relax_cell,
         copy_files=copy_files,
         additional_fields=additional_fields,
-        kpts=kpts,
         **calc_kwargs,
     )
