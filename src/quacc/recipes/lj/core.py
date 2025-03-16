@@ -13,21 +13,14 @@ from ase.calculators.lj import LennardJones
 from quacc import job
 from quacc.recipes._base import Recipe
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import Summarize, VibSummarize
+from quacc.schemas.ase import VibSummarize
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
 
-    from quacc.types import (
-        Filenames,
-        OptParams,
-        OptSchema,
-        RunSchema,
-        VibKwargs,
-        VibThermoSchema,
-    )
+    from quacc.types import OptParams, OptSchema, RunSchema, VibKwargs, VibThermoSchema
 
 
 @job
