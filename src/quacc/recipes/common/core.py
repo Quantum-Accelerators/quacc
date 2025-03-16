@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from ase.calculators.calculator import BaseCalculator
     from ase.optimize.optimize import Optimizer
 
-    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
+    from quacc.types import Filenames, OptSchema, RunSchema, SourceDirectory
 
 
 class Recipe:
