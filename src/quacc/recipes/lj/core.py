@@ -137,7 +137,7 @@ def freq_job(
     VibThermoSchema
         Dictionary of results
     """
-    return Recipe(LennardJones).freq(
+    freq_results = Recipe(LennardJones).vib(
         atoms,
         energy=energy,
         temperature=temperature,
@@ -146,3 +146,10 @@ def freq_job(
         additional_fields=additional_fields,
         **calc_kwargs,
     )
+    thermo_results = ThermoSummarize(
+        atoms,
+        freq_results["results"]["vib_freqs"],
+        energy=energy,
+        additional_fields=additional_fields,
+    ).ideal_gas(temperature=temperature, pressure=pressure)
+    return recursive_dict_merge(freq_results, thermo_results)

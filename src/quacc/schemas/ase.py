@@ -371,21 +371,13 @@ class VibSummarize:
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
-    def vib(
-        self,
-        is_molecule: bool = False,
-        store: Store | None | DefaultSetting = QuaccDefault,
-    ) -> VibSchema:
+    def vib(self, store: Store | None | DefaultSetting = QuaccDefault) -> VibSchema:
         """
         Get tabulated results from an ASE Vibrations object and store them in a database-
         friendly format.
 
         Parameters
         ----------
-        is_molecule
-            Whether the Atoms object is a molecule. If True, the vibrational modes are
-            sorted by their absolute value and the 3N-5 or 3N-6 modes are taken. If False,
-            all vibrational modes are taken.
         store
             Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
@@ -436,7 +428,10 @@ class VibSummarize:
         if natoms == 1:
             vib_freqs = []
             vib_energies = []
-        elif is_molecule:
+        elif atoms.pbc.any():
+            vib_freqs = vib_freqs_raw
+            vib_energies = vib_energies_raw
+        else:
             is_linear = (
                 PointGroupData()
                 .from_molecule(AseAtomsAdaptor().get_molecule(atoms))
@@ -455,9 +450,6 @@ class VibSummarize:
             n_modes = 3 * natoms - 5 if is_linear else 3 * natoms - 6
             vib_freqs = vib_freqs_raw_sorted[-n_modes:]
             vib_energies = vib_energies_raw_sorted[-n_modes:]
-        else:
-            vib_freqs = vib_freqs_raw
-            vib_energies = vib_energies_raw
 
         imag_vib_freqs = [f for f in vib_freqs if f < 0]
 
@@ -474,73 +466,6 @@ class VibSummarize:
         unsorted_task_doc = (
             atoms_metadata | inputs | vib_results | self.additional_fields
         )
-
-        return clean_dict(unsorted_task_doc)
-
-    def vib_and_thermo(
-        self,
-        thermo_method: Literal["ideal_gas", "harmonic"],
-        energy: float = 0.0,
-        temperature: float = 298.15,
-        pressure: float = 1.0,
-        store: Store | None | DefaultSetting = QuaccDefault,
-    ) -> VibThermoSchema:
-        """
-        Get tabulated results from an ASE Vibrations object and thermochemistry.
-
-        Parameters
-        ----------
-        thermo_method
-            Method to use for thermochemistry calculations. If None, no thermochemistry
-            calculations are performed.
-        energy
-            Potential energy in eV used as the reference point for thermochemistry calculations.
-        temperature
-            Temperature in K for thermochemistry calculations.
-        pressure
-            Pressure in atm for thermochemistry calculations
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
-
-        Returns
-        -------
-        VibThermoSchema
-            Dictionary representation of the task document
-        """
-        store = self._settings.STORE if store == QuaccDefault else store
-
-        atoms = (
-            self.vib_object._atoms
-            if isinstance(self.vib_object, VibrationsData)
-            else self.vib_object.atoms
-        )
-        is_molecule = bool(thermo_method == "ideal_gas")
-
-        # Generate vib data
-        vib_schema = self.vib(is_molecule=is_molecule, store=None)
-        directory = vib_schema["dir_name"]
-
-        # Generate thermo data
-        thermo_summary = ThermoSummarize(
-            atoms,
-            vib_schema["results"]["vib_freqs_raw"],
-            energy=energy,
-            directory=directory,
-            additional_fields=self.additional_fields,
-        )
-        if thermo_method == "ideal_gas":
-            thermo_schema = thermo_summary.ideal_gas(
-                temperature=temperature, pressure=pressure, store=None
-            )
-        elif thermo_method == "harmonic":
-            thermo_schema = thermo_summary.harmonic(
-                temperature=temperature, pressure=pressure, store=None
-            )
-        else:
-            raise ValueError(f"Unsupported thermo_method: {thermo_method}.")
-
-        # Merge the vib and thermo data
-        unsorted_task_doc = recursive_dict_merge(vib_schema, thermo_schema)
 
         return clean_dict(unsorted_task_doc)
 

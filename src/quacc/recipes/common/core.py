@@ -19,13 +19,7 @@ if TYPE_CHECKING:
     from ase.calculators.calculator import BaseCalculator
     from ase.optimize.optimize import Optimizer
 
-    from quacc.types import (
-        Filenames,
-        OptSchema,
-        RunSchema,
-        SourceDirectory,
-        VibThermoSchema,
-    )
+    from quacc.types import Filenames, OptSchema, RunSchema, SourceDirectory, VibSchema
 
 
 class Recipe:
@@ -217,25 +211,19 @@ class Recipe:
         dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
         return Summarize(additional_fields=additional_fields).opt(dyn)
 
-    def freq(
+    def vib(
         self,
         atoms: Atoms,
         vib_kwargs: dict[str, Any] | None = None,
         additional_fields: dict[str, Any] | None = None,
         **calc_kwargs,
-    ) -> VibThermoSchema:
-        """Run a frequency calculation.
+    ) -> VibSchema:
+        """Run a vibrational frequency calculation.
 
         Parameters
         ----------
         atoms
             Atoms object
-        energy
-            Potential energy in eV. If 0, then the output is just the correction.
-        temperature
-            Temperature in Kelvins.
-        pressure
-            Pressure in bar.
         vib_kwargs
             Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
         additional_fields
@@ -245,12 +233,12 @@ class Recipe:
 
         Returns
         -------
-        VibThermoSchema
+        VibSchema
             Results dictionary
         """
         additional_fields = additional_fields or {}
         additional_fields = {
-            "name": f"{self.calculator_class.__name__} Frequency"
+            "name": f"{self.calculator_class.__name__} Vibrations"
         } | additional_fields
 
         vib_kwargs = vib_kwargs or {}
