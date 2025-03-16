@@ -9,8 +9,6 @@ from typing import TYPE_CHECKING
 
 from frozendict import frozendict
 
-from quacc.recipes._base import Recipe
-
 if TYPE_CHECKING:
     from typing import Literal
 
