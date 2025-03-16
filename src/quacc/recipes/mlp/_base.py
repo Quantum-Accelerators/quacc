@@ -129,36 +129,3 @@ def pick_calculator(
     calc.parameters["version"] = __version__
 
     return calc
-
-
-class MLPRecipe(Recipe):
-    """Recipe for machine-learned interatomic potentials."""
-
-    def __init__(
-        self,
-        method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
-    ):
-        """Initialize the recipe.
-
-        Parameters
-        ----------
-        method
-            The MLP method to use
-        """
-        self.method = method
-        super().__init__(calculator_class=None)  # We'll override _prepare_calculator
-
-    def _prepare_calculator(self, **calc_kwargs) -> BaseCalculator:
-        """Prepare the calculator with merged parameters.
-
-        Parameters
-        ----------
-        **calc_kwargs
-            Calculator parameters that override defaults
-
-        Returns
-        -------
-        BaseCalculator
-            Configured calculator instance
-        """
-        return pick_calculator(self.method, **calc_kwargs)

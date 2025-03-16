@@ -7,7 +7,8 @@ from typing import TYPE_CHECKING
 from ase.optimize import BFGS
 
 from quacc import job
-from quacc.recipes.mlp._base import MLPRecipe
+from quacc.recipes._base import Recipe
+from quacc.recipes.mlp._base import pick_calculator
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -50,7 +51,8 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    return MLPRecipe(method).static(
+    calc = pick_calculator(method, **calc_kwargs)
+    return Recipe(calc).static(
         atoms, additional_fields=additional_fields, **calc_kwargs
     )
 
@@ -93,7 +95,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
-    return MLPRecipe(method).relax(
+    return Recipe(method).relax(
         atoms,
         relax_cell=relax_cell,
         fmax=fmax,
