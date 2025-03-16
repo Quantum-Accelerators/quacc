@@ -150,7 +150,9 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
     int
         Spin multiplicity of the Atoms object
     """
-    if (
+    if getattr(atoms, "spin_multiplicity", None):
+        return atoms.spin_multiplicity  # type: ignore[attr-defined]
+    elif (
         getattr(atoms, "calc", None) is not None
         and getattr(atoms.calc, "results", None) is not None
         and atoms.calc.results.get("magmom", None) is not None

@@ -81,6 +81,8 @@ def test_get_spin_mult():
     assert get_spin_multiplicity_attribute(atoms) is None
 
     atoms = molecule("H2O")
+    atoms.spin_multiplicity = 3
+    assert get_spin_multiplicity_attribute(atoms) == 3
 
     atoms = molecule("H2O")
     atoms.set_initial_magnetic_moments([0.0, 0.0, 0.0])
