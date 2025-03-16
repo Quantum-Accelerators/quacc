@@ -10,9 +10,10 @@ _GEOM_FILE = "geo_end.gen"
 
 
 def create_dftb_defaults(
+    *,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"],
-    kpts: tuple | list[tuple] | dict | None = None,
-    is_periodic: bool = True,
+    kpts: tuple | list[tuple] | dict | None,
+    is_periodic: bool,
 ) -> dict[str, Any]:
     """Create the default calculator kwargs for DFTB+.
 

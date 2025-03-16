@@ -14,10 +14,7 @@ _LOG_FILE = f"{_LABEL}.log"
 
 
 def create_gaussian_defaults(
-    xc: str = "wb97xd",
-    basis: str = "def2tzvp",
-    charge: int = 0,
-    spin_multiplicity: int = 1,
+    *, xc: str, basis: str, charge: int, spin_multiplicity: int
 ) -> dict[str, Any]:
     """Create the default calculator kwargs for Gaussian.
 
