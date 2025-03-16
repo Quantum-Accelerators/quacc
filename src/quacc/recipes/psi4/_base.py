@@ -20,8 +20,6 @@ if TYPE_CHECKING:
 
 def run_and_summarize(
     atoms: Atoms,
-    charge: int = 0,
-    spin_multiplicity: int = 1,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -34,10 +32,6 @@ def run_and_summarize(
     ----------
     atoms
         Atoms object
-    charge
-        Charge of the system.
-    spin_multiplicity
-        Multiplicity of the system.
     calc_defaults
         The default calculator parameters.
     calc_swaps
@@ -59,7 +53,4 @@ def run_and_summarize(
     calc = Psi4(**calc_flags)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    return Summarize(
-        charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields=additional_fields,
-    ).run(final_atoms, atoms)
+    return Summarize(additional_fields=additional_fields).run(final_atoms, atoms)

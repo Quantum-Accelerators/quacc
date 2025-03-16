@@ -26,7 +26,7 @@ def test_static_job_water(tmp_path, monkeypatch):
     atoms = molecule("H2O")
     atoms.info = {"test": "hello"}
     output = static_job(atoms)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
@@ -43,7 +43,7 @@ def test_static_job_cu_supercell(tmp_path, monkeypatch):
 
     atoms = bulk("Cu") * (3, 3, 3)
     output = static_job(atoms)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
@@ -66,7 +66,7 @@ def test_static_job_cu_kpts(tmp_path, monkeypatch):
 
     atoms = bulk("Cu")
     output = static_job(atoms, kpts=(3, 3, 3))
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
@@ -99,7 +99,7 @@ def test_relax_job_water(tmp_path, monkeypatch):
     atoms = molecule("H2O")
 
     output = relax_job(atoms)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
@@ -116,7 +116,7 @@ def test_relax_job_cu_supercell(tmp_path, monkeypatch):
     atoms[0].position += 0.1
 
     output = relax_job(atoms, kpts=(3, 3, 3), Hamiltonian_MaxSccIterations=100)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
     assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 100
@@ -140,7 +140,7 @@ def test_relax_job_cu_supercell_cell_relax(tmp_path, monkeypatch):
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
     output = relax_job(atoms, method="GFN1-xTB", kpts=(3, 3, 3), relax_cell=True)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN1-xTB"
     assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200

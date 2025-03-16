@@ -14,14 +14,12 @@ def test_static(tmp_path, monkeypatch):
 
     atoms = molecule("H2")
     output = static_job(atoms, charge=0, spin_multiplicity=1)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["multiplicity"] == 1
     assert output["parameters"]["method"] == "wb97x-v"
     assert output["parameters"]["basis"] == "def2-tzvp"
     assert output["parameters"]["num_threads"] == "max"
-    assert output["spin_multiplicity"] == 1
-    assert output["charge"] == 0
 
     output = static_job(
         atoms,
@@ -33,7 +31,7 @@ def test_static(tmp_path, monkeypatch):
         mem=None,
         pop="regular",
     )
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["multiplicity"] == 3
     assert output["parameters"]["method"] == "pbe"
@@ -41,5 +39,3 @@ def test_static(tmp_path, monkeypatch):
     assert output["parameters"]["pop"] == "regular"
     assert output["parameters"]["num_threads"] == 1
     assert "mem" not in output["parameters"]
-    assert output["spin_multiplicity"] == 3
-    assert output["charge"] == -2

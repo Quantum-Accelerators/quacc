@@ -48,8 +48,7 @@ def test_static_job(tmp_path, monkeypatch):
 
     atoms = molecule("H2O")
     output = static_job(atoms)
-    assert output["spin_multiplicity"] == 1
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["results"]["energy"] == pytest.approx(-9.515200426406743)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
 
@@ -59,8 +58,7 @@ def test_relax_job(tmp_path, monkeypatch):
 
     atoms = molecule("H2O")
     output = relax_job(atoms)
-    assert output["spin_multiplicity"] == 1
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["results"]["energy"] == pytest.approx(-9.517354818364769)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
     assert np.max(np.linalg.norm(output["results"]["forces"], axis=1)) < 0.01
@@ -79,9 +77,9 @@ def test_freq_job(tmp_path, monkeypatch):
     assert output["results"]["n_imag"] == 0
     assert output["results"]["imag_vib_freqs"] == []
 
-    assert output["symmetry"]["point_group"] == "C2v"
-    assert output["symmetry"]["rotation_number"] == 2
-    assert output["symmetry"]["linear"] is False
+    assert output["molecule_metadata"]["symmetry"]["point_group"] == "C2v"
+    assert output["molecule_metadata"]["symmetry"]["rotation_number"] == 2
+    assert output["molecule_metadata"]["symmetry"]["linear"] is False
     assert output["results"]["energy"] == pytest.approx(-9.515200426406743)
     assert output["results"]["enthalpy"] == pytest.approx(-8.807932688921495)
     assert output["results"]["entropy"] == pytest.approx(0.0019582788098945945)

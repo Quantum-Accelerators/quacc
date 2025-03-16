@@ -23,7 +23,7 @@ def test_static_job(tmp_path, monkeypatch):
     atoms = bulk("Al")
 
     output = static_job(atoms, kpts=[3, 3, 3])
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert "isym" not in output["parameters"]
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] is True
@@ -40,7 +40,7 @@ def test_static_job_spin(tmp_path, monkeypatch):
     atoms.set_initial_magnetic_moments([5.0] * len(atoms))
 
     output = static_job(atoms, kpts=[3, 3, 3])
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert "isym" not in output["parameters"]
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] is True
