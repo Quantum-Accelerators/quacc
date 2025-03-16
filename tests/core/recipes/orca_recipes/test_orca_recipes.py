@@ -23,15 +23,13 @@ def test_static_job(tmp_path, monkeypatch):
     atoms = molecule("H2")
 
     output = static_job(atoms, charge=0, spin_multiplicity=1, nprocs=1)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"]
         == "def2-tzvp engrad normalprint wb97x-d3bj xyzfile"
     )
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
-    assert output["spin_multiplicity"] == 1
-    assert output["charge"] == 0
 
 
 @pytest.mark.skipif(os.name == "nt", reason="mpirun not available on Windows")
@@ -48,7 +46,7 @@ def test_static_job_parallel(tmp_path, monkeypatch):
         orcablocks=["%scf maxiter 300 end"],
         nprocs=2,
     )
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
     assert (
@@ -65,7 +63,7 @@ def test_relax_job(tmp_path, monkeypatch):
     atoms = molecule("H2")
 
     output = relax_job(atoms, charge=0, spin_multiplicity=1, nprocs=2)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert (
@@ -81,7 +79,7 @@ def test_relax_job(tmp_path, monkeypatch):
         orcablocks=["%scf maxiter 300 end"],
         nprocs=2,
     )
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"] == "def2-svp hf normalprint opt xyzfile"
     )
@@ -106,7 +104,7 @@ def test_relax_freq_job(tmp_path, monkeypatch):
         run_freq=True,
         nprocs=2,
     )
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["parameters"]["orcasimpleinput"] == "def2-svp freq hf opt xyzfile"
@@ -119,7 +117,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     atoms = molecule("H2")
 
     output = ase_relax_job(atoms, opt_params={"fmax": 0.1}, nprocs=2)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert (
@@ -160,7 +158,7 @@ def test_freq_job(tmp_path, monkeypatch):
         orcasimpleinput=["#normalprint"],
         nprocs=2,
     )
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["parameters"]["orcasimpleinput"] == "def2-svp freq hf xyzfile"
@@ -186,7 +184,7 @@ def test_ase_quasi_irc_job(tmp_path, monkeypatch):
         orcasimpleinput=["#normalprint"],
         nprocs=2,
     )
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["atoms"] != atoms
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1

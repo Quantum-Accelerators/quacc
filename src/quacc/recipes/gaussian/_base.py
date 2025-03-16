@@ -67,7 +67,4 @@ def run_and_summarize(
         geom_file=LOG_FILE
     )
 
-    return Summarize(
-        charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields=additional_fields,
-    ).run(final_atoms, atoms)
+    return Summarize(additional_fields=additional_fields).run(final_atoms, atoms)

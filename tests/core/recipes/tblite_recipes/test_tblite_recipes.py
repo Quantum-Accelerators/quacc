@@ -19,7 +19,7 @@ def test_static_job_v1(tmp_path, monkeypatch):
     atoms = molecule("H2O")
     output = static_job(atoms)
     assert output["spin_multiplicity"] == 1
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.96777594361672)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
@@ -57,7 +57,7 @@ def test_relax_job(tmp_path, monkeypatch):
     atoms = molecule("H2O")
     output = relax_job(atoms)
     assert output["spin_multiplicity"] == 1
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["method"] == "GFN2-xTB"
     assert output["results"]["energy"] == pytest.approx(-137.97654191396492)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
@@ -93,9 +93,9 @@ def test_freq_job_v1(tmp_path, monkeypatch):
     assert output["results"]["imag_vib_freqs"] == []
     assert output["spin_multiplicity"] == 1
 
-    assert output["symmetry"]["point_group"] == "C2v"
-    assert output["symmetry"]["rotation_number"] == 2
-    assert output["symmetry"]["linear"] is False
+    assert output["molecule_metadata"]["symmetry"]["point_group"] == "C2v"
+    assert output["molecule_metadata"]["symmetry"]["rotation_number"] == 2
+    assert output["molecule_metadata"]["symmetry"]["linear"] is False
     assert len(output["parameters_thermo"]["vib_freqs"]) == 3
     assert output["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
     assert output["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
@@ -124,8 +124,8 @@ def test_freq_job_v2(tmp_path, monkeypatch):
     assert output["results"]["imag_vib_freqs"] == []
     assert output["spin_multiplicity"] == 2
 
-    assert output["symmetry"]["linear"] is False
-    assert output["symmetry"]["rotation_number"] == np.inf
+    assert output["molecule_metadata"]["symmetry"]["linear"] is False
+    assert output["molecule_metadata"]["symmetry"]["rotation_number"] == np.inf
     assert len(output["parameters_thermo"]["vib_freqs"]) == 0
     assert output["results"]["energy"] == -1.0
     assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)
@@ -159,8 +159,8 @@ def test_freq_job_v3(tmp_path, monkeypatch):
     assert output["parameters_thermo"]["pressure"] == 20.0
     assert output["parameters_thermo"]["sigma"] == 6
     assert output["parameters_thermo"]["spin_multiplicity"] == 2
-    assert output["symmetry"]["linear"] is False
-    assert output["symmetry"]["rotation_number"] == 6
+    assert output["molecule_metadata"]["symmetry"]["linear"] is False
+    assert output["molecule_metadata"]["symmetry"]["rotation_number"] == 6
     assert len(output["parameters_thermo"]["vib_freqs"]) == 6
     assert output["results"]["energy"] == -10.0
     assert output["results"]["enthalpy"] == pytest.approx(-8.749341973959462)

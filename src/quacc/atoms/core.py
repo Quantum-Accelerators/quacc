@@ -136,31 +136,6 @@ def copy_atoms(atoms: Atoms) -> Atoms:
     return atoms
 
 
-def get_charge_attribute(atoms: Atoms) -> int | None:
-    """
-    Get the charge of an Atoms object.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-
-    Returns
-    -------
-    int | None
-        Charge of the Atoms object
-    """
-    return (
-        atoms.charge  # type: ignore[attr-defined]
-        if getattr(atoms, "charge", None)
-        else (
-            round(atoms.get_initial_charges().sum())
-            if atoms.has("initial_charges")
-            else None
-        )
-    )
-
-
 def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
     """
     Get the spin multiplicity of an Atoms object.
@@ -193,68 +168,6 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
         return round(np.abs(atoms.get_initial_magnetic_moments().sum())) + 1
     else:
         return None
-
-
-def check_charge_and_spin(
-    atoms: Atoms, charge: int | None = None, spin_multiplicity: int | None = None
-) -> tuple[int, int]:
-    """
-    Check the validity of a given `charge` and `multiplicity`. If they are `None`, then
-    set the charge and/or spin multiplicity of a molecule using the information available,
-    raising a `ValueError` if there is an incompatibility.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    charge
-        Molecular charge
-    spin_multiplicity
-        Molecular multiplicity
-
-    Returns
-    -------
-    charge, multiplicity
-    """
-    charge = charge if charge is not None else get_charge_attribute(atoms)
-    spin_multiplicity = (
-        spin_multiplicity
-        if spin_multiplicity is not None
-        else get_spin_multiplicity_attribute(atoms)
-    )
-
-    if charge is None and spin_multiplicity is not None:
-        charge = 0
-
-    try:
-        mol = AseAtomsAdaptor.get_molecule(atoms)
-        if charge is not None:
-            if spin_multiplicity is not None:
-                mol.set_charge_and_spin(charge, spin_multiplicity)
-            else:
-                mol.set_charge_and_spin(charge)
-    except ValueError:
-        mol = AseAtomsAdaptor.get_molecule(atoms, charge_spin_check=False)
-        nelectrons = mol.nelectrons - charge if charge else mol.nelectrons
-        default_spin_multiplicity = 1 if nelectrons % 2 == 0 else 2
-        mol.set_charge_and_spin(
-            charge if charge is not None else mol.charge,
-            (
-                spin_multiplicity
-                if spin_multiplicity is not None
-                else default_spin_multiplicity
-            ),
-        )
-    if (mol.nelectrons + mol.spin_multiplicity) % 2 != 1:
-        raise ValueError(
-            f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
-            " not possible for this molecule."
-        )
-    LOGGER.debug(
-        f"Setting charge to {mol.charge} and spin multiplicity to {mol.spin_multiplicity}"
-    )
-
-    return mol.charge, mol.spin_multiplicity
 
 
 def get_final_atoms_from_dynamics(dynamics: Dynamics | Filter) -> Atoms:

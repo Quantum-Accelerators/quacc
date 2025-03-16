@@ -15,7 +15,7 @@ def test_static_job(tmp_path, monkeypatch):
     atoms = molecule("H2O")
 
     output = static_job(atoms)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["keywords"] == "gfnff"
     assert "gwolf" not in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -23,7 +23,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
     output = static_job(atoms, keywords={"gwolf": True})
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -31,7 +31,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
     output = static_job(atoms, use_gfnff=False)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -40,7 +40,7 @@ def test_static_job(tmp_path, monkeypatch):
 
     atoms = bulk("Cu") * (2, 2, 2)
     output = static_job(atoms)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -48,7 +48,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
     output = static_job(atoms, keywords={"#gwolf"})
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -56,7 +56,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
     output = static_job(atoms, use_gfnff=False)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "gwolf" not in output["parameters"]["keywords"]
     assert "dump every gulp.res" in output["parameters"]["options"]
@@ -70,7 +70,7 @@ def test_relax_job(tmp_path, monkeypatch):
     atoms = molecule("H2O")
 
     output = relax_job(atoms)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" not in output["parameters"]["keywords"]
@@ -81,7 +81,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
     output = relax_job(atoms, keywords={"gwolf": True})
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" not in output["parameters"]["keywords"]
@@ -92,7 +92,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert "output cif gulp.cif" not in output["parameters"]["options"]
 
     output = relax_job(atoms, relax_cell=True, use_gfnff=False)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" not in output["parameters"]["keywords"]
@@ -104,7 +104,7 @@ def test_relax_job(tmp_path, monkeypatch):
 
     atoms = bulk("Cu") * (2, 2, 2)
     output = relax_job(atoms, relax_cell=True)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" in output["parameters"]["keywords"]
@@ -115,7 +115,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
     output = relax_job(atoms, keywords={"gwolf": True})
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert "gfnff" in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" not in output["parameters"]["keywords"]
@@ -126,7 +126,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert "output cif gulp.cif" in output["parameters"]["options"]
 
     output = relax_job(atoms, relax_cell=True, use_gfnff=False)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert "gfnff" not in output["parameters"]["keywords"]
     assert "opti" in output["parameters"]["keywords"]
     assert "conp" in output["parameters"]["keywords"]

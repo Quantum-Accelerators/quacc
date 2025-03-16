@@ -62,10 +62,7 @@ def run_and_summarize(
 
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
-    return Summarize(
-        charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields=additional_fields,
-    ).run(final_atoms, atoms)
+    return Summarize(additional_fields=additional_fields).run(final_atoms, atoms)
 
 
 def prep_calculator(

@@ -258,12 +258,9 @@ if TYPE_CHECKING:
     class MoleculeMetadata(EmmetBase):
         """Type hint associated with [emmet.core.structure.MoleculeMetadata][]"""
 
-        charge: int
-        spin_multiplicity: int
         natoms: int
         elements: list[Element]
         nelements: int
-        nelectrons: int
         composition: Composition
         composition_reduced: Composition
         formula_alphabetical: str
@@ -453,12 +450,12 @@ if TYPE_CHECKING:
 
     # ----------- Schema (Atoms) type hints -----------
 
-    class AtomsSchema(StructureMetadata, MoleculeMetadata):
+    class AtomsSchema(TypedDict, total=False):
         """Type hint associated with [quacc.schemas.atoms.atoms_to_metadata][]"""
 
         atoms: Atoms
-        structure: Structure  # if atoms.pbc.any()
-        molecule: Molecule  # if not atoms.pbc.any()
+        structure_metadata: StructureMetadata  # if atoms.pbc.any()
+        molecule_metadata: MoleculeMetadata  # if not atoms.pbc.any()
 
     # ----------- Schema (ASE) type hints -----------
 

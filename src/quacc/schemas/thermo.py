@@ -42,7 +42,6 @@ class ThermoSummarize:
         vib_freqs: list[float | complex],
         energy: float = 0.0,
         directory: str | Path | None = None,
-        charge_and_multiplicity: tuple[int, int] | None = None,
         additional_fields: dict[str, Any] | None = None,
     ) -> None:
         """
@@ -59,8 +58,6 @@ class ThermoSummarize:
         directory
             Directory to store the output files. Defaults to the directory of the
             atoms object's calculator, if available.
-        charge_and_multiplicity
-            Charge and multiplicity of the atoms object.
         additional_fields
             Additional fields to store in the document.
 
@@ -78,7 +75,6 @@ class ThermoSummarize:
         self.vib_energies = [f * invcm for f in self.vib_freqs]
         self.energy = energy
         self.directory = Path(directory or atoms.calc.directory)
-        self.charge_and_multiplicity = charge_and_multiplicity
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
@@ -86,6 +82,7 @@ class ThermoSummarize:
         self,
         temperature: float = 298.15,
         pressure: float = 1.0,
+        spin_multiplicity: int | None = None,
         store: Store | None | DefaultSetting = QuaccDefault,
     ) -> ThermoSchema:
         """
@@ -98,6 +95,9 @@ class ThermoSummarize:
             Temperature in Kelvins.
         pressure
             Pressure in bar.
+        spin_multiplicity
+            Spin multiplicity of the system. If not provided, will attempt to detect
+            from the Atoms object.
         store
             Whether to store the document in the database.
 
@@ -109,11 +109,11 @@ class ThermoSummarize:
         store = self._settings.STORE if store == QuaccDefault else store
 
         # Get the spin multiplicity
-        if self.charge_and_multiplicity:
-            spin_multiplicity = self.charge_and_multiplicity[1]
-        else:
+        if spin_multiplicity is None:
             spin_multiplicity = get_spin_multiplicity_attribute(self.atoms)
-            LOGGER.info(
+            if spin_multiplicity is None:
+                raise ValueError("Spin multiplicity not known.")
+            LOGGER.warning(
                 f"Using a spin multiplicity of {spin_multiplicity} for IdealGasThermo."
             )
 
@@ -148,12 +148,7 @@ class ThermoSummarize:
         }
 
         unsorted_task_doc = (
-            atoms_to_metadata(
-                igt.atoms, charge_and_multiplicity=self.charge_and_multiplicity
-            )
-            | inputs
-            | results
-            | self.additional_fields
+            atoms_to_metadata(igt.atoms) | inputs | results | self.additional_fields
         )
         return finalize_dict(
             unsorted_task_doc,
@@ -217,12 +212,7 @@ class ThermoSummarize:
         }
 
         unsorted_task_doc = (
-            atoms_to_metadata(
-                self.atoms, charge_and_multiplicity=self.charge_and_multiplicity
-            )
-            | inputs
-            | results
-            | self.additional_fields
+            atoms_to_metadata(self.atoms) | inputs | results | self.additional_fields
         )
         return finalize_dict(
             unsorted_task_doc,
