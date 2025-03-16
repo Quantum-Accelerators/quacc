@@ -41,7 +41,11 @@ def static_job(
     RunSchema
         Results dictionary
     """
-    return Recipe(EMT).static(atoms, additional_fields=additional_fields, **calc_kwargs)
+    return Recipe(EMT).static(
+        atoms,
+        additional_fields={"name": "EMT Static"} | (additional_fields or {}),
+        **calc_kwargs,
+    )
 
 
 @job
@@ -76,6 +80,6 @@ def relax_job(
         atoms,
         relax_cell=relax_cell,
         opt_params=opt_params,
-        additional_fields=additional_fields,
+        additional_fields={"name": "EMT Relax"} | (additional_fields or {}),
         **calc_kwargs,
     )

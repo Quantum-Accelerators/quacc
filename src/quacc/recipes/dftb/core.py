@@ -89,7 +89,7 @@ def static_job(
         atoms,
         geom_file=_GEOM_FILE,
         copy_files=copy_files,
-        additional_fields=additional_fields,
+        additional_fields={"name": "DFTB+ Static"} | (additional_fields or {}),
         **calc_kwargs,
     )
 
@@ -144,6 +144,6 @@ def relax_job(
         atoms,
         geom_file=_GEOM_FILE,
         copy_files=copy_files,
-        additional_fields=additional_fields,
+        additional_fields={"name": "DFTB+ Relax"} | (additional_fields or {}),
         **calc_kwargs,
     )
