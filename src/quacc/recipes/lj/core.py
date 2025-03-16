@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase.calculators.lj import LennardJones
+from ase.optimize import BFGS
 
 from quacc import job
 from quacc.recipes.common.core import Recipe
@@ -19,8 +20,9 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from ase.optimize.optimize import Optimizer
 
-    from quacc.types import OptParams, OptSchema, RunSchema, VibKwargs, VibThermoSchema
+    from quacc.types import OptSchema, RunSchema, VibKwargs, VibThermoSchema
 
 
 @job
@@ -55,7 +57,11 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    opt_params: OptParams | None = None,
+    relax_cell: bool = False,
+    fmax: float | None = 0.01,
+    max_steps: int = 1000,
+    optimizer: type[Optimizer] = BFGS,
+    optimizer_kwargs: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -66,24 +72,32 @@ def relax_job(
     ----------
     atoms
         Atoms object
-    opt_params
-        Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
+    fmax
+        Maximum force change in eV/A
+    max_steps
+        Maximum number of steps
+    optimizer
+        ASE optimizer class to use
+    optimizer_kwargs
+        Dictionary of keyword arguments to pass to the optimizer
     additional_fields
-        Additional fields to add to the results dictionary.
+        Metadata to store in the results
     **calc_kwargs
-        Custom kwargs for the LJ calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [ase.calculators.lj.LennardJones] calculator.
+        Calculator parameters to pass to [ase.calculators.lj.LennardJones][]
 
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
-        See the type-hint for the data structure.
+        Results dictionary
     """
     return Recipe(LennardJones).relax(
-        atoms, opt_params=opt_params, additional_fields=additional_fields, **calc_kwargs
+        atoms,
+        fmax=fmax,
+        max_steps=max_steps,
+        optimizer=optimizer,
+        optimizer_kwargs=optimizer_kwargs,
+        additional_fields=additional_fields,
+        **calc_kwargs,
     )
 
 
