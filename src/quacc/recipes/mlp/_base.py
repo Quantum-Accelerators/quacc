@@ -39,7 +39,7 @@ def freezeargs(func):
 @lru_cache
 def pick_calculator(
     method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
-) -> tuple[BaseCalculator, dict[str, Any]]:
+) -> tuple[BaseCalculator, dict[str, Any], str]:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
 
@@ -59,6 +59,10 @@ def pick_calculator(
     -------
     Calculator
         The chosen calculator
+    calc_defaults
+        Dictionary of default parameters for the calculator
+    version
+        Version of the calculator
     """
     import torch
 
@@ -118,6 +122,4 @@ def pick_calculator(
     else:
         raise ValueError(f"Unrecognized {method=}.")
 
-    calc.parameters["version"] = __version__
-
-    return calc, calc_defaults
+    return calc, calc_defaults, __version__
