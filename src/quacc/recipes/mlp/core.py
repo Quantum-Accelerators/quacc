@@ -1,4 +1,4 @@
-"""Core recipes for universal machine-learned interatomic potentials."""
+"""Core recipes for machine-learned interatomic potentials."""
 
 from __future__ import annotations
 
