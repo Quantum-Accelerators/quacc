@@ -18,7 +18,7 @@ def make_deformations_from_bulk(
     norm_strains: Sequence[float] = (-0.01, -0.005, 0.005, 0.01),
     shear_strains: Sequence[float] = (-0.06, -0.03, 0.03, 0.06),
     symmetry: bool = False,
-) -> list[Atoms]:
+) -> DeformedStructureSet:
     """
     Function to generate deformed structures from a bulk atoms object.
 
@@ -35,16 +35,15 @@ def make_deformations_from_bulk(
 
     Returns
     -------
-    list[Atoms]
-        All generated deformed structures
+    DeformedStructureSet
+        A pymatgen DeformedStructureSet with information on the deformed
+        structures and their strains, useful for fitting later.
     """
-    struct = AseAtomsAdaptor.get_structure(atoms)
+    struct = AseAtomsAdaptor.get_structure(atoms)  # type: ignore
 
-    deformed_set = DeformedStructureSet(
+    return DeformedStructureSet(
         struct,
         norm_strains=norm_strains,
         shear_strains=shear_strains,
         symmetry=symmetry,
     )
-
-    return [structure.to_ase_atoms() for structure in deformed_set]

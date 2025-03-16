@@ -79,13 +79,13 @@ def get_phonopy(
     return phonon
 
 
-def phonopy_atoms_to_ase_atoms(phonpy_atoms: PhonopyAtoms) -> Atoms:
+def phonopy_atoms_to_ase_atoms(phonopy_atoms: PhonopyAtoms) -> Atoms:
     """
     Convert a phonopy atoms object to an ASE atoms object.
 
     Parameters
     ----------
-    phonpy_atoms
+    phonopy_atoms
         Phonopy atoms object
 
     Returns
@@ -93,10 +93,11 @@ def phonopy_atoms_to_ase_atoms(phonpy_atoms: PhonopyAtoms) -> Atoms:
     Atoms
         ASE atoms object
     """
-    pmg_structure = get_pmg_structure(phonpy_atoms)
+    pmg_structure = get_pmg_structure(phonopy_atoms)
     return pmg_structure.to_ase_atoms()
 
 
+@requires(has_phonopy, "Phonopy not installed.")
 def get_atoms_supercell_by_phonopy(
     atoms: Atoms,
     supercell_matrix: tuple[

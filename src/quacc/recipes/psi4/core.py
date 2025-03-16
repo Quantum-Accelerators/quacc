@@ -73,8 +73,6 @@ def static_job(
     }
     return run_and_summarize(
         atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "Psi4 Static"} | (additional_fields or {}),

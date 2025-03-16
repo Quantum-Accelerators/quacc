@@ -1,0 +1,12 @@
+chgnet==0.4.0
+torch-dftd==0.5.1
+sevenn==0.10.4
+orb-models==0.4.2
+fairchem-core==1.7.0
+pynanoflann@git+https://github.com/dwastberg/pynanoflann
+# Requirements from fairchem-core
+torch_geometric==2.6.1
+-f https://data.pyg.org/whl/torch-2.4.1+cpu.html
+torch_scatter==2.1.2
+torch_sparse==0.6.18
+torch_cluster==1.6.3

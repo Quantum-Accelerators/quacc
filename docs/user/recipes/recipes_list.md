@@ -25,15 +25,15 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name                     | Decorator        | Documentation                                           | Req'd Extras     |
-| ------------------------ | ---------------- | ------------------------------------------------------- | ---------------- |
-| EMT Static               | `#!Python @job`  | [quacc.recipes.emt.core.static_job][]                   |                  |
-| EMT Relax                | `#!Python @job`  | [quacc.recipes.emt.core.relax_job][]                    |                  |
-| EMT MD                   | `#!Python @job`  | [quacc.recipes.emt.md.md_job][]                         |                  |
-| EMT Bulk to Defects      | `#!Python @flow` | [quacc.recipes.emt.defects.bulk_to_defects_flow][]      | `quacc[defects]` |
-| EMT Bulk to Slabs        | `#!Python @flow` | [quacc.recipes.emt.slabs.bulk_to_slabs_flow][]          |                  |
-| EMT Phonons              | `#!Python @flow` | [quacc.recipes.emt.phonons.phonon_flow][]               | `quacc[phonons]` |
-| EMT Bulk to Deformations | `#!Python @flow` | [quacc.recipes.emt.elastic.bulk_to_deformations_flow][] |                  |
+| Name                     | Decorator        | Documentation                                             | Req'd Extras     |
+| ------------------------ | ---------------- | --------------------------------------------------------- | ---------------- |
+| EMT Static               | `#!Python @job`  | [quacc.recipes.emt.core.static_job][]                     |                  |
+| EMT Relax                | `#!Python @job`  | [quacc.recipes.emt.core.relax_job][]                      |                  |
+| EMT MD                   | `#!Python @job`  | [quacc.recipes.emt.md.md_job][]                           |                  |
+| EMT Bulk to Defects      | `#!Python @flow` | [quacc.recipes.emt.defects.bulk_to_defects_flow][]        | `quacc[defects]` |
+| EMT Bulk to Slabs        | `#!Python @flow` | [quacc.recipes.emt.slabs.bulk_to_slabs_flow][]            |                  |
+| EMT Phonons              | `#!Python @flow` | [quacc.recipes.emt.phonons.phonon_flow][]                 | `quacc[phonons]` |
+| EMT Bulk to Deformations | `#!Python @flow` | [quacc.recipes.emt.elastic.bulk_to_elastic_tensor_flow][] |                  |
 
 </center>
 
@@ -87,15 +87,16 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 !!! Info
 
-    Machine-learned interatomic potentials are a class of machine learning models that are trained to reproduce the potential energy surface of a system. The following pre-trained, "universal" MLPs are supported: [CHGNet](https://doi.org/10.1038/s42256-023-00716-3), [M3GNet](https://doi.org/10.1038/s43588-022-00349-3), and [MACE](https://mace-docs.readthedocs.io/en/latest/examples/foundation_models.html).
+    Machine-learned interatomic potentials are a class of machine learning models that are trained to reproduce the potential energy surface of a system. The following pre-trained, "universal" MLPs are supported: [CHGNet](https://doi.org/10.1038/s42256-023-00716-3), [M3GNet](https://doi.org/10.1038/s43588-022-00349-3), [MACE](https://mace-docs.readthedocs.io/en/latest/examples/foundation_models.html), and [FAIR-Chem](https://github.com/FAIR-Chem/fairchem).
 
 <center>
 
-| Name        | Decorator        | Documentation                             | Req'd Extras         |
-| ----------- | ---------------- | ----------------------------------------- | -------------------- |
-| MLP Static  | `#!Python @job`  | [quacc.recipes.mlp.core.static_job][]     | `quacc[mlp]`         |
-| MLP Relax   | `#!Python @job`  | [quacc.recipes.mlp.core.relax_job][]      | `quacc[mlp]`         |
-| MLP Phonons | `#!Python @flow` | [quacc.recipes.mlp.phonons.phonon_flow][] | `quacc[mlp,phonons]` |
+| Name           | Decorator        | Documentation                                                | Req'd Extras         |
+| -------------- | ---------------- | ------------------------------------------------------------ | -------------------- |
+| MLP Static     | `#!Python @job`  | [quacc.recipes.mlp.core.static_job][]                        | `quacc[mlp]`         |
+| MLP Relax      | `#!Python @job`  | [quacc.recipes.mlp.core.relax_job][]                         | `quacc[mlp]`         |
+| MLP Phonons    | `#!Python @flow` | [quacc.recipes.mlp.phonons.phonon_flow][]                    | `quacc[mlp,phonons]` |
+| MLP Elasticity | `#!Python @flow` | [quacc.recipes.mlp.elastic.bulk_to_elastic_tensor_flow][] | `quacc[mlp]` |
 
 </center>
 

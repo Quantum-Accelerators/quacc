@@ -49,7 +49,7 @@ def test_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = static_job(atoms)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert "isym" not in output["parameters"]
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] is True
@@ -78,7 +78,7 @@ def test_relax_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = relax_job(atoms, relax_cell=True)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isif"] == 3
@@ -86,7 +86,7 @@ def test_relax_job(patch_metallic_taskdoc):
     assert output["parameters"]["encut"] == 520
 
     output = relax_job(atoms, nelmin=6, relax_cell=True)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isif"] == 3
@@ -95,7 +95,7 @@ def test_relax_job(patch_metallic_taskdoc):
     assert output["parameters"]["nelmin"] == 6
 
     output = relax_job(atoms)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["lwave"] is False
@@ -107,13 +107,13 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = double_relax_flow(atoms)
-    assert output["relax1"]["nsites"] == len(atoms)
+    assert output["relax1"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
     assert output["relax1"]["parameters"]["isif"] == 3
     assert output["relax1"]["parameters"]["lwave"] is False
     assert output["relax1"]["parameters"]["encut"] == 520
-    assert output["relax2"]["nsites"] == len(atoms)
+    assert output["relax2"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"]["isym"] == 0
     assert output["relax2"]["parameters"]["nsw"] > 0
     assert output["relax2"]["parameters"]["isif"] == 3
@@ -121,13 +121,13 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     assert output["relax2"]["parameters"]["encut"] == 520
 
     output = double_relax_flow(atoms, relax2_kwargs={"nelmin": 6})
-    assert output["relax1"]["nsites"] == len(atoms)
+    assert output["relax1"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
     assert output["relax1"]["parameters"]["isif"] == 3
     assert output["relax1"]["parameters"]["lwave"] is False
     assert output["relax1"]["parameters"]["encut"] == 520
-    assert output["relax2"]["nsites"] == len(atoms)
+    assert output["relax2"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"]["isym"] == 0
     assert output["relax2"]["parameters"]["nsw"] > 0
     assert output["relax2"]["parameters"]["isif"] == 3
@@ -136,13 +136,13 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     assert output["relax2"]["parameters"]["nelmin"] == 6
 
     output = double_relax_flow(atoms, relax_cell=False)
-    assert output["relax1"]["nsites"] == len(atoms)
+    assert output["relax1"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
     assert output["relax1"]["parameters"]["lwave"] is False
     assert output["relax1"]["parameters"]["isif"] == 2
     assert output["relax1"]["parameters"]["encut"] == 520
-    assert output["relax2"]["nsites"] == len(atoms)
+    assert output["relax2"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"]["isym"] == 0
     assert output["relax2"]["parameters"]["nsw"] > 0
     assert output["relax2"]["parameters"]["lwave"] is False
@@ -156,7 +156,7 @@ def test_ase_relax_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = ase_relax_job(atoms, relax_cell=True)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] is False
     assert output["parameters"]["lcharg"] is False
@@ -171,7 +171,7 @@ def test_ase_relax_job2(patch_metallic_taskdoc):
     output = ase_relax_job(
         atoms, relax_cell=True, opt_params={"store_intermediate_results": True}
     )
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lwave"] is False
     assert output["parameters"]["lcharg"] is False
@@ -263,14 +263,14 @@ def test_slab_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = slab_static_job(atoms)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] is True
     assert output["parameters"]["encut"] == 450
 
     output = slab_static_job(atoms, nelmin=6)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] is True
@@ -278,7 +278,7 @@ def test_slab_static_job(patch_metallic_taskdoc):
     assert output["parameters"]["nelmin"] == 6
 
     output = slab_static_job(atoms, encut=None)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] is True
@@ -289,7 +289,7 @@ def test_slab_relax_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = slab_relax_job(atoms)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["isif"] == 2
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isym"] == 0
@@ -297,7 +297,7 @@ def test_slab_relax_job(patch_metallic_taskdoc):
     assert output["parameters"]["encut"] == 450
 
     output = slab_relax_job(atoms, nelmin=6)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["isif"] == 2
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isym"] == 0
@@ -313,18 +313,18 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
 
     outputs = bulk_to_slabs_flow(atoms, run_static=False)
     assert len(outputs) == 4
-    assert outputs[0]["nsites"] == 45
-    assert outputs[1]["nsites"] == 45
-    assert outputs[2]["nsites"] == 54
-    assert outputs[3]["nsites"] == 42
+    assert outputs[0]["structure_metadata"]["nsites"] == 45
+    assert outputs[1]["structure_metadata"]["nsites"] == 45
+    assert outputs[2]["structure_metadata"]["nsites"] == 54
+    assert outputs[3]["structure_metadata"]["nsites"] == 42
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
     outputs = bulk_to_slabs_flow(atoms)
     assert len(outputs) == 4
-    assert outputs[0]["nsites"] == 45
-    assert outputs[1]["nsites"] == 45
-    assert outputs[2]["nsites"] == 54
-    assert outputs[3]["nsites"] == 42
+    assert outputs[0]["structure_metadata"]["nsites"] == 45
+    assert outputs[1]["structure_metadata"]["nsites"] == 45
+    assert outputs[2]["structure_metadata"]["nsites"] == 54
+    assert outputs[3]["structure_metadata"]["nsites"] == 42
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
@@ -333,10 +333,10 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         run_static=False,
     )
     assert len(outputs) == 4
-    assert outputs[0]["nsites"] == 45
-    assert outputs[1]["nsites"] == 45
-    assert outputs[2]["nsites"] == 54
-    assert outputs[3]["nsites"] == 42
+    assert outputs[0]["structure_metadata"]["nsites"] == 45
+    assert outputs[1]["structure_metadata"]["nsites"] == 45
+    assert outputs[2]["structure_metadata"]["nsites"] == 54
+    assert outputs[3]["structure_metadata"]["nsites"] == 42
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
@@ -345,10 +345,10 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         atoms, job_params={"relax_job": {"preset": "SlabSet", "nelmin": 6}}
     )
     assert len(outputs) == 4
-    assert outputs[0]["nsites"] == 45
-    assert outputs[1]["nsites"] == 45
-    assert outputs[2]["nsites"] == 54
-    assert outputs[3]["nsites"] == 42
+    assert outputs[0]["structure_metadata"]["nsites"] == 45
+    assert outputs[1]["structure_metadata"]["nsites"] == 45
+    assert outputs[2]["structure_metadata"]["nsites"] == 54
+    assert outputs[3]["structure_metadata"]["nsites"] == 42
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
@@ -359,11 +359,11 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
 
     outputs = slab_to_ads_flow(atoms, adsorbate, run_static=False)
 
-    assert [output["nsites"] == 82 for output in outputs]
+    assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
     outputs = slab_to_ads_flow(atoms, adsorbate)
-    assert [output["nsites"] == 82 for output in outputs]
+    assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = slab_to_ads_flow(
@@ -373,7 +373,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         run_static=False,
     )
 
-    assert [output["nsites"] == 82 for output in outputs]
+    assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
@@ -382,7 +382,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         atoms, adsorbate, job_params={"relax_job": {"preset": "SlabSet", "nelmin": 6}}
     )
 
-    assert [output["nsites"] == 82 for output in outputs]
+    assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 450 for output in outputs]
@@ -390,48 +390,48 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
     outputs = slab_to_ads_flow(atoms, adsorbate2)
-    assert [output["nsites"] == 84 for output in outputs]
+    assert [output["structure_metadata"]["nsites"] == 84 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
 
 def test_qmof(patch_nonmetallic_taskdoc):
     atoms = bulk("Si")
     output = qmof_relax_job(atoms)
-    assert output["prerelax_lowacc"]["nsites"] == len(atoms)
+    assert output["prerelax_lowacc"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["prerelax_lowacc"]["parameters"]["sigma"] == 0.01
     assert output["prerelax_lowacc"]["parameters"]["isym"] == 0
     assert output["prerelax_lowacc"]["parameters"]["nsw"] == 0
     assert "isif" not in output["prerelax_lowacc"]["parameters"]
     assert "encut" not in output["prerelax_lowacc"]["parameters"]
 
-    assert output["position_relax_lowacc"]["nsites"] == len(atoms)
+    assert output["position_relax_lowacc"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["position_relax_lowacc"]["parameters"]["sigma"] == 0.01
     assert output["position_relax_lowacc"]["parameters"]["isym"] == 0
     assert output["position_relax_lowacc"]["parameters"]["nsw"] > 0
     assert output["position_relax_lowacc"]["parameters"]["isif"] == 2
     assert "encut" not in output["prerelax_lowacc"]["parameters"]
 
-    assert output["volume_relax_lowacc"]["nsites"] == len(atoms)
+    assert output["volume_relax_lowacc"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["volume_relax_lowacc"]["parameters"]["encut"] == 520
     assert output["volume_relax_lowacc"]["parameters"]["sigma"] == 0.01
     assert output["volume_relax_lowacc"]["parameters"]["isym"] == 0
     assert output["volume_relax_lowacc"]["parameters"]["nsw"] > 0
     assert output["volume_relax_lowacc"]["parameters"]["isif"] == 3
 
-    assert output["double_relax"][0]["nsites"] == len(atoms)
+    assert output["double_relax"][0]["structure_metadata"]["nsites"] == len(atoms)
     assert output["double_relax"][0]["parameters"]["encut"] == 520
     assert output["double_relax"][0]["parameters"]["sigma"] == 0.01
     assert output["double_relax"][0]["parameters"]["isym"] == 0
     assert output["double_relax"][0]["parameters"]["nsw"] > 0
     assert output["double_relax"][0]["parameters"]["isif"] == 3
 
-    assert output["double_relax"][1]["nsites"] == len(atoms)
+    assert output["double_relax"][1]["structure_metadata"]["nsites"] == len(atoms)
     assert output["double_relax"][1]["parameters"]["encut"] == 520
     assert output["double_relax"][1]["parameters"]["isym"] == 0
     assert output["double_relax"][1]["parameters"]["nsw"] > 0
     assert output["double_relax"][1]["parameters"]["isif"] == 3
 
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["sigma"] == 0.01
     assert output["parameters"]["isym"] == 0
@@ -457,7 +457,7 @@ def test_qmof(patch_nonmetallic_taskdoc):
 def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
     output = mp_metagga_prerelax_job(atoms)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "all",
         "ediff": 1e-5,
@@ -489,7 +489,7 @@ def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
     }
 
     output = mp_metagga_prerelax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
     assert output["parameters"]["ediffg"] == -0.05
     assert output["parameters"]["encut"] == 680
@@ -504,7 +504,7 @@ def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
 def test_mp_metagga_prerelax_job_nonmetallic(patch_nonmetallic_taskdoc):
     atoms = bulk("Si")
     output = mp_metagga_prerelax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
     assert output["parameters"]["ediffg"] == -0.05
     assert output["parameters"]["encut"] == 680
@@ -552,10 +552,10 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
 
     output = mp_metagga_relax_job(atoms)
     assert output["parameters"] == ref_parameters
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
 
     output = mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
@@ -569,7 +569,7 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
 def test_mp_metagga_relax_job_nonmetallic(patch_nonmetallic_taskdoc):
     atoms = bulk("Si")
     output = mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
@@ -584,7 +584,7 @@ def test_mp_metagga_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = mp_metagga_static_job(atoms)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "fast",
         "ediff": 1e-05,
@@ -619,7 +619,7 @@ def test_mp_metagga_relax_flow_metallic(tmp_path, patch_metallic_taskdoc):
         copy_r(MOCKED_DIR / "metallic", tmp_path)
         atoms = bulk("Al")
         output = mp_metagga_relax_flow(atoms)
-        assert output["static"]["nsites"] == len(atoms)
+        assert output["static"]["structure_metadata"]["nsites"] == len(atoms)
         assert output["prerelax"]["parameters"]["gga"] == "ps"
         assert output["prerelax"]["parameters"]["ismear"] == 0
         assert output["prerelax"]["parameters"]["pp"] == "pbe"
@@ -655,7 +655,7 @@ def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
             0.28752476644932956
         )
         assert output["relax2"]["parameters"]["pp"] == "pbe"
-        assert output["static"]["nsites"] == len(atoms)
+        assert output["static"]["structure_metadata"]["nsites"] == len(atoms)
 
         atoms = molecule("O2")
         atoms.set_initial_magnetic_moments([1.0, 0.0])
@@ -675,7 +675,7 @@ def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
         )
         assert output["relax2"]["parameters"]["pp"] == "pbe"
         assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
-        assert output["static"]["nsites"] == len(atoms)
+        assert output["static"]["structure_metadata"]["nsites"] == len(atoms)
         assert output["static"]["parameters"]["ismear"] == -5
         assert output["static"]["parameters"]["nsw"] == 0
         assert output["static"]["parameters"]["algo"] == "fast"
@@ -689,7 +689,7 @@ def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
     del atoms.arrays["initial_magmoms"]
     output = mp_gga_relax_job(atoms)
 
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "fast",
         "ediff": 0.0001,
@@ -728,7 +728,7 @@ def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
     output = mp_gga_static_job(atoms)
-    assert output["nsites"] == len(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "fast",
         "ediff": 0.0001,

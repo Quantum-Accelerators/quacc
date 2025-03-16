@@ -43,7 +43,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from ase.calculators.calculator import Calculator
+    from ase.calculators.calculator import BaseCalculator
     from ase.optimize.optimize import Dynamics, Optimizer
 
     from quacc.types import (
@@ -63,7 +63,7 @@ class Runner(BaseRunner):
     def __init__(
         self,
         atoms: Atoms | list[Atoms],
-        calculator: Calculator,
+        calculator: BaseCalculator,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     ) -> None:
         """
@@ -157,13 +157,13 @@ class Runner(BaseRunner):
         relax_cell: bool = False,
         fmax: float | None = 0.01,
         max_steps: int = 1000,
-        optimizer: Dynamics = BFGS,
+        optimizer: type[Dynamics] = BFGS,
         optimizer_kwargs: dict[str, Any] | None = None,
         store_intermediate_results: bool = False,
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
         filter_kwargs: dict[str, Any] | None = None,
-    ) -> Dynamics:
+    ) -> Optimizer:
         """
         This is a wrapper around the optimizers in ASE.
 
@@ -196,8 +196,8 @@ class Runner(BaseRunner):
 
         Returns
         -------
-        Dynamics
-            The ASE Dynamics object following an optimization.
+        Optimizer
+            The ASE Optimizer object following an optimization.
         """
         # Set defaults
         merged_optimizer_kwargs = recursive_dict_merge(

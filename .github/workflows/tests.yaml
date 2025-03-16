@@ -314,7 +314,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-mlps:
+  tests-mlp1:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -337,14 +337,63 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp1.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
+
+      - name: HuggingFace Hub Login
+        env:
+          HF_TOKEN: ${{ secrets.HUGGING_FACE_TOKEN }}
+        run: |
+          if [ -n "$HF_TOKEN" ]; then
+            huggingface-cli login --token "$HF_TOKEN"
+          else
+            echo "HF_TOKEN is not set. Skipping login."
+          fi
+
+      - name: Run tests with pytest
+        run: pytest -k 'mlp or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
+
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
+
+  tests-mlp2:
+    strategy:
+      fail-fast: true
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: tests/requirements**.txt
+
+      - name: Install pip packages
+        run: |
+          pip install uv
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp2.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
           echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
       - name: Run tests with pytest
-        run: pytest -k 'mlp or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
+        run: pytest -k 'mlp' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v4
@@ -400,7 +449,8 @@ jobs:
       - tests-defects-phonons-espresso
       - tests-tblite-dftbplus
       - tests-qchem-sella
-      - tests-mlps
+      - tests-mlp1
+      - tests-mlp2
       - tests-mp
     runs-on: ubuntu-latest
     steps:

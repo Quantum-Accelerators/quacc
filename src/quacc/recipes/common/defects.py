@@ -59,6 +59,7 @@ def bulk_to_defects_subflow(
     list[dict]
         List of dictionary of results.
     """
+    make_defects_kwargs = make_defects_kwargs or {}
     defects = make_defects_from_bulk(atoms, **make_defects_kwargs)
 
     results = []
