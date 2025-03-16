@@ -50,7 +50,9 @@ def static_job(
     RunSchema
         Results dictionary
     """
-    calc_defaults = create_dftb_defaults(method, kpts=kpts, is_periodic=atoms.pbc.any())
+    calc_defaults = create_dftb_defaults(
+        method=method, kpts=kpts, is_periodic=atoms.pbc.any()
+    )
     recipe = Recipe(Dftb, calc_defaults)
     return recipe.calculate(
         atoms,
