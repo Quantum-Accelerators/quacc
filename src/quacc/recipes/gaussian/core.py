@@ -110,10 +110,7 @@ def static_job(
     calc_defaults.update({"force": "", "gfinput": "", "ioplist": ["6/7=3", "2/9=2000"]})
     recipe = Recipe(Gaussian, calc_defaults)
     return recipe.calculate(
-        atoms,
-        copy_files=copy_files,
-        additional_fields={"name": "Gaussian Static"} | (additional_fields or {}),
-        **calc_kwargs,
+        atoms, copy_files=copy_files, additional_fields=additional_fields, **calc_kwargs
     )
 
 
@@ -169,8 +166,5 @@ def relax_job(
     recipe = Recipe(Gaussian, calc_defaults)
 
     return recipe.calculate(
-        atoms,
-        copy_files=copy_files,
-        additional_fields={"name": "Gaussian Relax"} | (additional_fields or {}),
-        **calc_kwargs,
+        atoms, copy_files=copy_files, additional_fields=additional_fields, **calc_kwargs
     )

@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.lj import LennardJones
 
 from quacc import job
+from quacc.recipes._base import Recipe
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize, VibSummarize
 
@@ -24,7 +25,6 @@ if TYPE_CHECKING:
         OptParams,
         OptSchema,
         RunSchema,
-        SourceDirectory,
         VibKwargs,
         VibThermoSchema,
     )
@@ -32,10 +32,7 @@ if TYPE_CHECKING:
 
 @job
 def static_job(
-    atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, additional_fields: dict[str, Any] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Function to carry out a static calculation.
@@ -44,8 +41,8 @@ def static_job(
     ----------
     atoms
         Atoms object
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields for results
     **calc_kwargs
         Dictionary of custom kwargs for the LJ calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -57,19 +54,15 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc = LennardJones(**calc_kwargs)
-    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
-
-    return Summarize(
-        additional_fields={"name": "LJ Static"} | (additional_fields or {})
-    ).run(final_atoms, atoms)
+    return Recipe(LennardJones).calculate(
+        atoms, additional_fields=additional_fields, **calc_kwargs
+    )
 
 
 @job
 def relax_job(
     atoms: Atoms,
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -83,8 +76,6 @@ def relax_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -98,14 +89,9 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    opt_params = opt_params or {}
-
-    calc = LennardJones(**calc_kwargs)
-    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
-
-    return Summarize(
-        additional_fields={"name": "LJ Relax"} | (additional_fields or {})
-    ).opt(dyn)
+    return Recipe(LennardJones).relax(
+        atoms, opt_params=opt_params, additional_fields=additional_fields, **calc_kwargs
+    )
 
 
 @job
@@ -115,7 +101,6 @@ def freq_job(
     temperature: float = 298.15,
     pressure: float = 1.0,
     vib_kwargs: VibKwargs | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VibThermoSchema:
@@ -134,8 +119,6 @@ def freq_job(
         Pressure in bar.
     vib_kwargs
         Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
