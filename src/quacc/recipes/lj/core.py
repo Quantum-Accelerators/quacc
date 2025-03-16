@@ -47,7 +47,7 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    return Recipe(LennardJones).calculate(
+    return Recipe(LennardJones).run(
         atoms, additional_fields=additional_fields, **calc_kwargs
     )
 

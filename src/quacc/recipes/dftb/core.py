@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
 
-from quacc.recipes.dftb._util import _GEOM_FILE, create_dftb_defaults
+from quacc.recipes.dftb._defaults import _GEOM_FILE, create_dftb_defaults
 
 
 @job
@@ -53,8 +53,7 @@ def static_job(
     calc_defaults = create_dftb_defaults(
         method=method, kpts=kpts, is_periodic=atoms.pbc.any()
     )
-    recipe = Recipe(Dftb, calc_defaults)
-    return recipe.calculate(
+    return Recipe(Dftb, calc_defaults=calc_defaults).run(
         atoms,
         geom_file=_GEOM_FILE,
         copy_files=copy_files,
@@ -106,9 +105,7 @@ def relax_job(
         "Driver_LatticeOpt": "Yes" if relax_cell else "No",
         "Driver_MaxSteps": 2000,
     }
-
-    recipe = Recipe(Dftb, calc_defaults)
-    return recipe.calculate(
+    return Recipe(Dftb, calc_defaults=calc_defaults).run(
         atoms,
         geom_file=_GEOM_FILE,
         copy_files=copy_files,

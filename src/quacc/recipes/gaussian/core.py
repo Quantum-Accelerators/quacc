@@ -8,7 +8,7 @@ from ase.calculators.gaussian import Gaussian
 
 from quacc import job
 from quacc.recipes.common.core import Recipe
-from quacc.recipes.gaussian._util import create_gaussian_defaults
+from quacc.recipes.gaussian._defaults import create_gaussian_defaults
 
 if TYPE_CHECKING:
     from typing import Any
@@ -62,8 +62,7 @@ def static_job(
         xc=xc, basis=basis, charge=charge, spin_multiplicity=spin_multiplicity
     )
     calc_defaults.update({"force": "", "gfinput": "", "ioplist": ["6/7=3", "2/9=2000"]})
-    recipe = Recipe(Gaussian, calc_defaults)
-    return recipe.calculate(
+    return Recipe(Gaussian, calc_defaults=calc_defaults).run(
         atoms, copy_files=copy_files, additional_fields=additional_fields, **calc_kwargs
     )
 
@@ -117,8 +116,7 @@ def relax_job(
     calc_defaults |= {"opt": "", "ioplist": ["2/9=2000"]}  # ASE issue #660
     if freq:
         calc_defaults |= {"freq": ""}
-    recipe = Recipe(Gaussian, calc_defaults)
 
-    return recipe.calculate(
+    return Recipe(Gaussian, calc_defaults=calc_defaults).run(
         atoms, copy_files=copy_files, additional_fields=additional_fields, **calc_kwargs
     )

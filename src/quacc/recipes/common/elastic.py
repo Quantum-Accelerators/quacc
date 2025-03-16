@@ -11,7 +11,7 @@ from emmet.core.mpid import MPID
 from pymatgen.analysis.elasticity.stress import Stress
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc import job, subflow
+from quacc import flow, job, subflow
 from quacc.atoms.deformation import make_deformations_from_bulk
 
 if TYPE_CHECKING:
@@ -24,7 +24,8 @@ if TYPE_CHECKING:
     from quacc.types import ElasticSchema, RunSchema
 
 
-def elastic_tensor_workflow(
+@flow
+def elastic_tensor_flow(
     atoms: Atoms,
     relax_job: Job,
     static_job: Job,

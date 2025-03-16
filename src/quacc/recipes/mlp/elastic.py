@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow
-from quacc.recipes.common.elastic import elastic_tensor_workflow
+from quacc.recipes.common.elastic import elastic_tensor_flow as elastic_tensor_flow_
 from quacc.recipes.mlp.core import relax_job, static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -79,7 +79,7 @@ def elastic_tensor_flow(
         decorators=job_decorators,
     )  # type: ignore
 
-    return elastic_tensor_workflow(
+    return elastic_tensor_flow_(
         atoms=atoms,
         relax_job=relax_job_,
         static_job=static_job_,

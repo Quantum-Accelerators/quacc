@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 class Recipe:
-    """Base class for all recipes."""
+    """Base class for all discrete compute tasks."""
 
     def __init__(
         self,
@@ -42,23 +42,7 @@ class Recipe:
         self.calculator_class = calculator_class
         self.calc_defaults = calc_defaults or {}
 
-    def _prepare_calculator(self, **calc_kwargs) -> BaseCalculator:
-        """Prepare the calculator with merged parameters.
-
-        Parameters
-        ----------
-        **calc_kwargs
-            Calculator parameters that override defaults
-
-        Returns
-        -------
-        BaseCalculator
-            Configured calculator instance
-        """
-        calc_flags = recursive_dict_merge(self.calc_defaults, calc_kwargs)
-        return self.calculator_class(**calc_flags)
-
-    def calculate(
+    def run(
         self,
         atoms: Atoms,
         geom_file: str | None = None,
@@ -130,7 +114,7 @@ class Recipe:
             "name": f"{self.calculator_class.__name__} Static"
         } | additional_fields
 
-        return self.calculate(
+        return self.run(
             atoms,
             copy_files=copy_files,
             additional_fields=additional_fields,
@@ -226,3 +210,19 @@ class Recipe:
         calc = self._prepare_calculator(**calc_kwargs)
         dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
         return Summarize(additional_fields=additional_fields).opt(dyn)
+
+    def _prepare_calculator(self, **calc_kwargs) -> BaseCalculator:
+        """Prepare the calculator with merged parameters.
+
+        Parameters
+        ----------
+        **calc_kwargs
+            Calculator parameters that override defaults
+
+        Returns
+        -------
+        BaseCalculator
+            Configured calculator instance
+        """
+        calc_flags = recursive_dict_merge(self.calc_defaults, calc_kwargs)
+        return self.calculator_class(**calc_flags)
