@@ -18,10 +18,9 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from ase.calculators.calculator import BaseCalculator
     from ase.dynamics import Dynamics
 
-    from quacc.types import OptParams, OptSchema, RunSchema
+    from quacc.types import OptSchema, RunSchema
 
 
 @job
