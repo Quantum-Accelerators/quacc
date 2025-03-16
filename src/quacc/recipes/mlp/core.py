@@ -95,8 +95,8 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
-    calc = pick_calculator(method, **calc_kwargs)
-    return Recipe(calc).relax(
+    calc, calc_defaults = pick_calculator(method)
+    return Recipe(calc, calc_defaults).relax(
         atoms,
         relax_cell=relax_cell,
         fmax=fmax,
