@@ -166,7 +166,9 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
         return round(np.abs(atoms.calc.results["magmoms"].sum())) + 1
     elif atoms.has("initial_magmoms"):
         return round(np.abs(atoms.get_initial_magnetic_moments().sum())) + 1
-    raise ValueError("Could not determine spin multiplicity")
+
+    LOGGER.warning("Could not determine spin multiplicity. Assuming 1.")
+    return 1
 
 
 def get_final_atoms_from_dynamics(dynamics: Dynamics | Filter) -> Atoms:

@@ -78,7 +78,7 @@ def test_perturb():
 
 def test_get_spin_mult():
     atoms = molecule("H2O")
-    assert get_spin_multiplicity_attribute(atoms) is None
+    assert get_spin_multiplicity_attribute(atoms) == 1
 
     atoms = molecule("H2O")
     atoms.spin_multiplicity = 3
