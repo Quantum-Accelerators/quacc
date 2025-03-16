@@ -15,7 +15,7 @@ from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
 from quacc.schemas.thermo import ThermoSummarize
-from quacc.utils.dicts import finalize_dict, recursive_dict_merge
+from quacc.utils.dicts import clean_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
@@ -132,12 +132,7 @@ class Summarize:
             final_atoms_metadata | inputs | results | self.additional_fields
         )
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def opt(
         self,
@@ -212,12 +207,7 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def md(
         self,
@@ -270,12 +260,7 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | md_fields | self.additional_fields
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def neb(
         self,
@@ -351,12 +336,7 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=None,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
 
 class VibSummarize:
@@ -495,12 +475,7 @@ class VibSummarize:
             atoms_metadata | inputs | vib_results | self.additional_fields
         )
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def vib_and_thermo(
         self,
@@ -567,12 +542,7 @@ class VibSummarize:
         # Merge the vib and thermo data
         unsorted_task_doc = recursive_dict_merge(vib_schema, thermo_schema)
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
 
 def _get_nth_iteration(

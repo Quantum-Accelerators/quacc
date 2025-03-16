@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from maggma.stores import MemoryStore
+
 from quacc import flow, job, subflow
 
 

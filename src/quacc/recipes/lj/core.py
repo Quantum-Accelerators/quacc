@@ -13,8 +13,8 @@ from ase.optimize import BFGS
 
 from quacc import job
 from quacc.recipes.common.core import Recipe
-from quacc.runners.ase import Runner
-from quacc.schemas.ase import VibSummarize
+from quacc.schemas.thermo import ThermoSummarize
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -137,15 +137,12 @@ def freq_job(
     VibThermoSchema
         Dictionary of results
     """
-    vib_kwargs = vib_kwargs or {}
-
-    calc = LennardJones(**calc_kwargs)
-    vib = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
-
-    return VibSummarize(
-        vib,
-        additional_fields={"name": "LJ Frequency and Thermo"}
-        | (additional_fields or {}),
-    ).vib_and_thermo(
-        "ideal_gas", energy=energy, temperature=temperature, pressure=pressure
+    return Recipe(LennardJones).freq(
+        atoms,
+        energy=energy,
+        temperature=temperature,
+        pressure=pressure,
+        vib_kwargs=vib_kwargs,
+        additional_fields=additional_fields,
+        **calc_kwargs,
     )

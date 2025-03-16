@@ -79,12 +79,6 @@ def test_vasp_summarize_run(run1, monkeypatch, tmp_path):
     VaspSummarize().run(atoms)
     monkeypatch.chdir(tmp_path)
 
-    # Test DB
-    atoms = read(os.path.join(p, "OUTCAR.gz"))
-    store = MemoryStore()
-    VaspSummarize(directory=p).run(atoms, store=store)
-    assert store.count() == 1
-
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
     results = VaspSummarize(directory=p, additional_fields={"test": "hi"}).run(atoms)

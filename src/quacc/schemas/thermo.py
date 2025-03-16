@@ -14,7 +14,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_spin_multiplicity_attribute
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import finalize_dict
+from quacc.utils.dicts import clean_dict
 from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
@@ -148,12 +148,7 @@ class ThermoSummarize:
         unsorted_task_doc = (
             atoms_to_metadata(igt.atoms) | inputs | results | self.additional_fields
         )
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=self.directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def harmonic(
         self,
@@ -212,12 +207,7 @@ class ThermoSummarize:
         unsorted_task_doc = (
             atoms_to_metadata(self.atoms) | inputs | results | self.additional_fields
         )
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=self.directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def _make_ideal_gas(self, spin_multiplicity: int | None = None) -> IdealGasThermo:
         """

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 from ase.optimize import BFGS
 
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import Summarize
+from quacc.schemas.ase import Summarize, VibSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -19,7 +19,13 @@ if TYPE_CHECKING:
     from ase.calculators.calculator import BaseCalculator
     from ase.optimize.optimize import Optimizer
 
-    from quacc.types import Filenames, OptSchema, RunSchema, SourceDirectory
+    from quacc.types import (
+        Filenames,
+        OptSchema,
+        RunSchema,
+        SourceDirectory,
+        VibThermoSchema,
+    )
 
 
 class Recipe:
@@ -210,6 +216,47 @@ class Recipe:
         calc = self._prepare_calculator(**calc_kwargs)
         dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
         return Summarize(additional_fields=additional_fields).opt(dyn)
+
+    def freq(
+        self,
+        atoms: Atoms,
+        vib_kwargs: dict[str, Any] | None = None,
+        additional_fields: dict[str, Any] | None = None,
+        **calc_kwargs,
+    ) -> VibThermoSchema:
+        """Run a frequency calculation.
+
+        Parameters
+        ----------
+        atoms
+            Atoms object
+        energy
+            Potential energy in eV. If 0, then the output is just the correction.
+        temperature
+            Temperature in Kelvins.
+        pressure
+            Pressure in bar.
+        vib_kwargs
+            Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
+        additional_fields
+            Additional fields for results
+        **calc_kwargs
+            Calculator parameters that override defaults
+
+        Returns
+        -------
+        VibThermoSchema
+            Results dictionary
+        """
+        additional_fields = additional_fields or {}
+        additional_fields = {
+            "name": f"{self.calculator_class.__name__} Frequency"
+        } | additional_fields
+
+        vib_kwargs = vib_kwargs or {}
+        calc = self._prepare_calculator(**calc_kwargs)
+        vib = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
+        return VibSummarize(vib, additional_fields=additional_fields).vib()
 
     def _prepare_calculator(self, **calc_kwargs) -> BaseCalculator:
         """Prepare the calculator with merged parameters.

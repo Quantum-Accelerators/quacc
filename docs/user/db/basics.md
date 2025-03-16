@@ -42,7 +42,7 @@ Here, we describe how to set up quacc with a database of your choosing.
         from maggma.stores import MongoStore
         from quacc.wflow_tools.db import results_to_db
 
-        # Let `results` be an output (or list of outputs) from quacc recipes
+        # Let `results` be an output a from quacc recipe
 
         # Define your database details
         store = MongoStore(

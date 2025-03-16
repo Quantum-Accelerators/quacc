@@ -20,7 +20,7 @@ from pymatgen.entries.compatibility import (
 from quacc import QuaccDefault, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import Summarize
-from quacc.utils.dicts import finalize_dict, recursive_dict_merge
+from quacc.utils.dicts import clean_dict, recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -203,12 +203,7 @@ class VaspSummarize:
             | base_task_doc
             | additional_fields
         )
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def ase_opt(
         self,
@@ -247,12 +242,7 @@ class VaspSummarize:
 
         vasp_summary = self.run(final_atoms, store=None)
         unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
 
 def bader_runner(path: Path | str) -> BaderSchema:

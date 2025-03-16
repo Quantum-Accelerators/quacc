@@ -165,9 +165,6 @@ def test_summarize_ideal_gas_thermo6(tmp_path):
     assert results["results"]["entropy"] == pytest.approx(0.0024104096804891486)
     assert results["parameters_thermo"]["spin_multiplicity"] == 4
 
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
-
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
     MontyDecoder().process_decoded(d)
@@ -199,9 +196,6 @@ def test_summarize_harmonic_thermo(tmp_path):
     assert results["results"]["internal_energy"] == pytest.approx(0.1700006085385999)
     assert results["results"]["entropy"] == pytest.approx(2.1952829783392438e-09)
     assert results["results"]["zpe"] == pytest.approx(0.17)
-
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)

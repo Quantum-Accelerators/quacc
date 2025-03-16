@@ -9,7 +9,7 @@ from monty.dev import requires
 
 from quacc import QuaccDefault, __version__, get_settings
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import finalize_dict
+from quacc.utils.dicts import clean_dict
 from quacc.utils.files import get_uri
 
 has_phonopy = bool(find_spec("phonopy"))
@@ -82,9 +82,4 @@ def summarize_phonopy(
 
     atoms_metadata = atoms_to_metadata(input_atoms)
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    return finalize_dict(
-        unsorted_task_doc,
-        directory=directory,
-        gzip_file=settings.GZIP_FILES,
-        store=store,
-    )
+    return clean_dict(unsorted_task_doc)

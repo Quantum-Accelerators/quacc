@@ -118,16 +118,6 @@ print(result)
     'volume': 11.761470249999999}
     ```
 
-!!! Note "Loading the JSON Output"
-
-    A serialized version of the printed output above is also written to the filesystem with the name `quacc_results.json.gz`. It can be read back in as follows:
-
-    ```python
-    from monty.serialization import loadfn
-
-    results = loadfn("quacc_results.json.gz")
-    ```
-
 ### A Mixed-Code Workflow
 
 ```mermaid
