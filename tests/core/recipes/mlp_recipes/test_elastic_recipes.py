@@ -86,8 +86,8 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         ref_elastic_modulus[method], abs=2
     )
     for output in outputs["deformed_results"]:
-        assert output["nelements"] == 1
-        assert output["nsites"] == 1
+        assert output["structure_metadata"]["nelements"] == 1
+        assert output["structure_metadata"]["nsites"] == 1
     assert len(outputs["deformed_results"]) == 24
 
     outputs = bulk_to_elastic_tensor_flow(
@@ -104,8 +104,8 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
     )
 
     for output in outputs["deformed_results"]:
-        assert output["nelements"] == 1
-        assert output["nsites"] == 1
+        assert output["structure_metadata"]["nelements"] == 1
+        assert output["structure_metadata"]["nsites"] == 1
     assert len(outputs["deformed_results"]) == 24
 
     outputs = bulk_to_elastic_tensor_flow(
@@ -122,8 +122,8 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
     )
 
     for output in outputs["deformed_results"]:
-        assert output["nelements"] == 1
-        assert output["nsites"] == 1
+        assert output["structure_metadata"]["nelements"] == 1
+        assert output["structure_metadata"]["nsites"] == 1
     assert len(outputs["deformed_results"]) == 24
 
     outputs = bulk_to_elastic_tensor_flow(
@@ -140,6 +140,6 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
     )
 
     for output in outputs["deformed_results"]:
-        assert output["nelements"] == 1
-        assert output["nsites"] == 1
+        assert output["structure_metadata"]["nelements"] == 1
+        assert output["structure_metadata"]["nsites"] == 1
     assert len(outputs["deformed_results"]) == 24

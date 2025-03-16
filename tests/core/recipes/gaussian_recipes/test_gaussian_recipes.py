@@ -12,7 +12,7 @@ def test_static_job(tmp_path, monkeypatch):
     atoms = molecule("H2")
 
     output = static_job(atoms, 0, 1)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["parameters"]["force"] == ""
@@ -26,7 +26,7 @@ def test_static_job(tmp_path, monkeypatch):
     ]  # see ASE issue #660
 
     output = static_job(atoms, -2, 3, xc="pbepbe", basis="def2svp")
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
     assert output["parameters"]["force"] == ""
@@ -48,7 +48,7 @@ def test_relax_job(tmp_path, monkeypatch):
     atoms.set_initial_magnetic_moments([0, 0])
 
     output = relax_job(atoms, 0, 1, xc="pbepbe", basis="def2svp")
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["parameters"]["opt"] == ""
@@ -59,7 +59,7 @@ def test_relax_job(tmp_path, monkeypatch):
     assert "sp" not in output["parameters"]
 
     output = relax_job(atoms, -2, 3, xc="pbepbe", basis="def2svp", freq=True)
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == -2
     assert output["parameters"]["mult"] == 3
     assert output["parameters"]["opt"] == ""
@@ -77,7 +77,7 @@ def test_relax_job_v2(tmp_path, monkeypatch):
     atoms.set_initial_magnetic_moments([0, 3])
 
     output = relax_job(atoms, 0, 3, xc="pbepbe", basis="def2svp")
-    assert output["natoms"] == len(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 3
     assert output["parameters"]["opt"] == ""

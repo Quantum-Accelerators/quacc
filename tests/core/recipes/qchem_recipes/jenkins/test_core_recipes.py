@@ -24,9 +24,7 @@ def test_static_job_simple(monkeypatch, tmp_path):
     output = static_job(
         molecule("O2"), spin_multiplicity=3, method="pbe", basis="def2-svp"
     )
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 3
-    assert output["formula_alphabetical"] == "O2"
+    assert output["molecule_metadata"]["formula_alphabetical"] == "O2"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 3
     assert output["results"]["energy"] < 0
@@ -39,9 +37,7 @@ def test_relax_job_simple(monkeypatch, tmp_path):
         molecule("O2"), spin_multiplicity=3, method="pbe", basis="def2-svp"
     )
 
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 3
-    assert output["formula_alphabetical"] == "O2"
+    assert output["molecule_metadata"]["formula_alphabetical"] == "O2"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 3
     assert output["results"]["energy"] < 0
