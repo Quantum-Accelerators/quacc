@@ -24,39 +24,33 @@ LOG_FILE = f"{_LABEL}.log"
 
 def run_and_summarize(
     atoms: Atoms,
-    charge: int = 0,
-    spin_multiplicity: int = 1,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> RunSchema:
     """
-     Base job function for carrying out Gaussian recipes.
+    Base job function for carrying out Gaussian recipes.
 
-     Parameters
-     ----------
-     atoms
-         Atoms object
-    charge
-         Charge of the system.
-     spin_multiplicity
-         Multiplicity of the system.
-     calc_defaults
-         Default parameters for the calculator.
-     calc_swaps
-         Dictionary of custom kwargs for the Gaussian calculator. Set a value to
-         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-         keys, refer to the [ase.calculators.gaussian.Gaussian][] calculator.
-     additional_fields
-         Additional fields to supply to the summarizer.
-     copy_files
-         Files to copy (and decompress) from source to the runtime directory.
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    calc_defaults
+        Default parameters for the calculator.
+    calc_swaps
+        Dictionary of custom kwargs for the Gaussian calculator. Set a value to
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
+        keys, refer to the [ase.calculators.gaussian.Gaussian][] calculator.
+    additional_fields
+        Additional fields to supply to the summarizer.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
 
-     Returns
-     -------
-     RunSchema
-         Dictionary of results
+    Returns
+    -------
+    RunSchema
+        Dictionary of results
     """
     settings = get_settings()
     gaussian_cmd = f"{settings.GAUSSIAN_CMD} < {_LABEL}.com > {LOG_FILE}"
