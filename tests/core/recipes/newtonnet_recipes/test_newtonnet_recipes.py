@@ -48,7 +48,6 @@ def test_static_job(tmp_path, monkeypatch):
 
     atoms = molecule("H2O")
     output = static_job(atoms)
-    assert output["spin_multiplicity"] == 1
     assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["results"]["energy"] == pytest.approx(-9.515200426406743)
     assert np.array_equal(output["atoms"].get_positions(), atoms.get_positions())
@@ -59,7 +58,6 @@ def test_relax_job(tmp_path, monkeypatch):
 
     atoms = molecule("H2O")
     output = relax_job(atoms)
-    assert output["spin_multiplicity"] == 1
     assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["results"]["energy"] == pytest.approx(-9.517354818364769)
     assert not np.array_equal(output["atoms"].get_positions(), atoms.get_positions())

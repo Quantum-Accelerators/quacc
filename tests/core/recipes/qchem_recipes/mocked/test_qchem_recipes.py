@@ -268,8 +268,6 @@ def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
     )
 
     assert output["atoms"] != test_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
     assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
