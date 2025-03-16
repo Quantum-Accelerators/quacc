@@ -147,12 +147,10 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
 
     Returns
     -------
-    int | None
+    int
         Spin multiplicity of the Atoms object
     """
-    if getattr(atoms, "spin_multiplicity", None):
-        return atoms.spin_multiplicity  # type: ignore[attr-defined]
-    elif (
+    if (
         getattr(atoms, "calc", None) is not None
         and getattr(atoms.calc, "results", None) is not None
         and atoms.calc.results.get("magmom", None) is not None
@@ -166,8 +164,7 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
         return round(np.abs(atoms.calc.results["magmoms"].sum())) + 1
     elif atoms.has("initial_magmoms"):
         return round(np.abs(atoms.get_initial_magnetic_moments().sum())) + 1
-    else:
-        return None
+    raise ValueError("Could not determine spin multiplicity")
 
 
 def get_final_atoms_from_dynamics(dynamics: Dynamics | Filter) -> Atoms:

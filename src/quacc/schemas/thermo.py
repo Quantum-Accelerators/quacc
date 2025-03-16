@@ -111,8 +111,6 @@ class ThermoSummarize:
         # Get the spin multiplicity
         if spin_multiplicity is None:
             spin_multiplicity = get_spin_multiplicity_attribute(self.atoms)
-            if spin_multiplicity is None:
-                raise ValueError("Spin multiplicity not known.")
             LOGGER.warning(
                 f"Using a spin multiplicity of {spin_multiplicity} for IdealGasThermo."
             )
