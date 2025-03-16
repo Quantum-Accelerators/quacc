@@ -57,7 +57,6 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    relax_cell: bool = False,
     fmax: float | None = 0.01,
     max_steps: int = 1000,
     optimizer: type[Optimizer] = BFGS,
