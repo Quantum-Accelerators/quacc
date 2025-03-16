@@ -96,14 +96,13 @@ def relax_job(
         Results dictionary
     """
     calc_defaults = create_dftb_defaults(method, kpts=kpts, is_periodic=atoms.pbc.any())
-    calc_defaults.update(
-        {
-            "Driver_": "GeometryOptimization",
-            "Driver_AppendGeometries": "Yes",
-            "Driver_LatticeOpt": "Yes" if relax_cell else "No",
-            "Driver_MaxSteps": 2000,
-        }
-    )
+    calc_defaults |= {
+        "Driver_": "GeometryOptimization",
+        "Driver_AppendGeometries": "Yes",
+        "Driver_LatticeOpt": "Yes" if relax_cell else "No",
+        "Driver_MaxSteps": 2000,
+    }
+
     recipe = Recipe(Dftb, calc_defaults)
     return recipe.calculate(
         atoms,

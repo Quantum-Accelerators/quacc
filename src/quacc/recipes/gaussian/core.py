@@ -114,9 +114,9 @@ def relax_job(
     calc_defaults = create_gaussian_defaults(
         xc=xc, basis=basis, charge=charge, spin_multiplicity=spin_multiplicity
     )
-    calc_defaults.update({"opt": "", "ioplist": ["2/9=2000"]})  # ASE issue #660
+    calc_defaults |= {"opt": "", "ioplist": ["2/9=2000"]}  # ASE issue #660
     if freq:
-        calc_defaults.update({"freq": ""})
+        calc_defaults |= {"freq": ""}
     recipe = Recipe(Gaussian, calc_defaults)
 
     return recipe.calculate(
