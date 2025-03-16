@@ -5,22 +5,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from quacc.runners.ase import Runner
-from quacc.schemas.ase import Summarize, VibSummarize
+from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.calculators.calculator import BaseCalculator
 
-    from quacc.types import (
-        Filenames,
-        OptParams,
-        OptSchema,
-        RunSchema,
-        SourceDirectory,
-        VibKwargs,
-        VibThermoSchema,
-    )
+    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 
 
 class Recipe:
