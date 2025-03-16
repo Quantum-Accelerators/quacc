@@ -45,9 +45,7 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 atoms = bulk("Cu")
 
 # Define the workflow with modified parameters for the `relax_job` step
-result = bulk_to_slabs_flow(
-    atoms, job_params={"relax_job": {"fmax": 1e-4}}
-)
+result = bulk_to_slabs_flow(atoms, job_params={"relax_job": {"fmax": 1e-4}})
 
 # Print the result
 print(result)

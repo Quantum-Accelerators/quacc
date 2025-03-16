@@ -458,7 +458,7 @@ from quacc.recipes.emt.core import relax_job
 atoms = bulk("Cu")
 
 # Run a structure relaxation with modified optimizer parameters
-result = relax_job(atoms, fmax= 1e-3, optimizer= LBFGS)
+result = relax_job(atoms, fmax=1e-3, optimizer=LBFGS)
 print(result)
 ```
 
