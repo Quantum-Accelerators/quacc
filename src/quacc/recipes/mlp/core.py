@@ -7,14 +7,14 @@ from typing import TYPE_CHECKING
 from ase.optimize import BFGS
 
 from quacc import job
-from quacc.recipes._base import Recipe
+from quacc.recipes.common.core import Recipe
 from quacc.recipes.mlp._util import pick_calculator
 
 if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.atoms import Atoms
-    from ase.dynamics import Dynamics
+    from ase.optimize import Dynamics
 
     from quacc.types import OptSchema, RunSchema
 

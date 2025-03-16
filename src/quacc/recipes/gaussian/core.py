@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.gaussian import Gaussian
 
 from quacc import job
-from quacc.recipes._base import Recipe
+from quacc.recipes.common.core import Recipe
 from quacc.recipes.gaussian._util import create_gaussian_defaults
 
 if TYPE_CHECKING:

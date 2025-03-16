@@ -12,13 +12,13 @@ from ase.calculators.emt import EMT
 from ase.optimize import BFGS
 
 from quacc import job
-from quacc.recipes._base import Recipe
+from quacc.recipes.common.core import Recipe
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from ase.dynamics import Dynamics
+    from ase.optimize import Dynamics
 
     from quacc.types import OptSchema, RunSchema
 

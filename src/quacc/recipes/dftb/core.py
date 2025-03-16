@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Literal
 from ase.calculators.dftb import Dftb
 
 from quacc import job
-from quacc.recipes._base import Recipe
+from quacc.recipes.common.core import Recipe
 
 if TYPE_CHECKING:
     from typing import Any

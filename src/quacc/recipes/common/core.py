@@ -1,4 +1,4 @@
-"""Base class for all recipes."""
+"""Core functions for common recipes."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.calculators.calculator import BaseCalculator
-    from ase.dynamics import Dynamics
+    from ase.optimize import Dynamics
 
     from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 

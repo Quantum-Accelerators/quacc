@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from ase.calculators.lj import LennardJones
 
 from quacc import job
-from quacc.recipes._base import Recipe
+from quacc.recipes.common.core import Recipe
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import VibSummarize
 
