@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase.calculators.emt import EMT
+from ase.optimize import BFGS
 
 from quacc import job
 from quacc.recipes._base import Recipe
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from ase.calculators.calculator import BaseCalculator
+    from ase.dynamics import Dynamics
 
     from quacc.types import OptParams, OptSchema, RunSchema
 
@@ -48,7 +51,10 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
-    opt_params: OptParams | None = None,
+    fmax: float | None = 0.01,
+    max_steps: int = 1000,
+    optimizer: type[Dynamics] = BFGS,
+    optimizer_kwargs: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -60,8 +66,16 @@ def relax_job(
         Atoms object
     relax_cell
         Whether to relax the cell
-    opt_params
-        Dictionary of custom kwargs for the optimization process
+    fmax
+        Maximum force change
+    max_steps
+        Maximum number of steps
+    optimizer
+        Optimizer class to use
+    optimizer_kwargs
+        Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
+        Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
+        kwargs and how they are set.
     additional_fields
         Additional fields for results
     **calc_kwargs
@@ -75,7 +89,10 @@ def relax_job(
     return Recipe(EMT).relax(
         atoms,
         relax_cell=relax_cell,
-        opt_params=opt_params,
+        fmax=fmax,
+        max_steps=max_steps,
+        optimizer=optimizer,
+        optimizer_kwargs=optimizer_kwargs,
         additional_fields=additional_fields,
         **calc_kwargs,
     )

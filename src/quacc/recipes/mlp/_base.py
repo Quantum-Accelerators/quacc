@@ -9,10 +9,13 @@ from typing import TYPE_CHECKING
 
 from frozendict import frozendict
 
+from quacc.recipes._base import Recipe
+
 if TYPE_CHECKING:
     from typing import Literal
 
     from ase.calculators.calculator import BaseCalculator
+
 
 LOGGER = getLogger(__name__)
 
@@ -77,7 +80,7 @@ def pick_calculator(
         from matgl.ext.ase import PESCalculator
 
         model = matgl.load_model("M3GNet-MP-2021.2.8-DIRECT-PES")
-        calc_kwargs.setdefault("stress_weight", 1.0 / 160.21766208)
+        calc_kwargs |= {"stress_weight": 1.0 / 160.21766208}
         calc = PESCalculator(potential=model, **calc_kwargs)
 
     elif method.lower() == "chgnet":
@@ -126,3 +129,36 @@ def pick_calculator(
     calc.parameters["version"] = __version__
 
     return calc
+
+
+class MLPRecipe(Recipe):
+    """Recipe for machine-learned interatomic potentials."""
+
+    def __init__(
+        self,
+        method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
+    ):
+        """Initialize the recipe.
+
+        Parameters
+        ----------
+        method
+            The MLP method to use
+        """
+        self.method = method
+        super().__init__(calculator_class=None)  # We'll override _prepare_calculator
+
+    def _prepare_calculator(self, **calc_kwargs) -> BaseCalculator:
+        """Prepare the calculator with merged parameters.
+
+        Parameters
+        ----------
+        **calc_kwargs
+            Calculator parameters that override defaults
+
+        Returns
+        -------
+        BaseCalculator
+            Configured calculator instance
+        """
+        return pick_calculator(self.method, **calc_kwargs)

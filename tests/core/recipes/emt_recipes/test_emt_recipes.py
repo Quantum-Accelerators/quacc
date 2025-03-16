@@ -76,7 +76,7 @@ def test_relax_job(tmp_path, monkeypatch):
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += [0.1, 0.1, 0.1]
-    output = relax_job(atoms, opt_params={"fmax": 0.03}, asap_cutoff=True)
+    output = relax_job(atoms, fmax=0.03, asap_cutoff=True)
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["asap_cutoff"] is True
     assert output["results"]["energy"] == pytest.approx(-0.004774645162642699)
@@ -86,9 +86,7 @@ def test_relax_job(tmp_path, monkeypatch):
     atoms[0].position += [0.1, 0.1, 0.1]
     c = FixAtoms(indices=[0, 1])
     atoms.set_constraint(c)
-    output_fire = relax_job(
-        atoms, opt_params={"fmax": 0.03, "optimizer": FIRE}, asap_cutoff=True
-    )
+    output_fire = relax_job(atoms, fmax=0.03, optimizer=FIRE, asap_cutoff=True)
     assert output_fire["structure_metadata"]["nsites"] == len(atoms)
     assert output_fire["parameters"]["asap_cutoff"] is True
     assert output_fire["results"]["energy"] == pytest.approx(0.04996032884581858)
@@ -101,11 +99,9 @@ def test_relax_job(tmp_path, monkeypatch):
     output_fire_pressure = relax_job(
         atoms,
         relax_cell=True,
-        opt_params={
-            "fmax": 0.03,
-            "optimizer": FIRE,
-            "filter_kwargs": {"scalar_pressure": 0.01},
-        },
+        fmax=0.03,
+        optimizer=FIRE,
+        filter_kwargs={"scalar_pressure": 0.01},
         asap_cutoff=True,
     )
 
@@ -201,7 +197,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     outputs = bulk_to_slabs_flow(
         atoms,
         run_static=False,
-        job_params={"relax_job": {"opt_params": {"fmax": 1.0}, "asap_cutoff": True}},
+        job_params={"relax_job": {"fmax": 1.0, "asap_cutoff": True}},
     )
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 80
