@@ -90,7 +90,9 @@ class Recipe:
             Results dictionary
         """
         additional_fields = additional_fields or {}
-        additional_fields |= {"name": f"{self.calculator_class.__name__}"}
+        additional_fields = {
+            "name": f"{self.calculator_class.__name__}"
+        } | additional_fields
 
         calc = self._prepare_calculator(**calc_kwargs)
         final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
@@ -124,7 +126,9 @@ class Recipe:
             Results dictionary
         """
         additional_fields = additional_fields or {}
-        additional_fields |= {"name": f"{self.calculator_class.__name__} Static"}
+        additional_fields = {
+            "name": f"{self.calculator_class.__name__} Static"
+        } | additional_fields
 
         return self.calculate(
             atoms,
@@ -194,7 +198,9 @@ class Recipe:
             Results dictionary
         """
         additional_fields = additional_fields or {}
-        additional_fields |= {"name": f"{self.calculator_class.__name__} Relax"}
+        additional_fields = {
+            "name": f"{self.calculator_class.__name__} Relax"
+        } | additional_fields
 
         opt_params = opt_params or {}
         if opt_params:
@@ -203,28 +209,20 @@ class Recipe:
                 DeprecationWarning,
                 stacklevel=2,
             )
-            opt_params |= {
-                "fmax": fmax,
-                "max_steps": max_steps,
-                "optimizer": optimizer,
-                "optimizer_kwargs": optimizer_kwargs,
-                "store_intermediate_results": store_intermediate_results,
-                "fn_hook": fn_hook,
-                "run_kwargs": run_kwargs,
-                "filter_kwargs": filter_kwargs,
-            }
+
+        params = {
+            "relax_cell": relax_cell,
+            "fmax": fmax,
+            "max_steps": max_steps,
+            "optimizer": optimizer,
+            "optimizer_kwargs": optimizer_kwargs,
+            "store_intermediate_results": store_intermediate_results,
+            "fn_hook": fn_hook,
+            "run_kwargs": run_kwargs,
+            "filter_kwargs": filter_kwargs,
+        }
+        opt_params = params | opt_params
 
         calc = self._prepare_calculator(**calc_kwargs)
-        dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(
-            relax_cell=relax_cell,
-            fmax=fmax,
-            max_steps=max_steps,
-            optimizer=optimizer,
-            optimizer_kwargs=optimizer_kwargs,
-            store_intermediate_results=store_intermediate_results,
-            fn_hook=fn_hook,
-            run_kwargs=run_kwargs,
-            filter_kwargs=filter_kwargs,
-            **opt_params,
-        )
+        dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
         return Summarize(additional_fields=additional_fields).opt(dyn)

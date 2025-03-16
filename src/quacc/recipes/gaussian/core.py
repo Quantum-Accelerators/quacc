@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import psutil
 from ase.calculators.gaussian import Gaussian
 
-from quacc import get_settings, job
+from quacc import job
 from quacc.recipes._base import Recipe
+from quacc.recipes.gaussian._util import create_gaussian_defaults
 
 if TYPE_CHECKING:
     from typing import Any
@@ -16,52 +16,6 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
-
-_LABEL = "Gaussian"
-_LOG_FILE = f"{_LABEL}.log"
-
-
-def _create_gaussian_defaults(
-    xc: str = "wb97xd",
-    basis: str = "def2tzvp",
-    charge: int = 0,
-    spin_multiplicity: int = 1,
-) -> dict[str, Any]:
-    """Create the default calculator kwargs for Gaussian.
-
-    Parameters
-    ----------
-    xc
-        Exchange-correlation functional
-    basis
-        Basis set
-    charge
-        Charge of the system
-    spin_multiplicity
-        Multiplicity of the system
-
-    Returns
-    -------
-    dict[str, Any]
-        Dictionary of default calculator kwargs
-    """
-    settings = get_settings()
-
-    return {
-        "command": f"{settings.GAUSSIAN_CMD} < {_LABEL}.com > {_LOG_FILE}",
-        "label": _LABEL,
-        "mem": "16GB",
-        "chk": "Gaussian.chk",
-        "nprocshared": psutil.cpu_count(logical=False),
-        "xc": xc,
-        "basis": basis,
-        "charge": charge,
-        "mult": spin_multiplicity,
-        "pop": "CM5",
-        "scf": ["maxcycle=250", "xqc"],
-        "integral": "ultrafine",
-        "nosymmetry": "",
-    }
 
 
 @job
@@ -104,7 +58,7 @@ def static_job(
     RunSchema
         Dictionary of results
     """
-    calc_defaults = _create_gaussian_defaults(
+    calc_defaults = create_gaussian_defaults(
         xc=xc, basis=basis, charge=charge, spin_multiplicity=spin_multiplicity
     )
     calc_defaults.update({"force": "", "gfinput": "", "ioplist": ["6/7=3", "2/9=2000"]})
@@ -157,7 +111,7 @@ def relax_job(
     RunSchema
         Dictionary of results
     """
-    calc_defaults = _create_gaussian_defaults(
+    calc_defaults = create_gaussian_defaults(
         xc=xc, basis=basis, charge=charge, spin_multiplicity=spin_multiplicity
     )
     calc_defaults.update({"opt": "", "ioplist": ["2/9=2000"]})  # ASE issue #660

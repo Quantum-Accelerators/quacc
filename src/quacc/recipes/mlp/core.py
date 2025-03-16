@@ -8,7 +8,7 @@ from ase.optimize import BFGS
 
 from quacc import job
 from quacc.recipes._base import Recipe
-from quacc.recipes.mlp._base import pick_calculator
+from quacc.recipes.mlp._util import pick_calculator
 
 if TYPE_CHECKING:
     from typing import Any, Literal

@@ -16,38 +16,7 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
 
-_GEOM_FILE = "geo_end.gen"
-
-
-def _create_dftb_defaults(
-    method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"],
-    kpts: tuple | list[tuple] | dict | None = None,
-    is_periodic: bool = True,
-) -> dict[str, Any]:
-    """Create the default calculator kwargs for DFTB+.
-
-    Parameters
-    ----------
-    method
-        Method to use
-    kpts
-        k-point grid to use
-    is_periodic
-        Whether the system is periodic
-
-    Returns
-    -------
-    dict[str, Any]
-        Default calculator kwargs
-    """
-    calc_defaults = {
-        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-        "Hamiltonian_MaxSccIterations": 200,
-        "kpts": kpts or ((1, 1, 1) if is_periodic else None),
-    }
-    if "xtb" in method.lower():
-        calc_defaults["Hamiltonian_Method"] = method
-    return calc_defaults
+from quacc.recipes.dftb._util import _GEOM_FILE, create_dftb_defaults
 
 
 @job
@@ -81,9 +50,7 @@ def static_job(
     RunSchema
         Results dictionary
     """
-    calc_defaults = _create_dftb_defaults(
-        method, kpts=kpts, is_periodic=atoms.pbc.any()
-    )
+    calc_defaults = create_dftb_defaults(method, kpts=kpts, is_periodic=atoms.pbc.any())
     recipe = Recipe(Dftb, calc_defaults)
     return recipe.calculate(
         atoms,
@@ -128,9 +95,7 @@ def relax_job(
     RunSchema
         Results dictionary
     """
-    calc_defaults = _create_dftb_defaults(
-        method, kpts=kpts, is_periodic=atoms.pbc.any()
-    )
+    calc_defaults = create_dftb_defaults(method, kpts=kpts, is_periodic=atoms.pbc.any())
     calc_defaults.update(
         {
             "Driver_": "GeometryOptimization",
