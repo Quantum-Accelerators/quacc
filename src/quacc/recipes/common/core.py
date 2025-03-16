@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.calculators.calculator import BaseCalculator
-    from ase.optimize import Dynamics
+    from ase.optimize.optimize import Optimizer
 
     from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 
@@ -127,13 +127,13 @@ class Recipe:
         relax_cell: bool = False,
         fmax: float | None = 0.01,
         max_steps: int = 1000,
-        optimizer: type[Dynamics] = BFGS,
+        optimizer: type[Optimizer] = BFGS,
         optimizer_kwargs: dict[str, Any] | None = None,
         store_intermediate_results: bool = False,
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
         filter_kwargs: dict[str, Any] | None = None,
-        opt_params: OptParams | None = None,
+        opt_params: dict[str, Any] | None = None,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
         additional_fields: dict[str, Any] | None = None,
         **calc_kwargs,

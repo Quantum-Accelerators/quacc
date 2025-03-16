@@ -160,7 +160,7 @@ def _deformations_to_elastic_tensor(
     ElasticityDoc
         An emmet (i.e. MaterialsProject) ElasticityDoc with information about the final elastic tensor fit
     """
-    structure = AseAtomsAdaptor.get_structure(undeformed_result["atoms"])  # type: ignore
+    structure = AseAtomsAdaptor.get_structure(undeformed_result["atoms"])
     equilibrium_stress = Stress(
         (
             voigt_6_to_full_3x3_stress(undeformed_result["results"]["stress"])

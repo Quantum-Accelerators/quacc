@@ -29,7 +29,7 @@ def create_dftb_defaults(
     Returns
     -------
     dict[str, Any]
-        Default calculator kwargs
+        Default calculator kwargs for [ase.calculators.dftb.Dftb][]
     """
     calc_defaults = {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",

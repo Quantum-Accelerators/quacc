@@ -22,8 +22,8 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     kpts: tuple | list[tuple] | dict | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -35,14 +35,14 @@ def static_job(
         Atoms object
     method
         Method to use
-    copy_files
-        Files to copy to runtime directory
     kpts
         k-point grid to use
+    copy_files
+        Files to copy to runtime directory
     additional_fields
-        Additional fields for results
+        Metadata to store in the results
     **calc_kwargs
-        Additional calculator kwargs
+        Calculator parameters to pass to [ase.calculators.dftb.Dftb][]
 
     Returns
     -------
@@ -50,7 +50,7 @@ def static_job(
         Results dictionary
     """
     calc_defaults = create_dftb_defaults(
-        method=method, kpts=kpts, is_periodic=atoms.pbc.any()
+        method=method, kpts=kpts, is_periodic=bool(atoms.pbc.any())
     )
     return Recipe(Dftb, calc_defaults=calc_defaults).run(
         atoms,
@@ -86,9 +86,9 @@ def relax_job(
     copy_files
         Files to copy to runtime directory
     additional_fields
-        Additional fields for results
+        Metadata to store in the results
     **calc_kwargs
-        Additional calculator kwargs
+        Calculator parameters to pass to [ase.calculators.dftb.Dftb][]
 
     Returns
     -------
@@ -96,7 +96,7 @@ def relax_job(
         Results dictionary
     """
     calc_defaults = create_dftb_defaults(
-        method=method, kpts=kpts, is_periodic=atoms.pbc.any()
+        method=method, kpts=kpts, is_periodic=bool(atoms.pbc.any())
     )
     calc_defaults |= {
         "Driver_": "GeometryOptimization",

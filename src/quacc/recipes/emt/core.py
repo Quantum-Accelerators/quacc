@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from ase.optimize import Dynamics
+    from ase.optimize.optimize import Optimizer
 
     from quacc.types import OptSchema, RunSchema
 
@@ -34,9 +34,9 @@ def static_job(
     atoms
         Atoms object
     additional_fields
-        Additional fields for results
+        Metadata to store in the results
     **calc_kwargs
-        Calculator parameters that override defaults
+        Calculator parameters to pass to [ase.calculators.emt.EMT][]
 
     Returns
     -------
@@ -52,7 +52,7 @@ def relax_job(
     relax_cell: bool = False,
     fmax: float | None = 0.01,
     max_steps: int = 1000,
-    optimizer: type[Dynamics] = BFGS,
+    optimizer: type[Optimizer] = BFGS,
     optimizer_kwargs: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -66,19 +66,17 @@ def relax_job(
     relax_cell
         Whether to relax the cell
     fmax
-        Maximum force change
+        Maximum force change in eV/A
     max_steps
         Maximum number of steps
     optimizer
-        Optimizer class to use
+        ASE optimizer class to use
     optimizer_kwargs
-        Dictionary of kwargs for the optimizer. Takes all valid kwargs for ASE
-        Optimizer classes. Refer to `_set_sella_kwargs` for Sella-related
-        kwargs and how they are set.
+        Dictionary of keyword arguments to pass to the optimizer
     additional_fields
-        Additional fields for results
+        Metadata to store in the results
     **calc_kwargs
-        Calculator parameters that override defaults
+        Calculator parameters to pass to [ase.calculators.emt.EMT][]
 
     Returns
     -------
