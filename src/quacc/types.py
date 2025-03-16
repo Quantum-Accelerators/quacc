@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from pymatgen.core.composition import Composition
     from pymatgen.core.lattice import Lattice
     from pymatgen.core.periodic_table import Element
-    from pymatgen.core.structure import Molecule, Structure
+    from pymatgen.core.structure import Structure
     from pymatgen.entries.computed_entries import ComputedEntry
     from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
     from typing_extensions import NotRequired, TypedDict
