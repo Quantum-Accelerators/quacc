@@ -380,7 +380,7 @@ class Summarize:
 
 class VibSummarize:
     """
-    Summarize an ASE Vibratinos analysis.
+    Summarize an ASE Vibrations analysis.
     """
 
     def __init__(
