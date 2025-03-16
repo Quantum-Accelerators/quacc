@@ -8,6 +8,7 @@ from ase.calculators.dftb import Dftb
 
 from quacc import job
 from quacc.recipes.common.core import Recipe
+from quacc.recipes.dftb._defaults import _GEOM_FILE, create_dftb_defaults
 
 if TYPE_CHECKING:
     from typing import Any
@@ -15,8 +16,6 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
-
-from quacc.recipes.dftb._defaults import _GEOM_FILE, create_dftb_defaults
 
 
 @job
