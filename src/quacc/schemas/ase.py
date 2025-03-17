@@ -212,7 +212,7 @@ class Summarize:
         # Check and set up variables
         base_task_doc = self.opt(dyn, trajectory=trajectory, check_convergence=False)
         del base_task_doc["converged"]
-        directory = self.directory or base_task_doc["dir_name"]
+        self.directory or base_task_doc["dir_name"]
 
         # Clean up the opt parameters
         parameters_md = base_task_doc.pop("parameters_opt")
