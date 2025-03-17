@@ -7,7 +7,7 @@ from functools import partial, wraps
 from typing import TYPE_CHECKING, Any
 
 from quacc.settings import change_settings_wrap
-from quacc.wflow_tools.db import results_to_db
+from quacc.wflow_tools.db import store_wrapper
 
 if TYPE_CHECKING:
     from quacc.settings import QuaccSettings
@@ -15,37 +15,6 @@ if TYPE_CHECKING:
 Job = Callable[..., Any]
 Flow = Callable[..., Any]
 Subflow = Callable[..., Any]
-
-
-def _store_wrapper(
-    func: Callable[..., Any], settings: QuaccSettings
-) -> Callable[..., Any]:
-    """
-    Wrap a function to store the results in the database.
-
-    Parameters
-    ----------
-    func
-        The function to wrap.
-    settings
-        The Quacc settings.
-
-    Returns
-    -------
-    Callable[..., Any]
-        The wrapped function.
-    """
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        result = func(*args, **kwargs)
-
-        if isinstance(result, dict) and settings.STORE:
-            results_to_db(settings.STORE, result)
-
-        return result
-
-    return wrapper
 
 
 def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
@@ -183,7 +152,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     if settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
-        return _store_wrapper(ct.electron(_func, **kwargs), settings)
+        return ct.electron(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "dask":
         from dask import delayed
 
@@ -193,23 +162,21 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
         def wrapper(*f_args, **f_kwargs):
             return _func(*f_args, **f_kwargs)
 
-        return _store_wrapper(Delayed_(delayed(wrapper, **kwargs)), settings)
+        return store_wrapper(Delayed_(delayed(wrapper, **kwargs)), settings.STORE)
     elif settings.WORKFLOW_ENGINE == "jobflow":
         from jobflow import job as jf_job
 
-        return _store_wrapper(jf_job(_func, **kwargs), settings)
+        return jf_job(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
         wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
 
-        return _store_wrapper(python_app(wrapped_fn, **kwargs), settings)
+        return store_wrapper(python_app(wrapped_fn, **kwargs), settings.STORE)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
-        return _store_wrapper(
-            task(_func, namespace=_func.__module__, **kwargs), settings
-        )
+        return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import task
 
@@ -220,11 +187,11 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
                 decorated = task(_func, **kwargs)
                 return decorated.submit(*f_args, **f_kwargs)
 
-            return _store_wrapper(wrapper, settings)
+            return wrapper
         else:
-            return _store_wrapper(task(_func, **kwargs), settings)
+            return task(_func, **kwargs)
     else:
-        return _store_wrapper(_func, settings)
+        return store_wrapper(_func, settings.STORE)
 
 
 def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
@@ -379,19 +346,15 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
     elif settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
-        return _store_wrapper(ct.lattice(_func, **kwargs), settings)
+        return ct.lattice(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
-        return _store_wrapper(
-            task(_func, namespace=_func.__module__, **kwargs), settings
-        )
+        return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
-        return _store_wrapper(
-            _get_prefect_wrapped_flow(_func, settings, **kwargs), settings
-        )
+        return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     else:
-        return _store_wrapper(_func, settings)
+        return store_wrapper(_func, settings.STORE)
 
 
 def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
@@ -597,7 +560,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
     elif settings.WORKFLOW_ENGINE == "covalent":
         import covalent as ct
 
-        return _store_wrapper(ct.electron(ct.lattice(_func), **kwargs), settings)
+        return ct.electron(ct.lattice(_func), **kwargs)
     elif settings.WORKFLOW_ENGINE == "dask":
         from dask.delayed import delayed
         from dask.distributed import worker_client
@@ -610,25 +573,21 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
                 futures = client.compute(_func(*f_args, **f_kwargs))
                 return client.gather(futures)
 
-        return _store_wrapper(delayed(wrapper, **kwargs), settings)
+        return store_wrapper(delayed(wrapper, **kwargs), settings.STORE)
     elif settings.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
 
         wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
 
-        return _store_wrapper(join_app(wrapped_fn, **kwargs), settings)
+        return store_wrapper(join_app(wrapped_fn, **kwargs), settings.STORE)
     elif settings.WORKFLOW_ENGINE == "prefect":
-        return _store_wrapper(
-            _get_prefect_wrapped_flow(_func, settings, **kwargs), settings
-        )
+        return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
-        return _store_wrapper(
-            task(_func, namespace=_func.__module__, **kwargs), settings
-        )
+        return task(_func, namespace=_func.__module__, **kwargs)
     else:
-        return _store_wrapper(_func, settings)
+        return store_wrapper(_func, settings.STORE)
 
 
 def _get_parsl_wrapped_func(

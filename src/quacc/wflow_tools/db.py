@@ -3,14 +3,47 @@
 from __future__ import annotations
 
 import uuid
-from typing import TYPE_CHECKING
+from functools import wraps
+from typing import TYPE_CHECKING, Any
 
 from monty.json import jsanitize
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from typing import Any
 
     from maggma.core import Store
+
+    from quacc.settings import QuaccSettings
+
+
+def store_wrapper(func: Callable[..., Any], store: Store | None) -> Callable[..., Any]:
+    """
+    Wrap a function to store the results in the database.
+
+    Parameters
+    ----------
+    func
+        The function to wrap.
+    settings
+        The Quacc settings.
+
+    Returns
+    -------
+    Callable[..., Any]
+        The wrapped function.
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+
+        if isinstance(result, dict) and store:
+            results_to_db(store, result)
+
+        return result
+
+    return wrapper
 
 
 def results_to_db(store: Store, result: dict[str, Any]) -> None:
