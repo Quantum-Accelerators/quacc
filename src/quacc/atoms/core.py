@@ -152,19 +152,18 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
     """
     if getattr(atoms, "spin_multiplicity", None):
         return atoms.spin_multiplicity  # type: ignore[attr-defined]
-    elif (
-        getattr(atoms, "calc", None) is not None
-        and getattr(atoms.calc, "results", None) is not None
-        and atoms.calc.results.get("magmom", None) is not None
-    ):
-        return round(abs(atoms.calc.results["magmom"])) + 1
-    elif (
-        getattr(atoms, "calc", None) is not None
-        and getattr(atoms.calc, "results", None) is not None
-        and atoms.calc.results.get("magmoms", None) is not None
-    ):
-        return round(np.abs(atoms.calc.results["magmoms"].sum())) + 1
-    elif atoms.has("initial_magmoms"):
+
+    try:
+        results = atoms.calc.results  # type: ignore[attr-defined]
+    except AttributeError:
+        results = None
+    if results:
+        if results.get("magmom", None) is not None:
+            return round(abs(results["magmom"])) + 1
+        if results.get("magmoms", None) is not None:
+            return round(np.abs(results["magmoms"].sum())) + 1
+
+    if atoms.has("initial_magmoms"):
         return round(np.abs(atoms.get_initial_magnetic_moments().sum())) + 1
 
     LOGGER.warning("Could not determine spin multiplicity. Assuming 1.")
@@ -199,7 +198,7 @@ def perturb(mol: Atoms, matrix: list[list[float]] | NDArray, scale: float) -> At
     mol
         ASE Atoms object representing a molecule
     matrix
-        Nx3 matrix, where N is the number of atoms. This means that there is potentially a different translation
+        N x 3 matrix, where N is the number of atoms. This means that there is potentially a different translation
         vector for each atom in the molecule.
     scale
         Scaling factor for perturbation
