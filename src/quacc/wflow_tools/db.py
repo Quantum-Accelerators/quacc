@@ -14,8 +14,6 @@ if TYPE_CHECKING:
 
     from maggma.core import Store
 
-    from quacc.settings import QuaccSettings
-
 
 def store_wrapper(func: Callable[..., Any], store: Store | None) -> Callable[..., Any]:
     """
