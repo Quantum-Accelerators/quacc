@@ -7,7 +7,11 @@ from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
 
-from frozendict import frozendict
+from monty.dev import requires
+
+has_frozen = bool(find_spec("frozendict"))
+if has_frozen:
+    from frozendict import frozendict
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -17,6 +21,7 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
+@requires(has_frozen, "frozendict is not installed.")
 def freezeargs(func):
     """Convert a mutable dictionary into immutable.
     Useful to make sure dictionary args are compatible with cache
