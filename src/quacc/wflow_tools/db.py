@@ -22,9 +22,8 @@ def results_to_db(store: Store, result: dict[str, Any]) -> None:
     ----------
     store
         The Maggma Store object to store the results in
-    results
-        The output summary dictionary or list of dictionaries from a quacc
-        recipe
+    result
+        The output summary dictionary from a quacc recipe
 
     Returns
     -------
