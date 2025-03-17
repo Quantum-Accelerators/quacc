@@ -6,7 +6,7 @@ import os
 import shlex
 from typing import TYPE_CHECKING
 
-from custodian import Custodian
+from custodian.custodian import Custodian
 from custodian.vasp.handlers import (
     FrozenJobErrorHandler,
     IncorrectSmearingHandler,

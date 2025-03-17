@@ -1,4 +1,3 @@
-
 """
 Custom types used throughout quacc.
 """
