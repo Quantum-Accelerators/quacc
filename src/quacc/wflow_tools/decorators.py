@@ -7,7 +7,6 @@ from functools import partial, wraps
 from typing import TYPE_CHECKING, Any
 
 from quacc.settings import change_settings_wrap
-from quacc.wflow_tools.db import store_wrapper
 
 if TYPE_CHECKING:
     from quacc.settings import QuaccSettings
@@ -162,7 +161,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
         def wrapper(*f_args, **f_kwargs):
             return _func(*f_args, **f_kwargs)
 
-        return store_wrapper(Delayed_(delayed(wrapper, **kwargs)), settings.STORE)
+        return Delayed_(delayed(wrapper, **kwargs))
     elif settings.WORKFLOW_ENGINE == "jobflow":
         from jobflow import job as jf_job
 
@@ -172,7 +171,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
 
         wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
 
-        return store_wrapper(python_app(wrapped_fn, **kwargs), settings.STORE)
+        return python_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
@@ -191,7 +190,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
         else:
             return task(_func, **kwargs)
     else:
-        return store_wrapper(_func, settings.STORE)
+        return _func
 
 
 def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
@@ -354,7 +353,7 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     else:
-        return store_wrapper(_func, settings.STORE)
+        return _func
 
 
 def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
@@ -573,13 +572,13 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
                 futures = client.compute(_func(*f_args, **f_kwargs))
                 return client.gather(futures)
 
-        return store_wrapper(delayed(wrapper, **kwargs), settings.STORE)
+        return delayed(wrapper, **kwargs)
     elif settings.WORKFLOW_ENGINE == "parsl":
         from parsl import join_app
 
         wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
 
-        return store_wrapper(join_app(wrapped_fn, **kwargs), settings.STORE)
+        return join_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
@@ -587,7 +586,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     else:
-        return store_wrapper(_func, settings.STORE)
+        return _func
 
 
 def _get_parsl_wrapped_func(
