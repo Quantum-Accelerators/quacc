@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.atoms import Atoms
-    from ase.optimize import Dynamics
+    from ase.optimize.optimize import Optimizer
 
     from quacc.types import OptSchema, RunSchema
 
@@ -66,7 +66,7 @@ def relax_job(
     relax_cell: bool = False,
     fmax: float | None = 0.05,
     max_steps: int = 1000,
-    optimizer: type[Dynamics] = BFGS,
+    optimizer: type[Optimizer] = BFGS,
     optimizer_kwargs: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -82,6 +82,14 @@ def relax_job(
         Universal ML interatomic potential method to use
     relax_cell
         Whether to relax the cell.
+    fmax
+        Maximum force change for relaxation.
+    max_steps
+        Maximum number of steps for relaxation.
+    optimizer
+        Optimizer to use.
+    optimizer_kwargs
+        Additional kwargs for the optimizer.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs

@@ -138,13 +138,7 @@ def freq_job(
         Dictionary of results
     """
     freq_results = Recipe(LennardJones).vib(
-        atoms,
-        energy=energy,
-        temperature=temperature,
-        pressure=pressure,
-        vib_kwargs=vib_kwargs,
-        additional_fields=additional_fields,
-        **calc_kwargs,
+        atoms, vib_kwargs=vib_kwargs, additional_fields=additional_fields, **calc_kwargs
     )
     thermo_results = ThermoSummarize(
         atoms,

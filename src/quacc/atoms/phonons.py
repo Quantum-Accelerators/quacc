@@ -13,15 +13,15 @@ from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 has_phonopy = bool(find_spec("phonopy"))
 
 if has_phonopy:
-    from phonopy import Phonopy
-    from phonopy.structure.cells import get_supercell
+    from phonopy import Phonopy  # type: ignore
+    from phonopy.structure.cells import get_supercell  # type: ignore
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
     if has_phonopy:
-        from phonopy.structure.atoms import PhonopyAtoms
+        from phonopy.structure.atoms import PhonopyAtoms  # type: ignore
 
 
 @requires(has_phonopy, "Phonopy not installed.")
@@ -68,7 +68,7 @@ def get_phonopy(
             np.round(np.ceil(min_lengths / atoms.cell.lengths()))
         )
 
-    phonon = Phonopy(
+    phonon = Phonopy(  # type: ignore
         get_phonopy_structure(Structure.from_ase_atoms(atoms)),
         symprec=symprec,
         supercell_matrix=supercell_matrix,
@@ -121,7 +121,7 @@ def get_atoms_supercell_by_phonopy(
     """
 
     return phonopy_atoms_to_ase_atoms(
-        get_supercell(
+        get_supercell(  # type: ignore
             get_phonopy_structure(Structure.from_ase_atoms(atoms)), supercell_matrix
         )
     )

@@ -14,29 +14,20 @@ from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
-from quacc.schemas.thermo import ThermoSummarize
-from quacc.utils.dicts import clean_dict, recursive_dict_merge
+from quacc.utils.dicts import clean_dict
 from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import Any, Literal
+    from typing import Any
 
     from ase.atoms import Atoms
     from ase.io.trajectory import TrajectoryWriter
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.vibrations import Vibrations
-    from maggma.core import Store
 
-    from quacc.types import (
-        DefaultSetting,
-        DynSchema,
-        OptSchema,
-        RunSchema,
-        VibSchema,
-        VibThermoSchema,
-    )
+    from quacc.types import DefaultSetting, DynSchema, OptSchema, RunSchema, VibSchema
 
 
 class Summarize:
@@ -57,7 +48,7 @@ class Summarize:
         Parameters
         ----------
         directory
-            Path to the directory where the calculation was run and results will be stored.
+            Path to the directory where the calculation was run and results were stored.
         move_magmoms
             Whether to move the final magmoms of the original Atoms object to the
             initial magmoms of the returned Atoms object, if relevant.
@@ -73,12 +64,7 @@ class Summarize:
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
-    def run(
-        self,
-        final_atoms: Atoms,
-        input_atoms: Atoms,
-        store: Store | None | DefaultSetting = QuaccDefault,
-    ) -> RunSchema:
+    def run(self, final_atoms: Atoms, input_atoms: Atoms) -> RunSchema:
         """
         Get tabulated results from a standard ASE run.
 
@@ -105,7 +91,6 @@ class Summarize:
             msg = "ASE Atoms object's calculator has no results."
             raise ValueError(msg)
 
-        store = self._settings.STORE if store == QuaccDefault else store
         directory = self.directory or final_atoms.calc.directory
 
         # Generate input atoms metadata
@@ -139,7 +124,6 @@ class Summarize:
         dyn: Optimizer,
         trajectory: list[Atoms] | None = None,
         check_convergence: bool | DefaultSetting = QuaccDefault,
-        store: Store | None | DefaultSetting = QuaccDefault,
     ) -> OptSchema:
         """
         Get tabulated results from an ASE optimization.
@@ -154,8 +138,6 @@ class Summarize:
         check_convergence
             Whether to check the convergence of the calculation. Defaults to True in
             settings.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
         Returns
         -------
@@ -169,7 +151,6 @@ class Summarize:
             if check_convergence == QuaccDefault
             else check_convergence
         )
-        store = self._settings.STORE if store == QuaccDefault else store
 
         # Get trajectory
         if trajectory:
@@ -190,7 +171,7 @@ class Summarize:
             raise RuntimeError(msg)
 
         # Base task doc
-        base_task_doc = self.run(final_atoms, initial_atoms, store=None)
+        base_task_doc = self.run(final_atoms, initial_atoms)
 
         # Clean up the opt parameters
         parameters_opt = dyn.todict()
@@ -210,10 +191,7 @@ class Summarize:
         return clean_dict(unsorted_task_doc)
 
     def md(
-        self,
-        dyn: MolecularDynamics,
-        trajectory: list[Atoms] | None = None,
-        store: Store | None | DefaultSetting = QuaccDefault,
+        self, dyn: MolecularDynamics, trajectory: list[Atoms] | None = None
     ) -> DynSchema:
         """
         Get tabulated results from an ASE MD run.
@@ -225,8 +203,6 @@ class Summarize:
         trajectory
             ASE Trajectory object or list[Atoms] from reading a trajectory file. If
             None, the trajectory must be found in `dyn.trajectory.filename`.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
         Returns
         -------
@@ -234,10 +210,7 @@ class Summarize:
             Dictionary representation of the task document
         """
         # Check and set up variables
-        store = self._settings.STORE if store == QuaccDefault else store
-        base_task_doc = self.opt(
-            dyn, trajectory=trajectory, check_convergence=False, store=None
-        )
+        base_task_doc = self.opt(dyn, trajectory=trajectory, check_convergence=False)
         del base_task_doc["converged"]
         directory = self.directory or base_task_doc["dir_name"]
 
@@ -268,7 +241,6 @@ class Summarize:
         n_images: int,
         n_iter_return: int = -1,
         trajectory: TrajectoryWriter | list[Atoms] | None = None,
-        store: Store | None | DefaultSetting = QuaccDefault,
     ) -> OptSchema:
         """
         Summarize the NEB run results and store them in a database-friendly format.
@@ -283,15 +255,12 @@ class Summarize:
             Number of iterations to return. If -1, all iterations are returned.
         trajectory
             Trajectory of the NEB run, either as a Trajectory object or a list of Atoms objects.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`.
 
         Returns
         -------
         OptSchema
             A dictionary containing the summarized NEB run results.
         """
-        store = self._settings.STORE if store == QuaccDefault else store
 
         # Get trajectory
         if trajectory:
@@ -371,29 +340,23 @@ class VibSummarize:
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
-    def vib(self, store: Store | None | DefaultSetting = QuaccDefault) -> VibSchema:
+    def vib(self) -> VibSchema:
         """
         Get tabulated results from an ASE Vibrations object and store them in a database-
         friendly format.
-
-        Parameters
-        ----------
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
         Returns
         -------
         VibSchema
             Dictionary representation of the task document
         """
-        store = self._settings.STORE if store == QuaccDefault else store
 
         # Tabulate input parameters
         vib_freqs_raw = self.vib_object.get_frequencies().tolist()
         vib_energies_raw = self.vib_object.get_energies().tolist()
         if isinstance(self.vib_object, VibrationsData):
             atoms = self.vib_object._atoms
-            directory = self.directory
+            directory = self.directory or "."
             inputs = {"nid": get_uri(directory).split(":")[0], "dir_name": directory}
         else:
             atoms = self.vib_object.atoms

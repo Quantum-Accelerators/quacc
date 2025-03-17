@@ -95,9 +95,7 @@ class VaspSummarize:
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
-    def run(
-        self, final_atoms: Atoms, store: Store | None | DefaultSetting = QuaccDefault
-    ) -> VaspSchema:
+    def run(self, final_atoms: Atoms) -> VaspSchema:
         """
         Get tabulated results from a VASP run and store them in a database-friendly format.
 
@@ -105,8 +103,6 @@ class VaspSummarize:
         ----------
         final_atoms
             ASE Atoms object following a calculation.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
 
         Returns
         -------
@@ -129,7 +125,6 @@ class VaspSummarize:
             else self.check_convergence
         )
         directory = Path(self.directory or final_atoms.calc.directory)
-        store = self._settings.STORE if store == QuaccDefault else store
         additional_fields = self.additional_fields or {}
 
         # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
@@ -161,7 +156,7 @@ class VaspSummarize:
             directory=directory,
             move_magmoms=self.move_magmoms,
             additional_fields=self.additional_fields,
-        ).run(final_atoms, initial_atoms, store=None)
+        ).run(final_atoms, initial_atoms)
 
         if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
             intermediate_vasp_task_docs = {
@@ -206,10 +201,7 @@ class VaspSummarize:
         return clean_dict(unsorted_task_doc)
 
     def ase_opt(
-        self,
-        optimizer: Optimizer,
-        trajectory: list[Atoms] | None = None,
-        store: Store | None | DefaultSetting = QuaccDefault,
+        self, optimizer: Optimizer, trajectory: list[Atoms] | None = None
     ) -> VaspASEOptSchema:
         """
         Summarize an ASE-based VASP optimization.
@@ -221,10 +213,12 @@ class VaspSummarize:
         trajectory
             ASE Trajectory object or list[Atoms] from reading a trajectory file. If
             None, the trajectory must be found in dyn.trajectory.filename.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
+
+        Returns
+        -------
+        VaspASEOptSchema
+            Dictionary representation of the task document
         """
-        store = self._settings.STORE if store == QuaccDefault else store
 
         final_atoms = get_final_atoms_from_dynamics(optimizer)
         directory = Path(self.directory or final_atoms.calc.directory)
@@ -234,13 +228,10 @@ class VaspSummarize:
             move_magmoms=self.move_magmoms,
             additional_fields=self.additional_fields,
         ).opt(
-            optimizer,
-            trajectory=trajectory,
-            check_convergence=self.check_convergence,
-            store=None,
+            optimizer, trajectory=trajectory, check_convergence=self.check_convergence
         )
 
-        vasp_summary = self.run(final_atoms, store=None)
+        vasp_summary = self.run(final_atoms)
         unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
         return clean_dict(unsorted_task_doc)
 

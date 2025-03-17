@@ -7,7 +7,9 @@ from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
 
-from frozendict import frozendict
+from monty.dev import requires
+
+has_frozen = bool(find_spec("frozendict"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -19,6 +21,7 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
+@requires(has_frozen, "frozendict must be installed. Run pip install frozendict.")
 def freezeargs(func: Callable) -> Callable:
     """
     Convert a mutable dictionary into immutable.
@@ -35,6 +38,7 @@ def freezeargs(func: Callable) -> Callable:
     Function
         Wrapped function
     """
+    from frozendict import frozendict
 
     @wraps(func)
     def wrapped(*args, **kwargs):

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class QChem(FileIOCalculator):
     """Custom Q-Chem calculator built on Pymatgen and Custodian."""
 
-    implemented_properties: ClassVar[list[str]] = [
+    implemented_properties: ClassVar[list[str]] = [  # type: ignore
         "energy",
         "forces",
         "hessian",

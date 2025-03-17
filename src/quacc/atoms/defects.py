@@ -13,10 +13,10 @@ from pymatgen.io.ase import AseAtomsAdaptor
 has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
 has_shakenbreak = bool(find_spec("shakenbreak"))
 if has_pmg_defects:
-    from pymatgen.analysis.defects.generators import VacancyGenerator
-    from pymatgen.analysis.defects.thermo import DefectEntry
+    from pymatgen.analysis.defects.generators import VacancyGenerator  # type: ignore
+    from pymatgen.analysis.defects.thermo import DefectEntry  # type: ignore
 if has_shakenbreak:
-    from shakenbreak.input import Distortions
+    from shakenbreak.input import Distortions  # type: ignore
 
 
 if TYPE_CHECKING:
@@ -25,8 +25,8 @@ if TYPE_CHECKING:
     from pymatgen.core.structure import Structure
 
     if has_pmg_defects:
-        from pymatgen.analysis.defects.core import Defect
-        from pymatgen.analysis.defects.generators import (
+        from pymatgen.analysis.defects.core import Defect  # type: ignore
+        from pymatgen.analysis.defects.generators import (  # type: ignore
             AntiSiteGenerator,
             ChargeInterstitialGenerator,
             InterstitialGenerator,
@@ -49,7 +49,7 @@ def make_defects_from_bulk(
         | SubstitutionGenerator
         | VacancyGenerator
         | VoronoiInterstitialGenerator
-    ) = VacancyGenerator,
+    ) = VacancyGenerator,  # type: ignore
     defect_charge: int = 0,
     sc_mat: NDArray | None = None,
     min_atoms: int = 80,
@@ -115,7 +115,7 @@ def make_defects_from_bulk(
         )
 
         # Instantiate class to apply rattle and bond distortion to all defects
-        dist = Distortions([defect_entry])
+        dist = Distortions([defect_entry])  # type: ignore
 
         # Apply rattle and bond distortion to all defects
         defect_dict, distortion_metadata = dist.apply_distortions()
@@ -164,10 +164,13 @@ def get_defect_entry_from_defect(
         defect entry
     """
     # Find defect's fractional coordinates and remove it from supercell
+    dummy_site = None
     for site in defect_supercell:
         if site.species.elements[0].symbol == DummySpecies().symbol:
             dummy_site = site
             break
+    if dummy_site is None:
+        raise ValueError("No dummy site found in defect supercell.")
     defect_supercell.remove(dummy_site)
 
     computed_structure_entry = ComputedStructureEntry(
@@ -175,7 +178,7 @@ def get_defect_entry_from_defect(
         energy=0.0,  # needs to be set, so set to 0.0
     )
 
-    return DefectEntry(
+    return DefectEntry(  # type: ignore
         defect=defect,
         charge_state=defect_charge,
         sc_entry=computed_structure_entry,
