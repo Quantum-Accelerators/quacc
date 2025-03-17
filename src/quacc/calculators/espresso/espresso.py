@@ -240,7 +240,7 @@ class EspressoTemplate(EspressoTemplate_):
                 results = {"matdyn_results": {"phonon_dos": phonon_dos}}
 
         if "energy" not in results:
-            results["energy"] = None
+            results["energy"] = {}
 
         return results
 
