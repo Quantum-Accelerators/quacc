@@ -172,8 +172,7 @@ class QuaccSettings(BaseSettings):
     # FHI-aims Settings
     # ---------------------------
     AIMS_BIN: Path = Field(
-        Path("aims.x"),
-        description="Path to the FHI-aims executable.",
+        Path("aims.x"), description="Path to the FHI-aims executable."
     )
 
     AIMS_PARALLEL_CMD: str = Field(
