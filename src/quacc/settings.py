@@ -167,6 +167,34 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
+    
+    # ---------------------------
+    # FHI-aims Settings
+    # ---------------------------
+    AIMS_BIN: Path = Field(
+        Path("aims.x"), description="Path to the FHI-aims executable."
+    )
+
+    AIMS_PARALLEL_CMD: str = Field(
+        "",
+        description=(
+            """
+            Parallelization command to run FHI-aims. For example: 'mpirun -np 4'.
+            Note that this does not include the executable name.
+            """
+        ),
+    )
+
+    AIMS_SPECIES_DEFAULTS: Path = Field(
+        Path("/path/to/fhi-aims/species_defaults/defaults_2020/"),
+        description=(
+            """
+            Path to the species_defaults directory containing the FHI-aims basis sets.
+            This should point to a specific species defaults set (e.g., defaults_2020),
+            which contains subdirectories like 'light', 'intermediate', 'tight', etc.
+            """
+        ),
+    )
 
     # ---------------------------
     # ESPRESSO Settings
