@@ -27,7 +27,6 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.optimize.optimize import Optimizer
-    from maggma.core import Store
 
     from quacc.types import (
         BaderSchema,

@@ -11,9 +11,7 @@ from ase.io import read
 from ase.mep import NEB
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
-from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
-from monty.serialization import loadfn
 
 from quacc.schemas.ase import Summarize, VibSummarize
 
