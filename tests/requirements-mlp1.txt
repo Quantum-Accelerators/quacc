@@ -1,6 +1,6 @@
 chgnet==0.4.0
 torch-dftd==0.5.1
-sevenn==0.10.4
+sevenn==0.11.0
 orb-models==0.4.2
 fairchem-core==1.7.0
 pynanoflann@git+https://github.com/dwastberg/pynanoflann
