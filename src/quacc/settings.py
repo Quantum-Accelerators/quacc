@@ -167,7 +167,7 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    
+
     # ---------------------------
     # FHI-aims Settings
     # ---------------------------
