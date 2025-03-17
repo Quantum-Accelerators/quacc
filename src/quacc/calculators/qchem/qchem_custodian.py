@@ -58,7 +58,7 @@ def run_custodian(
         Lists of lists of errors.
     """
     # Adapted from atomate.qchem.firetasks.run_calc
-    from custodian import Custodian
+    from custodian.custodian import Custodian
     from custodian.qchem.handlers import QChemErrorHandler
     from custodian.qchem.jobs import QCJob
 
