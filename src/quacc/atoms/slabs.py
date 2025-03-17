@@ -25,23 +25,18 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
-def flip_atoms(
-    atoms: Atoms | Structure | Slab, return_struct: bool = False
-) -> Atoms | Structure | Slab:
+def flip_atoms(atoms: Atoms, return_struct: bool = False) -> Atoms:
     """
-    Convenience function for vertically flipping periodic atoms or structures.
+    Convenience function for vertically flipping periodic atoms.
 
     Parameters
     ----------
     atoms
-        Atoms/.Structure to flip
-    return_struct
-        True if a Pymatgen structure object should be returned. False if an ASE
-        atoms object should be returned
+        Atoms to flip
 
     Returns
     -------
-    Atoms | Structure | Slab
+    Atoms
         Inverted slab
     """
     new_atoms = (
@@ -54,6 +49,27 @@ def flip_atoms(
         new_atoms = AseAtomsAdaptor.get_structure(new_atoms)
 
     return new_atoms
+
+
+def flip_structure(struct: Structure | Slab) -> Structure | Slab:
+    """
+    Convenience function for vertically flipping periodic structures.
+
+    Parameters
+    ----------
+    struct
+        Structure or Slab to flip
+
+    Returns
+    -------
+    Structure | Slab
+        Inverted slab
+    """
+    new_atoms = struct.to_ase_atoms()
+    new_atoms.rotate(180, "x")
+    new_atoms.wrap()
+
+    return AseAtomsAdaptor.get_structure(new_atoms)
 
 
 def make_slabs_from_bulk(
@@ -121,10 +137,8 @@ def make_slabs_from_bulk(
         for slab in slabs:
             if not slab.is_symmetric():
                 # Flip the slab and its oriented unit cell
-                new_slab = flip_atoms(slab, return_struct=True)  # type: Slab
-                new_oriented_unit_cell = flip_atoms(
-                    slab.oriented_unit_cell, return_struct=True
-                )  # type: Slab
+                new_slab = flip_structure(slab)
+                new_oriented_unit_cell = flip_structure(slab.oriented_unit_cell)
 
                 # Reconstruct the full slab object, noting the new shift and
                 # oriented unit cell
@@ -153,6 +167,7 @@ def make_slabs_from_bulk(
     slabs_with_props = []
     for slab in slabs:
         # Make sure desired atoms are on surface
+        surface_species = []
         if allowed_surface_symbols:
             # Find atoms at surface
             surf_sites = AdsorbateSiteFinder(deepcopy(slab)).surface_sites
@@ -371,5 +386,5 @@ def get_surface_energy(
     """
     alpha = len(slab) / len(bulk)
     cell = slab.get_cell()
-    area = np.linalg.norm(np.cross(cell[0], cell[1]))
+    area = float(np.linalg.norm(np.cross(cell[0], cell[1])))
     return (slab_energy - alpha * bulk_energy) / (2 * area)
