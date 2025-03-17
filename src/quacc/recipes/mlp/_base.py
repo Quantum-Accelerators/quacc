@@ -77,7 +77,8 @@ def pick_calculator(
         from matgl.ext.ase import PESCalculator
 
         model = matgl.load_model("M3GNet-MP-2021.2.8-DIRECT-PES")
-        calc_kwargs.setdefault("stress_weight", 1.0 / 160.21766208)
+        if "stress_weight" not in calc_kwargs:
+            calc_kwargs["stress_weight"] = 1.0 / 160.21766208
         calc = PESCalculator(potential=model, **calc_kwargs)
 
     elif method.lower() == "chgnet":
