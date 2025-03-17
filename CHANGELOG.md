@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.13.0]
+
+### Added
+
+- New elastic workflows for MLIPs and EMT
+
+### Changed
+
+- The existing elastic workflow has been completely overhauled so that it is more practical t ouse
+- The results dictionary returned at the end of the run has been modified, such that the structure metadata is now put under the `structure_metadata` key rather than the root level of the dictionary. Should this breaking change prove undesirable by the community, it can be reverted.
+
+### Fixed
+
+- Fixed various type hints
+
 ## [0.12.3]
 
 ### Added
