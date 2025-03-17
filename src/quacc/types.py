@@ -1,3 +1,4 @@
+
 """
 Custom types used throughout quacc.
 """
@@ -450,12 +451,16 @@ if TYPE_CHECKING:
 
     # ----------- Schema (Atoms) type hints -----------
 
-    class AtomsSchema(TypedDict, total=False):
+    class OptionalAtomsSchema(TypedDict, total=False):
+        """Type hint associated with [quacc.schemas.atoms.atoms_to_metadata][]"""
+
+        structure_metadata: StructureMetadata  # if atoms.pbc.any()
+        molecule_metadata: MoleculeMetadata  # if not atoms.pbc.any()
+
+    class AtomsSchema(OptionalAtomsSchema):
         """Type hint associated with [quacc.schemas.atoms.atoms_to_metadata][]"""
 
         atoms: Atoms
-        structure_metadata: StructureMetadata  # if atoms.pbc.any()
-        molecule_metadata: MoleculeMetadata  # if not atoms.pbc.any()
 
     # ----------- Schema (ASE) type hints -----------
 
@@ -532,7 +537,7 @@ if TYPE_CHECKING:
 
         deformed_structure_set: DeformedStructureSet
         deformed_results: list[RunSchema | OptSchema]
-        undeformed_static: RunSchema | OptSchema
+        undeformed_result: RunSchema | OptSchema
         elasticity_doc: ElasticityDoc
 
     class VibThermoSchema(VibSchema, ThermoSchema):
