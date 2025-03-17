@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import flow
-from quacc.recipes.common.elastic import bulk_to_elastic_tensor_subflow
+from quacc.recipes.common.elastic import elastic_tensor_flow as elastic_tensor_flow_
 from quacc.recipes.mlp.core import relax_job, static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 @flow
-def bulk_to_elastic_tensor_flow(
+def elastic_tensor_flow(
     atoms: Atoms,
     pre_relax: bool = True,
     run_static: bool = False,
@@ -30,26 +30,32 @@ def bulk_to_elastic_tensor_flow(
     """
     Workflow consisting of:
 
-    1. Deformed structures generation
-
-    2. Deformed structures relaxations
+    1. Bulk structure relaxation (if pre_relax is True)
         - name: "relax_job"
         - job: [quacc.recipes.emt.core.relax_job][]
 
-    3. Deformed structures statics (optional)
+    2. Bulk structure static calculation (if run_static is True)
         - name: "static_job"
         - job: [quacc.recipes.emt.core.static_job][]
 
-    4. Elastic tensor calculation
+    3. Deformed structures generation
 
+    4. Deformed structures relaxations
+        - name: "relax_job"
+        - job: [quacc.recipes.emt.core.relax_job][]
+
+    5. Deformed structures statics (if run_static is True)
+        - name: "static_job"
+        - job: [quacc.recipes.emt.core.static_job][]
+
+    6. Elastic tensor calculation
 
     Parameters
     ----------
     atoms
         Atoms object
     pre_relax
-        Whether to run a relaxation on the bulk structure before deformation (true) or run a static
-        calculation (false)
+        Whether to run a relaxation on the structure before deformation (true)
     run_static
         Whether to run static calculations after any relaxations on the undeformed or deformed structures
     deform_kwargs
@@ -73,16 +79,11 @@ def bulk_to_elastic_tensor_flow(
         decorators=job_decorators,
     )  # type: ignore
 
-    if pre_relax:
-        undeformed_result = relax_job_(atoms, relax_cell=True)
-        if run_static:
-            undeformed_result = static_job_(undeformed_result["atoms"])
-    else:
-        undeformed_result = static_job_(atoms)
-
-    return bulk_to_elastic_tensor_subflow(
-        undeformed_result=undeformed_result,
+    return elastic_tensor_flow_(
+        atoms=atoms,
         relax_job=relax_job_,
-        static_job=static_job_ if run_static else None,
+        static_job=static_job_,
+        pre_relax=pre_relax,
+        run_static=run_static,
         deform_kwargs=deform_kwargs,
     )

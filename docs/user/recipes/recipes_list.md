@@ -25,15 +25,15 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name                     | Decorator        | Documentation                                             | Req'd Extras     |
-| ------------------------ | ---------------- | --------------------------------------------------------- | ---------------- |
-| EMT Static               | `#!Python @job`  | [quacc.recipes.emt.core.static_job][]                     |                  |
-| EMT Relax                | `#!Python @job`  | [quacc.recipes.emt.core.relax_job][]                      |                  |
-| EMT MD                   | `#!Python @job`  | [quacc.recipes.emt.md.md_job][]                           |                  |
-| EMT Bulk to Defects      | `#!Python @flow` | [quacc.recipes.emt.defects.bulk_to_defects_flow][]        | `quacc[defects]` |
-| EMT Bulk to Slabs        | `#!Python @flow` | [quacc.recipes.emt.slabs.bulk_to_slabs_flow][]            |                  |
-| EMT Phonons              | `#!Python @flow` | [quacc.recipes.emt.phonons.phonon_flow][]                 | `quacc[phonons]` |
-| EMT Bulk to Deformations | `#!Python @flow` | [quacc.recipes.emt.elastic.bulk_to_elastic_tensor_flow][] |                  |
+| Name                     | Decorator        | Documentation                                      | Req'd Extras     |
+| ------------------------ | ---------------- | -------------------------------------------------- | ---------------- |
+| EMT Static               | `#!Python @job`  | [quacc.recipes.emt.core.static_job][]              |                  |
+| EMT Relax                | `#!Python @job`  | [quacc.recipes.emt.core.relax_job][]               |                  |
+| EMT MD                   | `#!Python @job`  | [quacc.recipes.emt.md.md_job][]                    |                  |
+| EMT Bulk to Defects      | `#!Python @flow` | [quacc.recipes.emt.defects.bulk_to_defects_flow][] | `quacc[defects]` |
+| EMT Bulk to Slabs        | `#!Python @flow` | [quacc.recipes.emt.slabs.bulk_to_slabs_flow][]     |                  |
+| EMT Phonons              | `#!Python @flow` | [quacc.recipes.emt.phonons.phonon_flow][]          | `quacc[phonons]` |
+| EMT Bulk to Deformations | `#!Python @flow` | [quacc.recipes.emt.elastic.elastic_tensor_flow][]  |                  |
 
 </center>
 
@@ -91,12 +91,12 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name           | Decorator        | Documentation                                                | Req'd Extras         |
-| -------------- | ---------------- | ------------------------------------------------------------ | -------------------- |
-| MLP Static     | `#!Python @job`  | [quacc.recipes.mlp.core.static_job][]                        | `quacc[mlp]`         |
-| MLP Relax      | `#!Python @job`  | [quacc.recipes.mlp.core.relax_job][]                         | `quacc[mlp]`         |
-| MLP Phonons    | `#!Python @flow` | [quacc.recipes.mlp.phonons.phonon_flow][]                    | `quacc[mlp,phonons]` |
-| MLP Elasticity | `#!Python @flow` | [quacc.recipes.mlp.elastic.bulk_to_elastic_tensor_flow][] | `quacc[mlp]` |
+| Name           | Decorator        | Documentation                                     | Req'd Extras         |
+| -------------- | ---------------- | ------------------------------------------------- | -------------------- |
+| MLP Static     | `#!Python @job`  | [quacc.recipes.mlp.core.static_job][]             | `quacc[mlp]`         |
+| MLP Relax      | `#!Python @job`  | [quacc.recipes.mlp.core.relax_job][]              | `quacc[mlp]`         |
+| MLP Phonons    | `#!Python @flow` | [quacc.recipes.mlp.phonons.phonon_flow][]         | `quacc[mlp,phonons]` |
+| MLP Elasticity | `#!Python @flow` | [quacc.recipes.mlp.elastic.elastic_tensor_flow][] | `quacc[mlp]`         |
 
 </center>
 
@@ -108,16 +108,16 @@ The list of available quacc recipes is shown below. The "Req'd Extras" column sp
 
 <center>
 
-| Name                | Decorator       | Documentation                                 | Req'd Extras   |
-|---------------------| --------------- |-----------------------------------------------|                |
-| NewtonNet Static    | `#!Python @job` | [quacc.recipes.newtonnet.core.static_job][]   |                |
-| NewtonNet Relax     | `#!Python @job` | [quacc.recipes.newtonnet.core.relax_job][]    |                |
-| NewtonNet Frequency | `#!Python @job` | [quacc.recipes.newtonnet.core.freq_job][]     |                |
-| NewtonNet TS        | `#!Python @job` | [quacc.recipes.newtonnet.ts.ts_job][]         | `quacc[sella]` |
-| NewtonNet IRC       | `#!Python @job` | [quacc.recipes.newtonnet.ts.irc_job][]        | `quacc[sella]` |
-| NewtonNet Quasi IRC | `#!Python @job` | [quacc.recipes.newtonnet.ts.quasi_irc_job][]  | `quacc[sella]` |
-| NewtonNet neb       | `#!Python @job` | [quacc.recipes.newtonnet.ts.neb_job][]        |                |
-| NewtonNet geodesic  | `#!Python @job` | [quacc.recipes.newtonnet.ts.geodesic_job][]   |                |
+| Name | Decorator | Documentation | Req'd Extras |
+|---------------------| --------------- |-----------------------------------------------| |
+| NewtonNet Static | `#!Python @job` | [quacc.recipes.newtonnet.core.static_job][] | |
+| NewtonNet Relax | `#!Python @job` | [quacc.recipes.newtonnet.core.relax_job][] | |
+| NewtonNet Frequency | `#!Python @job` | [quacc.recipes.newtonnet.core.freq_job][] | |
+| NewtonNet TS | `#!Python @job` | [quacc.recipes.newtonnet.ts.ts_job][] | `quacc[sella]` |
+| NewtonNet IRC | `#!Python @job` | [quacc.recipes.newtonnet.ts.irc_job][] | `quacc[sella]` |
+| NewtonNet Quasi IRC | `#!Python @job` | [quacc.recipes.newtonnet.ts.quasi_irc_job][] | `quacc[sella]` |
+| NewtonNet neb | `#!Python @job` | [quacc.recipes.newtonnet.ts.neb_job][] | |
+| NewtonNet geodesic | `#!Python @job` | [quacc.recipes.newtonnet.ts.geodesic_job][] | |
 
 </center>
 
