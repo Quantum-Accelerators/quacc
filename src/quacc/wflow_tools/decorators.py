@@ -17,6 +17,37 @@ Flow = Callable[..., Any]
 Subflow = Callable[..., Any]
 
 
+def _store_wrapper(
+    func: Callable[..., Any], settings: QuaccSettings
+) -> Callable[..., Any]:
+    """
+    Wrap a function to store the results in the database.
+
+    Parameters
+    ----------
+    func
+        The function to wrap.
+    settings
+        The Quacc settings.
+
+    Returns
+    -------
+    Callable[..., Any]
+        The wrapped function.
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        result = func(*args, **kwargs)
+
+        if isinstance(result, dict) and settings.STORE:
+            results_to_db(settings.STORE, result)
+
+        return result
+
+    return wrapper
+
+
 def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     """
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think of
@@ -598,37 +629,6 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         )
     else:
         return _store_wrapper(_func, settings)
-
-
-def _store_wrapper(
-    func: Callable[..., Any], settings: QuaccSettings
-) -> Callable[..., Any]:
-    """
-    Wrap a function to store the results in the database.
-
-    Parameters
-    ----------
-    func
-        The function to wrap.
-    settings
-        The Quacc settings.
-
-    Returns
-    -------
-    Callable[..., Any]
-        The wrapped function.
-    """
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        result = func(*args, **kwargs)
-
-        if isinstance(result, dict) and settings.STORE:
-            results_to_db(settings.STORE, result)
-
-        return result
-
-    return wrapper
 
 
 def _get_parsl_wrapped_func(
