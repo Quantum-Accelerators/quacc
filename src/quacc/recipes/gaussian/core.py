@@ -4,10 +4,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import psutil
+from ase.calculators.gaussian import Gaussian
 
 from quacc import job
-from quacc.recipes.gaussian._base import run_and_summarize
+from quacc.recipes.common.core import Recipe
+from quacc.recipes.gaussian._defaults import create_gaussian_defaults
 
 if TYPE_CHECKING:
     from typing import Any
@@ -57,28 +58,12 @@ def static_job(
     RunSchema
         Dictionary of results
     """
-    calc_defaults = {
-        "mem": "16GB",
-        "chk": "Gaussian.chk",
-        "nprocshared": psutil.cpu_count(logical=False),
-        "xc": xc,
-        "basis": basis,
-        "charge": charge,
-        "mult": spin_multiplicity,
-        "force": "",
-        "scf": ["maxcycle=250", "xqc"],
-        "integral": "ultrafine",
-        "nosymmetry": "",
-        "pop": "CM5",
-        "gfinput": "",
-        "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
-    }
-    return run_and_summarize(
-        atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        additional_fields={"name": "Gaussian Static"} | (additional_fields or {}),
-        copy_files=copy_files,
+    calc_defaults = create_gaussian_defaults(
+        xc=xc, basis=basis, charge=charge, spin_multiplicity=spin_multiplicity
+    )
+    calc_defaults.update({"force": "", "gfinput": "", "ioplist": ["6/7=3", "2/9=2000"]})
+    return Recipe(Gaussian, calc_defaults=calc_defaults).run(
+        atoms, copy_files=copy_files, additional_fields=additional_fields, **calc_kwargs
     )
 
 
@@ -125,28 +110,13 @@ def relax_job(
     RunSchema
         Dictionary of results
     """
-    calc_defaults = {
-        "mem": "16GB",
-        "chk": "Gaussian.chk",
-        "nprocshared": psutil.cpu_count(logical=False),
-        "xc": xc,
-        "basis": basis,
-        "charge": charge,
-        "mult": spin_multiplicity,
-        "opt": "",
-        "pop": "CM5",
-        "scf": ["maxcycle=250", "xqc"],
-        "integral": "ultrafine",
-        "nosymmetry": "",
-        "ioplist": ["2/9=2000"],  # ASE issue #660
-    }
+    calc_defaults = create_gaussian_defaults(
+        xc=xc, basis=basis, charge=charge, spin_multiplicity=spin_multiplicity
+    )
+    calc_defaults |= {"opt": "", "ioplist": ["2/9=2000"]}  # ASE issue #660
     if freq:
-        calc_defaults["freq"] = ""
+        calc_defaults |= {"freq": ""}
 
-    return run_and_summarize(
-        atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        additional_fields={"name": "Gaussian Relax"} | (additional_fields or {}),
-        copy_files=copy_files,
+    return Recipe(Gaussian, calc_defaults=calc_defaults).run(
+        atoms, copy_files=copy_files, additional_fields=additional_fields, **calc_kwargs
     )

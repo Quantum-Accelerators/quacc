@@ -215,7 +215,7 @@ class EspressoTemplate(EspressoTemplate_):
         results = {}
         if self.binary == "pw":
             atoms = read(Path(directory) / self.outputname, format="espresso-out")
-            results = dict(atoms.calc.properties())
+            results = dict(atoms.calc.properties())  # type: ignore
         elif self.binary in ["ph", "phcg"]:
             with Path(directory, self.outputname).open() as fd:
                 results = read_espresso_ph(fd)
@@ -240,7 +240,7 @@ class EspressoTemplate(EspressoTemplate_):
                 results = {"matdyn_results": {"phonon_dos": phonon_dos}}
 
         if "energy" not in results:
-            results["energy"] = None
+            results["energy"] = {}
 
         return results
 

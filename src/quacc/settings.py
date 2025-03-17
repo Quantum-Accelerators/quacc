@@ -241,7 +241,7 @@ class QuaccSettings(BaseSettings):
         description=(
             "Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."
         ),
-    )
+    )  # type: ignore
 
     # ---------------------------
     # VASP Settings
@@ -267,11 +267,11 @@ class QuaccSettings(BaseSettings):
     VASP_PP_PATH: Optional[Path] = Field(
         os.environ.get("VASP_PP_PATH"),
         description="Path to the VASP pseudopotential library. Must contain the directories `potpaw_PBE` and `potpaw` for PBE and LDA pseudopotentials, respectively. If ASE's VASP_PP_PATH is set, you do not need to set this.",
-    )
+    )  # type: ignore
     VASP_VDW: Optional[Path] = Field(
         os.environ.get("ASE_VASP_VDW"),
         description="Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals. If ASE's ASE_VASP_VDW is set, you do not need to set this.",
-    )
+    )  # type: ignore
 
     # VASP Settings: General
     VASP_INCAR_COPILOT: Literal["off", "on", "aggressive"] = Field(
@@ -603,13 +603,13 @@ def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
     Callable
         The wrapped function.
     """
-    original_func = func._original_func if getattr(func, "_changed", False) else func
+    original_func = func._original_func if getattr(func, "_changed", False) else func  # type: ignore[attr-defined]
 
     @wraps(original_func)
     def wrapper(*args, **kwargs):
         with change_settings(changes):
             return original_func(*args, **kwargs)
 
-    wrapper._changed = True
-    wrapper._original_func = original_func
+    wrapper._changed = True  # type: ignore[attr-defined]
+    wrapper._original_func = original_func  # type: ignore[attr-defined]
     return wrapper

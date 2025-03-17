@@ -5,18 +5,11 @@ from __future__ import annotations
 from collections.abc import MutableMapping
 from copy import deepcopy
 from logging import getLogger
-from pathlib import Path
 from typing import TYPE_CHECKING
-
-from monty.json import jsanitize
-from monty.serialization import dumpfn
-
-from quacc.wflow_tools.db import results_to_db
 
 if TYPE_CHECKING:
     from typing import Any
 
-    from maggma.stores import Store
 
 LOGGER = getLogger(__name__)
 
@@ -180,53 +173,3 @@ def clean_dict(start_dict: MutableMapping[str, Any]) -> MutableMapping[str, Any]
         Cleaned dictionary
     """
     return sort_dict(remove_dict_entries(start_dict, None))
-
-
-def finalize_dict(
-    task_doc: dict,
-    directory: str | Path | None = None,
-    gzip_file: bool = True,
-    store: Store | None = None,
-) -> MutableMapping[str, Any]:
-    """
-    Finalize a schema by cleaning it and storing it in a database and/or file.
-
-    Parameters
-    ----------
-    task_doc
-        Dictionary representation of the task document.
-    directory
-        Directory where the results file is stored.
-    gzip_file
-        Whether to gzip the results file.
-    store
-        Maggma Store object to store the results in.
-
-    Returns
-    -------
-    dict
-        Cleaned task document
-    """
-
-    cleaned_task_doc = clean_dict(task_doc)
-    if directory:
-        if "tmp-quacc" in str(directory):
-            raise ValueError("The directory should not be a temporary directory.")
-
-        sanitized_schema = jsanitize(
-            cleaned_task_doc, enum_values=True, recursive_msonable=True
-        )
-        dumpfn(
-            sanitized_schema,
-            Path(
-                directory,
-                "quacc_results.json.gz" if gzip_file else "quacc_results.json",
-            ),
-            fmt="json",
-            indent=4,
-        )
-
-    if store:
-        results_to_db(store, task_doc)
-
-    return cleaned_task_doc

@@ -14,8 +14,8 @@ LOGGER = logging.getLogger(__name__)
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 
 if has_geodesic_interpolate:
-    from geodesic_interpolate.geodesic import Geodesic
-    from geodesic_interpolate.interpolation import redistribute
+    from geodesic_interpolate.geodesic import Geodesic  # type: ignore
+    from geodesic_interpolate.interpolation import redistribute  # type: ignore
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -94,11 +94,11 @@ def geodesic_interpolate_wrapper(
 
     # Perform smoothing by minimizing distance in Cartesian coordinates with redundant internal metric
     # to find the appropriate geodesic curve on the hyperspace.
-    geodesic_smoother = Geodesic(
+    geodesic_smoother = Geodesic(  # type: ignore
         chemical_symbols,
         raw_interpolated_positions,
         morse_scaling,
-        threshold=distance_cutoff,
+        threshold=distance_cutoff,  # type: ignore
         friction=geometry_friction,
     )
     if perform_sweep == "auto":

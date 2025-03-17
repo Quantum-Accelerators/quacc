@@ -8,7 +8,7 @@ from quacc.wflow_tools.db import results_to_db
 
 def test_results_to_db():
     atoms = bulk("Cu")
-    store = MemoryStore(collection_name="db3")
+    store = MemoryStore(collection_name="test_results_to_db")
     results_to_db(store, {"atoms": atoms})
     with store:
         assert store.count() == 1

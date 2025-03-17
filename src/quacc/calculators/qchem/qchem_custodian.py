@@ -86,7 +86,7 @@ def run_custodian(
     )
     qchem_nbo_exe = (
         settings.QCHEM_NBO_EXE if qchem_nbo_exe == QuaccDefault else qchem_nbo_exe
-    )
+    )  # type: ignore
 
     # Error handlers for Q-Chem
     handlers = [QChemErrorHandler()] if qchem_use_error_handlers else []
@@ -104,7 +104,7 @@ def run_custodian(
     c = Custodian(
         handlers,
         jobs,
-        max_errors=qchem_custodian_max_errors,
+        max_errors=qchem_custodian_max_errors,  # type: ignore
         terminate_on_nonzero_returncode=False,
         directory=directory,
     )

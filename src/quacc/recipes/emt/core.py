@@ -9,67 +9,55 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase.calculators.emt import EMT
+from ase.optimize import BFGS
 
 from quacc import job
-from quacc.runners.ase import Runner
-from quacc.schemas.ase import Summarize
+from quacc.recipes.common.core import Recipe
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from ase.optimize.optimize import Optimizer
 
-    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
+    from quacc.types import OptSchema, RunSchema
 
 
 @job
 def static_job(
-    atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, additional_fields: dict[str, Any] | None = None, **calc_kwargs
 ) -> RunSchema:
-    """
-    Carry out a static calculation.
+    """Carry out a static calculation.
 
     Parameters
     ----------
     atoms
         Atoms object
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
     additional_fields
-        Additional fields to add to the results dictionary.
+        Metadata to store in the results
     **calc_kwargs
-        Custom kwargs for the EMT calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [ase.calculators.emt.EMT][] calculator.
+        Calculator parameters to pass to [ase.calculators.emt.EMT][]
 
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
-        See the type-hint for the data structure.
+        Results dictionary
     """
-    calc = EMT(**calc_kwargs)
-    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
-
-    return Summarize(
-        additional_fields={"name": "EMT Static"} | (additional_fields or {})
-    ).run(final_atoms, atoms)
+    return Recipe(EMT).static(atoms, additional_fields=additional_fields, **calc_kwargs)
 
 
 @job
 def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
-    opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    fmax: float | None = 0.01,
+    max_steps: int = 1000,
+    optimizer: type[Optimizer] = BFGS,
+    optimizer_kwargs: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
-    """
-    Carry out a geometry optimization.
+    """Carry out a geometry optimization.
 
     Parameters
     ----------
@@ -77,31 +65,31 @@ def relax_job(
         Atoms object
     relax_cell
         Whether to relax the cell
-    opt_params
-        Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    fmax
+        Maximum force change in eV/A
+    max_steps
+        Maximum number of steps
+    optimizer
+        ASE optimizer class to use
+    optimizer_kwargs
+        Dictionary of keyword arguments to pass to the optimizer
     additional_fields
-        Additional fields to add to the results dictionary.
+        Metadata to store in the results
     **calc_kwargs
-        Custom kwargs for the EMT calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [ase.calculators.emt.EMT][] calculator.
+        Calculator parameters to pass to [ase.calculators.emt.EMT][]
 
     Returns
     -------
     OptSchema
-        Dictionary of results, specified in [quacc.schemas.ase.Summarize.opt][].
-        See the type-hint for the data structure.
+        Results dictionary
     """
-    opt_params = opt_params or {}
-
-    calc = EMT(**calc_kwargs)
-    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(
-        relax_cell=relax_cell, **opt_params
+    return Recipe(EMT).relax(
+        atoms,
+        relax_cell=relax_cell,
+        fmax=fmax,
+        max_steps=max_steps,
+        optimizer=optimizer,
+        optimizer_kwargs=optimizer_kwargs,
+        additional_fields=additional_fields,
+        **calc_kwargs,
     )
-
-    return Summarize(
-        additional_fields={"name": "EMT Relax"} | (additional_fields or {})
-    ).opt(dyn)

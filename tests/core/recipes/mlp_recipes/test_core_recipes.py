@@ -96,11 +96,11 @@ def test_relax_job_missing_pynanoflann(monkeypatch):
             return None
         return find_spec(name)
 
-    import quacc.recipes.mlp._base
+    import quacc.recipes.mlp._defaults
 
-    quacc.recipes.mlp._base.pick_calculator.__wrapped__.cache_clear()
+    quacc.recipes.mlp._defaults.pick_calculator.__wrapped__.cache_clear()
     monkeypatch.setattr("importlib.util.find_spec", mock_find_spec)
-    monkeypatch.setattr("quacc.recipes.mlp._base.find_spec", mock_find_spec)
+    monkeypatch.setattr("quacc.recipes.mlp._defaults.find_spec", mock_find_spec)
     with pytest.raises(ImportError, match=r"orb-models requires pynanoflann"):
         relax_job(bulk("Cu"), method="orb")
 
