@@ -180,7 +180,7 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
         },
         "q2r": {"input": {"fildyn": "matdyn", "flfrc": "q2r.fc"}},
         "bands": {
-            "bands": {"prefix": "pwscf", "filband": "bands.out", "outdir": outdir}
+            "bands": {"prefix": "pwscf", "filband": "bands.dat", "outdir": outdir}
         },
         "fs": {
             "fermi": {
