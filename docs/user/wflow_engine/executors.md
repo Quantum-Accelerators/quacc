@@ -38,13 +38,13 @@ In the previous examples, we have been running calculations on our local machine
 
 === "Jobflow"
 
-    Out-of-the-box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The recommended option is [jobflow-remote](https://github.com/Matgenix/jobflow-remote), but you can also use [FireWorks](https://github.com/materialsproject/fireworks).
+    Out-of-the-box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The recommended option is [jobflow-remote](https://github.com/Matgenix/jobflow-remote), but you can also use [Fireworks](https://github.com/materialsproject/fireworks).
 
     === "Jobflow Remote"
 
         **Setting Up Your Jobflow Remote Cnnfiguration**
 
-        When you previously [set up Jobflow and FireWorks](../../install/wflow_engines.md), you created a `my_qadapter.yaml` file. It's now time to revisit that file and adjust the `pre_run` command with any modules or environment variables necessary for your calculations to run. Additionally, you will probably want to update the `nodes`, `walltime`, and related settings for your scheduler.
+        When you previously [set up Jobflow or FireWorks](../../install/wflow_engines.md), you created a YAML file with configuration details. It's now time to revisit that file and adjust the `pre_run` command with any modules or environment variables necessary for your calculations to run. Additionally, you will probably want to update the `nodes`, `walltime`, and related settings for your scheduler.
 
     === "Fireworks"
 
