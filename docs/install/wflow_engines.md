@@ -180,7 +180,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
             collection_name: jf_outputs
         ```
 
-        3. Confirm that everything works by running the following minimal example:
+        Afterwards, confirm that everything works by running the following minimal example:
 
         ```python
         from jobflow_remote.utils.examples import add
