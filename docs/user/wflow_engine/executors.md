@@ -38,41 +38,49 @@ In the previous examples, we have been running calculations on our local machine
 
 === "Jobflow"
 
-    Out-of-the-box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The two recommended options are [jobflow-remote](https://github.com/Matgenix/jobflow-remote) and [FireWorks](https://github.com/materialsproject/fireworks), the latter of which is described here.
+    Out-of-the-box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The recommended option is [jobflow-remote](https://github.com/Matgenix/jobflow-remote), but you can also use [FireWorks](https://github.com/materialsproject/fireworks).
 
-    **Setting Up Your `my_qadapter.yaml`**
+    === "Jobflow Remote"
 
-    When you previously [set up Jobflow and FireWorks](../../install/wflow_engines.md), you created a `my_qadapter.yaml` file. It's now time to revisit that file and adjust the `pre_rocket` command with any modules or environment variables necessary for your calculations to run. Additionally, you will probably want to update the `nodes`, `walltime`, and related settings for your scheduler.
+        **Setting up Your Jobflow Remote Cnnfiguration**
 
-    **Converting Between Jobflow and FireWorks**
+        When you previously [set up Jobflow and FireWorks](../../install/wflow_engines.md), you created a `my_qadapter.yaml` file. It's now time to revisit that file and adjust the `pre_run` command with any modules or environment variables necessary for your calculations to run. Additionally, you will probably want to update the `nodes`, `walltime`, and related settings for your scheduler.
 
-    The [`jobflow.managers.fireworks`](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks) module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
+    === "Fireworks"
 
-    **Converting a Job to a Firework**
+        **Setting Up Your `my_qadapter.yaml`**
 
-    To convert a `Job` to a `firework` and add it to your launch pad:
+        When you previously [set up Jobflow and FireWorks](../../install/wflow_engines.md), you created a `my_qadapter.yaml` file. It's now time to revisit that file and adjust the `pre_rocket` command with any modules or environment variables necessary for your calculations to run. Additionally, you will probably want to update the `nodes`, `walltime`, and related settings for your scheduler.
 
-    ```python
-    from fireworks import LaunchPad
-    from jobflow.managers.fireworks import job_to_firework
+        **Converting Between Jobflow and FireWorks**
 
-    fw = job_to_firework(job)
-    lpad = LaunchPad.auto_load()
-    lpad.add_wf(fw)
-    ```
+        The [`jobflow.managers.fireworks`](https://materialsproject.github.io/jobflow/jobflow.managers.html#module-jobflow.managers.fireworks) module has all the tools you need to convert your Jobflow workflows to a format that is suitable for FireWorks.
 
-    **Converting a Flow to a Workflow**
+        **Converting a Job to a Firework**
 
-    To convert a `Flow` to a `workflow` and add it to your launch pad:
+        To convert a `Job` to a `firework` and add it to your launch pad:
 
-    ```python
-    from fireworks import LaunchPad
-    from jobflow.managers.fireworks import flow_to_workflow
+        ```python
+        from fireworks import LaunchPad
+        from jobflow.managers.fireworks import job_to_firework
 
-    wf = flow_to_workflow(flow)
-    lpad = LaunchPad.auto_load()
-    lpad.add_wf(wf)
-    ```
+        fw = job_to_firework(job)
+        lpad = LaunchPad.auto_load()
+        lpad.add_wf(fw)
+        ```
+
+        **Converting a Flow to a Workflow**
+
+        To convert a `Flow` to a `workflow` and add it to your launch pad:
+
+        ```python
+        from fireworks import LaunchPad
+        from jobflow.managers.fireworks import flow_to_workflow
+
+        wf = flow_to_workflow(flow)
+        lpad = LaunchPad.auto_load()
+        lpad.add_wf(wf)
+        ```
 
 ## Worked Examples
 
@@ -80,7 +88,7 @@ In this section, we go through the entire process to deploy recipes remotely on 
 
 !!! Tip "First-Time Deployment"
 
-    Before deploying remote calculations for the first time, do `quacc set WORKFLOW_ENGINE None` on the remote machine and run your recipe as a standard Python script (e.g. by submitting it as a job to the scheduler). This preliminary test will help you identify potential issues early on. When you're done, you can re-set the `WORKFLOW_ENGINE` variable and continue with deployment via a workflow manager.
+    Before deploying remote calculations for the first time, do `quacc set WORKFLOW_ENGINE None` on the remote machine and run your recipe as a standard Python script (e.g. by submitting it as a job to the scheduler). This preliminary test will help you identify potential issues that are independent of the workflow manager.
 
 ### Pre-Requisites
 
@@ -157,12 +165,17 @@ If you haven't done so already:
 
     On both the local and remote machines:
 
-    ```bash
-    pip install quacc[jobflow]
-    quacc set WORKFLOW_ENGINE jobflow && quacc set CREATE_UNIQUE_DIR false  # (1)!
-    ```
+    !!! "Jobflow Remote"
 
-    1. FireWorks and Jobflow have their own mechanisms for task isolation, which we will rely on instead.
+        ```bash
+        pip install quacc[jobflow]
+        ```
+
+    !!! "Fireworks"
+
+        ```bash
+        pip install quacc[jobflow] fireworks
+        ```
 
 ### Concurrent Non-MPI Jobs
 
@@ -401,7 +414,7 @@ If you haven't done so already:
                     account=account,
                     qos="debug",
                     constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc && {env_vars}",  # (7)!
+                    worker_init=f"source ~/.bashrc && conda activate cms && {env_vars}",  # (7)!
                     walltime="00:10:00",  # (8)!
                     nodes_per_block=nodes_per_allocation,  # (9)!
                     init_blocks=0,  # (10)!
@@ -573,44 +586,67 @@ If you haven't done so already:
 
 === "Jobflow"
 
-    From the login node of the remote machine, run the following:
+    === "Jobflow Remote"
 
-    ```python
-    import jobflow as jf
-    from ase.build import bulk
-    from fireworks import LaunchPad
-    from jobflow.managers.fireworks import flow_to_workflow
-    from quacc.recipes.emt.core import relax_job, static_job
+        From the login node of the remote machine, run the following:
 
-    atoms = bulk("Cu")
-    job1 = relax_job(atoms)
-    job2 = static_job(job1.output["atoms"])
-    flow = jf.Flow([job1, job2])
+        ```python
+        from ase.build import bulk
+        from jobflow import Flow
+        from jobflow_remote import submit_flow
+        from quacc.recipes.emt.core import relax_job, static_job
 
-    wf = flow_to_workflow(flow)
-    lpad = LaunchPad.auto_load()
-    lpad.add_wf(wf)
-    ```
+        atoms_list = [bulk("Si"), bulk("Al")]
+        for atoms in atoms_list:
+            job1 = relax_job(atoms, relax_cell=True)
+            job2 = static_job(job1.output["atoms"])
+            flow = Flow([job1, job2])
 
-    **Dispatching Calculations**
+            submit_flow(flow, worker="basic_python")
+        ```
 
-    With a workflow added to your launch pad, on the desired machine of choice, you can run `qlaunch rapidfire --nlaunches <N>` (where `<N>` is the number of jobs to submit) in the command line to submit your workflows to the job scheduler. Running `qlaunch rapidfire -m <N>` will ensure that `<N>` jobs are always in the queue or running. To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
+    === "Fireworks"
 
-    By default, `qlaunch` will launch compute jobs that each poll for a single FireWork to run. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
+        From the login node of the remote machine, run the following:
 
-    **Monitoring the Launchpad**
+        ```python
+        import jobflow as jf
+        from ase.build import bulk
+        from fireworks import LaunchPad
+        from jobflow.managers.fireworks import flow_to_workflow
+        from quacc.recipes.emt.core import relax_job, static_job
 
-    The easiest way to monitor the state of your launched FireWorks and workflows is through the GUI, which can be viewed with `lpad webgui`. To get the status of running fireworks from the command line, you can run `lpad get_fws -s RUNNING`. Other statuses can also be provided as well as individual FireWorks IDs.
+        lpad = LaunchPad.auto_load()
 
-    To rerun a specific FireWork, one can use the `rerun_fws` command like so: `lpad rerun_fws -i <FWID>` where `<FWID>` is the FireWork ID. Similarly, one can rerun all fizzled jobs via `lpad rerun_fws -s FIZZLED`. More complicated Mongo-style queries can also be carried out. Cancelling a workflow can be done with `lpad delete_wflows -i <FWID>`. Refer to the `lpad -h` help menu for more details.
+        atoms_list = [bulk("Si"), bulk("Al")]
+        for atoms in atoms_list:
+            job1 = relax_job(atoms, relax_cell=True)
+            job2 = static_job(job1.output["atoms"])
+            flow = Flow([job1, job2])
 
-    **Setting Where Jobs are Dispatched**
+            wf = flow_to_workflow(flow)
+            lpad.add_wf(wf)
+        ```
 
-    The `my_qadapter.yaml` file you made in the [installation instructions](../../install/install.md) specifies how FireWorks will submit jobs added to your launch pad. Additional details can be found in the [Jobflow Documentation](https://materialsproject.github.io/jobflow/tutorials/8-fireworks.html#setting-where-jobs-are-dispatched) for how to dynamically set where and how Jobflow `Job` and `Flow` objects can be dispatched.
+        **Dispatching Calculations**
 
-    ??? Tip "Continuous Job Submission"
+        With a workflow added to your launch pad, on the desired machine of choice, you can run `qlaunch rapidfire --nlaunches <N>` (where `<N>` is the number of jobs to submit) in the command line to submit your workflows to the job scheduler. Running `qlaunch rapidfire -m <N>` will ensure that `<N>` jobs are always in the queue or running. To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
 
-        To ensure that jobs are continually submitted to the queue, you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running jobs on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
+        By default, `qlaunch` will launch compute jobs that each poll for a single FireWork to run. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
+
+        **Monitoring the Launchpad**
+
+        The easiest way to monitor the state of your launched FireWorks and workflows is through the GUI, which can be viewed with `lpad webgui`. To get the status of running fireworks from the command line, you can run `lpad get_fws -s RUNNING`. Other statuses can also be provided as well as individual FireWorks IDs.
+
+        To rerun a specific FireWork, one can use the `rerun_fws` command like so: `lpad rerun_fws -i <FWID>` where `<FWID>` is the FireWork ID. Similarly, one can rerun all fizzled jobs via `lpad rerun_fws -s FIZZLED`. More complicated Mongo-style queries can also be carried out. Cancelling a workflow can be done with `lpad delete_wflows -i <FWID>`. Refer to the `lpad -h` help menu for more details.
+
+        **Setting Where Jobs are Dispatched**
+
+        The `my_qadapter.yaml` file you made in the [installation instructions](../../install/install.md) specifies how FireWorks will submit jobs added to your launch pad. Additional details can be found in the [Jobflow Documentation](https://materialsproject.github.io/jobflow/tutorials/8-fireworks.html#setting-where-jobs-are-dispatched) for how to dynamically set where and how Jobflow `Job` and `Flow` objects can be dispatched.
+
+        ??? Tip "Continuous Job Submission"
+
+            To ensure that jobs are continually submitted to the queue, you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running jobs on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
 
 ### Concurrent MPI Jobs
 
@@ -806,7 +842,7 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
                     account=account,
                     qos="debug",
                     constraint="cpu",
-                    worker_init=f"source ~/.bashrc && conda activate quacc && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
+                    worker_init=f"source ~/.bashrc && conda activate cms && module load vasp/6.4.1-cpu && export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
                     walltime="00:10:00",
                     nodes_per_block=nodes_per_allocation,
                     launcher=SimpleLauncher(),  # (3)!
@@ -913,44 +949,71 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
 
 === "Jobflow"
 
-    You will need to update your `my_qadapter.yaml` file that you made when setting up FireWorks. Specifically, ensure that the following parameters are set:
-
-    ```yaml title="my_qadapter.yaml"
-    _fw_name: CommonAdapter
-    _fw_q_type: SLURM
-    rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
-    nodes: 1
-    walltime: 00:30:00
-    account: MySlurmAccountName
-    job_name: quacc_firework
-    qos: debug
-    pre_rocket: |
-                conda activate quacc
-                module load vasp/6.4.1-cpu
-                export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
-    ```
-
-    From the login node of the remote machine, then run the following:
+    From the login node of the remote machine, run the following:
 
     ```python
-    import jobflow as jf
     from ase.build import bulk
-    from fireworks import LaunchPad
-    from jobflow.managers.fireworks import flow_to_workflow
+    from jobflow import Flow
+    from jobflow_remote import submit_flow
     from quacc.recipes.vasp.core import relax_job, static_job
 
-    atoms = bulk("C")
-    job1 = relax_job(atoms, kpts=[3, 3, 3])
-    job2 = static_job(job1.output["atoms"], kpts=[3, 3, 3])
-    flow = jf.Flow([job1, job2])
+    atoms_list = [bulk("Si"), bulk("Al")]
+    for atoms in atoms_list:
+        atoms.set_initial_magnetic_moments([0.0] * len(atoms))
+        job1 = relax_job(atoms, relax_cell=True)
+        job2 = static_job(job1.output["atoms"])
+        flow = Flow([job1, job2])
 
-    wf = flow_to_workflow(flow)
-    lpad = LaunchPad.auto_load()
-    lpad.add_wf(wf)
+        submit_flow(flow, worker="basic_vasp")
     ```
 
-    Then run the following on the remote machine:
+    Then monitor the progress with `jf job list`.
 
-    ```bash
-    qlaunch rapidfire -m 1
-    ```
+    === "Fireworks"
+
+        You will need to update your `my_qadapter.yaml` file that you made when setting up FireWorks. Specifically, ensure that the following parameters are set:
+
+        ```yaml title="my_qadapter.yaml"
+        _fw_name: CommonAdapter
+        _fw_q_type: SLURM
+        rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
+        nodes: 1
+        walltime: 00:30:00
+        account: MySlurmAccountName
+        job_name: quacc_firework
+        qos: debug
+        pre_rocket: |
+                    conda activate cms
+                    module load vasp/6.4.1-cpu
+                    export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node=128 --cpu_bind=cores"
+                    export QUACC_WORKFLOW_ENGINE=jobflow
+                    export QUACC_CREATE_UNIQUE_DIR=False
+        ```
+
+        From the login node of the remote machine, run the following:
+
+        ```python
+        import jobflow as jf
+        from ase.build import bulk
+        from fireworks import LaunchPad
+        from jobflow.managers.fireworks import flow_to_workflow
+        from quacc.recipes.vasp.core import relax_job, static_job
+
+        lpad = LaunchPad.auto_load()
+
+        atoms_list = [bulk("Si"), bulk("Al")]
+        for atoms in atoms_list:
+            atoms.set_initial_magnetic_moments([0.0] * len(atoms))
+            job1 = relax_job(atoms, relax_cell=True)
+            job2 = static_job(job1.output["atoms"])
+            flow = Flow([job1, job2])
+
+            wf = flow_to_workflow(flow)
+            lpad.add_wf(wf)
+        ```
+
+        Then run the following on the remote machine:
+
+        ```bash
+        qlaunch rapidfire -m 1
+        ```
