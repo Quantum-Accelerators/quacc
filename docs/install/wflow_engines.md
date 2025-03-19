@@ -92,159 +92,255 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
 === "Jobflow"
 
-    **Installation**
+    === "Jobflow-Remote"
 
-    To install Jobflow with support for FireWorks, run the following:
+        **Installation**
 
-    ```bash
-    pip install quacc[jobflow] fireworks
-    ```
+        To install Jobflow with support for Jobflow-Remote, run the following:
 
-    **MongoDB Setup**
+        ```bash
+        pip install quacc[jobflow]
+        ```
 
-    Jobflow and FireWorks both require the use of a database (most commonly a MongoDB instance) to store calculation results.
+        **MongoDB Setup**
 
-    !!! Tip
+        Jobflow requires the use of a database (most commonly a MongoDB instance) to store calculation results.
 
-        If it is not possible to use MongoDB, you can use a variety of other data store options available within the [maggma package](https://github.com/materialsproject/maggma), including a [`MontyStore`](https://materialsproject.github.io/maggma/reference/stores/#maggma.stores.mongolike.MontyStore) that solely relies on the local filesystem.
+        !!! Tip
 
-    **Jobflow DB Setup**
+            If it is not possible to use MongoDB, you can use a variety of other data store options available within the [maggma package](https://github.com/materialsproject/maggma).
 
-    If you plan to use Jobflow to write your workflows, you will need to make a `jobflow.yaml` file. This file will generally be formatted like the example below. Fill in the fields with the appropriate values for your MongoDB cluster, which is where all your calculation inputs and outputs will be stored.
+        **Jobflow DB Setup**
 
-    ```yaml title="jobflow.yaml"
-    JOB_STORE:
-      docs_store:
-        type: MongoStore
-        host: <host name>
-        port: 27017
-        username: <username>
-        password: <password>
-        database: <database name>
-        collection_name: <collection name>
-    ```
+        If you plan to use Jobflow-Remote to run your workflows, you will need to carry out the following steps:
 
-    !!! Note "MongoDB Atlas"
+        1. Run `jf project generate cms`
 
-        If you are using a URI (as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
+        2. Replace the `~/.jfremote/cms.yaml` with the configuration parameters outlined in the Jobflow Remote [configuration documentation](https://matgenix.github.io/jobflow-remote/user/install.html). There are many different kinds of configurations. A representative example is shown below for the "all-in-one" configuration. When the YAML is completed, run `jf project check --errors`. If there are no errors, you can run `jf runner start` to start the runner.
+
+        ```yaml title="~/.jfremote/cms.yaml"
+        name: cms
+        workers:
+        basic_vasp:
+            type: local
+            scheduler_type: slurm
+            work_dir: /path/to/my/jobflow/vasp
+            pre_run: |
+                source ~/.bashrc
+                module load anaconda3/2024.10
+                conda activate cms
+                module load vasp/6.5.1
+                export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node 112"
+                export QUACC_WORKFLOW_ENGINE=jobflow
+                export QUACC_CREATE_UNIQUE_DIR=False
+            timeout_execute: 60
+            resources:
+                nodes: 1
+                ntasks_per_node: 112
+                cpus_per_task: 1
+                mem: 900G
+                time: 04:00:00
+                account: rosengroup
+        basic_python:
+            type: local
+            scheduler_type: slurm
+            work_dir: /path/to/my/jobflow/python
+            pre_run: |
+                source ~/.bashrc
+                module load anaconda3/2024.10
+                conda activate cms
+                export QUACC_WORKFLOW_ENGINE=jobflow
+                export QUACC_CREATE_UNIQUE_DIR=False
+                timeout_execute: 60
+            resources:
+                nodes: 1
+                ntasks_per_node: 1
+                cpus_per_task: 1
+                mem: 8G
+                time: 04:00:00
+                account: rosengroup
+        queue:
+        store:
+            type: MongoStore
+            host: localhost
+            database: <MongoDB Database Name>
+            username: <MongoDB UserName>
+            password: <MongoDB PW>
+            collection_name: jf_jobs
+        flows_collection: jf_flows
+        auxiliary_collection: jf_aux
+        exec_config: {}
+        jobstore:
+        docs_store:
+            type: MongoStore
+            database: <MongoDB Database Name>
+            host: localhost
+            username: <MongoDB UserName>
+            password: <MongoDB PW>
+            collection_name: jf_outputs
+        ```
+
+        3. Confirm that everything works by running the following minimal example:
+
+        ```python
+        from jobflow_remote.utils.examples import add
+        from jobflow_remote import submit_flow
+        from jobflow import Flow
+
+        job1 = add(1, 2)
+        job2 = add(job1.output, 2)
+        flow = Flow([job1, job2])
+
+        ids = submit_flow(flow, worker="basic_python")
+        print(ids)
+        ```
+
+    === "Fireworks"
+
+        **Installation**
+
+        To install Jobflow with support for Fireworks, run the following:
+
+        ```bash
+        pip install quacc[jobflow] fireworks
+        ```
+
+        **MongoDB Setup**
+
+        Jobflow requires the use of a database (most commonly a MongoDB instance) to store calculation results.
+
+        !!! Tip
+
+            If it is not possible to use MongoDB, you can use a variety of other data store options available within the [maggma package](https://github.com/materialsproject/maggma).
+
+        **Jobflow DB Setup**
+
+        If you plan to use Jobflow to write your workflows, you will need to make a `jobflow.yaml` file. This file will generally be formatted like the example below. Fill in the fields with the appropriate values for your MongoDB cluster, which is where all your calculation inputs and outputs will be stored.
 
         ```yaml title="jobflow.yaml"
         JOB_STORE:
-          docs_store:
+        docs_store:
             type: MongoStore
-            host: <URI>
+            host: <host name>
             port: 27017
+            username: <username>
+            password: <password>
             database: <database name>
             collection_name: <collection name>
         ```
 
-    You will then need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
+        !!! Note "MongoDB Atlas"
 
-    ```bash
-    export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"
-    ```
+            If you are using a URI (as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
 
-    **FireWorks Setup**
+            ```yaml title="jobflow.yaml"
+            JOB_STORE:
+            docs_store:
+                type: MongoStore
+                host: <URI>
+                port: 27017
+                database: <database name>
+                collection_name: <collection name>
+            ```
 
-    If you plan to use FireWorks to dispatch your Jobflow workflows, you will also need to make a few configuration files: `FW_config.yaml`, `my_fworker.yaml`, `my_launchpad.yaml`, and `my_qadapter.yaml`. To begin, make a directory called `fw_config` where you will store the four files described in greater detail below. The directory structure will look like the following:
+        You will then need to define a `JOBFLOW_CONFIG_FILE` environment variable pointing to the file you made. For instance, in your `~/.bashrc` file, add the following line:
 
-    ```text
-    fw_config
-    ├── FW_config.yaml
-    ├── my_fworker.yaml
-    ├── my_launchpad.yaml
-    └── my_qadapter.yaml
-    ```
+        ```bash
+        export JOBFLOW_CONFIG_FILE="/path/to/my/jobflow.yaml"
+        ```
 
-    **FW Config File**
+        **FireWorks Setup**
 
-    For the `FW_config.yaml`, you can use the following template. Make sure to update the path to the `fw_config` folder where the file resides.
+        If you plan to use FireWorks to dispatch your Jobflow workflows, you will also need to make a few configuration files: `FW_config.yaml`, `my_fworker.yaml`, `my_launchpad.yaml`, and `my_qadapter.yaml`. To begin, make a directory called `fw_config` where you will store the four files described in greater detail below. The directory structure will look like the following:
 
-    ```yaml title="FW_config.yaml"
-    CONFIG_FILE_DIR: </path/to/fw_config>
-    QUEUE_UPDATE_INTERVAL: 2
-    ```
+        ```text
+        fw_config
+        ├── FW_config.yaml
+        ├── my_fworker.yaml
+        ├── my_launchpad.yaml
+        └── my_qadapter.yaml
+        ```
 
-    You will also need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
+        **FW Config File**
 
-    ```bash
-    export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"
-    ```
+        For the `FW_config.yaml`, you can use the following template. Make sure to update the path to the `fw_config` folder where the file resides.
 
-    **FWorker**
+        ```yaml title="FW_config.yaml"
+        CONFIG_FILE_DIR: </path/to/fw_config>
+        QUEUE_UPDATE_INTERVAL: 2
+        ```
 
-    For the `my_fworker.yaml`, you can use the following template. You do not need to make any modifications.
+        You will also need to define a `FW_CONFIG_FILE` environment variable pointing to the `FW_config.yaml` file you made. For instance, in your `~/.bashrc` file, add the following line:
 
-    ```yaml title="my_fworker.yaml"
-    name: quacc_fworker
-    category: ""
-    query: "{}"
-    ```
+        ```bash
+        export FW_CONFIG_FILE="/path/to/config/fw_config/FW_config.yaml"
+        ```
 
-    **Launchpad**
+        **FWorker**
 
-    For the `my_launchpad.yaml`, you can use the following template. Replace the entries in `<>` with the appropriate values for your Mongo database.
+        For the `my_fworker.yaml`, you can use the following template. You do not need to make any modifications.
 
-    ```yaml title="my_launchpad.yaml"
-    host: <host name>
-    port: 27017
-    name: <database name>
-    username: <username>
-    password: <password>
-    logdir: null
-    strm_lvl: DEBUG
-    user_indices: []
-    wf_user_indices: []
-    ```
+        ```yaml title="my_fworker.yaml"
+        name: quacc_fworker
+        category: ""
+        query: "{}"
+        ```
 
-    !!! Note "MongoDB Atlas"
+        **Launchpad**
 
-        If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then you will use the following `my_launchpad.yaml` template instead.
+        For the `my_launchpad.yaml`, you can use the following template. Replace the entries in `<>` with the appropriate values for your Mongo database.
 
         ```yaml title="my_launchpad.yaml"
-        host: <URI>
+        host: <host name>
         port: 27017
         name: <database name>
-        uri_store: true
+        username: <username>
+        password: <password>
         logdir: null
         strm_lvl: DEBUG
         user_indices: []
         wf_user_indices: []
         ```
 
-    **QAdapter**
+        !!! Note "MongoDB Atlas"
 
-    Assuming you plan to use a queuing system for your compute jobs, you will need to make a `my_qadapter.yaml` file. For this, you will need to follow the instructions in the [FireWorks documentation](https://materialsproject.github.io/fireworks/qadapter_programming.html) for your specific job scheduling system. An example `my_qadapter.yaml` file is shown below for Slurm.
+            If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then you will use the following `my_launchpad.yaml` template instead.
 
-    ```yaml title="my_qadapter.yaml"
-    _fw_name: CommonAdapter
-    _fw_q_type: SLURM
-    rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
-    nodes: 1
-    walltime: 00:30:00
-    account: <account>
-    job_name: quacc_firework
-    qos: regular
-    pre_rocket: |
-                conda activate MyEnv
-                module load MyModuleName
-                export MyEnvVar=MyEnvValue
-    ```
+            ```yaml title="my_launchpad.yaml"
+            host: <URI>
+            port: 27017
+            name: <database name>
+            uri_store: true
+            logdir: null
+            strm_lvl: DEBUG
+            user_indices: []
+            wf_user_indices: []
+            ```
 
-    In the above example, you would need to change the path in the `rocket_launch` field to the correct path to your `my_fworker.yaml`. The nodes, walltime, account, and qos are the corresponding parameters for your queuing system. Finally, anything in the `pre_rocket` field will be executed before the job begins running. It is a good place to load modules and set environment variables. A representative example has been provided above.
+        **QAdapter**
 
-    **Database Initialization**
+        Assuming you plan to use a queuing system for your compute jobs, you will need to make a `my_qadapter.yaml` file. For this, you will need to follow the instructions in the [FireWorks documentation](https://materialsproject.github.io/fireworks/qadapter_programming.html) for your specific job scheduling system. An example `my_qadapter.yaml` file is shown below for Slurm.
 
-    !!! Danger
+        ```yaml title="my_qadapter.yaml"
+        _fw_name: CommonAdapter
+        _fw_q_type: SLURM
+        rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
+        nodes: 1
+        walltime: 00:30:00
+        account: <account>
+        job_name: quacc_firework
+        qos: regular
+        pre_rocket: |
+                    export QUACC_WORKFLOW_ENGINE=jobflow
+                    export QUACC_CREATE_UNIQUE_DIR=False
+        ```
 
-        Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
+        In the above example, you would need to change the path in the `rocket_launch` field to the correct path to your `my_fworker.yaml`. The nodes, walltime, account, and qos are the corresponding parameters for your queuing system. Finally, anything in the `pre_rocket` field will be executed before the job begins running. It is a good place to load modules and set environment variables. A representative example has been provided above.
 
-    To check that FireWorks can connect to your database, run `lpad reset` if this is your first time using FireWorks.
+        **Database Initialization**
 
-    **Quacc Settings**
+        !!! Danger
 
-    Finally, since FireWorks will create unique folders of its own for each job, you can disable quacc's handling of directory management as follows:
+            Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
 
-    ```bash
-    quacc set CREATE_UNIQUE_DIR False
-    ```
+        To check that FireWorks can connect to your database, run `lpad reset` if this is your first time using FireWorks.
