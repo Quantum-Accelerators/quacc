@@ -952,23 +952,23 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     === "Jobflow Remote"
 
         From the login node of the remote machine, run the following:
-    
+
         ```python
         from ase.build import bulk
         from jobflow import Flow
         from jobflow_remote import submit_flow
         from quacc.recipes.vasp.core import relax_job, static_job
-    
+
         atoms_list = [bulk("Si"), bulk("Al")]
         for atoms in atoms_list:
             atoms.set_initial_magnetic_moments([0.0] * len(atoms))
             job1 = relax_job(atoms, relax_cell=True)
             job2 = static_job(job1.output["atoms"])
             flow = Flow([job1, job2])
-    
+
             submit_flow(flow, worker="basic_vasp")
         ```
-    
+
         Then monitor the progress with `jf job list`.
 
     === "Fireworks"
