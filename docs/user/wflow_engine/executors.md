@@ -42,7 +42,7 @@ In the previous examples, we have been running calculations on our local machine
 
     === "Jobflow Remote"
 
-        **Setting up Your Jobflow Remote Cnnfiguration**
+        **Setting Up Your Jobflow Remote Cnnfiguration**
 
         When you previously [set up Jobflow and FireWorks](../../install/wflow_engines.md), you created a `my_qadapter.yaml` file. It's now time to revisit that file and adjust the `pre_run` command with any modules or environment variables necessary for your calculations to run. Additionally, you will probably want to update the `nodes`, `walltime`, and related settings for your scheduler.
 
@@ -165,13 +165,13 @@ If you haven't done so already:
 
     On both the local and remote machines:
 
-    !!! "Jobflow Remote"
+    === "Jobflow Remote"
 
         ```bash
         pip install quacc[jobflow]
         ```
 
-    !!! "Fireworks"
+    === "Fireworks"
 
         ```bash
         pip install quacc[jobflow] fireworks
@@ -948,6 +948,8 @@ First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc`
     ```
 
 === "Jobflow"
+
+    === "Jobflow Remote"
 
     From the login node of the remote machine, run the following:
 
