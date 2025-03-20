@@ -17,10 +17,10 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
 
+
 BASE_SET_METAL = {
     "occupation_type": "cold 0.1",
     "relativistic": "atomic_zora scalar",
-    "sc_accuracy_rho": 1e-5,
     "charge_mix_param": 0.05,
     "mixer": "pulay",
     "n_max_pulay": 14,
@@ -28,10 +28,16 @@ BASE_SET_METAL = {
     "output_level": "normal",
 }
 
+BASE_SET_AGNOSTIC = {
+    "relativistic": "atomic_zora scalar",
+    "mixer": "pulay",
+    "xc": "pbe",
+    "output_level": "normal",
+}
+
 BASE_SET_NON_METAL = {
     "occupation_type": "gaussian 0.01",
     "relativistic": "atomic_zora scalar",
-    "sc_accuracy_rho": 1e-5,
     "xc": "pbe",
     "charge_mix_param": 0.20,
     "mixer": "pulay",
@@ -39,6 +45,7 @@ BASE_SET_NON_METAL = {
 }
 
 KSPACING_METAL = 0.033
+KSPACING_AGNOSTIC = 0.033
 KSPACING_NON_METAL = 0.045
 
 
@@ -52,6 +59,7 @@ def static_job(
     spin: Literal["none", "collinear", "non-collinear"] | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
+    agnostic_params: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -77,6 +85,10 @@ def static_job(
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
         Additional fields to add to the results dictionary.
+    agnostic_params
+        If True, uses minimal settings (no occupation_type or charge_mix_param)
+        letting FHI-aims determine these automatically. If False (default),
+        auto-detects whether the system is metallic or not.
     **calc_kwargs
         Custom kwargs for the FHI-aims calculator. For a list of available
         keys, refer to the [ase.calculators.aims.Aims][] calculator.
@@ -87,17 +99,25 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = (
-        BASE_SET_METAL.copy() if check_is_metal(atoms) else BASE_SET_NON_METAL.copy()
-    )
+    if agnostic_params:
+        calc_defaults = BASE_SET_AGNOSTIC.copy()
+        default_kspacing = KSPACING_AGNOSTIC
+    else:
+        calc_defaults = (
+            BASE_SET_METAL.copy()
+            if check_is_metal(atoms)
+            else BASE_SET_NON_METAL.copy()
+        )
+        default_kspacing = (
+            KSPACING_METAL if check_is_metal(atoms) else KSPACING_NON_METAL
+        )
+
     calc_defaults["species_dir"] = species_defaults
 
     if kspacing is not None:
         calc_defaults["kspacing"] = kspacing
     else:
-        calc_defaults["kspacing"] = (
-            KSPACING_METAL if check_is_metal(atoms) else KSPACING_NON_METAL
-        )
+        calc_defaults["kspacing"] = default_kspacing
 
     if spin is not None:
         calc_defaults["spin"] = spin
@@ -122,6 +142,7 @@ def relax_job(
     relax_cell: bool = False,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
+    agnostic_params: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -149,6 +170,10 @@ def relax_job(
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
         Additional fields to add to the results dictionary.
+    agnostic_params
+        If True, uses minimal settings (no occupation_type or charge_mix_param)
+        letting FHI-aims determine these automatically. If False (default),
+        auto-detects whether the system is metallic or not.
     **calc_kwargs
         Custom kwargs for the FHI-aims calculator. For a list of available
         keys, refer to the [ase.calculators.aims.Aims][] calculator.
@@ -159,17 +184,25 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = (
-        BASE_SET_METAL.copy() if check_is_metal(atoms) else BASE_SET_NON_METAL.copy()
-    )
+    if agnostic_params:
+        calc_defaults = BASE_SET_AGNOSTIC.copy()
+        default_kspacing = KSPACING_AGNOSTIC
+    else:
+        calc_defaults = (
+            BASE_SET_METAL.copy()
+            if check_is_metal(atoms)
+            else BASE_SET_NON_METAL.copy()
+        )
+        default_kspacing = (
+            KSPACING_METAL if check_is_metal(atoms) else KSPACING_NON_METAL
+        )
+
     calc_defaults["species_dir"] = species_defaults
 
     if kspacing is not None:
         calc_defaults["kspacing"] = kspacing
     else:
-        calc_defaults["kspacing"] = (
-            KSPACING_METAL if check_is_metal(atoms) else KSPACING_NON_METAL
-        )
+        calc_defaults["kspacing"] = default_kspacing
 
     if spin is not None:
         calc_defaults["spin"] = spin
@@ -200,6 +233,7 @@ def ase_relax_job(
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
+    agnostic_params: bool = False,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -232,6 +266,10 @@ def ase_relax_job(
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
         Additional fields to add to the results dictionary.
+    agnostic_params
+        If True, uses minimal settings (no occupation_type or charge_mix_param)
+        letting FHI-aims determine these automatically. If False (default),
+        auto-detects whether the system is metallic or not.
     **calc_kwargs
         Additional keyword arguments to pass to the FHI-aims calculator.
 
@@ -241,17 +279,25 @@ def ase_relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = (
-        BASE_SET_METAL.copy() if check_is_metal(atoms) else BASE_SET_NON_METAL.copy()
-    )
+    if agnostic_params:
+        calc_defaults = BASE_SET_AGNOSTIC.copy()
+        default_kspacing = KSPACING_AGNOSTIC
+    else:
+        calc_defaults = (
+            BASE_SET_METAL.copy()
+            if check_is_metal(atoms)
+            else BASE_SET_NON_METAL.copy()
+        )
+        default_kspacing = (
+            KSPACING_METAL if check_is_metal(atoms) else KSPACING_NON_METAL
+        )
+
     calc_defaults["species_dir"] = species_defaults
 
     if kspacing is not None:
         calc_defaults["kspacing"] = kspacing
     else:
-        calc_defaults["kspacing"] = (
-            KSPACING_METAL if check_is_metal(atoms) else KSPACING_NON_METAL
-        )
+        calc_defaults["kspacing"] = default_kspacing
 
     if spin is not None:
         calc_defaults["spin"] = spin
