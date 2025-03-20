@@ -101,3 +101,32 @@ def convert_pmg_kpts(
         gamma = max_pmg_kpts.style.name.lower() == "gamma"
 
     return kpts, gamma
+
+
+def kspacing_to_grid(atoms, spacing):
+    """
+    Calculate the kpoint mesh that is equivalent to the given spacing
+    in reciprocal space (units Angstrom^-1).
+
+    Parameters
+    ----------
+    atoms: ase.Atoms
+        A structure that can have get_reciprocal_cell called on it.
+    spacing: float
+        Minimum K-Point spacing in A^-1.
+
+    Returns
+    -------
+    kpoint_grid : [int, int, int]
+        K-point grid specification to give the required spacing.
+    """
+    n_x, n_y, n_z = np.linalg.norm(atoms.cell.reciprocal(), axis=1)
+    kpoint_grid = [
+        max(1, int(np.ceil(n_x / spacing))),
+        max(1, int(np.ceil(n_y / spacing))),
+        max(1, int(np.ceil(n_z / spacing))),
+    ]
+    for i, pbc in enumerate(atoms.pbc):
+        if not pbc:
+            kpoint_grid[i] = 1
+    return kpoint_grid
