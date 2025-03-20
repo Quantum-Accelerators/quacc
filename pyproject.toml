@@ -50,6 +50,7 @@ mlp1 = ["chgnet>=0.3.3", "torch-dftd>=0.4.0", "sevenn>=0.10.1",  "orb-models>=0.
 mlp2 = ["mace-torch>=0.3.3", "matgl>=1.1.2"]
 mp = ["atomate2>=0.0.14"]
 newtonnet = ["newtonnet>=1.1"]
+ocp = ["fairchem-data-oc>=0.2.0"]
 parsl = ["parsl[monitoring]>=2024.5.27; platform_system!='Windows'"]
 phonons = ["phonopy>=2.20.0", "seekpath>=2.1.0"]
 prefect = ["prefect[dask]>=2.19.0", "dask-jobqueue>=0.8.2"]
