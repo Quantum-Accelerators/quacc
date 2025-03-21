@@ -64,10 +64,6 @@ def ocp_adslab_generator(
     adsorbates_kwargs: list[dict[Any, Any]] | None = None,
     multiple_adsorbate_slab_config_kwargs: dict[Any, Any] | None = None,
 ) -> list[Atoms]:
-    if adsorbates_kwargs is None:
-        logger.warning("No adsorbate kwargs found, defaulting to a single *OH!")
-        adsorbates_kwargs = [{"adsorbate_smiles_from_db": "*OH"}]
-
     adsorbates = [
         Adsorbate(**adsorbate_kwargs) for adsorbate_kwargs in adsorbates_kwargs
     ]
@@ -163,6 +159,7 @@ def adsorb_ml_pipeline(
     gas_validate_job: Job,
     num_to_validate_with_DFT: int = 0,
     ml_gas_references: dict[str, RunSchema] | None = None,
+    reference_ml_energies_to_gas_phase: bool = False,
 ):
     unrelaxed_adslab_configurations = ocp_adslab_generator(
         slab, adsorbates_kwargs, multiple_adsorbate_slab_config_kwargs
@@ -173,32 +170,32 @@ def adsorb_ml_pipeline(
         for adslab_configuration in unrelaxed_adslab_configurations
     ]
 
-    if ml_gas_references is None:
-        ml_gas_references = {
-            "N2": ml_slab_adslab_relax_job(
-                molecule_pbc("N2", vacuum=10), relax_cell=False
-            ),
-            "CO": ml_slab_adslab_relax_job(
-                molecule_pbc("CO", vacuum=10), relax_cell=False
-            ),
-            "H2": ml_slab_adslab_relax_job(
-                molecule_pbc("H2", vacuum=10), relax_cell=False
-            ),
-            "H2O": ml_slab_adslab_relax_job(
-                molecule_pbc("H2O", vacuum=10), relax_cell=False
-            ),
-        }
-
     ml_relaxed_slab_result = ml_slab_adslab_relax_job(slab.atoms)
 
-    ml_referenced_configurations = reference_adslab_energies(
-        ml_relaxed_configurations,
-        ml_relaxed_slab_result,
-        CO_result=ml_gas_references["CO"],
-        N2_result=ml_gas_references["N2"],
-        H2_result=ml_gas_references["H2"],
-        H2O_result=ml_gas_references["H2O"],
-    )
+    if reference_ml_energies_to_gas_phase:
+        if ml_gas_references is None:
+            ml_gas_references = {
+                "N2": ml_slab_adslab_relax_job(
+                    molecule_pbc("N2", vacuum=10), relax_cell=False
+                ),
+                "CO": ml_slab_adslab_relax_job(
+                    molecule_pbc("CO", vacuum=10), relax_cell=False
+                ),
+                "H2": ml_slab_adslab_relax_job(
+                    molecule_pbc("H2", vacuum=10), relax_cell=False
+                ),
+                "H2O": ml_slab_adslab_relax_job(
+                    molecule_pbc("H2O", vacuum=10), relax_cell=False
+                ),
+            }
+        ml_relaxed_configurations = reference_adslab_energies(
+            ml_relaxed_configurations,
+            ml_relaxed_slab_result,
+            CO_result=ml_gas_references["CO"],
+            N2_result=ml_gas_references["N2"],
+            H2_result=ml_gas_references["H2"],
+            H2O_result=ml_gas_references["H2O"],
+        )
 
     adslab_anomalies_list = [
         job(detect_anomaly)(
@@ -208,26 +205,24 @@ def adsorb_ml_pipeline(
     ]
 
     top_candidates = filter_sort_select_adslabs(
-        adslab_results=ml_referenced_configurations,
+        adslab_results=ml_relaxed_configurations,
         adslab_anomalies_list=adslab_anomalies_list,
     )
 
     if num_to_validate_with_DFT == 0:
         return {
             "slab": slab,
-            "unrelaxed_configurations": unrelaxed_adslab_configurations,
-            "adslab_ml_relaxed_configurations": ml_relaxed_configurations,
+            "adslab_ml_relaxed_configurations": top_candidates,
             "adslab_anomalies": adslab_anomalies_list,
         }
     else:
         return {
             "slab": slab,
-            "unrelaxed_configurations": unrelaxed_adslab_configurations,
-            "adslab_ml_relaxed_configurations": ml_relaxed_configurations,
+            "adslab_ml_relaxed_configurations": top_candidates,
             "adslab_anomalies": adslab_anomalies_list,
             "validated_structures": {
                 "validated_adslabs": [
-                    adslab_validate_job(top_candidates[i]["relaxed_configuration"])
+                    adslab_validate_job(top_candidates[i]["atoms"])
                     for i in range(num_to_validate_with_DFT)
                 ],
                 "slab_validated": slab_validate_job(slab.atoms, relax_cell=False),
@@ -259,17 +254,29 @@ def reference_adslab_energies(
         recursive_dict_merge(
             adslab_result,
             {
-                "results_references": {"atomic_energies": atomic_energies},
-                "referenced_adsorption_energy": adslab_result["results"]["energy"]
-                - slab_energy
-                - sum(
-                    [
-                        atomic_energies[atom.symbol]
-                        for atom in adslab_result["atoms"][
-                            adslab_result["atoms"].get_tags() == 2
-                        ]  # all adsorbate tagged with tag=2!
-                    ]
-                ),
+                "results": {
+                    "atomic_energies": atomic_energies,
+                    "slab_energy": slab_energy,
+                    "adslab_energy": adslab_result["results"]["energy"],
+                    "gas_reactant_energy": sum(
+                        [
+                            atomic_energies[atom.symbol]
+                            for atom in adslab_result["atoms"][
+                                adslab_result["atoms"].get_tags() == 2
+                            ]  # all adsorbate tagged with tag=2!
+                        ]
+                    ),
+                    "adsorption_energy": adslab_result["results"]["energy"]
+                    - slab_energy
+                    - sum(
+                        [
+                            atomic_energies[atom.symbol]
+                            for atom in adslab_result["atoms"][
+                                adslab_result["atoms"].get_tags() == 2
+                            ]  # all adsorbate tagged with tag=2!
+                        ]
+                    ),
+                }
             },
         )
         for adslab_result in adslab_results
@@ -296,6 +303,8 @@ def standard_ocp_dataset_enumeration(
     job_decorators: dict[str, dict[str, Any]] | None = None,
     max_miller: int = 1,
     num_to_validate_with_DFT: int = 0,
+    reference_ml_energies_to_gas_phase: bool = True,
+    relax_bulk: bool = True,
 ):
     (
         bulk_relax_job_,
@@ -309,7 +318,7 @@ def standard_ocp_dataset_enumeration(
             "ml_slab_adslab_relax_job",
             "slab_validate_job",
             "adslab_validate_job",
-            "gas_relax_job",
+            "gas_validate_job",
         ],
         [
             bulk_relax_job,  # type: ignore
@@ -322,25 +331,28 @@ def standard_ocp_dataset_enumeration(
         decorators=job_decorators,  # type: ignore
     )
 
-    if bulk_relax_job is not None:
+    if relax_bulk:
         bulk_atoms = bulk_relax_job_(bulk_atoms, relax_cell=True)["atoms"]
 
     slabs = ocp_surface_generator(bulk_atoms=bulk_atoms, max_miller=max_miller)
 
-    ml_gas_references = {
-        "N2": ml_slab_adslab_relax_job_(
-            molecule_pbc("N2", vacuum=10), relax_cell=False
-        ),
-        "CO": ml_slab_adslab_relax_job_(
-            molecule_pbc("CO", vacuum=10), relax_cell=False
-        ),
-        "H2": ml_slab_adslab_relax_job_(
-            molecule_pbc("H2", vacuum=10), relax_cell=False
-        ),
-        "H2O": ml_slab_adslab_relax_job_(
-            molecule_pbc("H2O", vacuum=10), relax_cell=False
-        ),
-    }
+    if reference_ml_energies_to_gas_phase:
+        ml_gas_references = {
+            "N2": ml_slab_adslab_relax_job_(
+                molecule_pbc("N2", vacuum=10), relax_cell=False
+            ),
+            "CO": ml_slab_adslab_relax_job_(
+                molecule_pbc("CO", vacuum=10), relax_cell=False
+            ),
+            "H2": ml_slab_adslab_relax_job_(
+                molecule_pbc("H2", vacuum=10), relax_cell=False
+            ),
+            "H2O": ml_slab_adslab_relax_job_(
+                molecule_pbc("H2O", vacuum=10), relax_cell=False
+            ),
+        }
+    else:
+        ml_gas_references = None
 
     @flow
     def adsorbML_each_surface(slabs, **kwargs):
@@ -360,4 +372,5 @@ def standard_ocp_dataset_enumeration(
         gas_validate_job=gas_validate_job_,
         num_to_validate_with_DFT=num_to_validate_with_DFT,
         ml_gas_references=ml_gas_references,
+        reference_ml_energies_to_gas_phase=reference_ml_energies_to_gas_phase,
     )
