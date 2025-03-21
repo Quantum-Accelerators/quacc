@@ -29,9 +29,7 @@ class AdsorbatesKwargs(TypedDict):
     position: list[float]
     orientation: list[float]
 
-class MultipleAdsorbateSlabConfigKwargs(TypedDict):
-    num_adsorbates: int
-    adsorbate_distance: float
+
 
 class MoleculeResults(TypedDict):
     N2: RunSchema
@@ -113,7 +111,7 @@ class CustomSlab(Slab):
 def ocp_adslab_generator(
     slab: Slab | Atoms,
     adsorbates_kwargs: list[AdsorbatesKwargs] | None = None,
-    multiple_adsorbate_slab_config_kwargs: MultipleAdsorbateSlabConfigKwargs | None = None,
+    multiple_adsorbate_slab_config_kwargs: dict[str,Any] | None = None,
 ) -> list[Atoms]:
     """
     Generate adsorbate-slab configurations.
@@ -124,7 +122,7 @@ def ocp_adslab_generator(
         The slab structure.
     adsorbates_kwargs : list[AdsorbatesKwargs], optional
         List of keyword arguments for generating adsorbates, by default None.
-    multiple_adsorbate_slab_config_kwargs : MultipleAdsorbateSlabConfigKwargs, optional
+    multiple_adsorbate_slab_config_kwargs : dict[str,Any], optional
         Keyword arguments for generating multiple adsorbate-slab configurations, by default None.
 
     Returns
@@ -160,7 +158,7 @@ def ocp_adslab_generator(
 def find_adslabs_each_slab(
     slabs: list[Slab],
     adsorbates_kwargs: AdsorbatesKwargs,
-    multiple_adsorbate_slab_config_kwargs: MultipleAdsorbateSlabConfigKwargs | None = None,
+    multiple_adsorbate_slab_config_kwargs: dict[str,Any] | None = None,
 ) -> list[dict[str, Any]]:
     """
     Find adsorbate-slab configurations for each slab.
@@ -171,7 +169,7 @@ def find_adslabs_each_slab(
         List of slabs.
     adsorbates_kwargs : AdsorbatesKwargs
         Keyword arguments for generating adsorbates.
-    multiple_adsorbate_slab_config_kwargs : MultipleAdsorbateSlabConfigKwargs, optional
+    multiple_adsorbate_slab_config_kwargs : dict[str,Any], optional
         Keyword arguments for generating multiple adsorbate-slab configurations, by default None.
 
     Returns
@@ -267,7 +265,7 @@ def filter_sort_select_adslabs(
 def adsorb_ml_pipeline(
     slab: Slab,
     adsorbates_kwargs: AdsorbatesKwargs,
-    multiple_adsorbate_slab_config_kwargs: MultipleAdsorbateSlabConfigKwargs,
+    multiple_adsorbate_slab_config_kwargs: dict[str, Any],
     ml_slab_adslab_relax_job: Job,
     slab_validate_job: Job,
     adslab_validate_job: Job,
@@ -286,7 +284,7 @@ def adsorb_ml_pipeline(
         The slab structure to which adsorbates will be added.
     adsorbates_kwargs : AdsorbatesKwargs
         Keyword arguments for generating adsorbate configurations.
-    multiple_adsorbate_slab_config_kwargs : MultipleAdsorbateSlabConfigKwargs
+    multiple_adsorbate_slab_config_kwargs : dict[str, Any]
         Keyword arguments for generating multiple adsorbate-slab configurations.
     ml_slab_adslab_relax_job : Job
         Job for relaxing slab and adsorbate-slab configurations using ML.
@@ -500,7 +498,7 @@ def generate_molecule_reference_results(relax_job: Job) -> MoleculeResults:
 def bulk_to_surfaces_to_adsorbml(
     bulk_atoms: Atoms,
     adsorbates_kwargs: AdsorbatesKwargs,
-    multiple_adsorbate_slab_config_kwargs: MultipleAdsorbateSlabConfigKwargs,
+    multiple_adsorbate_slab_config_kwargs: dict[str, Any],
     ml_relax_job: Job,
     slab_validate_job: Job,
     adslab_validate_job: Job,
@@ -530,13 +528,13 @@ def bulk_to_surfaces_to_adsorbml(
         4. Reference the energies to gas phase if needed (eg using a total energy ML model)
         5. Optionally validate top K configurations with DFT single-points or relaxations
 
-   Parameters
+    Parameters
     ----------
     bulk_atoms : Atoms
         The bulk atomic structure.
     adsorbates_kwargs : AdsorbatesKwargs
         Keyword arguments for generating adsorbate configurations.
-    multiple_adsorbate_slab_config_kwargs : MultipleAdsorbateSlabConfigKwargs
+    multiple_adsorbate_slab_config_kwargs : dict[str, Any]
         Keyword arguments for generating multiple adsorbate-slab configurations.
     ml_relax_job : Job
         Job for relaxing slab and adsorbate-slab configurations using ML.
@@ -560,6 +558,8 @@ def bulk_to_surfaces_to_adsorbml(
         Whether to reference ML energies to gas phase, by default True.
     relax_bulk : bool, optional
         Whether to relax the bulk structure, by default True.
+    atomic_reference_energies : dict[str, float] | None, optional
+        Atomic reference energies for referencing if known ahead of time, by default None.
 
     Returns
     -------
