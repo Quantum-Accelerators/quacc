@@ -395,8 +395,9 @@ def reference_adslab_energies(
         List of adsorbate-slab results with referenced energies.
     """
     adslab_results = copy.deepcopy(adslab_results)
-    if atomic_energies is None and molecule_results is not None:
-        atomic_energies = {
+    if atomic_energies is None:
+        if molecule_results is not None:
+            atomic_energies = {
             "H": molecule_results["H2"]["results"]["energy"] / 2,
             "N": molecule_results["N2"]["results"]["energy"] / 2,
             "O": (
@@ -409,10 +410,11 @@ def reference_adslab_energies(
                 - molecule_results["H2"]["results"]["energy"]
             ),
         }
-    else:
-        raise Exception(
+        else:
+            raise Exception(
             "Missing atomic energies and gas phase energies; unable to continue!"
         )
+        
 
     slab_energy = slab_result["results"]["energy"]
 
@@ -503,18 +505,32 @@ def bulk_to_surfaces_to_adsorbml(
     slab_validate_job: Job,
     adslab_validate_job: Job,
     gas_validate_job: Job,
-    bulk_relax_job: Job | None,
+    max_miller: int = 1,
+    bulk_relax_job: Job | None = None,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, dict[str, Any]] | None = None,
-    max_miller: int = 1,
     num_to_validate_with_DFT: int = 0,
     reference_ml_energies_to_gas_phase: bool = True,
     relax_bulk: bool = True,
+    atomic_reference_energies: dict[str, float] | None = None,
 ) -> list[dict[str, Any]]:
     """
-    Run a pipeline from bulk atoms to adsorbate-slab configurations using machine learning.
+    Run a pipeline from bulk atoms to adsorbate-slab configurations using machine learning!
+    For full details, see the AdsorbML paper (https://arxiv.org/abs/2211.16486, 
+                                     https://www.nature.com/articles/s41524-023-01121-5).
 
-    Parameters
+    1. Relax bulk structure if desired
+    2. Generate surface slabs from bulk atoms
+    3. Generate gas phase reference energies if needed
+
+    For each slab generated in (3):
+        1. Generate trial adsorbate-slab configurations
+        2. Relax slab and adsorbate-slab configurations using ML
+        3. Validate slab and adsorbate-slab configurations (check for anomalies like dissociations))
+        4. Reference the energies to gas phase if needed (eg using a total energy ML model)
+        5. Optionally validate top K configurations with DFT single-points or relaxations
+
+   Parameters
     ----------
     bulk_atoms : Atoms
         The bulk atomic structure.
@@ -530,14 +546,14 @@ def bulk_to_surfaces_to_adsorbml(
         Job for validating the adsorbate-slab structures.
     gas_validate_job : Job
         Job for validating gas phase structures.
-    bulk_relax_job : Job | None
-        Job for relaxing the bulk structure, by default None.
-    job_params : dict[str, dict[str, Any]], optional
-        Parameters for customizing jobs, by default None.
-    job_decorators : dict[str, dict[str, Any]], optional
-        Decorators for customizing jobs, by default None.
     max_miller : int, optional
         Maximum Miller index, by default 1.
+    bulk_relax_job : Job | None, optional
+        Job for relaxing the bulk structure, by default None.
+    job_params : dict[str, dict[str, Any]] | None, optional
+        Parameters for customizing jobs, by default None.
+    job_decorators : dict[str, dict[str, Any]] | None, optional
+        Decorators for customizing jobs, by default None.
     num_to_validate_with_DFT : int, optional
         Number of top configurations to validate with DFT, by default 0.
     reference_ml_energies_to_gas_phase : bool, optional
@@ -576,11 +592,12 @@ def bulk_to_surfaces_to_adsorbml(
     )
 
     if relax_bulk:
+        bulk_atoms
         bulk_atoms = bulk_relax_job_(bulk_atoms, relax_cell=True)["atoms"]
 
     slabs = ocp_surface_generator(bulk_atoms=bulk_atoms, max_miller=max_miller)
 
-    if reference_ml_energies_to_gas_phase:
+    if reference_ml_energies_to_gas_phase and atomic_reference_energies is not None:
         molecule_results = generate_molecule_reference_results(
             ml_slab_adslab_relax_job_
         )
@@ -606,4 +623,5 @@ def bulk_to_surfaces_to_adsorbml(
         num_to_validate_with_DFT=num_to_validate_with_DFT,
         molecule_results=molecule_results,
         reference_ml_energies_to_gas_phase=reference_ml_energies_to_gas_phase,
+        atomic_reference_energies=atomic_reference_energies
     )
