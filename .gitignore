@@ -3,6 +3,7 @@ symlink*
 quacc-20*
 tmp*
 cache*
+*test_renders
 *test_results
 *test_scratch
 package-lock*
