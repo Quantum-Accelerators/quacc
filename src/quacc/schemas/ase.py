@@ -74,14 +74,6 @@ class Summarize:
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
-    def _render(self, atoms_trajectory: list[Atoms]) -> None:
-        render_atoms_trajectory(
-            atoms_trajectory,
-            output_dir=self.additional_fields.get("render", {}).get("output_dir"),
-            image_config=self.additional_fields.get("render", {}).get("image_config"),
-            video_config=self.additional_fields.get("render", {}).get("video_config"),
-        )
-
     def run(
         self,
         final_atoms: Atoms,
@@ -222,7 +214,7 @@ class Summarize:
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
         # Create renders of atomic positions (initial, final, full trajectory)
-        self._render(atoms_trajectory)
+        _render_atoms_trajectory(atoms_trajectory, self.additional_fields)
 
         return finalize_dict(
             unsorted_task_doc,
@@ -283,7 +275,7 @@ class Summarize:
         unsorted_task_doc = base_task_doc | md_fields | self.additional_fields
 
         # Create renders of atomic positions (initial, final, full trajectory)
-        self._render(base_task_doc["trajectory"])
+        _render_atoms_trajectory(base_task_doc["trajectory"], self.additional_fields)
 
         return finalize_dict(
             unsorted_task_doc,
@@ -367,7 +359,7 @@ class Summarize:
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
         # Create renders of atomic positions (initial, final, full trajectory)
-        self._render(atoms_trajectory)
+        _render_atoms_trajectory(atoms_trajectory, self.additional_fields)
 
         return finalize_dict(
             unsorted_task_doc,
@@ -408,14 +400,6 @@ class VibSummarize:
         self.directory = directory
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
-
-    def _render(self, atoms_trajectory: list[Atoms]) -> None:
-        render_atoms_trajectory(
-            atoms_trajectory,
-            output_dir=self.additional_fields.get("render", {}).get("output_dir"),
-            image_config=self.additional_fields.get("render", {}).get("image_config"),
-            video_config=self.additional_fields.get("render", {}).get("video_config"),
-        )
 
     def vib(
         self,
@@ -522,7 +506,7 @@ class VibSummarize:
         )
 
         # Create renders of atomic positions (initial, final, full trajectory)
-        self._render(atoms)
+        _render_atoms_trajectory(atoms, self.additional_fields)
 
         return finalize_dict(
             unsorted_task_doc,
@@ -597,7 +581,7 @@ class VibSummarize:
         unsorted_task_doc = recursive_dict_merge(vib_schema, thermo_schema)
 
         # Create renders of atomic positions (initial, final, full trajectory)
-        self._render(atoms)
+        _render_atoms_trajectory(atoms, self.additional_fields)
 
         return finalize_dict(
             unsorted_task_doc,
@@ -639,3 +623,14 @@ def _get_nth_iteration(
     if end_idx < len(neb_trajectory) - 1:
         result.extend(neb_trajectory[-(n_images):])
     return result
+
+
+def _render_atoms_trajectory(
+    atoms_trajectory: list[Atoms], additional_fields: dict[str, Any]
+) -> None:
+    render_atoms_trajectory(
+        atoms_trajectory,
+        output_dir=additional_fields.get("render", {}).get("output_dir"),
+        image_config=additional_fields.get("render", {}).get("image_config"),
+        video_config=additional_fields.get("render", {}).get("video_config"),
+    )
