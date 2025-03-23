@@ -6,10 +6,8 @@ parsl = pytest.importorskip("parsl")
 
 from pathlib import Path
 
-import numpy as np
 from ase.build import bulk
 
-from quacc import flow, job
 from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
 

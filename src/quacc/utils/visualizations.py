@@ -4,20 +4,24 @@ from __future__ import annotations
 
 import hashlib
 import subprocess
-from pathlib import Path
 import tempfile
-from typing import Optional, Sequence
 import uuid
+from pathlib import Path
+from typing import TYPE_CHECKING
 
-from ase.atoms import Atoms
 from ase.io import write
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from ase.atoms import Atoms
 
 
 def render_atoms_trajectory(
     trajectory: Sequence[Atoms],
     output_dir: str,
-    image_config: Optional[dict[str, str]] | None = None,
-    video_config: Optional[dict[str, str]] | None = None,
+    image_config: dict[str, str] | None = None,
+    video_config: dict[str, str] | None = None,
 ) -> None:
     """Generate a video of the atomic trajectory using ASE and state final image
 
