@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import subprocess
 from pathlib import Path
-import shutil
+import tempfile
 from typing import Optional, Sequence
 import uuid
 
@@ -62,11 +62,6 @@ def render_atoms_trajectory(
     output_dir = Path(output_dir).resolve()
     output_dir.mkdir(exist_ok=True, parents=True)
 
-    # Create unique frames directory
-    unique_id = str(uuid.uuid4())[:8]  # Use first 8 chars of UUID
-    frames_dir = output_dir / f"frames_{unique_id}"
-    frames_dir.mkdir(exist_ok=True, parents=True)
-
     # Generate unique filename based on trajectory properties
     first_atoms = trajectory[0]
     chemical_formula = first_atoms.get_chemical_formula(mode="hill")
@@ -75,43 +70,45 @@ def render_atoms_trajectory(
     structure_hash = hashlib.md5(
         str(first_atoms.positions + trajectory[-1].positions).encode()
     ).hexdigest()[:8]
+    unique_id = str(uuid.uuid4())[:8]
     output_filename_prefix = (
         f"{chemical_formula}_{num_atoms}atoms_{structure_hash}_{unique_id}"
     )
 
     # VIDEO: TRAJECTORY
-    width = video_config.get("width", 800)  # Default width
-    height = video_config.get("height", 600)  # Default height
+    width = video_config.get("width", 800)
+    height = video_config.get("height", 600)
     width += width % 2
     height += height % 2
 
-    # Render
-    for i, atoms in enumerate(trajectory):
-        frame_path = frames_dir / f"frame_{i:04d}.png"
-        # ASE's write function can directly output PNG files
-        write(
-            str(frame_path),
-            atoms,
-            format="png",
-            show_unit_cell=0,
-            rotation=video_config.get("rotation", "0z"),
-            scale=video_config.get("scale", 20),
+    # Use a temporary directory for frames
+    with tempfile.TemporaryDirectory() as temp_dir:
+        temp_dir_path = Path(temp_dir)
+
+        # Render frames in temporary directory
+        for i, atoms in enumerate(trajectory):
+            frame_path = temp_dir_path / f"frame_{i:04d}.png"
+            write(
+                str(frame_path),
+                atoms,
+                format="png",
+                show_unit_cell=0,
+                rotation=video_config.get("rotation", "0z"),
+                scale=video_config.get("scale", 20),
+            )
+            if not frame_path.exists():
+                raise RuntimeError(f"Failed to save frame {i}")
+
+        # Generate video from frames
+        output_video_filename = f"{output_filename_prefix}_{num_frames}frames.mp4"
+        output_video_path = output_dir / output_video_filename
+        cmd_str = (
+            f"ffmpeg -y -framerate {video_config.get('fps', 5)} "
+            f"-i {temp_dir_path}/frame_%04d.png "
+            f"-vf scale={width}:{height} "
+            f"-c:v libx264 -pix_fmt yuv420p {output_video_path}"
         )
-        if not frame_path.exists():
-            raise RuntimeError(f"Failed to save frame {i}")
-
-    output_video_filename = f"{output_filename_prefix}_{num_frames}frames.mp4"
-    output_video_path = output_dir / output_video_filename
-    cmd_str = (
-        f"ffmpeg -y -framerate {video_config.get('fps', 5)} "
-        f"-i {frames_dir}/frame_%04d.png "
-        f"-vf scale={width}:{height} "  # Force even dimensions
-        f"-c:v libx264 -pix_fmt yuv420p {output_video_path}"
-    )
-    subprocess.run(cmd_str, shell=True, check=True)
-
-    # Clean frames directory
-    shutil.rmtree(frames_dir, ignore_errors=True)
+        subprocess.run(cmd_str, shell=True, check=True)
 
     # IMAGE: FINAL
     output_final_frame_filename = f"{output_filename_prefix}_final.png"
