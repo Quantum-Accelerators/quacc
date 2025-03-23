@@ -17,7 +17,7 @@ from quacc.schemas.prep import prep_next_run
 from quacc.schemas.thermo import ThermoSummarize
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
-from quacc.utils.visualizations import render_atoms
+from quacc.utils.visualizations import render_atoms_trajectory
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -75,13 +75,11 @@ class Summarize:
         self._settings = get_settings()
 
     def _render(self, atoms_trajectory: list[Atoms]) -> None:
-        render_atoms(
+        render_atoms_trajectory(
             atoms_trajectory,
-            renders_dir=self._settings.RENDERS_DIR,
-            render_images=self._settings.RENDER_IMAGES_ENABLED,
-            render_video=self._settings.RENDER_VIDEOS_ENABLED,
-            image_config=self._settings.RENDER_IMAGES_CONFIG,
-            video_config=self._settings.RENDER_VIDEOS_CONFIG,
+            output_dir=self.additional_fields.get("render", {}).get("output_dir"),
+            image_config=self.additional_fields.get("render", {}).get("image_config"),
+            video_config=self.additional_fields.get("render", {}).get("video_config"),
         )
 
     def run(
@@ -412,13 +410,11 @@ class VibSummarize:
         self._settings = get_settings()
 
     def _render(self, atoms_trajectory: list[Atoms]) -> None:
-        render_atoms(
+        render_atoms_trajectory(
             atoms_trajectory,
-            renders_dir=self._settings.RENDERS_DIR,
-            render_images=self._settings.RENDER_IMAGES_ENABLED,
-            render_video=self._settings.RENDER_VIDEOS_ENABLED,
-            image_config=self._settings.RENDER_IMAGES_CONFIG,
-            video_config=self._settings.RENDER_VIDEOS_CONFIG,
+            output_dir=self.additional_fields.get("render", {}).get("output_dir"),
+            image_config=self.additional_fields.get("render", {}).get("image_config"),
+            video_config=self.additional_fields.get("render", {}).get("video_config"),
         )
 
     def vib(

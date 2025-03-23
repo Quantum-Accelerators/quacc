@@ -389,45 +389,6 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
-    # Visualization Settings
-    # ---------------------------
-
-    RENDER_IMAGES_ENABLED: bool = Field(
-        False,
-        description=(
-            """
-            Whether to create trajectory images.
-            """
-        ),
-    )
-    RENDER_IMAGES_CONFIG: dict[str, str | int | bool] = Field(
-        {
-            "style": "cartoon",
-            "colorscheme": "bwr",
-            "ray": True,
-            "width": 1024,
-            "height": 768,
-        },
-        description=(
-            """
-            Configuration for trajectory images.
-            """
-        ),
-    )
-    RENDER_VIDEOS_ENABLED: bool = Field(
-        False,
-        description=(
-            """
-            Whether to create trajectory videos.
-            """
-        ),
-    )
-    RENDER_VIDEOS_CONFIG: dict[str, str | int | bool] = Field(
-        {"fps": 5, "style": "ball+stick", "width": 1024, "height": 768},
-        description="Configuration for trajectory videos using nglview.",
-    )
-
-    # ---------------------------
     # Q-Chem Settings
     # ---------------------------
 
