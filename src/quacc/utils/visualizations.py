@@ -6,7 +6,7 @@ import hashlib
 import subprocess
 from pathlib import Path
 import shutil
-from typing import Sequence
+from typing import Optional, Sequence
 import uuid
 
 from ase.atoms import Atoms
@@ -16,8 +16,9 @@ from ase.io import write
 def render_atoms_trajectory(
     trajectory: Sequence[Atoms],
     output_dir: str,
-    image_config: dict[str, str] | None = None,
-    video_config: dict[str, str] | None = None,
+    image_config: Optional[dict[str, str]] | None = None,
+    video_config: Optional[dict[str, str]] | None = None,
+    throw_if_missing_data: Optional[bool] = False,
 ) -> None:
     """Generate a video of the atomic trajectory using ASE and state final image
 
@@ -41,13 +42,11 @@ def render_atoms_trajectory(
     -------
     Void
     """
-    if output_dir is None:
-        # raise ValueError("output_dir must be provided")
-        return
-
     if len(trajectory) < 2:
-        # raise ValueError("Trajectory must contain at least 2 frames")
-        return
+        if throw_if_missing_data == True:
+            raise ValueError("Trajectory must contain at multiple frames")
+        else:
+            return
 
     # Set/get defaults
     image_config = {
