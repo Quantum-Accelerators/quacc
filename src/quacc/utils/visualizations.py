@@ -18,7 +18,6 @@ def render_atoms_trajectory(
     output_dir: str,
     image_config: Optional[dict[str, str]] | None = None,
     video_config: Optional[dict[str, str]] | None = None,
-    throw_if_missing_data: Optional[bool] = False,
 ) -> None:
     """Generate a video of the atomic trajectory using ASE and state final image
 
@@ -42,11 +41,11 @@ def render_atoms_trajectory(
     -------
     Void
     """
+    if output_dir is None:
+        raise ValueError("output_dir must be specified")
+
     if len(trajectory) < 2:
-        if throw_if_missing_data == True:
-            raise ValueError("Trajectory must contain at multiple frames")
-        else:
-            return
+        raise ValueError("Trajectory must contain at multiple frames")
 
     # Set/get defaults
     image_config = {

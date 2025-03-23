@@ -631,10 +631,11 @@ def _render_atoms_trajectory(
     """
     Render the atomic trajectory helper function to cut down on boiler plate
     """
-    if additional_fields.get("render", {}) is not None:
+    render_config = additional_fields.get("render", {})
+    if render_config is not None and render_config.get("output_dir") is not None:
         render_atoms_trajectory(
             atoms_trajectory,
-            output_dir=additional_fields.get("render", {}).get("output_dir"),
-            image_config=additional_fields.get("render", {}).get("image_config"),
-            video_config=additional_fields.get("render", {}).get("video_config"),
+            output_dir=render_config["output_dir"],
+            image_config=render_config.get("image_config"),
+            video_config=render_config.get("video_config"),
         )
