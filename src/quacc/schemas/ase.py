@@ -17,6 +17,7 @@ from quacc.schemas.prep import prep_next_run
 from quacc.schemas.thermo import ThermoSummarize
 from quacc.utils.dicts import finalize_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
+from quacc.utils.visualizations import render_atoms
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -72,6 +73,16 @@ class Summarize:
         self.move_magmoms = move_magmoms
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
+
+    def _render(self, atoms_trajectory: list[Atoms]) -> None:
+        render_atoms(
+            atoms_trajectory,
+            renders_dir=self._settings.RENDERS_DIR,
+            render_images=self._settings.RENDER_IMAGES_ENABLED,
+            render_video=self._settings.RENDER_VIDEOS_ENABLED,
+            image_config=self._settings.RENDER_IMAGES_CONFIG,
+            video_config=self._settings.RENDER_VIDEOS_CONFIG,
+        )
 
     def run(
         self,
@@ -212,6 +223,9 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
+        # Create renders of atomic positions (initial, final, full trajectory)
+        self._render(atoms_trajectory)
+
         return finalize_dict(
             unsorted_task_doc,
             directory,
@@ -269,6 +283,9 @@ class Summarize:
 
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | md_fields | self.additional_fields
+
+        # Create renders of atomic positions (initial, final, full trajectory)
+        self._render(base_task_doc["trajectory"])
 
         return finalize_dict(
             unsorted_task_doc,
@@ -351,6 +368,9 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
+        # Create renders of atomic positions (initial, final, full trajectory)
+        self._render(atoms_trajectory)
+
         return finalize_dict(
             unsorted_task_doc,
             directory=None,
@@ -390,6 +410,16 @@ class VibSummarize:
         self.directory = directory
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
+
+    def _render(self, atoms_trajectory: list[Atoms]) -> None:
+        render_atoms(
+            atoms_trajectory,
+            renders_dir=self._settings.RENDERS_DIR,
+            render_images=self._settings.RENDER_IMAGES_ENABLED,
+            render_video=self._settings.RENDER_VIDEOS_ENABLED,
+            image_config=self._settings.RENDER_IMAGES_CONFIG,
+            video_config=self._settings.RENDER_VIDEOS_CONFIG,
+        )
 
     def vib(
         self,
@@ -495,6 +525,9 @@ class VibSummarize:
             atoms_metadata | inputs | vib_results | self.additional_fields
         )
 
+        # Create renders of atomic positions (initial, final, full trajectory)
+        self._render(atoms)
+
         return finalize_dict(
             unsorted_task_doc,
             directory=directory,
@@ -566,6 +599,9 @@ class VibSummarize:
 
         # Merge the vib and thermo data
         unsorted_task_doc = recursive_dict_merge(vib_schema, thermo_schema)
+
+        # Create renders of atomic positions (initial, final, full trajectory)
+        self._render(atoms)
 
         return finalize_dict(
             unsorted_task_doc,
