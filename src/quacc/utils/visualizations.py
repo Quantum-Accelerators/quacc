@@ -95,12 +95,11 @@ def render_atoms_trajectory(
                 rotation=video_config.get("rotation", "0z"),
                 scale=video_config.get("scale", 20),
             )
-            if not frame_path.exists():
-                raise RuntimeError(f"Failed to save frame {i}")
 
         # Generate video from frames
-        output_video_filename = f"{output_filename_prefix}_{num_frames}frames.mp4"
-        output_video_path = output_dir / output_video_filename
+        output_video_path = (
+            output_dir / f"{output_filename_prefix}_{num_frames}frames.mp4"
+        )
         cmd_str = (
             f"ffmpeg -y -framerate {video_config.get('fps', 5)} "
             f"-i {temp_dir_path}/frame_%04d.png "
@@ -110,8 +109,7 @@ def render_atoms_trajectory(
         subprocess.run(cmd_str, shell=True, check=True)
 
     # IMAGE: FINAL
-    output_final_frame_filename = f"{output_filename_prefix}_final.png"
-    output_final_frame_path = output_dir / output_final_frame_filename
+    output_final_frame_path = output_dir / f"{output_filename_prefix}_final.png"
     write(
         str(output_final_frame_path),
         trajectory[-1],
