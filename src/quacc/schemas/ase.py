@@ -628,6 +628,9 @@ def _get_nth_iteration(
 def _render_atoms_trajectory(
     atoms_trajectory: list[Atoms], additional_fields: dict[str, Any]
 ) -> None:
+    """
+    Render the atomic trajectory helper function to cut down on boiler plate
+    """
     render_atoms_trajectory(
         atoms_trajectory,
         output_dir=additional_fields.get("render", {}).get("output_dir"),
