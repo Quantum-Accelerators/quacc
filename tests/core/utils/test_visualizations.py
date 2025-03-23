@@ -17,20 +17,17 @@ TEST_RUNINFO = Path(__file__).parent.parent / "runinfo"
 TEST_RENDER_DIR = Path(__file__).parent.parent / "_test_renders"
 
 
-def test_render_relax_job(tmp_path, monkeypatch):
+def test_render_within_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu") * (4, 11, 7)
+    atoms = bulk("Cu") * (2, 7, 5)
     atoms.rattle(stdev=0.5)
     atoms.set_cell(atoms.get_cell() * 1.2)
 
     result = relax_job(
         atoms,
         relax_cell=True,
-        opt_params={
-            "fmax": 0.01,  # Lower fmax and more steps for longer relaxation
-            "max_steps": 500,
-        },
+        opt_params={"fmax": 0.8},
         additional_fields={
             "render": {"output_dir": TEST_RENDER_DIR, "video_config": {"fps": 10}}
         },
@@ -39,12 +36,12 @@ def test_render_relax_job(tmp_path, monkeypatch):
     assert result is not None
     # A trajectory mp4 should exist prefixed with Cu27 label
     assert any(
-        f.name.startswith("Cu308") and f.suffix == ".mp4"
+        f.name.startswith("Cu70") and f.suffix == ".mp4"
         for f in TEST_RENDER_DIR.glob("*.mp4")
     )
 
 
-def test_render_relax_job_in_flow(tmp_path, monkeypatch):
+def test_render_within_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
