@@ -50,7 +50,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
 
     if method == "fairchem":
         calc_kwargs = {
-            "model_name": "EquiformerV2-31M-OMAT24-mp-salex",
+            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
             "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:
