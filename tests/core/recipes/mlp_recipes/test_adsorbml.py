@@ -38,13 +38,12 @@ def _set_dtype(size, type_="float"):
     globals()[f"{type_}_np"] = getattr(np, f"{type_}{size}")
     torch.set_default_dtype(getattr(torch, f"float{size}"))
 
+
 @pytest.mark.skipif(
-    not has_fairchem_data_oc,
-    reason="fairchem-data-oc python package not available",
+    not has_fairchem_data_oc, reason="fairchem-data-oc python package not available"
 )
 @pytest.mark.parametrize("method", methods)
 def test_total_energy_adsorbml(tmp_path, monkeypatch, method):
-
     from quacc.recipes.mlp.adsorbml import bulk_to_surfaces_to_adsorbml
 
     monkeypatch.chdir(tmp_path)
@@ -102,13 +101,12 @@ def test_total_energy_adsorbml(tmp_path, monkeypatch, method):
         ref_CO_Cu111_adsorption_energy[method], abs=0.1
     )
 
+
 @pytest.mark.skipif(
-    not has_fairchem_data_oc,
-    reason="fairchem-data-oc python package not available",
+    not has_fairchem_data_oc, reason="fairchem-data-oc python package not available"
 )
 @pytest.mark.parametrize("fairchem_checkpoint", ["EquiformerV2-31M-S2EF-OC20-All+MD"])
 def test_referenced_energy_mlp(tmp_path, monkeypatch, fairchem_checkpoint):
-
     from quacc.recipes.mlp.adsorbml import bulk_to_surfaces_to_adsorbml
 
     monkeypatch.chdir(tmp_path)
