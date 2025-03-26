@@ -31,9 +31,6 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
-
-
-
 @job
 def ocp_surface_generator(bulk_atoms: Atoms, max_miller: int = 1) -> list[Slab]:
     """
@@ -92,8 +89,12 @@ class CustomSlab(Slab):
         self.shift = shift
         self.top = top
 
-        assert np.linalg.norm(self.atoms.cell[0]) >= min_ab, f"Slab not tiled, you need to repeat it to at least {min_ab}"
-        assert np.linalg.norm(self.atoms.cell[1]) >= min_ab, f"Slab not tiled, you need to repeat it to at least {min_ab}"
+        assert np.linalg.norm(self.atoms.cell[0]) >= min_ab, (
+            f"Slab not tiled, you need to repeat it to at least {min_ab}"
+        )
+        assert np.linalg.norm(self.atoms.cell[1]) >= min_ab, (
+            f"Slab not tiled, you need to repeat it to at least {min_ab}"
+        )
         assert self.has_surface_tagged(), "Slab not tagged"
         assert len(self.atoms.constraints) > 0, "Sub-surface atoms not constrained"
 
@@ -101,8 +102,8 @@ class CustomSlab(Slab):
 @job
 def ocp_adslab_generator(
     slab: Slab | Atoms,
-    adsorbates_kwargs: list[dict[str,Any]] | None = None,
-    multiple_adsorbate_slab_config_kwargs: dict[str,Any] | None = None,
+    adsorbates_kwargs: list[dict[str, Any]] | None = None,
+    multiple_adsorbate_slab_config_kwargs: dict[str, Any] | None = None,
 ) -> list[Atoms]:
     """
     Generate adsorbate-slab configurations.
@@ -152,8 +153,8 @@ def ocp_adslab_generator(
 @flow
 def find_adslabs_each_slab(
     slabs: list[Slab],
-    adsorbates_kwargs: dict[str,Any],
-    multiple_adsorbate_slab_config_kwargs: dict[str,Any] | None = None,
+    adsorbates_kwargs: dict[str, Any],
+    multiple_adsorbate_slab_config_kwargs: dict[str, Any] | None = None,
 ) -> list[dict[str, Slab | list[Atoms]]]:
     """
     Find adsorbate-slab configurations for each slab.
@@ -259,7 +260,7 @@ def filter_sort_select_adslabs(
 @flow
 def adsorb_ml_pipeline(
     slab: Slab,
-    adsorbates_kwargs: dict[str,Any],
+    adsorbates_kwargs: dict[str, Any],
     multiple_adsorbate_slab_config_kwargs: dict[str, Any],
     ml_slab_adslab_relax_job: Job,
     slab_validate_job: Job,
@@ -312,11 +313,13 @@ def adsorb_ml_pipeline(
         detected anomalies, and optionally DFT-validated structures.
     """
 
-    slab.atoms.pbc=True
+    slab.atoms.pbc = True
     ml_relaxed_slab_result = ml_slab_adslab_relax_job(slab.atoms)
 
     unrelaxed_adslab_configurations = ocp_adslab_generator(
-        ml_relaxed_slab_result["atoms"], adsorbates_kwargs, multiple_adsorbate_slab_config_kwargs
+        ml_relaxed_slab_result["atoms"],
+        adsorbates_kwargs,
+        multiple_adsorbate_slab_config_kwargs,
     )
 
     ml_relaxed_configurations = [
@@ -357,17 +360,15 @@ def adsorb_ml_pipeline(
         }
     else:
         dft_validated_adslabs = [
-                    adslab_validate_job(top_candidates[i]["atoms"], relax_cell=False)
-                    for i in range(num_to_validate_with_DFT)
-                ]
+            adslab_validate_job(top_candidates[i]["atoms"], relax_cell=False)
+            for i in range(num_to_validate_with_DFT)
+        ]
 
         dft_validated_slab = slab_validate_job(slab.atoms, relax_cell=False)
 
         if reference_ml_energies_to_gas_phase:
             if atomic_reference_energies is None and molecule_results is None:
-                molecule_results = generate_molecule_reference_results(
-                    gas_validate_job
-                )
+                molecule_results = generate_molecule_reference_results(gas_validate_job)
 
             dft_validated_adslabs = reference_adslab_energies(
                 dft_validated_adslabs,
@@ -380,8 +381,11 @@ def adsorb_ml_pipeline(
             "slab": slab.get_metadata_dict(),
             "adslabs": top_candidates,
             "adslab_anomalies": adslab_anomalies_list,
-            "validated_structures": {"slab": dft_validated_slab, "adslabs": dft_validated_adslabs}}
-
+            "validated_structures": {
+                "slab": dft_validated_slab,
+                "adslabs": dft_validated_adslabs,
+            },
+        }
 
 
 @job
@@ -414,23 +418,22 @@ def reference_adslab_energies(
     if atomic_energies is None:
         if molecule_results is not None:
             atomic_energies = {
-            "H": molecule_results["H2"]["results"]["energy"] / 2,
-            "N": molecule_results["N2"]["results"]["energy"] / 2,
-            "O": (
-                molecule_results["H2O"]["results"]["energy"]
-                - molecule_results["H2"]["results"]["energy"]
-            ),
-            "C": molecule_results["CO"]["results"]["energy"]
-            - (
-                molecule_results["H2O"]["results"]["energy"]
-                - molecule_results["H2"]["results"]["energy"]
-            ),
-        }
+                "H": molecule_results["H2"]["results"]["energy"] / 2,
+                "N": molecule_results["N2"]["results"]["energy"] / 2,
+                "O": (
+                    molecule_results["H2O"]["results"]["energy"]
+                    - molecule_results["H2"]["results"]["energy"]
+                ),
+                "C": molecule_results["CO"]["results"]["energy"]
+                - (
+                    molecule_results["H2O"]["results"]["energy"]
+                    - molecule_results["H2"]["results"]["energy"]
+                ),
+            }
         else:
             raise Exception(
-            "Missing atomic energies and gas phase energies; unable to continue!"
-        )
-
+                "Missing atomic energies and gas phase energies; unable to continue!"
+            )
 
     slab_energy = slab_result["results"]["energy"]
 
@@ -515,7 +518,7 @@ def generate_molecule_reference_results(relax_job: Job) -> MoleculeReferenceResu
 @flow
 def bulk_to_surfaces_to_adsorbml(
     bulk_atoms: Atoms,
-    adsorbates_kwargs: dict[str,Any],
+    adsorbates_kwargs: dict[str, Any],
     multiple_adsorbate_slab_config_kwargs: dict[str, Any],
     ml_relax_job: Job,
     slab_validate_job: Job,
@@ -523,7 +526,6 @@ def bulk_to_surfaces_to_adsorbml(
     gas_validate_job: Job,
     max_miller: int = 1,
     bulk_relax_job: Job | None = None,
-
     num_to_validate_with_DFT: int = 0,
     reference_ml_energies_to_gas_phase: bool = True,
     relax_bulk: bool = True,
@@ -587,9 +589,7 @@ def bulk_to_surfaces_to_adsorbml(
     slabs = ocp_surface_generator(bulk_atoms=bulk_atoms, max_miller=max_miller)
 
     if reference_ml_energies_to_gas_phase and atomic_reference_energies is not None:
-        molecule_results = generate_molecule_reference_results(
-            ml_relax_job
-        )
+        molecule_results = generate_molecule_reference_results(ml_relax_job)
     else:
         molecule_results = None
 
@@ -612,5 +612,5 @@ def bulk_to_surfaces_to_adsorbml(
         num_to_validate_with_DFT=num_to_validate_with_DFT,
         molecule_results=molecule_results,
         reference_ml_energies_to_gas_phase=reference_ml_energies_to_gas_phase,
-        atomic_reference_energies=atomic_reference_energies
+        atomic_reference_energies=atomic_reference_energies,
     )

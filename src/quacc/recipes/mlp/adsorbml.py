@@ -4,8 +4,8 @@ import logging
 from typing import TYPE_CHECKING, Any
 
 from quacc import Job, flow
+from quacc.recipes.common.adsorbml import adsorb_ml_pipeline as adsorb_ml_pipeline_
 from quacc.recipes.common.adsorbml import (
-    adsorb_ml_pipeline as adsorb_ml_pipeline_,
     bulk_to_surfaces_to_adsorbml as bulk_to_surfaces_to_adsorbml_,
 )
 from quacc.wflow_tools.customizers import customize_funcs
@@ -19,7 +19,6 @@ if TYPE_CHECKING:
         AtomicReferenceEnergies,
         MoleculeReferenceResults,
     )
-
 
 
 logger = logging.getLogger(__name__)
@@ -123,7 +122,7 @@ def adsorb_ml_pipeline(
 @flow
 def bulk_to_surfaces_to_adsorbml(
     bulk_atoms: Atoms,
-    adsorbates_kwargs: dict[str,Any],
+    adsorbates_kwargs: dict[str, Any],
     multiple_adsorbate_slab_config_kwargs: dict[str, Any],
     ml_relax_job: Job,
     slab_validate_job: Job,

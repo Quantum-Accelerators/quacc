@@ -553,11 +553,14 @@ if TYPE_CHECKING:
     class AdsorbMLSchema(TypedDict):
         slab: Slab
         adslabs: list[OptSchema]
-        adslab_anomalies: list[Literal[
-            "adsorbate_dissociated",
-            "adsorbate_desorbed",
-            "surface_changed",
-            "adsorbate_intercalated",]]
+        adslab_anomalies: list[
+            Literal[
+                "adsorbate_dissociated",
+                "adsorbate_desorbed",
+                "surface_changed",
+                "adsorbate_intercalated",
+            ]
+        ]
         validated_structures: NotRequired[dict[str, Any]]
 
     class MoleculeReferenceResults(TypedDict):
