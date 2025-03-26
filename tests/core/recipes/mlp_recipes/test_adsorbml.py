@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 from ase.build import bulk
 
-from quacc.recipes.mlp.adsorbml import bulk_to_surfaces_to_adsorbml
 from quacc.recipes.mlp.core import relax_job
 
 torch = pytest.importorskip("torch")
@@ -27,7 +26,7 @@ if has_sevennet := find_spec("sevenn"):
 if has_orb := find_spec("orb_models"):
     methods.append("orb")
 
-if find_spec("fairchem"):
+if find_spec("fairchem.core"):
     from huggingface_hub.utils._auth import get_token
 
     if get_token():
@@ -39,9 +38,15 @@ def _set_dtype(size, type_="float"):
     globals()[f"{type_}_np"] = getattr(np, f"{type_}{size}")
     torch.set_default_dtype(getattr(torch, f"float{size}"))
 
-
+@pytest.mark.skipif(
+    not has_fairchem_data_oc,
+    reason="fairchem-data-oc python package not available",
+)
 @pytest.mark.parametrize("method", methods)
 def test_total_energy_adsorbml(tmp_path, monkeypatch, method):
+
+    from quacc.recipes.mlp.adsorbml import bulk_to_surfaces_to_adsorbml
+
     monkeypatch.chdir(tmp_path)
 
     if method == "mace-mp-0":
@@ -97,9 +102,15 @@ def test_total_energy_adsorbml(tmp_path, monkeypatch, method):
         ref_CO_Cu111_adsorption_energy[method], abs=0.1
     )
 
-
+@pytest.mark.skipif(
+    not has_fairchem_data_oc,
+    reason="fairchem-data-oc python package not available",
+)
 @pytest.mark.parametrize("fairchem_checkpoint", ["EquiformerV2-31M-S2EF-OC20-All+MD"])
 def test_referenced_energy_mlp(tmp_path, monkeypatch, fairchem_checkpoint):
+
+    from quacc.recipes.mlp.adsorbml import bulk_to_surfaces_to_adsorbml
+
     monkeypatch.chdir(tmp_path)
 
     calc_kwargs = {
