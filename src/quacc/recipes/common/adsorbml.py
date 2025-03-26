@@ -366,16 +366,16 @@ def adsorb_ml_pipeline(
 
         dft_validated_slab = slab_validate_job(slab.atoms, relax_cell=False)
 
-        if reference_ml_energies_to_gas_phase:
-            if atomic_reference_energies is None and molecule_results is None:
-                molecule_results = generate_molecule_reference_results(gas_validate_job)
+        # If we're running DFT calculations, we always need to reference energies!
+        if atomic_reference_energies is None and molecule_results is None:
+            molecule_results = generate_molecule_reference_results(gas_validate_job)
 
-            dft_validated_adslabs = reference_adslab_energies(
-                dft_validated_adslabs,
-                dft_validated_slab,
-                atomic_energies=atomic_reference_energies,
-                molecule_results=molecule_results,
-            )
+        dft_validated_adslabs = reference_adslab_energies(
+            dft_validated_adslabs,
+            dft_validated_slab,
+            atomic_energies=atomic_reference_energies,
+            molecule_results=molecule_results,
+        )
 
         return {
             "slab": slab.get_metadata_dict(),
