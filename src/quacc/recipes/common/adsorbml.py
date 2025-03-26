@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import copy
 import logging
-from typing import TYPE_CHECKING, Any, Literal, TypedDict
+from typing import TYPE_CHECKING, Any, Literal
 
 import numpy as np
 from ase.atoms import Atoms
@@ -17,31 +17,22 @@ from fairchem.data.oc.utils import DetectTrajAnomaly
 
 from quacc import Job, flow, job
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.customizers import customize_funcs, strip_decorator
+from quacc.wflow_tools.customizers import strip_decorator
 
 if TYPE_CHECKING:
-    from quacc.types import RunSchema
+    from quacc.types import (
+        AdsorbMLSchema,
+        AtomicReferenceEnergies,
+        MoleculeReferenceResults,
+        OptSchema,
+        RunSchema,
+    )
 
 logger = logging.getLogger(__name__)
 
-class AdsorbatesKwargs(TypedDict):
-    adsorbate_type: str
-    position: list[float]
-    orientation: list[float]
 
 
 
-class MoleculeResults(TypedDict):
-    N2: RunSchema
-    CO: RunSchema
-    H2: RunSchema
-    H2O: RunSchema
-
-class AtomicReferenceEnergies(TypedDict):
-    H: float
-    N: float
-    O: float
-    C: float
 
 @job
 def ocp_surface_generator(bulk_atoms: Atoms, max_miller: int = 1) -> list[Slab]:
@@ -110,7 +101,7 @@ class CustomSlab(Slab):
 @job
 def ocp_adslab_generator(
     slab: Slab | Atoms,
-    adsorbates_kwargs: list[AdsorbatesKwargs] | None = None,
+    adsorbates_kwargs: list[dict[str,Any]] | None = None,
     multiple_adsorbate_slab_config_kwargs: dict[str,Any] | None = None,
 ) -> list[Atoms]:
     """
@@ -120,7 +111,7 @@ def ocp_adslab_generator(
     ----------
     slab : Slab | Atoms
         The slab structure.
-    adsorbates_kwargs : list[AdsorbatesKwargs], optional
+    adsorbates_kwargs : list[dict[str,Any]], optional
         List of keyword arguments for generating adsorbates, by default None.
     multiple_adsorbate_slab_config_kwargs : dict[str,Any], optional
         Keyword arguments for generating multiple adsorbate-slab configurations, by default None.
@@ -161,9 +152,9 @@ def ocp_adslab_generator(
 @flow
 def find_adslabs_each_slab(
     slabs: list[Slab],
-    adsorbates_kwargs: AdsorbatesKwargs,
+    adsorbates_kwargs: dict[str,Any],
     multiple_adsorbate_slab_config_kwargs: dict[str,Any] | None = None,
-) -> list[dict[str, Any]]:
+) -> list[dict[str, Slab | list[Atoms]]]:
     """
     Find adsorbate-slab configurations for each slab.
 
@@ -234,21 +225,21 @@ def detect_anomaly(
 
 @job
 def filter_sort_select_adslabs(
-    adslab_results: list[RunSchema], adslab_anomalies_list: list[list[str]]
-) -> list[RunSchema]:
+    adslab_results: list[OptSchema], adslab_anomalies_list: list[list[str]]
+) -> list[OptSchema]:
     """
     Filter, sort, and select adsorbate-slab configurations based on anomalies and energy.
 
     Parameters
     ----------
-    adslab_results : list[RunSchema]
+    adslab_results : list[OptSchema]
         List of adsorbate-slab results.
     adslab_anomalies_list : list[list[str]]
         List of detected anomalies for each adsorbate-slab configuration.
 
     Returns
     -------
-    list[RunSchema]
+    list[OptSchema]
         Sorted list of adsorbate-slab configurations without anomalies.
     """
     for adslab_result, adslab_anomalies in zip(
@@ -268,7 +259,7 @@ def filter_sort_select_adslabs(
 @flow
 def adsorb_ml_pipeline(
     slab: Slab,
-    adsorbates_kwargs: AdsorbatesKwargs,
+    adsorbates_kwargs: dict[str,Any],
     multiple_adsorbate_slab_config_kwargs: dict[str, Any],
     ml_slab_adslab_relax_job: Job,
     slab_validate_job: Job,
@@ -276,9 +267,9 @@ def adsorb_ml_pipeline(
     gas_validate_job: Job,
     num_to_validate_with_DFT: int = 0,
     reference_ml_energies_to_gas_phase: bool = False,
-    molecule_results: MoleculeResults | None = None,
+    molecule_results: MoleculeReferenceResults | None = None,
     atomic_reference_energies: AtomicReferenceEnergies | None = None,
-) -> dict[str, Any]:
+) -> AdsorbMLSchema:
     """
     Run a machine learning-based pipeline for adsorbate-slab systems.
 
@@ -293,7 +284,7 @@ def adsorb_ml_pipeline(
     ----------
     slab : Slab
         The slab structure to which adsorbates will be added.
-    adsorbates_kwargs : AdsorbatesKwargs
+    adsorbates_kwargs : dict[str,Any]
         Keyword arguments for generating adsorbate configurations.
     multiple_adsorbate_slab_config_kwargs : dict[str, Any]
         Keyword arguments for generating multiple adsorbate-slab configurations.
@@ -309,7 +300,7 @@ def adsorb_ml_pipeline(
         Number of top configurations to validate with DFT, by default 0.
     reference_ml_energies_to_gas_phase : bool, optional
         Whether to reference ML energies to gas phase, by default False.
-    molecule_results : MoleculeResults, optional
+    molecule_results : MoleculeReferenceResults, optional
         Precomputed molecule results for referencing, by default None.
     atomic_reference_energies : AtomicReferenceEnergies, optional
         Atomic reference energies for referencing, by default None.
@@ -332,8 +323,6 @@ def adsorb_ml_pipeline(
         ml_slab_adslab_relax_job(adslab_configuration)
         for adslab_configuration in unrelaxed_adslab_configurations
     ]
-
-
 
     if reference_ml_energies_to_gas_phase:
         if atomic_reference_energies is None and molecule_results is None:
@@ -362,8 +351,8 @@ def adsorb_ml_pipeline(
 
     if num_to_validate_with_DFT == 0:
         return {
-            "slab": slab,
-            "adslab_ml_relaxed_configurations": top_candidates,
+            "slab": slab.get_metadata_dict(),
+            "adslabs": top_candidates,
             "adslab_anomalies": adslab_anomalies_list,
         }
     else:
@@ -388,8 +377,8 @@ def adsorb_ml_pipeline(
             )
 
         return {
-            "slab": slab,
-            "adslab_ml_relaxed_configurations": top_candidates,
+            "slab": slab.get_metadata_dict(),
+            "adslabs": top_candidates,
             "adslab_anomalies": adslab_anomalies_list,
             "validated_structures": {"slab": dft_validated_slab, "adslabs": dft_validated_adslabs}}
 
@@ -397,11 +386,11 @@ def adsorb_ml_pipeline(
 
 @job
 def reference_adslab_energies(
-    adslab_results: list[dict[str, Any]],
+    adslab_results: list[OptSchema],
     slab_result: RunSchema,
     atomic_energies: AtomicReferenceEnergies | None,
-    molecule_results: MoleculeResults | None,
-) -> list[dict[str, Any]]:
+    molecule_results: MoleculeReferenceResults | None,
+) -> list[OptSchema]:
     """
     Reference adsorbate-slab energies to atomic and slab energies.
 
@@ -413,7 +402,7 @@ def reference_adslab_energies(
         Result of the slab calculation.
     atomic_energies : AtomicReferenceEnergies | None
         Dictionary of atomic energies.
-    molecule_results : MoleculeResults | None
+    molecule_results : MoleculeReferenceResults | None
         Dictionary of molecule results.
 
     Returns
@@ -501,7 +490,7 @@ def molecule_pbc(*args: Any, **molecule_kwargs: Any) -> Atoms:
     return atoms
 
 
-def generate_molecule_reference_results(relax_job: Job) -> MoleculeResults:
+def generate_molecule_reference_results(relax_job: Job) -> MoleculeReferenceResults:
     """
     Generate reference results for molecules.
 
@@ -512,7 +501,7 @@ def generate_molecule_reference_results(relax_job: Job) -> MoleculeResults:
 
     Returns
     -------
-    MoleculeResults
+    MoleculeReferenceResults
         Dictionary of reference results for molecules.
     """
     return {
@@ -526,7 +515,7 @@ def generate_molecule_reference_results(relax_job: Job) -> MoleculeResults:
 @flow
 def bulk_to_surfaces_to_adsorbml(
     bulk_atoms: Atoms,
-    adsorbates_kwargs: AdsorbatesKwargs,
+    adsorbates_kwargs: dict[str,Any],
     multiple_adsorbate_slab_config_kwargs: dict[str, Any],
     ml_relax_job: Job,
     slab_validate_job: Job,
@@ -534,8 +523,7 @@ def bulk_to_surfaces_to_adsorbml(
     gas_validate_job: Job,
     max_miller: int = 1,
     bulk_relax_job: Job | None = None,
-    job_params: dict[str, dict[str, Any]] | None = None,
-    job_decorators: dict[str, dict[str, Any]] | None = None,
+
     num_to_validate_with_DFT: int = 0,
     reference_ml_energies_to_gas_phase: bool = True,
     relax_bulk: bool = True,
@@ -578,10 +566,6 @@ def bulk_to_surfaces_to_adsorbml(
         Maximum Miller index, by default 1.
     bulk_relax_job : Job | None, optional
         Job for relaxing the bulk structure, by default None.
-    job_params : dict[str, dict[str, Any]] | None, optional
-        Parameters for customizing jobs, by default None.
-    job_decorators : dict[str, dict[str, Any]] | None, optional
-        Decorators for customizing jobs, by default None.
     num_to_validate_with_DFT : int, optional
         Number of top configurations to validate with DFT, by default 0.
     reference_ml_energies_to_gas_phase : bool, optional
@@ -593,42 +577,18 @@ def bulk_to_surfaces_to_adsorbml(
 
     Returns
     -------
-    list[dict[str, Any]]
-        List of dictionaries containing the results of the pipeline for each slab.
+    list[AdsorbMLSchema]
+        List of AdsorbML results for each slab
     """
-    (
-        bulk_relax_job_,
-        ml_slab_adslab_relax_job_,
-        slab_validate_job_,
-        adslab_validate_job_,
-        gas_validate_job_,
-    ) = customize_funcs(
-        [
-            "bulk_relax_job",
-            "ml_slab_adslab_relax_job",
-            "slab_validate_job",
-            "adslab_validate_job",
-            "gas_validate_job",
-        ],
-        [
-            bulk_relax_job,  # type: ignore
-            ml_relax_job,
-            slab_validate_job,
-            adslab_validate_job,
-            gas_validate_job,
-        ],
-        param_swaps=job_params,
-        decorators=job_decorators,  # type: ignore
-    )
 
     if relax_bulk:
-        bulk_atoms = bulk_relax_job_(bulk_atoms, relax_cell=True)["atoms"]
+        bulk_atoms = bulk_relax_job(bulk_atoms, relax_cell=True)["atoms"]
 
     slabs = ocp_surface_generator(bulk_atoms=bulk_atoms, max_miller=max_miller)
 
     if reference_ml_energies_to_gas_phase and atomic_reference_energies is not None:
         molecule_results = generate_molecule_reference_results(
-            ml_slab_adslab_relax_job_
+            ml_relax_job
         )
     else:
         molecule_results = None
@@ -645,10 +605,10 @@ def bulk_to_surfaces_to_adsorbml(
         slabs=slabs,
         adsorbates_kwargs=adsorbates_kwargs,
         multiple_adsorbate_slab_config_kwargs=multiple_adsorbate_slab_config_kwargs,
-        ml_slab_adslab_relax_job=ml_slab_adslab_relax_job_,
-        slab_validate_job=slab_validate_job_,
-        adslab_validate_job=adslab_validate_job_,
-        gas_validate_job=gas_validate_job_,
+        ml_slab_adslab_relax_job=ml_relax_job,
+        slab_validate_job=slab_validate_job,
+        adslab_validate_job=adslab_validate_job,
+        gas_validate_job=gas_validate_job,
         num_to_validate_with_DFT=num_to_validate_with_DFT,
         molecule_results=molecule_results,
         reference_ml_energies_to_gas_phase=reference_ml_energies_to_gas_phase,

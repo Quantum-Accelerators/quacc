@@ -1,2 +1,3 @@
 mace-torch==0.3.12
 matgl @ git+https://github.com/materialsvirtuallab/matgl.git
+fairchem-data-oc==0.2.1

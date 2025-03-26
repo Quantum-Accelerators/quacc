@@ -539,6 +539,39 @@ if TYPE_CHECKING:
         undeformed_result: RunSchema | OptSchema
         elasticity_doc: ElasticityDoc
 
+    class SlabMetadata(TypedDict):
+        millers: tuple[int, int, int]
+        shift: tuple[float, float, float]
+        vacuum: float
+        surface_area: float
+        volume: float
+
+    class Slab(TypedDict):
+        slab_atomsobject: Atoms
+        slab_metadata: SlabMetadata
+
+    class AdsorbMLSchema(TypedDict):
+        slab: Slab
+        adslabs: list[OptSchema]
+        adslab_anomalies: list[Literal[
+            "adsorbate_dissociated",
+            "adsorbate_desorbed",
+            "surface_changed",
+            "adsorbate_intercalated",]]
+        validated_structures: NotRequired[dict[str, Any]]
+
+    class MoleculeReferenceResults(TypedDict):
+        N2: RunSchema
+        CO: RunSchema
+        H2: RunSchema
+        H2O: RunSchema
+
+    class AtomicReferenceEnergies(TypedDict):
+        H: float
+        N: float
+        O: float
+        C: float
+
     class VibThermoSchema(VibSchema, ThermoSchema):
         """Combined Vibrations and Thermo schema"""
 
