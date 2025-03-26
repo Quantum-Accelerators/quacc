@@ -572,7 +572,7 @@ if TYPE_CHECKING:
     class AtomicReferenceEnergies(TypedDict):
         H: float
         N: float
-        O: float # noqa: E741
+        O: float  # noqa: E741
         C: float
 
     class VibThermoSchema(VibSchema, ThermoSchema):
