@@ -20,7 +20,7 @@ from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_funcs, strip_decorator
 
 if TYPE_CHECKING:
-    from quacc.types import OptSchema, RunSchema
+    from quacc.types import RunSchema
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ class CustomSlab(Slab):
 
     def __init__(
         self,
-        slab_atoms: Atoms,
+        atoms: Atoms,
         bulk: Atoms | None = None,
         millers: tuple | None = None,
         shift: float | None = None,
@@ -82,7 +82,7 @@ class CustomSlab(Slab):
 
         Parameters
         ----------
-        slab_atoms : Atoms
+        atoms : Atoms
             The slab atomic structure.
         bulk : Atoms, optional
             The bulk atomic structure, by default None.
@@ -96,15 +96,15 @@ class CustomSlab(Slab):
             Minimum a and b lattice parameters, by default 0.8.
         """
         self.bulk = bulk
-        self.slab_atoms = slab_atoms
+        self.atoms = atoms
         self.millers = millers
         self.shift = shift
         self.top = top
 
-        assert np.linalg.norm(self.slab_atoms.cell[0]) >= min_ab, "Slab not tiled"
-        assert np.linalg.norm(self.slab_atoms.cell[1]) >= min_ab, "Slab not tiled"
+        assert np.linalg.norm(self.atoms.cell[0]) >= min_ab, f"Slab not tiled, you need to repeat it to at least {min_ab}"
+        assert np.linalg.norm(self.atoms.cell[1]) >= min_ab, f"Slab not tiled, you need to repeat it to at least {min_ab}"
         assert self.has_surface_tagged(), "Slab not tagged"
-        assert len(self.slab_atoms.constraints) > 0, "Sub-surface atoms not constrained"
+        assert len(self.atoms.constraints) > 0, "Sub-surface atoms not constrained"
 
 
 @job
@@ -136,9 +136,9 @@ def ocp_adslab_generator(
 
     if isinstance(slab, Atoms):
         try:
-            slab = CustomSlab(slab_atoms=slab)
+            slab = CustomSlab(atoms=slab)
         except AssertionError:
-            slab = CustomSlab(slab_atoms=tile_and_tag_atoms(slab))
+            slab = CustomSlab(atoms=tile_and_tag_atoms(slab))
             logger.warning(
                 "The slab was not tagged and/or tiled. "
                 "We did the best we could, but you should be careful and check the results!"
@@ -150,6 +150,10 @@ def ocp_adslab_generator(
     adslabs = MultipleAdsorbateSlabConfig(
         copy.deepcopy(slab), adsorbates, **multiple_adsorbate_slab_config_kwargs
     )
+
+    atoms_list = adslabs.atoms_list
+    for atoms in atoms_list:
+        atoms.pbc = True
 
     return adslabs.atoms_list
 
@@ -278,6 +282,13 @@ def adsorb_ml_pipeline(
     """
     Run a machine learning-based pipeline for adsorbate-slab systems.
 
+    1. Relax slab using ML
+    2. Generate trial adsorbate-slab configurations for the relaxed slab
+    3. Relax adsorbate-slab configurations using ML
+    4. Validate slab and adsorbate-slab configurations (check for anomalies like dissociations))
+    5. Reference the energies to gas phase if needed (eg using a total energy ML model)
+    6. Optionally validate top K configurations with DFT single-points or relaxations
+
     Parameters
     ----------
     slab : Slab
@@ -309,8 +320,12 @@ def adsorb_ml_pipeline(
         Dictionary containing the slab, ML-relaxed adsorbate-slab configurations,
         detected anomalies, and optionally DFT-validated structures.
     """
+
+    slab.atoms.pbc=True
+    ml_relaxed_slab_result = ml_slab_adslab_relax_job(slab.atoms)
+
     unrelaxed_adslab_configurations = ocp_adslab_generator(
-        slab, adsorbates_kwargs, multiple_adsorbate_slab_config_kwargs
+        ml_relaxed_slab_result["atoms"], adsorbates_kwargs, multiple_adsorbate_slab_config_kwargs
     )
 
     ml_relaxed_configurations = [
@@ -318,7 +333,7 @@ def adsorb_ml_pipeline(
         for adslab_configuration in unrelaxed_adslab_configurations
     ]
 
-    ml_relaxed_slab_result = ml_slab_adslab_relax_job(slab.atoms)
+
 
     if reference_ml_energies_to_gas_phase:
         if atomic_reference_energies is None and molecule_results is None:
@@ -352,18 +367,32 @@ def adsorb_ml_pipeline(
             "adslab_anomalies": adslab_anomalies_list,
         }
     else:
+        dft_validated_adslabs = [
+                    adslab_validate_job(top_candidates[i]["atoms"], relax_cell=False)
+                    for i in range(num_to_validate_with_DFT)
+                ]
+
+        dft_validated_slab = slab_validate_job(slab.atoms, relax_cell=False)
+
+        if reference_ml_energies_to_gas_phase:
+            if atomic_reference_energies is None and molecule_results is None:
+                molecule_results = generate_molecule_reference_results(
+                    gas_validate_job
+                )
+
+            dft_validated_adslabs = reference_adslab_energies(
+                dft_validated_adslabs,
+                dft_validated_slab,
+                atomic_energies=atomic_reference_energies,
+                molecule_results=molecule_results,
+            )
+
         return {
             "slab": slab,
             "adslab_ml_relaxed_configurations": top_candidates,
             "adslab_anomalies": adslab_anomalies_list,
-            "validated_structures": {
-                "validated_adslabs": [
-                    adslab_validate_job(top_candidates[i]["atoms"])
-                    for i in range(num_to_validate_with_DFT)
-                ],
-                "slab_validated": slab_validate_job(slab.atoms, relax_cell=False),
-            },
-        }
+            "validated_structures": {"slab": dft_validated_slab, "adslabs": dft_validated_adslabs}}
+
 
 
 @job
@@ -412,7 +441,7 @@ def reference_adslab_energies(
             raise Exception(
             "Missing atomic energies and gas phase energies; unable to continue!"
         )
-        
+
 
     slab_energy = slab_result["results"]["energy"]
 
@@ -514,7 +543,7 @@ def bulk_to_surfaces_to_adsorbml(
 ) -> list[dict[str, Any]]:
     """
     Run a pipeline from bulk atoms to adsorbate-slab configurations using machine learning!
-    For full details, see the AdsorbML paper (https://arxiv.org/abs/2211.16486, 
+    For full details, see the AdsorbML paper (https://arxiv.org/abs/2211.16486,
                                      https://www.nature.com/articles/s41524-023-01121-5).
 
     1. Relax bulk structure if desired
@@ -522,11 +551,12 @@ def bulk_to_surfaces_to_adsorbml(
     3. Generate gas phase reference energies if needed
 
     For each slab generated in (3):
-        1. Generate trial adsorbate-slab configurations
-        2. Relax slab and adsorbate-slab configurations using ML
-        3. Validate slab and adsorbate-slab configurations (check for anomalies like dissociations))
-        4. Reference the energies to gas phase if needed (eg using a total energy ML model)
-        5. Optionally validate top K configurations with DFT single-points or relaxations
+        1. Relax slab using ML
+        2. Generate trial adsorbate-slab configurations for the relaxed slab
+        3. Relax adsorbate-slab configurations using ML
+        4. Validate slab and adsorbate-slab configurations (check for anomalies like dissociations))
+        5. Reference the energies to gas phase if needed (eg using a total energy ML model)
+        6. Optionally validate top K configurations with DFT single-points or relaxations
 
     Parameters
     ----------
@@ -592,7 +622,6 @@ def bulk_to_surfaces_to_adsorbml(
     )
 
     if relax_bulk:
-        bulk_atoms
         bulk_atoms = bulk_relax_job_(bulk_atoms, relax_cell=True)["atoms"]
 
     slabs = ocp_surface_generator(bulk_atoms=bulk_atoms, max_miller=max_miller)
