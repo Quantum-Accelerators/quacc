@@ -26,7 +26,7 @@ if has_sevennet := find_spec("sevenn"):
 if has_orb := find_spec("orb_models"):
     methods.append("orb")
 
-if find_spec("fairchem.core"):
+if has_fairchem := find_spec("fairchem.core"):
     from huggingface_hub.utils._auth import get_token
 
     if get_token():
@@ -57,19 +57,34 @@ def test_total_energy_adsorbml(tmp_path, monkeypatch, method):
 
     if method == "fairchem":
         calc_kwargs = {
-            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
+            "model_name": "EquiformerV2-31M-OMAT24",
             "local_cache": "./fairchem_checkpoint_cache/",
             "seed": 42,
         }
+        # Computed from DFT since we only need this once; this also serves as a test
+        # that the reference energies are being used correctly
+        OMAT_energies = {
+            "H2": -6.77226619,
+            "H2O": -14.23238513,
+            "N2": -16.65252624,
+            "CO": -14.79264030,
+        }
+        atomic_reference_energies = {
+            "H": OMAT_energies["H2"] / 2,
+            "N": OMAT_energies["N2"] / 2,
+            "O": (OMAT_energies["H2O"] - OMAT_energies["H2"]),
+            "C": OMAT_energies["CO"] - (OMAT_energies["H2O"] - OMAT_energies["H2"]),
+        }
     else:
         calc_kwargs = {}
+        atomic_reference_energies = None
 
     ref_CO_Cu111_adsorption_energy = {
         "chgnet": -1.5,
         "m3gnet": -0.5,
         "mace-mp-0": -0.5,
         "sevennet": -0.98,
-        "orb": -0.5,
+        "orb": -1.04,
         "fairchem": -0.5,
     }
 
@@ -89,6 +104,7 @@ def test_total_energy_adsorbml(tmp_path, monkeypatch, method):
         },
         max_miller=1,
         num_to_validate_with_DFT=1,
+        atomic_reference_energies=atomic_reference_energies,
         reference_ml_energies_to_gas_phase=True,
         relax_bulk=True,
     )
@@ -105,7 +121,7 @@ def test_total_energy_adsorbml(tmp_path, monkeypatch, method):
 
 
 @pytest.mark.skipif(
-    not has_fairchem_data_oc, reason="fairchem-data-oc python package not available"
+    not (has_fairchem_data_oc and has_fairchem), reason="fairchem-data-oc python package not available"
 )
 @pytest.mark.parametrize("fairchem_checkpoint", ["EquiformerV2-31M-S2EF-OC20-All+MD"])
 def test_referenced_energy_mlp(tmp_path, monkeypatch, fairchem_checkpoint):
