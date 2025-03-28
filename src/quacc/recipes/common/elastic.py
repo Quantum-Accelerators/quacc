@@ -115,7 +115,7 @@ def _elastic_tensor_subflow(
 
     results = []
     for deformed in deformed_structure_set:
-        result = relax_job(deformed.to_ase_atoms())
+        result = relax_job(deformed.to_ase_atoms(), relax_cell=False)
 
         if static_job is not None:
             result = static_job(result["atoms"])
