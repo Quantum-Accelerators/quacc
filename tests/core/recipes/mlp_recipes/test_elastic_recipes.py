@@ -26,7 +26,7 @@ if has_sevennet := find_spec("sevenn"):
 if has_orb := find_spec("orb_models"):
     methods.append("orb")
 
-if find_spec("fairchem"):
+if find_spec("fairchem.core"):
     from huggingface_hub.utils._auth import get_token
 
     if get_token():
