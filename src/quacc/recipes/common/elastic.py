@@ -182,7 +182,6 @@ def _deformations_to_elastic_tensor(
     ]
     return ElasticityDoc.from_deformations_and_stresses(
         structure,
-        MPID("quacc-00"),
         deformations=deformed_structure_set.deformations,
         equilibrium_stress=equilibrium_stress,
         stresses=stresses,
