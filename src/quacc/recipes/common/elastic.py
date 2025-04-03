@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from ase import units
 from ase.stress import voigt_6_to_full_3x3_stress
 from emmet.core.elasticity import ElasticityDoc
-from emmet.core.mpid import MPID
 from pymatgen.analysis.elasticity.stress import Stress
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -182,7 +181,6 @@ def _deformations_to_elastic_tensor(
     ]
     return ElasticityDoc.from_deformations_and_stresses(
         structure,
-        MPID("quacc-00"),
         deformations=deformed_structure_set.deformations,
         equilibrium_stress=equilibrium_stress,
         stresses=stresses,
