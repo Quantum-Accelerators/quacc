@@ -163,7 +163,7 @@ class VaspSummarize:
             additional_fields=self.additional_fields,
         ).run(final_atoms, initial_atoms, store=None)
 
-        if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
+        if nsteps := len([f for f in directory.iterdir() if f.startswith("step")]):
             intermediate_vasp_task_docs = {
                 "steps": {
                     n: TaskDoc.from_directory(directory / f"step{n}").model_dump()
