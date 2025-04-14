@@ -239,8 +239,8 @@ class Runner(BaseRunner):
             full_run_kwargs.pop("fmax")
         try:
             with traj, optimizer(self.atoms, **merged_optimizer_kwargs) as dyn:
-                if issubclass(optimizer, SciPyOptimizer | MolecularDynamics):
-                    # https://gitlab.coms/ase/ase/-/issues/1475
+                if issubclass(optimizer, SciPyOptimizer):
+                    # https://gitlab.com/ase/ase/-/issues/1475
                     # https://gitlab.com/ase/ase/-/issues/1497
                     dyn.run(**full_run_kwargs)
                 else:
