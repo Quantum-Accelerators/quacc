@@ -152,7 +152,7 @@ class MrccTemplate(CalculatorTemplate):
         parameters = dict(parameters)
 
         kw = {"charge": 0, "mult": 1, "calc": "PBE", "basis": "def2-SVP"}
-        kw.update(parameters)
+        kw |= parameters
 
         write_mrcc(directory / self.inputname, atoms, kw)
 

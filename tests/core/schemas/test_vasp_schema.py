@@ -67,7 +67,7 @@ def test_vasp_summarize_run(run1, monkeypatch, tmp_path):
     atoms = read(os.path.join(p, "OUTCAR.gz"))
     calc = atoms.calc
     results = VaspSummarize(directory=p).run(atoms)
-    assert results["nsites"] == len(atoms)
+    assert results["structure_metadata"]["nsites"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["output"]["energy"] == -33.15807349
     assert Path(results["dir_name"]).is_dir()

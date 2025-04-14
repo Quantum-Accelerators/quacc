@@ -34,17 +34,17 @@ if find_spec("fairchem"):
         methods.append("fairchem")
 
 
+def _set_dtype(size, type_="float"):
+    globals()[f"{type_}_th"] = getattr(torch, f"{type_}{size}")
+    globals()[f"{type_}_np"] = getattr(np, f"{type_}{size}")
+    torch.set_default_dtype(getattr(torch, f"float{size}"))
+
+
 @pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
 def test_bad_method():
     atoms = bulk("Cu")
     with pytest.raises(ValueError, match="Unrecognized method='bad_method'"):
         static_job(atoms, method="bad_method")
-
-
-def _set_dtype(size, type_="float"):
-    globals()[f"{type_}_th"] = getattr(torch, f"{type_}{size}")
-    globals()[f"{type_}_np"] = getattr(np, f"{type_}{size}")
-    torch.set_default_dtype(getattr(torch, f"float{size}"))
 
 
 @pytest.mark.parametrize("method", methods)
@@ -59,7 +59,7 @@ def test_static_job(tmp_path, monkeypatch, method):
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "model_name": "EquiformerV2-31M-OMAT24-mp-salex",
+            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
             "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:
@@ -117,7 +117,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "model_name": "EquiformerV2-31M-OMAT24-mp-salex",
+            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
             "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:
@@ -169,7 +169,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "model_name": "EquiformerV2-31M-OMAT24-mp-salex",
+            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
             "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:

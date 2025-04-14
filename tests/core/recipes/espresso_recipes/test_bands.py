@@ -39,6 +39,9 @@ def test_bands_flow(tmp_path, monkeypatch):
         == "bands"
     )
 
+    assert Path(output["bands_pp"]["dir_name"], "bands.out.gz").exists()
+    assert Path(output["bands_pp"]["dir_name"], "bands.dat.gz").exists()
+
     assert_allclose(
         output["bands_pw"]["atoms"].get_positions(), atoms.get_positions(), atol=1.0e-4
     )

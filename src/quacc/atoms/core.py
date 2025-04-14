@@ -136,31 +136,6 @@ def copy_atoms(atoms: Atoms) -> Atoms:
     return atoms
 
 
-def get_charge_attribute(atoms: Atoms) -> int | None:
-    """
-    Get the charge of an Atoms object.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-
-    Returns
-    -------
-    int | None
-        Charge of the Atoms object
-    """
-    return (
-        atoms.charge  # type: ignore[attr-defined]
-        if getattr(atoms, "charge", None)
-        else (
-            round(atoms.get_initial_charges().sum())
-            if atoms.has("initial_charges")
-            else None
-        )
-    )
-
-
 def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
     """
     Get the spin multiplicity of an Atoms object.
@@ -172,89 +147,27 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
 
     Returns
     -------
-    int | None
+    int
         Spin multiplicity of the Atoms object
     """
     if getattr(atoms, "spin_multiplicity", None):
         return atoms.spin_multiplicity  # type: ignore[attr-defined]
-    elif (
-        getattr(atoms, "calc", None) is not None
-        and getattr(atoms.calc, "results", None) is not None
-        and atoms.calc.results.get("magmom", None) is not None
-    ):
-        return round(abs(atoms.calc.results["magmom"])) + 1
-    elif (
-        getattr(atoms, "calc", None) is not None
-        and getattr(atoms.calc, "results", None) is not None
-        and atoms.calc.results.get("magmoms", None) is not None
-    ):
-        return round(np.abs(atoms.calc.results["magmoms"].sum())) + 1
-    elif atoms.has("initial_magmoms"):
-        return round(np.abs(atoms.get_initial_magnetic_moments().sum())) + 1
-    else:
-        return None
-
-
-def check_charge_and_spin(
-    atoms: Atoms, charge: int | None = None, spin_multiplicity: int | None = None
-) -> tuple[int, int]:
-    """
-    Check the validity of a given `charge` and `multiplicity`. If they are `None`, then
-    set the charge and/or spin multiplicity of a molecule using the information available,
-    raising a `ValueError` if there is an incompatibility.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    charge
-        Molecular charge
-    spin_multiplicity
-        Molecular multiplicity
-
-    Returns
-    -------
-    charge, multiplicity
-    """
-    charge = charge if charge is not None else get_charge_attribute(atoms)
-    spin_multiplicity = (
-        spin_multiplicity
-        if spin_multiplicity is not None
-        else get_spin_multiplicity_attribute(atoms)
-    )
-
-    if charge is None and spin_multiplicity is not None:
-        charge = 0
 
     try:
-        mol = Molecule.from_ase_atoms(atoms)
-        if charge is not None:
-            if spin_multiplicity is not None:
-                mol.set_charge_and_spin(charge, spin_multiplicity)
-            else:
-                mol.set_charge_and_spin(charge)
-    except ValueError:
-        mol = Molecule.from_ase_atoms(atoms, charge_spin_check=False)
-        nelectrons = mol.nelectrons - charge if charge else mol.nelectrons
-        default_spin_multiplicity = 1 if nelectrons % 2 == 0 else 2
-        mol.set_charge_and_spin(
-            charge if charge is not None else mol.charge,
-            (
-                spin_multiplicity
-                if spin_multiplicity is not None
-                else default_spin_multiplicity
-            ),
-        )
-    if (mol.nelectrons + mol.spin_multiplicity) % 2 != 1:
-        raise ValueError(
-            f"Charge of {mol.charge} and spin multiplicity of {mol.spin_multiplicity} is"
-            " not possible for this molecule."
-        )
-    LOGGER.debug(
-        f"Setting charge to {mol.charge} and spin multiplicity to {mol.spin_multiplicity}"
-    )
+        results = atoms.calc.results  # type: ignore[attr-defined]
+    except AttributeError:
+        results = None
+    if results:
+        if results.get("magmom", None) is not None:
+            return round(abs(results["magmom"])) + 1
+        if results.get("magmoms", None) is not None:
+            return round(np.abs(results["magmoms"].sum())) + 1
 
-    return mol.charge, mol.spin_multiplicity
+    if atoms.has("initial_magmoms"):
+        return round(np.abs(atoms.get_initial_magnetic_moments().sum())) + 1
+
+    LOGGER.warning("Could not determine spin multiplicity. Assuming 1.")
+    return 1
 
 
 def get_final_atoms_from_dynamics(dynamics: Dynamics | Filter) -> Atoms:
@@ -285,7 +198,7 @@ def perturb(mol: Atoms, matrix: list[list[float]] | NDArray, scale: float) -> At
     mol
         ASE Atoms object representing a molecule
     matrix
-        Nx3 matrix, where N is the number of atoms. This means that there is potentially a different translation
+        N x 3 matrix, where N is the number of atoms. This means that there is potentially a different translation
         vector for each atom in the molecule.
     scale
         Scaling factor for perturbation

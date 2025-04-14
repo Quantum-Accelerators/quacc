@@ -12,7 +12,6 @@ from ase.optimize import FIRE
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc import JobFailure, _internally_set_settings
-from quacc.atoms.core import check_charge_and_spin
 from quacc.calculators.qchem import QChem
 from quacc.recipes.qchem.core import freq_job, relax_job, static_job
 from quacc.recipes.qchem.ts import irc_job, quasi_irc_job, ts_job
@@ -120,13 +119,9 @@ def mock_read(self, **kwargs):
 def test_static_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute1)
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
-    output = static_job(test_atoms, charge=charge, spin_multiplicity=spin_multiplicity)
+    output = static_job(test_atoms, charge=0, spin_multiplicity=1)
     assert output["atoms"] == test_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 76
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
@@ -142,21 +137,17 @@ def test_static_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(QChem, "execute", mock_execute2)
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = static_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=-1,
+        spin_multiplicity=2,
         method="b97mv",
         basis="def2-svpd",
         qchem_dict_set_params={"pcm_dielectric": "3.0"},
     )
 
     assert output["atoms"] == test_atoms
-    assert output["charge"] == -1
-    assert output["spin_multiplicity"] == 2
-    assert output["nelectrons"] == 77
-    assert output["formula_alphabetical"] == "C4 H4 O6"
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
@@ -172,18 +163,14 @@ def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(QChem, "execute", mock_execute3)
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = static_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=0,
+        spin_multiplicity=1,
         rem={"mem_total": 170000, "scf_algorithm": "gdm"},
     )
     assert output["atoms"] == test_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 76
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
@@ -193,14 +180,6 @@ def test_static_job_v3(monkeypatch, tmp_path, test_atoms):
     ref_qcin = QCInput.from_file(str(QCHEM_DIR / "mol.qin.alternate"))
     qcinput_nearly_equal(qcin, ref_qcin)
     assert output["results"]["taskdoc"]
-
-
-def test_static_job_v4(monkeypatch, tmp_path, os_atoms):
-    monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(QChem, "read_results", mock_read)
-    monkeypatch.setattr(QChem, "execute", mock_execute4)
-    charge, spin_multiplicity = check_charge_and_spin(os_atoms)
-    assert static_job(os_atoms, charge=charge, spin_multiplicity=spin_multiplicity)
 
 
 def test_static_job_v5(tmp_path, monkeypatch, test_atoms):
@@ -225,20 +204,16 @@ def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(QChem, "execute", mock_execute1)
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
     output = relax_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=0,
+        spin_multiplicity=1,
         basis="def2-tzvpd",
         opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 76
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
@@ -254,22 +229,18 @@ def test_relax_job_v1(monkeypatch, tmp_path, test_atoms):
 def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute2)
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
 
     output = relax_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=-1,
+        spin_multiplicity=2,
         method="b97mv",
         qchem_dict_set_params={"pcm_dielectric": "3.0"},
         opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
-    assert output["charge"] == -1
-    assert output["spin_multiplicity"] == 2
-    assert output["nelectrons"] == 77
-    assert output["formula_alphabetical"] == "C4 H4 O6"
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
@@ -286,22 +257,18 @@ def test_relax_job_v2(monkeypatch, tmp_path, test_atoms):
 def test_relax_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute3)
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
 
     output = relax_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=0,
+        spin_multiplicity=1,
         rem={"scf_algorithm": "gdm", "mem_total": 170000},
         basis="def2-tzvpd",
         opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 76
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
@@ -328,21 +295,17 @@ def test_relax_job_v4(tmp_path, monkeypatch, test_atoms):
 def test_freq_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute5)
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
     output = freq_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=-1,
+        spin_multiplicity=2,
         rem={"scf_algorithm": "diis"},
         method="b97mv",
         basis="def2-svpd",
     )
 
     assert output["atoms"] == test_atoms
-    assert output["charge"] == -1
-    assert output["spin_multiplicity"] == 2
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 77
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-605.6859554019 * units.Hartree)
@@ -355,21 +318,17 @@ def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
 
     monkeypatch.setattr(QChem, "execute", mock_execute1)
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
 
     output = ts_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=0,
+        spin_multiplicity=1,
         basis="def2-tzvpd",
         opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 76
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
@@ -384,22 +343,18 @@ def test_ts_job_v1(monkeypatch, tmp_path, test_atoms):
 def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute2)
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms, charge=-1)
 
     output = ts_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=-1,
+        spin_multiplicity=2,
         method="b97mv",
         qchem_dict_set_params={"pcm_dielectric": "3.0"},
         opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
-    assert output["charge"] == -1
-    assert output["spin_multiplicity"] == 2
-    assert output["nelectrons"] == 77
-    assert output["formula_alphabetical"] == "C4 H4 O6"
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == 2
     assert output["results"]["energy"] == pytest.approx(-605.6859554025 * units.Hartree)
@@ -416,22 +371,18 @@ def test_ts_job_v2(monkeypatch, tmp_path, test_atoms):
 def test_ts_job_v3(monkeypatch, tmp_path, test_atoms):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setattr(QChem, "execute", mock_execute3)
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
 
     output = ts_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=0,
+        spin_multiplicity=1,
         rem={"scf_algorithm": "gdm", "mem_total": 170000},
         basis="def2-tzvpd",
         opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 76
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
     assert output["results"]["energy"] == pytest.approx(-606.1616819641 * units.Hartree)
@@ -457,22 +408,17 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
     monkeypatch.setattr(QChem, "read_results", mock_read)
     monkeypatch.setattr(QChem, "execute", mock_execute4)
 
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
-
     output = irc_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=0,
+        spin_multiplicity=1,
         direction="forward",
         basis="def2-tzvpd",
         opt_params={"max_steps": 1},
     )
 
     assert output["atoms"] != test_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 76
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
 
@@ -482,12 +428,10 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
     )
     qcinput_nearly_equal(qcin, ref_qcin)
 
-    charge, spin_multiplicity = check_charge_and_spin(test_atoms)
-
     output = irc_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=0,
+        spin_multiplicity=1,
         direction="reverse",
         basis="def2-tzvpd",
         opt_params={"max_steps": 1},
@@ -501,8 +445,8 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
 
     output = irc_job(
         test_atoms,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=0,
+        spin_multiplicity=1,
         direction="reverse",
         rem={"scf_algorithm": "gdm", "mem_total": 170000},
         basis="def2-tzvpd",
@@ -510,10 +454,7 @@ def test_irc_job_v1(monkeypatch, tmp_path, test_atoms):
     )
 
     assert output["atoms"] != test_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H4 O6"
-    assert output["nelectrons"] == 76
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H4 O6"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
 
@@ -581,13 +522,11 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_qirc_atoms):
         [0.014, -0.034, 0.094],
     ]
 
-    charge, spin_multiplicity = check_charge_and_spin(test_qirc_atoms)
-
     output = quasi_irc_job(
         test_qirc_atoms,
         mode,
-        charge=charge,
-        spin_multiplicity=spin_multiplicity,
+        charge=0,
+        spin_multiplicity=1,
         direction="forward",
         method="wb97mv",
         opt_params={"max_steps": 5},
@@ -595,10 +534,7 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_qirc_atoms):
     )
 
     assert output["atoms"] != test_qirc_atoms
-    assert output["charge"] == 0
-    assert output["spin_multiplicity"] == 1
-    assert output["formula_alphabetical"] == "C4 H8 O4"
-    assert output["nelectrons"] == 64
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H8 O4"
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["spin_multiplicity"] == 1
 
@@ -619,10 +555,7 @@ def test_quasi_irc_job(monkeypatch, tmp_path, test_qirc_atoms):
     )
 
     assert output["atoms"] != test_qirc_atoms
-    assert output["charge"] == -1
-    assert output["spin_multiplicity"] == 2
-    assert output["formula_alphabetical"] == "C4 H8 O4"
-    assert output["nelectrons"] == 65
+    assert output["molecule_metadata"]["formula_alphabetical"] == "C4 H8 O4"
     assert output["parameters"]["charge"] == -1
     assert output["parameters"]["spin_multiplicity"] == 2
 

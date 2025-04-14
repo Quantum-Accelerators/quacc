@@ -157,13 +157,13 @@ class Runner(BaseRunner):
         relax_cell: bool = False,
         fmax: float | None = 0.01,
         max_steps: int = 1000,
-        optimizer: Dynamics = BFGS,
+        optimizer: type[Dynamics] = BFGS,
         optimizer_kwargs: dict[str, Any] | None = None,
         store_intermediate_results: bool = False,
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
         filter_kwargs: dict[str, Any] | None = None,
-    ) -> Dynamics:
+    ) -> Optimizer:
         """
         This is a wrapper around the optimizers in ASE.
 
@@ -196,8 +196,8 @@ class Runner(BaseRunner):
 
         Returns
         -------
-        Dynamics
-            The ASE Dynamics object following an optimization.
+        Optimizer
+            The ASE Optimizer object following an optimization.
         """
         # Set defaults
         merged_optimizer_kwargs = recursive_dict_merge(

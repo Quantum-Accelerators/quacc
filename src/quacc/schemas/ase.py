@@ -48,7 +48,6 @@ class Summarize:
     def __init__(
         self,
         directory: str | Path | None = None,
-        charge_and_multiplicity: tuple[int, int] | None = None,
         move_magmoms: bool = False,
         additional_fields: dict[str, Any] | None = None,
     ) -> None:
@@ -59,9 +58,6 @@ class Summarize:
         ----------
         directory
             Path to the directory where the calculation was run and results will be stored.
-        charge_and_multiplicity
-            Charge and spin multiplicity of the Atoms object, only used for Molecule
-            metadata.
         move_magmoms
             Whether to move the final magmoms of the original Atoms object to the
             initial magmoms of the returned Atoms object, if relevant.
@@ -73,7 +69,6 @@ class Summarize:
         None
         """
         self.directory = directory
-        self.charge_and_multiplicity = charge_and_multiplicity
         self.move_magmoms = move_magmoms
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
@@ -114,14 +109,7 @@ class Summarize:
         directory = self.directory or final_atoms.calc.directory
 
         # Generate input atoms metadata
-        if input_atoms:
-            input_atoms_metadata = atoms_to_metadata(
-                input_atoms,
-                charge_and_multiplicity=self.charge_and_multiplicity,
-                store_pmg=False,
-            )
-        else:
-            input_atoms_metadata = {}
+        input_atoms_metadata = atoms_to_metadata(input_atoms) if input_atoms else {}
 
         # Generate the base of the task document
         inputs = {
@@ -137,12 +125,7 @@ class Summarize:
         atoms_to_store = prep_next_run(final_atoms, move_magmoms=self.move_magmoms)
 
         # Generate final atoms metadata
-        if final_atoms:
-            final_atoms_metadata = atoms_to_metadata(
-                atoms_to_store, charge_and_multiplicity=self.charge_and_multiplicity
-            )
-        else:
-            final_atoms_metadata = {}
+        final_atoms_metadata = atoms_to_metadata(atoms_to_store) if final_atoms else {}
 
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = (
@@ -351,9 +334,7 @@ class Summarize:
             + 1
         )
         ts_atoms = atoms_trajectory[ts_index]
-        base_task_doc = atoms_to_metadata(
-            atoms_trajectory[0], charge_and_multiplicity=self.charge_and_multiplicity
-        )
+        base_task_doc = atoms_to_metadata(atoms_trajectory[0])
 
         # Clean up the opt parameters
         parameters_opt = dyn.todict()
@@ -380,14 +361,13 @@ class Summarize:
 
 class VibSummarize:
     """
-    Summarize an ASE Vibratinos analysis.
+    Summarize an ASE Vibrations analysis.
     """
 
     def __init__(
         self,
         vib_object: Vibrations | VibrationsData,
         directory: str | Path | None = None,
-        charge_and_multiplicity: tuple[int, int] | None = None,
         additional_fields: dict[str, Any] | None = None,
     ) -> None:
         """
@@ -399,9 +379,6 @@ class VibSummarize:
             Instantiated ASE Vibrations object.
         directory
             Path to the directory where the results will be stored.
-        charge_and_multiplicity
-            Charge and spin multiplicity of the Atoms object, only used for Molecule
-            metadata.
         additional_fields
             Additional fields to add to the task document.
 
@@ -411,7 +388,6 @@ class VibSummarize:
         """
         self.vib_object = vib_object
         self.directory = directory
-        self.charge_and_multiplicity = charge_and_multiplicity
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
@@ -474,9 +450,7 @@ class VibSummarize:
                 vib_energies_raw[i] = np.abs(vib_energies_raw[i])
 
         # Get the true vibrational modes
-        atoms_metadata = atoms_to_metadata(
-            atoms, charge_and_multiplicity=self.charge_and_multiplicity
-        )
+        atoms_metadata = atoms_to_metadata(atoms)
 
         natoms = len(atoms)
         if natoms == 1:
@@ -486,7 +460,7 @@ class VibSummarize:
             is_linear = (
                 PointGroupData().from_molecule(Molecule.from_ase_atoms(atoms)).linear
                 if atoms.pbc.any()
-                else atoms_metadata["symmetry"]["linear"]
+                else atoms_metadata["molecule_metadata"]["symmetry"]["linear"]
             )
 
             # Sort by absolute value
@@ -575,7 +549,6 @@ class VibSummarize:
             vib_schema["results"]["vib_freqs_raw"],
             energy=energy,
             directory=directory,
-            charge_and_multiplicity=self.charge_and_multiplicity,
             additional_fields=self.additional_fields,
         )
         if thermo_method == "ideal_gas":

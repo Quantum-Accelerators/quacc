@@ -1,4 +1,4 @@
-"""Elastic constants recipes for EMT."""
+"""Elastic constants recipes for MLPs."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from quacc import flow
 from quacc.recipes.common.elastic import elastic_tensor_flow as elastic_tensor_flow_
-from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.mlp.core import relax_job, static_job
 from quacc.wflow_tools.customizers import customize_funcs
 
 if TYPE_CHECKING:

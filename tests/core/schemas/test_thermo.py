@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from logging import INFO, getLogger
+from logging import WARNING, getLogger
 from pathlib import Path
 
 import numpy as np
@@ -46,13 +46,14 @@ def test_run_ideal_gas(tmp_path):
 def test_summarize_ideal_gas_thermo1(tmp_path):
     # Make sure metadata is made
     atoms = molecule("N2")
-    results = ThermoSummarize(atoms, [0.34 / invcm], directory=tmp_path).ideal_gas()
-    assert results["natoms"] == len(atoms)
+    results = ThermoSummarize(atoms, [0.34 / invcm], directory=tmp_path).ideal_gas(
+        spin_multiplicity=1
+    )
+    assert results["molecule_metadata"]["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0
-    assert "pymatgen_version" in results["builder_meta"]
 
 
 def test_summarize_ideal_gas_thermo2(tmp_path):
@@ -60,8 +61,8 @@ def test_summarize_ideal_gas_thermo2(tmp_path):
     atoms = molecule("N2")
     results = ThermoSummarize(
         atoms, [0.0 / invcm, 0.34 / invcm], energy=-1, directory=tmp_path
-    ).ideal_gas()
-    assert results["natoms"] == len(atoms)
+    ).ideal_gas(spin_multiplicity=1)
+    assert results["molecule_metadata"]["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
@@ -75,7 +76,7 @@ def test_summarize_ideal_gas_thermo3(tmp_path):
     atoms.calc = EMT()
     results = ThermoSummarize(
         atoms, [0.0 / invcm, 0.34 / invcm], energy=-1, directory=tmp_path
-    ).ideal_gas()
+    ).ideal_gas(spin_multiplicity=1)
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
 
@@ -96,13 +97,13 @@ def test_summarize_ideal_gas_thermo4(tmp_path, caplog):
         (0.38803854931751625 + 0j),
         (0.3880868821616261 + 0j),
     ]
-    with caplog.at_level(INFO):
+    with caplog.at_level(WARNING):
         results = ThermoSummarize(
             atoms, np.array(vib_energies) / invcm, energy=-10.0, directory=tmp_path
         ).ideal_gas(temperature=1000.0, pressure=20.0)
     assert "Using a spin multiplicity of 2" in caplog.text
 
-    assert results["natoms"] == len(atoms)
+    assert results["molecule_metadata"]["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert len(results["parameters_thermo"]["vib_energies"]) == 6
     assert results["parameters_thermo"]["vib_energies"][0] == vib_energies[-6]
@@ -135,12 +136,8 @@ def test_summarize_ideal_gas_thermo5(tmp_path):
         (0.3880868821616261 + 0j),
     ]
     results = ThermoSummarize(
-        atoms,
-        np.array(vib_energies) / invcm,
-        energy=-10.0,
-        charge_and_multiplicity=(0, 2),
-        directory=tmp_path,
-    ).ideal_gas(temperature=1000.0, pressure=20.0)
+        atoms, np.array(vib_energies) / invcm, energy=-10.0, directory=tmp_path
+    ).ideal_gas(spin_multiplicity=2, temperature=1000.0, pressure=20.0)
     assert results["results"]["entropy"] == pytest.approx(0.0023506788982171896)
     assert results["parameters_thermo"]["spin_multiplicity"] == 2
 
@@ -163,12 +160,8 @@ def test_summarize_ideal_gas_thermo6(tmp_path):
         (0.3880868821616261 + 0j),
     ]
     results = ThermoSummarize(
-        atoms,
-        np.array(vib_energies) / invcm,
-        energy=-10.0,
-        charge_and_multiplicity=(0, 4),
-        directory=tmp_path,
-    ).ideal_gas(temperature=1000.0, pressure=20.0)
+        atoms, np.array(vib_energies) / invcm, energy=-10.0, directory=tmp_path
+    ).ideal_gas(spin_multiplicity=4, temperature=1000.0, pressure=20.0)
     assert results["results"]["entropy"] == pytest.approx(0.0024104096804891486)
     assert results["parameters_thermo"]["spin_multiplicity"] == 4
 

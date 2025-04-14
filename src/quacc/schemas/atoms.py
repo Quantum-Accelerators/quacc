@@ -7,11 +7,7 @@ from typing import TYPE_CHECKING
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from pymatgen.core import Molecule, Structure
 
-from quacc.atoms.core import (
-    copy_atoms,
-    get_charge_attribute,
-    get_spin_multiplicity_attribute,
-)
+from quacc.atoms.core import copy_atoms
 
 if TYPE_CHECKING:
     from typing import Any
@@ -22,11 +18,7 @@ if TYPE_CHECKING:
 
 
 def atoms_to_metadata(
-    atoms: Atoms,
-    charge_and_multiplicity: tuple[int, int] | None = None,
-    get_metadata: bool = True,
-    store_pmg: bool = True,
-    additional_fields: dict[str, Any] | None = None,
+    atoms: Atoms, additional_fields: dict[str, Any] | None = None
 ) -> AtomsSchema:
     """
     Convert an ASE Atoms object to a dict suitable for storage in MongoDB.
@@ -35,14 +27,6 @@ def atoms_to_metadata(
     ----------
     atoms
         ASE Atoms object to store in {"atoms": atoms}
-    charge_and_multiplicity
-        Charge and spin multiplicity of the Atoms object, only used for Molecule
-        metadata.
-    get_metadata
-        Whether to store atoms metadata in the returned dict.
-    store_pmg
-        Whether to store the Pymatgen Structure/Molecule object in {"structure":
-        Structure} or {"molecule": Molecule}, respectively.
     additional_fields
         Additional fields to add to the document.
 
@@ -56,41 +40,23 @@ def atoms_to_metadata(
     results = {}
     atoms.calc = None
 
-    # Set any charge or multiplicity keys
-    if not atoms.pbc.any():
-        if charge_and_multiplicity:
-            charge = charge_and_multiplicity[0]
-            spin_multiplicity = charge_and_multiplicity[1]
-        else:
-            charge = get_charge_attribute(atoms)
-            spin_multiplicity = get_spin_multiplicity_attribute(atoms)
-
-        if charge is not None:
-            atoms.charge = charge  # type: ignore[attr-defined]
-        if spin_multiplicity is not None:
-            atoms.spin_multiplicity = spin_multiplicity  # type: ignore[attr-defined]
-
     # Strip the dummy atoms, if present
     if "X" in atoms.get_chemical_symbols():
         del atoms[[atom.index for atom in atoms if atom.symbol == "X"]]
 
-    # Get Atoms metadata, if requested. emmet already has built-in tools for
-    # generating pymatgen Structure/Molecule metadata, so we'll just use that.
-    if get_metadata:
-        if atoms.pbc.any():
-            struct = Structure.from_ase_atoms(atoms)
-            metadata = StructureMetadata().from_structure(struct).model_dump()
-            if store_pmg:
-                results["structure"] = struct
-        else:
-            mol = Molecule.from_ase_atoms(atoms, charge_spin_check=False)
-            metadata = MoleculeMetadata().from_molecule(mol).model_dump()
-            if store_pmg:
-                results["molecule"] = mol
+    # Get Pymatgen Structure/Molecule metadata
+    if atoms.pbc.any():
+        structure = Structure.from_ase_atoms(atoms)
+        structure_metadata = StructureMetadata().from_structure(structure).model_dump()
+        results["structure_metadata"] = structure_metadata
     else:
-        metadata = {}
+        mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
+        molecule_metadata = MoleculeMetadata().from_molecule(mol).model_dump()
+        for key in ["charge", "spin_multiplicity", "nelectrons"]:
+            del molecule_metadata[key]
+        results["molecule_metadata"] = molecule_metadata
 
     # Store Atoms object
     results["atoms"] = atoms
 
-    return metadata | results | additional_fields
+    return results | additional_fields

@@ -82,10 +82,7 @@ def run_and_summarize(
         geom_file=GEOM_FILE
     )
 
-    return Summarize(
-        charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields=additional_fields,
-    ).run(final_atoms, atoms)
+    return Summarize(additional_fields=additional_fields).run(final_atoms, atoms)
 
 
 def run_and_summarize_opt(
@@ -151,10 +148,7 @@ def run_and_summarize_opt(
 
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
-    return Summarize(
-        charge_and_multiplicity=(charge, spin_multiplicity),
-        additional_fields=additional_fields,
-    ).opt(dyn)
+    return Summarize(additional_fields=additional_fields).opt(dyn)
 
 
 def prep_calculator(
