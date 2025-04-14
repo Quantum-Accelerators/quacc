@@ -68,7 +68,7 @@ def flip_structure(struct: Structure | Slab) -> Structure | Slab:
     new_atoms.rotate(180, "x")
     new_atoms.wrap()
 
-    return AseAtomsAdaptor.get_structure(new_atoms)
+    return Structure.from_ase_atoms(new_atoms)
 
 
 def make_slabs_from_bulk(
