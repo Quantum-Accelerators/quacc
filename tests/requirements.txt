@@ -1,4 +1,4 @@
-ase==3.24.0
+ase==3.25.0
 custodian==2024.10.16
 emmet-core==0.84.7rc1
 frozendict==2.4.6
