@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
-from pymatgen.core import Molecule, Structure
+from pymatgen.core import Structure
 
 from quacc.atoms.core import copy_atoms
 
