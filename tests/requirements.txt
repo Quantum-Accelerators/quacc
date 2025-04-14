@@ -6,7 +6,7 @@ maggma==0.71.5
 monty==2025.3.3
 numpy==1.26.4
 psutil==6.1.1
-pydantic==2.11.2
+pydantic==2.11.3
 pydantic-settings==2.8.1
 pymatgen==2025.4.10
 ruamel.yaml==0.18.10
