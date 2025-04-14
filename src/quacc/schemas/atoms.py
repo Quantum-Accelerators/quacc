@@ -50,7 +50,7 @@ def atoms_to_metadata(
         structure_metadata = StructureMetadata().from_structure(structure).model_dump()
         results["structure_metadata"] = structure_metadata
     else:
-        mol = AseAtomsAdaptor().get_molecule(atoms, charge_spin_check=False)
+        mol = Molecule.from_ase_atoms(atoms, charge_spin_check=False)
         molecule_metadata = MoleculeMetadata().from_molecule(mol).model_dump()
         for key in ["charge", "spin_multiplicity", "nelectrons"]:
             del molecule_metadata[key]
