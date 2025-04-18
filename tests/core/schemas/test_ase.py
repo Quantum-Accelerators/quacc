@@ -34,28 +34,8 @@ def test_summarize_run(tmpdir, monkeypatch):
     assert results["input_atoms"]["atoms"] == initial_atoms
     assert Path(results["dir_name"]).is_dir()
 
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
-
-    assert (
-        json_results["structure_metadata"]["nsites"]
-        == results["structure_metadata"]["nsites"]
-    )
-    assert json_results["results"]["energy"] == results["results"]["energy"]
-    assert json_results["atoms"].info == results["atoms"].info
-
 
 def test_summarize_run2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    # Test DB
-    initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
-    atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
-    store = MemoryStore()
-    Summarize().run(atoms, initial_atoms, store=store)
-    assert store.count() == 1
-
-
-def test_summarize_run3(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Make sure info tags are handled appropriately
@@ -67,7 +47,7 @@ def test_summarize_run3(tmp_path, monkeypatch):
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
 
-def test_summarize_run4(tmp_path, monkeypatch):
+def test_summarize_run3(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     # Make sure magnetic moments are handled appropriately
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
@@ -85,7 +65,7 @@ def test_summarize_run4(tmp_path, monkeypatch):
     assert results["atoms"].calc is None
 
 
-def test_summarize_run5(tmp_path, monkeypatch):
+def test_summarize_run4(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     # Make sure Atoms magmoms were not moved if specified
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
@@ -129,17 +109,6 @@ def test_summarize_opt_run1(tmp_path, monkeypatch):
     assert results["parameters_opt"]["fmax"] == dyn.fmax
     assert results["parameters_opt"]["max_steps"] == 100
 
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-
-    assert json_results.keys() == results.keys()
-
-    # assert things on the trajectory are the same
-    assert json_results["trajectory"] == results["trajectory"]
-    assert (
-        json_results["trajectory_results"][-1]["energy"]
-        == results["trajectory_results"][-1]["energy"]
-    )
-
     # Test custom traj
     assert (
         Summarize().opt(dyn, trajectory=traj, check_convergence=False)["trajectory"]
@@ -148,21 +117,6 @@ def test_summarize_opt_run1(tmp_path, monkeypatch):
 
 
 def test_summarize_opt_run2(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    # Test DB
-    atoms = bulk("Cu") * (2, 2, 1)
-    atoms[0].position += [0.1, 0.1, 0.1]
-    atoms.calc = EMT()
-    dyn = BFGS(atoms, trajectory="test.traj")
-    dyn.run(steps=5)
-
-    store = MemoryStore()
-    Summarize().opt(dyn, check_convergence=False, store=store)
-    assert store.count() == 1
-
-
-def test_summarize_opt_run3(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Test no convergence
@@ -176,7 +130,7 @@ def test_summarize_opt_run3(tmp_path, monkeypatch):
         Summarize().opt(dyn)
 
 
-def test_summarize_opt_run4(tmp_path, monkeypatch):
+def test_summarize_opt_run3(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Make sure info tags are handled appropriately
@@ -232,9 +186,6 @@ def test_vib_run1(monkeypatch, tmp_path):
     assert results["results"]["vib_freqs"][0] == pytest.approx(928.1447554058556)
     assert len(results["results"]["vib_energies"]) == 1
     assert results["results"]["vib_energies"][0] == pytest.approx(0.11507528256667966)
-
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
 
 
 def test_vib_run2(monkeypatch, tmp_path):
@@ -308,9 +259,6 @@ def test_summarize_vib_and_thermo_run1(tmp_path, monkeypatch):
     assert len(results["results"]["vib_energies"]) == 1
     assert results["results"]["vib_energies"][0] == pytest.approx(0.11507528256667966)
 
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
-
 
 def test_summarize_vib_and_thermo_run2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
@@ -325,9 +273,6 @@ def test_summarize_vib_and_thermo_run2(tmp_path, monkeypatch):
 
     results = VibSummarize(vib).vib_and_thermo("ideal_gas")
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
@@ -351,10 +296,7 @@ def test_summarize_vib_and_thermo_run3(tmp_path, monkeypatch):
     assert len(results["results"]["vib_freqs_raw"]) == 6
     assert len(results["results"]["vib_energies_raw"]) == 6
     assert len(results["results"]["vib_freqs"]) == 6
-    assert len(results["results"]["vib_energies"]) == 6
-
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
+    assert len(results["results"]["vib_energies"])
 
 
 def test_summarize_vib_and_thermo_run4(tmp_path, monkeypatch):

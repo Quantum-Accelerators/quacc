@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from quacc.calculators.vasp import Vasp
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import VibSummarize
+from quacc.schemas.thermo import ThermoSummarize
 from quacc.schemas.vasp import VaspSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -178,6 +179,21 @@ def run_and_summarize_vib_and_thermo(
 
     calc = Vasp(atoms, preset=preset, **calc_flags)
     vib = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
-    return VibSummarize(vib, additional_fields=additional_fields).vib_and_thermo(
-        thermo_method, energy=energy, temperature=temperature, pressure=pressure
+    vib_summary = VibSummarize(vib, additional_fields=additional_fields).vib(
+        is_molecule=thermo_method == "ideal_gas"
     )
+    thermo_summarize = ThermoSummarize(
+        vib_summary["atoms"],
+        vib_summary["results"]["vib_freqs"],
+        energy=energy,
+        additional_fields=additional_fields,
+    )
+    if thermo_method == "ideal_gas":
+        thermo_summary = thermo_summarize.ideal_gas(
+            temperature=temperature, pressure=pressure
+        )
+    else:
+        thermo_summary = thermo_summarize.harmonic(
+            temperature=temperature, pressure=pressure
+        )
+    return recursive_dict_merge(vib_summary, thermo_summary)

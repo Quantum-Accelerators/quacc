@@ -1,4 +1,4 @@
-"""Base functions for universal machine-learned interatomic potentials."""
+"""Set default arguments for universal machine-learned interatomic potentials."""
 
 from __future__ import annotations
 
@@ -7,21 +7,38 @@ from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
 
-from frozendict import frozendict
+from monty.dev import requires
+
+has_frozen = bool(find_spec("frozendict"))
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from collections.abc import Callable
+    from typing import Any, Literal
 
     from ase.calculators.calculator import BaseCalculator
+
 
 LOGGER = getLogger(__name__)
 
 
-def freezeargs(func):
-    """Convert a mutable dictionary into immutable.
+@requires(has_frozen, "frozendict must be installed. Run pip install frozendict.")
+def freezeargs(func: Callable) -> Callable:
+    """
+    Convert a mutable dictionary into immutable.
     Useful to make sure dictionary args are compatible with cache
     From https://stackoverflow.com/a/53394430
+
+    Parameters
+    ----------
+    func
+        Function to wrap
+
+    Returns
+    -------
+    Function
+        Wrapped function
     """
+    from frozendict import frozendict
 
     @wraps(func)
     def wrapped(*args, **kwargs):
@@ -38,8 +55,7 @@ def freezeargs(func):
 @lru_cache
 def pick_calculator(
     method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
-    **calc_kwargs,
-) -> BaseCalculator:
+) -> tuple[BaseCalculator, dict[str, Any], str]:
     """
     Adapted from `matcalc.util.get_universal_calculator`.
 
@@ -54,17 +70,15 @@ def pick_calculator(
     ----------
     method
         Name of the calculator to use.
-    **calc_kwargs
-        Custom kwargs for the underlying calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
-        `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`, or
-        `orb_models.forcefield.calculator.ORBCalculator` calculators.
 
     Returns
     -------
     Calculator
         The chosen calculator
+    calc_defaults
+        Dictionary of default parameters for the calculator
+    version
+        Version of the calculator
     """
     import torch
 
@@ -77,29 +91,29 @@ def pick_calculator(
         from matgl.ext.ase import PESCalculator
 
         model = matgl.load_model("M3GNet-MP-2021.2.8-DIRECT-PES")
-        if "stress_weight" not in calc_kwargs:
-            calc_kwargs["stress_weight"] = 1.0 / 160.21766208
-        calc = PESCalculator(potential=model, **calc_kwargs)
+        calc_defaults = {"potential": model, "stress_weight": 1.0 / 160.21766208}
+        calc = PESCalculator
 
     elif method.lower() == "chgnet":
         from chgnet import __version__
         from chgnet.model.dynamics import CHGNetCalculator
 
-        calc = CHGNetCalculator(**calc_kwargs)
+        calc_defaults = {}
+        calc = CHGNetCalculator
 
     elif method.lower() == "mace-mp-0":
         from mace import __version__
         from mace.calculators import mace_mp
 
-        if "default_dtype" not in calc_kwargs:
-            calc_kwargs["default_dtype"] = "float64"
-        calc = mace_mp(**calc_kwargs)
+        calc_defaults = {"default_dtype": "float64"}
+        calc = mace_mp
 
     elif method.lower() == "sevennet":
         from sevenn import __version__
         from sevenn.sevennet_calculator import SevenNetCalculator
 
-        calc = SevenNetCalculator(**calc_kwargs)
+        calc_defaults = {}
+        calc = SevenNetCalculator
 
     elif method.lower() == "orb":
         if not find_spec("pynanoflann"):
@@ -112,18 +126,16 @@ def pick_calculator(
         from orb_models.forcefield import pretrained
         from orb_models.forcefield.calculator import ORBCalculator
 
-        orb_model = calc_kwargs.get("model", "orb_v2")
-        orbff = getattr(pretrained, orb_model)()
-        calc = ORBCalculator(model=orbff, **calc_kwargs)
+        calc = ORBCalculator
+        calc_defaults = {"model": pretrained.orb_v2}
 
     elif method.lower() == "fairchem":
         from fairchem.core import OCPCalculator, __version__
 
-        calc = OCPCalculator(**calc_kwargs)
+        calc_defaults = {}
+        calc = OCPCalculator
 
     else:
         raise ValueError(f"Unrecognized {method=}.")
 
-    calc.parameters["version"] = __version__
-
-    return calc
+    return calc, calc_defaults, __version__

@@ -80,8 +80,7 @@ Once the job successfully completes, the file structure looks like:
 RESULTS_DIR
 ├── quacc-2023-12-08-67890
 │   ├── INPUT.gz
-    ├── OUTPUT.gz
-    └── quacc_results.json.gz
+    └── OUTPUT.gz
 ```
 
 ```text

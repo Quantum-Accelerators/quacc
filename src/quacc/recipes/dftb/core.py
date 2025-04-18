@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
+
+from ase.calculators.dftb import Dftb
 
 from quacc import job
-from quacc.recipes.dftb._base import run_and_summarize
+from quacc.recipes.common.core import Recipe
+from quacc.recipes.dftb._defaults import _GEOM_FILE, create_dftb_defaults
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Any
 
     from ase.atoms import Atoms
 
@@ -19,52 +22,42 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     kpts: tuple | list[tuple] | dict | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
-    """
-    Carry out a single-point calculation.
+    """Carry out a single-point calculation.
 
     Parameters
     ----------
     atoms
         Atoms object
     method
-        Method to use.
+        Method to use
     kpts
-        k-point grid to use.
+        k-point grid to use
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Files to copy to runtime directory
     additional_fields
-        Additional fields to add to the results dictionary.
+        Metadata to store in the results
     **calc_kwargs
-        Custom kwargs for the calculator that would override the
-        calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key
-        entirely. For a list of available keys, refer to the
-        [ase.calculators.dftb.Dftb][] calculator.
+        Calculator parameters to pass to [ase.calculators.dftb.Dftb][]
 
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
-        See the return type-hint for the data structure.
+        Results dictionary
     """
-    calc_defaults = {
-        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-        "Hamiltonian_MaxSccIterations": 200,
-        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
-    }
-    if "xtb" in method.lower():
-        calc_defaults["Hamiltonian_Method"] = method
-
-    return run_and_summarize(
+    calc_defaults = create_dftb_defaults(
+        method=method, kpts=kpts, is_periodic=bool(atoms.pbc.any())
+    )
+    return Recipe(Dftb, calc_defaults=calc_defaults).run(
         atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        additional_fields={"name": "DFTB+ Static"} | (additional_fields or {}),
+        geom_file=_GEOM_FILE,
         copy_files=copy_files,
+        additional_fields=additional_fields,
+        **calc_kwargs,
     )
 
 
@@ -78,52 +71,43 @@ def relax_job(
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
-    """
-    Carry out a structure relaxation.
+    """Carry out a structure relaxation.
 
     Parameters
     ----------
     atoms
         Atoms object
     method
-        Method to use.
+        Method to use
     kpts
-        k-point grid to use.
+        k-point grid to use
     relax_cell
-        Whether to relax the unit cell shape/volume in addition to the
-        positions.
+        Whether to relax the cell
     copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+        Files to copy to runtime directory
     additional_fields
-        Additional fields to add to the results dictionary.
+        Metadata to store in the results
     **calc_kwargs
-        Custom kwargs for the calculator that would override the
-        calculator defaults. Set a value to `quacc.Remove` to remove a pre-existing key
-        entirely. For a list of available keys, refer to the
-        [ase.calculators.dftb.Dftb][] calculator.
+        Calculator parameters to pass to [ase.calculators.dftb.Dftb][]
 
     Returns
     -------
     RunSchema
-        Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
-        See the return type-hint for the data structure.
+        Results dictionary
     """
-    calc_defaults = {
+    calc_defaults = create_dftb_defaults(
+        method=method, kpts=kpts, is_periodic=bool(atoms.pbc.any())
+    )
+    calc_defaults |= {
         "Driver_": "GeometryOptimization",
         "Driver_AppendGeometries": "Yes",
         "Driver_LatticeOpt": "Yes" if relax_cell else "No",
         "Driver_MaxSteps": 2000,
-        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-        "Hamiltonian_MaxSccIterations": 200,
-        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
-    if "xtb" in method.lower():
-        calc_defaults["Hamiltonian_Method"] = method
-
-    return run_and_summarize(
+    return Recipe(Dftb, calc_defaults=calc_defaults).run(
         atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        additional_fields={"name": "DFTB+ Relax"} | (additional_fields or {}),
+        geom_file=_GEOM_FILE,
         copy_files=copy_files,
+        additional_fields=additional_fields,
+        **calc_kwargs,
     )

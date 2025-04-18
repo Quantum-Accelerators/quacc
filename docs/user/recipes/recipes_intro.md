@@ -118,16 +118,6 @@ print(result)
     'volume': 11.761470249999999}
     ```
 
-!!! Note "Loading the JSON Output"
-
-    A serialized version of the printed output above is also written to the filesystem with the name `quacc_results.json.gz`. It can be read back in as follows:
-
-    ```python
-    from monty.serialization import loadfn
-
-    results = loadfn("quacc_results.json.gz")
-    ```
-
 ### A Mixed-Code Workflow
 
 ```mermaid
@@ -447,7 +437,7 @@ print(result)
     'volume': 11.563195249785407}
     ```
 
-You will also see that [quacc.recipes.emt.core.relax_job][] takes an `opt_params` keyword argument that allows you to pass in a dictionary of parameters to the optimizer. That may look something like the following.
+You will also see that [quacc.recipes.emt.core.relax_job][] takes a variety of other keyword arguments that allow you to modify the behavior of the optimization settings. That may look something like the following.
 
 ```python
 from ase.build import bulk
@@ -458,7 +448,7 @@ from quacc.recipes.emt.core import relax_job
 atoms = bulk("Cu")
 
 # Run a structure relaxation with modified optimizer parameters
-result = relax_job(atoms, opt_params={"fmax": 1e-3, "optimizer": LBFGS})
+result = relax_job(atoms, fmax=1e-3, optimizer=LBFGS)
 print(result)
 ```
 
