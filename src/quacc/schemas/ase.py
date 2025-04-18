@@ -82,8 +82,6 @@ class Summarize:
             ASE Atoms following a calculation. A calculator must be attached.
         input_atoms
             Input ASE Atoms object to store.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
         Returns
         -------

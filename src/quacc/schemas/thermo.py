@@ -149,8 +149,6 @@ class ThermoSummarize:
             Temperature in Kelvins.
         pressure
             Pressure in bar.
-        store
-            Whether to store the document in the database.
 
         Returns
         -------

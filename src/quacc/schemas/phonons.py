@@ -49,8 +49,6 @@ def summarize_phonopy(
         Calculator parameters used to generate the phonon object.
     additional_fields
         Additional fields to add to the document.
-    store
-        Whether to store the document in the database.
 
     Returns
     -------
