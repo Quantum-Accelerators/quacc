@@ -13,7 +13,6 @@ from ase.optimize import BFGS
 
 from quacc import job
 from quacc.recipes.common.core import Recipe
-from quacc.schemas.ase import VibSummarize
 from quacc.schemas.thermo import ThermoSummarize
 from quacc.utils.dicts import recursive_dict_merge
 

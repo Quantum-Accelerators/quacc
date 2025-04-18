@@ -14,13 +14,12 @@ from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
-from quacc.schemas.thermo import ThermoSummarize
-from quacc.utils.dicts import clean_dict, recursive_dict_merge
+from quacc.utils.dicts import clean_dict
 from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
     from pathlib import Path
-    from typing import Any, Literal
+    from typing import Any
 
     from ase.atoms import Atoms
     from ase.io.trajectory import TrajectoryWriter
@@ -28,14 +27,7 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Optimizer
     from ase.vibrations import Vibrations
 
-    from quacc.types import (
-        DefaultSetting,
-        DynSchema,
-        OptSchema,
-        RunSchema,
-        VibSchema,
-        VibThermoSchema,
-    )
+    from quacc.types import DefaultSetting, DynSchema, OptSchema, RunSchema, VibSchema
 
 
 class Summarize:
