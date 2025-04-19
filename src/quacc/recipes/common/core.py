@@ -56,8 +56,6 @@ class Recipe:
             Files to copy to runtime directory
         additional_fields
             Additional fields for results
-        **calc_kwargs
-            Calculator parameters that override defaults
 
         Returns
         -------
