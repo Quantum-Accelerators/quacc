@@ -12,7 +12,8 @@ from monty.dev import requires
 has_frozen = bool(find_spec("frozendict"))
 
 if TYPE_CHECKING:
-    from typing import Callable, Literal
+    from collections.abc import Callable
+    from typing import Literal
 
     from ase.calculators.calculator import BaseCalculator
 
