@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import job
+from quacc.recipes.common.core import Recipe
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize, VibSummarize
 from quacc.schemas.thermo import ThermoSummarize
@@ -58,11 +59,7 @@ def static_job(
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     calc = TBLite(**calc_flags)
-
-    final_atoms = Runner(atoms, calc).run_calc()
-    return Summarize(
-        additional_fields={"name": "TBLite Static"} | (additional_fields or {})
-    ).run(final_atoms, atoms)
+    return Recipe(calc).static(atoms, additional_fields=additional_fields)
 
 
 @job
@@ -71,7 +68,10 @@ def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     relax_cell: bool = False,
-    opt_params: OptParams | None = None,
+    fmax: float | None = 0.01,
+    max_steps: int = 1000,
+    optimizer: type[Optimizer] = BFGS,
+    optimizer_kwargs: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -84,13 +84,16 @@ def relax_job(
         Atoms object
     method
         xTB method to use
-    relax_cell
-        Whether to relax the cell.
-    opt_params
-        Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
+    fmax
+        Maximum force change in eV/A
+    max_steps
+        Maximum number of steps
+    optimizer
+        ASE optimizer class to use
+    optimizer_kwargs
+        Dictionary of keyword arguments to pass to the optimizer
     additional_fields
-        Additional fields to add to the results dictionary.
+        Metadata to store in the results
     **calc_kwargs
         Custom kwargs for the tblite calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of available
@@ -102,15 +105,20 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
-    opt_params = opt_params or {}
+    _opt_params = calc_kwargs.pop("opt_params", None)  # deprecated
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     calc = TBLite(**calc_flags)
-    dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_params)
-
-    return Summarize(
-        additional_fields={"name": "TBLite Relax"} | (additional_fields or {})
-    ).opt(dyn)
+    return Recipe(calc).relax(
+        atoms,
+        relax_cell=relax_cell,
+        fmax=fmax,
+        max_steps=max_steps,
+        optimizer=optimizer,
+        optimizer_kwargs=optimizer_kwargs,
+        additional_fields=additional_fields,
+        opt_params=_opt_params,
+    )
 
 
 @job
@@ -160,13 +168,12 @@ def freq_job(
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     calc = TBLite(**calc_flags)
 
-    vib = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
-
-    vib_summary = VibSummarize(
-        vib,
-        additional_fields={"name": "TBLite Frequency and Thermo"}
-        | (additional_fields or {}),
-    ).vib(is_molecule=True)
+    vib_summary = Recipe(calc).vib(
+        atoms,
+        is_molecule=True,
+        vib_kwargs=vib_kwargs,
+        additional_fields=additional_fields,
+    )
     thermo_summary = ThermoSummarize(
         vib_summary["atoms"],
         vib_summary["results"]["vib_freqs"],
