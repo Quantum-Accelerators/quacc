@@ -127,7 +127,7 @@ def pick_calculator(
         from orb_models.forcefield.calculator import ORBCalculator
 
         calc = ORBCalculator
-        calc_defaults = {"model": pretrained.orb_v2}
+        calc_defaults = {"model": pretrained.orb_v2()}
 
     elif method.lower() == "fairchem":
         from fairchem.core import OCPCalculator, __version__
