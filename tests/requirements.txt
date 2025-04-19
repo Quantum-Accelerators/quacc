@@ -1,13 +1,13 @@
 ase==3.24.0
-custodian==2024.10.16
+custodian==2025.4.14
 emmet-core==0.84.7rc1
 frozendict==2.4.6
 maggma==0.71.5
 monty==2025.3.3
 numpy==1.26.4
 psutil==6.1.1
-pydantic==2.11.2
-pydantic-settings==2.8.1
-pymatgen==2025.4.10
+pydantic==2.11.3
+pydantic-settings==2.9.1
+pymatgen==2025.4.17
 ruamel.yaml==0.18.10
 typer==0.15.2
