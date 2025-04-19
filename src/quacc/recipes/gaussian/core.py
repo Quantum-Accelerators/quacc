@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 
 import psutil
 
-from quacc import job
-from quacc.recipes.gaussian._base import run_and_summarize
+from quacc import Remove, job
+from quacc.recipes.gaussian._base import _LABEL, run_and_summarize
 
 if TYPE_CHECKING:
     from typing import Any
@@ -58,20 +58,21 @@ def static_job(
         Dictionary of results
     """
     calc_defaults = {
+        # General settings
         "mem": "16GB",
-        "chk": "Gaussian.chk",
+        "chk": f"{_LABEL}.chk",
         "nprocshared": psutil.cpu_count(logical=False),
         "xc": xc,
         "basis": basis,
         "charge": charge,
         "mult": spin_multiplicity,
-        "force": "",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
-        "nosymmetry": "",
         "pop": "CM5",
+        # Job-specific settings
+        "force": "",
         "gfinput": "",
-        "ioplist": ["6/7=3", "2/9=2000"],  # see ASE issue #660
+        "ioplist": ["6/7=3", "2/9=2000"],  # https://gitlab.com/ase/ase/-/issues/660
     }
     return run_and_summarize(
         atoms,
@@ -126,22 +127,23 @@ def relax_job(
         Dictionary of results
     """
     calc_defaults = {
+        # General settings
         "mem": "16GB",
-        "chk": "Gaussian.chk",
+        "chk": f"{_LABEL}.chk",
         "nprocshared": psutil.cpu_count(logical=False),
         "xc": xc,
         "basis": basis,
         "charge": charge,
         "mult": spin_multiplicity,
-        "opt": "",
-        "pop": "CM5",
         "scf": ["maxcycle=250", "xqc"],
         "integral": "ultrafine",
+        "pop": "CM5",
+        # Job-specific settings
+        "opt": "",
         "nosymmetry": "",
-        "ioplist": ["2/9=2000"],  # ASE issue #660
+        "ioplist": ["2/9=2000"],  # https://gitlab.com/ase/ase/-/issues/660
+        "freq": "" if freq else Remove,
     }
-    if freq:
-        calc_defaults["freq"] = ""
 
     return run_and_summarize(
         atoms,

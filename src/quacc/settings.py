@@ -10,7 +10,6 @@ from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import psutil
-from maggma.core import Store
 from monty.serialization import loadfn
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -104,32 +103,6 @@ class QuaccSettings(BaseSettings):
     CHECK_CONVERGENCE: bool = Field(
         True,
         description="Whether to check for convergence, when implemented by a given recipe.",
-    )
-
-    # ---------------------------
-    # Data Store Settings
-    # ---------------------------
-    STORE: Optional[Union[dict[str, dict], Store]] = Field(
-        None,
-        description=(
-            """
-            The desired Maggma data store where calculation results will be stored. All data stores listed in
-            `maggma.stores.__init__.py` are supported. If a dictionary is provided, the first key must be set
-            to the desired store type. The sub-parameters are the keyword arguments accepted by the Store.
-            An example is shown below:
-
-            ```yaml
-            STORE:
-              MongoStore:
-                database: my_db
-                collection_name: my_collection
-                username: my_username
-                password: my_password
-                host: localhost
-                port: 27017
-            ```
-            """
-        ),
     )
 
     # ---------------------------
@@ -461,20 +434,6 @@ class QuaccSettings(BaseSettings):
         if v:
             v.mkdir(exist_ok=True, parents=True)
         return v
-
-    @field_validator("STORE")
-    @classmethod
-    def generate_store(cls, v: Union[dict[str, dict[str, Any]], Store]) -> Store:
-        """Generate the Maggma store."""
-        from maggma import stores
-
-        if isinstance(v, dict):
-            store_name = next(iter(v.keys()))
-            store = getattr(stores, store_name)
-
-            return store(**v[store_name])
-        else:
-            return v
 
     @field_validator("ESPRESSO_PARALLEL_CMD")
     @classmethod

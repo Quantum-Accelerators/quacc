@@ -20,14 +20,13 @@ from pymatgen.entries.compatibility import (
 from quacc import QuaccDefault, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import Summarize
-from quacc.utils.dicts import finalize_dict, recursive_dict_merge
+from quacc.utils.dicts import clean_dict, recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
     from ase.optimize.optimize import Optimizer
-    from maggma.core import Store
 
     from quacc.types import (
         BaderSchema,
@@ -95,9 +94,7 @@ class VaspSummarize:
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
-    def run(
-        self, final_atoms: Atoms, store: Store | None | DefaultSetting = QuaccDefault
-    ) -> VaspSchema:
+    def run(self, final_atoms: Atoms) -> VaspSchema:
         """
         Get tabulated results from a VASP run and store them in a database-friendly format.
 
@@ -105,8 +102,6 @@ class VaspSummarize:
         ----------
         final_atoms
             ASE Atoms object following a calculation.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
 
         Returns
         -------
@@ -129,7 +124,6 @@ class VaspSummarize:
             else self.check_convergence
         )
         directory = Path(self.directory or final_atoms.calc.directory)
-        store = self._settings.STORE if store == QuaccDefault else store
         additional_fields = self.additional_fields or {}
 
         # Fetch all tabulated results from VASP outputs files. Fortunately, emmet
@@ -161,7 +155,7 @@ class VaspSummarize:
             directory=directory,
             move_magmoms=self.move_magmoms,
             additional_fields=self.additional_fields,
-        ).run(final_atoms, initial_atoms, store=None)
+        ).run(final_atoms, initial_atoms)
 
         if nsteps := len([f for f in os.listdir(directory) if f.startswith("step")]):
             intermediate_vasp_task_docs = {
@@ -203,18 +197,10 @@ class VaspSummarize:
             | base_task_doc
             | additional_fields
         )
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def ase_opt(
-        self,
-        optimizer: Optimizer,
-        trajectory: list[Atoms] | None = None,
-        store: Store | None | DefaultSetting = QuaccDefault,
+        self, optimizer: Optimizer, trajectory: list[Atoms] | None = None
     ) -> VaspASEOptSchema:
         """
         Summarize an ASE-based VASP optimization.
@@ -226,11 +212,12 @@ class VaspSummarize:
         trajectory
             ASE Trajectory object or list[Atoms] from reading a trajectory file. If
             None, the trajectory must be found in dyn.trajectory.filename.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`,
-        """
-        store = self._settings.STORE if store == QuaccDefault else store
 
+        Returns
+        -------
+        VaspASEOptSchema
+            Dictionary representation of the task document
+        """
         final_atoms = get_final_atoms_from_dynamics(optimizer)
         directory = Path(self.directory or final_atoms.calc.directory)
 
@@ -239,20 +226,12 @@ class VaspSummarize:
             move_magmoms=self.move_magmoms,
             additional_fields=self.additional_fields,
         ).opt(
-            optimizer,
-            trajectory=trajectory,
-            check_convergence=self.check_convergence,
-            store=None,
+            optimizer, trajectory=trajectory, check_convergence=self.check_convergence
         )
 
-        vasp_summary = self.run(final_atoms, store=None)
+        vasp_summary = self.run(final_atoms)
         unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
 
 def bader_runner(path: Path | str) -> BaderSchema:

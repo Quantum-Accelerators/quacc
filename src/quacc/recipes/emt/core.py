@@ -19,15 +19,12 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
+    from quacc.types import OptParams, OptSchema, RunSchema
 
 
 @job
 def static_job(
-    atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, additional_fields: dict[str, Any] | None = None, **calc_kwargs
 ) -> RunSchema:
     """
     Carry out a static calculation.
@@ -36,8 +33,6 @@ def static_job(
     ----------
     atoms
         Atoms object
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -52,7 +47,7 @@ def static_job(
         See the type-hint for the data structure.
     """
     calc = EMT(**calc_kwargs)
-    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
+    final_atoms = Runner(atoms, calc).run_calc()
 
     return Summarize(
         additional_fields={"name": "EMT Static"} | (additional_fields or {})
@@ -64,7 +59,6 @@ def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -80,8 +74,6 @@ def relax_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -98,9 +90,7 @@ def relax_job(
     opt_params = opt_params or {}
 
     calc = EMT(**calc_kwargs)
-    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(
-        relax_cell=relax_cell, **opt_params
-    )
+    dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_params)
 
     return Summarize(
         additional_fields={"name": "EMT Relax"} | (additional_fields or {})
