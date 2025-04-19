@@ -51,7 +51,7 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc = pick_calculator(method)
+    calc = pick_calculator(method, **calc_kwargs)
     return Recipe(calc).static(atoms, additional_fields=additional_fields)
 
 
@@ -102,7 +102,7 @@ def relax_job(
         See the type-hint for the data structure.
     """
     _opt_params = calc_kwargs.pop("opt_params", None)  # deprecated
-    calc = pick_calculator(method)
+    calc = pick_calculator(method, **calc_kwargs)
     return Recipe(calc).relax(
         atoms,
         relax_cell=relax_cell,
