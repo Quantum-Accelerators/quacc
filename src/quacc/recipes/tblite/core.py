@@ -169,7 +169,7 @@ def freq_job(
     ).vib(is_molecule=True)
     thermo_summary = ThermoSummarize(
         vib_summary["atoms"],
-        vib_summary["vib_freqs"],
+        vib_summary["results"]["vib_freqs"],
         energy=energy,
         additional_fields=additional_fields,
     ).ideal_gas(temperature=temperature, pressure=pressure)

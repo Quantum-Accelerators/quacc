@@ -198,7 +198,7 @@ def freq_job(
     )
     thermo_summary = ThermoSummarize(
         vib_summary["atoms"],
-        vib_summary["vib_freqs"],
+        vib_summary["results"]["vib_freqs"],
         energy=summary["results"]["energy"],
         additional_fields=additional_fields,
     ).ideal_gas(temperature=temperature, pressure=pressure)
