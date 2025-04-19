@@ -5,14 +5,14 @@ from __future__ import annotations
 from functools import lru_cache, wraps
 from importlib.util import find_spec
 from logging import getLogger
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
 has_frozen = bool(find_spec("frozendict"))
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Callable, Literal
 
     from ase.calculators.calculator import BaseCalculator
 
