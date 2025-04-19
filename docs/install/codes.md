@@ -145,6 +145,20 @@ If you plan to use TBLite with quacc, you will need to install the tblite interf
 
 Refer to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html) for details on how to parallelize calculations and adjust the memory limits.
 
+## FHI-aims
+
+If you plan on using FHI-aims with quacc, you will need to obtain and install FHI-aims. This can be done as described in the [Get the Code](https://fhi-aims.org/get-the-code-menu/get-the-code) section of the FHI-aims website.
+
+At minimum, you will need to define and set `AIMS_BIN` to be the path to the FHI-aims executable and `AIMS_SPECIES_DEFAULTS` to be the path to the species defaults directory. This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md).
+
+An example is provided below on how to define the commands in your `~/.bashrc`:
+
+```bash
+export QUACC_AIMS_BIN="/path/to/aims.x"
+export QUACC_AIMS_PARALLEL_CMD="mpirun -np 4"
+export QUACC_AIMS_SPECIES_DEFAULTS="/path/to/fhi-aims/species_defaults/defaults_2020/"
+```
+
 ## VASP
 
 To use quacc with VASP, you will need to define several environment variables, as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md). The most important are listed below:
