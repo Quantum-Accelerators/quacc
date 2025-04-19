@@ -5,10 +5,12 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
+from ase.calculators.psi4 import Psi4
 from monty.dev import requires
 
 from quacc import job
-from quacc.recipes.psi4._base import run_and_summarize
+from quacc.recipes.common.core import Recipe
+from quacc.utils.dicts import recursive_dict_merge
 
 has_psi4 = bool(find_spec("psi4"))
 
@@ -71,10 +73,8 @@ def static_job(
         "multiplicity": spin_multiplicity,
         "reference": "uks" if spin_multiplicity > 1 else "rks",
     }
-    return run_and_summarize(
-        atoms,
-        calc_defaults=calc_defaults,
-        calc_swaps=calc_kwargs,
-        additional_fields={"name": "Psi4 Static"} | (additional_fields or {}),
-        copy_files=copy_files,
+    calc_params = recursive_dict_merge(calc_defaults, calc_kwargs)
+    calc = Psi4(**calc_params)
+    return Recipe(calc).static(
+        atoms, copy_files=copy_files, additional_fields=additional_fields
     )
