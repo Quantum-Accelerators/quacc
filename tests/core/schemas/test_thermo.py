@@ -17,38 +17,34 @@ LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
-def test_run_ideal_gas(tmp_path):
+def test_run_ideal_gas():
     co2 = molecule("CO2")
-    igt = ThermoSummarize(
-        co2, [526, 526, 1480, 2565], directory=tmp_path
-    )._make_ideal_gas()
+    igt = ThermoSummarize(co2, [526, 526, 1480, 2565])._make_ideal_gas()
     assert igt.geometry == "linear"
     assert igt.spin == 0
     assert igt.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
 
     co2 = molecule("CO2")
-    igt = ThermoSummarize(
-        co2, [526, 526, 1480, 2565], directory=tmp_path
-    )._make_ideal_gas(spin_multiplicity=2)
+    igt = ThermoSummarize(co2, [526, 526, 1480, 2565])._make_ideal_gas(
+        spin_multiplicity=2
+    )
     assert igt.geometry == "linear"
     assert igt.spin == 0.5
     assert igt.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
 
     co2 = molecule("CO2")
-    igt = ThermoSummarize(
-        co2, [-12, 526, 526, 1480, 2565], directory=tmp_path
-    )._make_ideal_gas(spin_multiplicity=2)
+    igt = ThermoSummarize(co2, [-12, 526, 526, 1480, 2565])._make_ideal_gas(
+        spin_multiplicity=2
+    )
     assert igt.geometry == "linear"
     assert igt.spin == 0.5
     assert igt.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
 
 
-def test_summarize_ideal_gas_thermo1(tmp_path):
+def test_summarize_ideal_gas_thermo1():
     # Make sure metadata is made
     atoms = molecule("N2")
-    results = ThermoSummarize(atoms, [0.34 / invcm], directory=tmp_path).ideal_gas(
-        spin_multiplicity=1
-    )
+    results = ThermoSummarize(atoms, [0.34 / invcm]).ideal_gas(spin_multiplicity=1)
     assert results["molecule_metadata"]["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -56,12 +52,12 @@ def test_summarize_ideal_gas_thermo1(tmp_path):
     assert results["results"]["energy"] == 0
 
 
-def test_summarize_ideal_gas_thermo2(tmp_path):
+def test_summarize_ideal_gas_thermo2():
     # Make sure right number of vib energies are reported
     atoms = molecule("N2")
-    results = ThermoSummarize(
-        atoms, [0.0 / invcm, 0.34 / invcm], energy=-1, directory=tmp_path
-    ).ideal_gas(spin_multiplicity=1)
+    results = ThermoSummarize(atoms, [0.0 / invcm, 0.34 / invcm], energy=-1).ideal_gas(
+        spin_multiplicity=1
+    )
     assert results["molecule_metadata"]["natoms"] == len(atoms)
     assert results["atoms"] == atoms
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
@@ -69,18 +65,18 @@ def test_summarize_ideal_gas_thermo2(tmp_path):
     assert results["results"]["energy"] == -1
 
 
-def test_summarize_ideal_gas_thermo3(tmp_path):
+def test_summarize_ideal_gas_thermo3():
     # # # Make sure info tags are handled appropriately
     atoms = molecule("N2")
     atoms.info["test_dict"] = {"hi": "there", "foo": "bar"}
     atoms.calc = EMT()
-    results = ThermoSummarize(
-        atoms, [0.0 / invcm, 0.34 / invcm], energy=-1, directory=tmp_path
-    ).ideal_gas(spin_multiplicity=1)
+    results = ThermoSummarize(atoms, [0.0 / invcm, 0.34 / invcm], energy=-1).ideal_gas(
+        spin_multiplicity=1
+    )
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
 
-def test_summarize_ideal_gas_thermo4(tmp_path, caplog):
+def test_summarize_ideal_gas_thermo4(caplog):
     # Make sure spin works right
     atoms = molecule("CH3")
     vib_energies = [
@@ -99,7 +95,7 @@ def test_summarize_ideal_gas_thermo4(tmp_path, caplog):
     ]
     with caplog.at_level(WARNING):
         results = ThermoSummarize(
-            atoms, np.array(vib_energies) / invcm, energy=-10.0, directory=tmp_path
+            atoms, np.array(vib_energies) / invcm, energy=-10.0
         ).ideal_gas(temperature=1000.0, pressure=20.0)
     assert "Using a spin multiplicity of 2" in caplog.text
 
@@ -118,7 +114,7 @@ def test_summarize_ideal_gas_thermo4(tmp_path, caplog):
     assert results["parameters_thermo"]["spin_multiplicity"] == 2
 
 
-def test_summarize_ideal_gas_thermo5(tmp_path):
+def test_summarize_ideal_gas_thermo5():
     # Test custom spin
     atoms = molecule("CH3")
     vib_energies = [
@@ -136,13 +132,13 @@ def test_summarize_ideal_gas_thermo5(tmp_path):
         (0.3880868821616261 + 0j),
     ]
     results = ThermoSummarize(
-        atoms, np.array(vib_energies) / invcm, energy=-10.0, directory=tmp_path
+        atoms, np.array(vib_energies) / invcm, energy=-10.0
     ).ideal_gas(spin_multiplicity=2, temperature=1000.0, pressure=20.0)
     assert results["results"]["entropy"] == pytest.approx(0.0023506788982171896)
     assert results["parameters_thermo"]["spin_multiplicity"] == 2
 
 
-def test_summarize_ideal_gas_thermo6(tmp_path):
+def test_summarize_ideal_gas_thermo6():
     # Test custom spin
     atoms = molecule("CH3")
     vib_energies = [
@@ -160,7 +156,7 @@ def test_summarize_ideal_gas_thermo6(tmp_path):
         (0.3880868821616261 + 0j),
     ]
     results = ThermoSummarize(
-        atoms, np.array(vib_energies) / invcm, energy=-10.0, directory=tmp_path
+        atoms, np.array(vib_energies) / invcm, energy=-10.0
     ).ideal_gas(spin_multiplicity=4, temperature=1000.0, pressure=20.0)
     assert results["results"]["entropy"] == pytest.approx(0.0024104096804891486)
     assert results["parameters_thermo"]["spin_multiplicity"] == 4
@@ -173,25 +169,21 @@ def test_summarize_ideal_gas_thermo6(tmp_path):
     MontyDecoder().process_decoded(d)
 
 
-def test_run_harmonic_thermo(tmp_path):
+def test_run_harmonic_thermo():
     co2 = molecule("CO2")
-    ht = ThermoSummarize(
-        co2, [526, 526, 1480, 2565], directory=tmp_path
-    )._make_harmonic_thermo()
+    ht = ThermoSummarize(co2, [526, 526, 1480, 2565])._make_harmonic_thermo()
     assert ht.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
 
     co2 = molecule("CO2")
-    ht = ThermoSummarize(
-        co2, [-12, 526, 526, 1480, 2565], directory=tmp_path
-    )._make_harmonic_thermo()
+    ht = ThermoSummarize(co2, [-12, 526, 526, 1480, 2565])._make_harmonic_thermo()
     assert ht.get_ZPE_correction() == pytest.approx(2548.5 * invcm)
 
 
-def test_summarize_harmonic_thermo(tmp_path):
+def test_summarize_harmonic_thermo():
     atoms = molecule("H2")
 
     # Make sure metadata is made
-    results = ThermoSummarize(atoms, [0.34 / invcm], directory=tmp_path).harmonic()
+    results = ThermoSummarize(atoms, [0.34 / invcm]).harmonic()
     assert results["parameters_thermo"]["vib_energies"] == [0.34]
     assert results["parameters_thermo"]["vib_freqs"] == [0.34 / invcm]
     assert results["results"]["energy"] == 0

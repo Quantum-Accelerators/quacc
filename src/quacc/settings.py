@@ -107,32 +107,6 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
-    # Data Store Settings
-    # ---------------------------
-    STORE: Optional[Union[dict[str, dict], Store]] = Field(
-        None,
-        description=(
-            """
-            The desired Maggma data store where calculation results will be stored. All data stores listed in
-            `maggma.stores.__init__.py` are supported. If a dictionary is provided, the first key must be set
-            to the desired store type. The sub-parameters are the keyword arguments accepted by the Store.
-            An example is shown below:
-
-            ```yaml
-            STORE:
-              MongoStore:
-                database: my_db
-                collection_name: my_collection
-                username: my_username
-                password: my_password
-                host: localhost
-                port: 27017
-            ```
-            """
-        ),
-    )
-
-    # ---------------------------
     # Prefect Settings
     # ---------------------------
     PREFECT_AUTO_SUBMIT: bool = Field(

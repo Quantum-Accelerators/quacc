@@ -15,7 +15,7 @@ from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
 from quacc.schemas.thermo import ThermoSummarize
-from quacc.utils.dicts import finalize_dict, recursive_dict_merge
+from quacc.utils.dicts import clean_dict, finalize_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
@@ -57,7 +57,7 @@ class Summarize:
         Parameters
         ----------
         directory
-            Path to the directory where the calculation was run and results will be stored.
+            Path to the directory where the calculation was run and results were stored.
         move_magmoms
             Whether to move the final magmoms of the original Atoms object to the
             initial magmoms of the returned Atoms object, if relevant.
@@ -73,12 +73,7 @@ class Summarize:
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
-    def run(
-        self,
-        final_atoms: Atoms,
-        input_atoms: Atoms,
-        store: Store | None | DefaultSetting = QuaccDefault,
-    ) -> RunSchema:
+    def run(self, final_atoms: Atoms, input_atoms: Atoms) -> RunSchema:
         """
         Get tabulated results from a standard ASE run.
 
@@ -88,8 +83,6 @@ class Summarize:
             ASE Atoms following a calculation. A calculator must be attached.
         input_atoms
             Input ASE Atoms object to store.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
         Returns
         -------
@@ -105,7 +98,6 @@ class Summarize:
             msg = "ASE Atoms object's calculator has no results."
             raise ValueError(msg)
 
-        store = self._settings.STORE if store == QuaccDefault else store
         directory = self.directory or final_atoms.calc.directory
 
         # Generate input atoms metadata
@@ -132,19 +124,13 @@ class Summarize:
             final_atoms_metadata | inputs | results | self.additional_fields
         )
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def opt(
         self,
         dyn: Optimizer,
         trajectory: list[Atoms] | None = None,
         check_convergence: bool | DefaultSetting = QuaccDefault,
-        store: Store | None | DefaultSetting = QuaccDefault,
     ) -> OptSchema:
         """
         Get tabulated results from an ASE optimization.
@@ -159,8 +145,6 @@ class Summarize:
         check_convergence
             Whether to check the convergence of the calculation. Defaults to True in
             settings.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
         Returns
         -------
@@ -174,7 +158,6 @@ class Summarize:
             if check_convergence == QuaccDefault
             else check_convergence
         )
-        store = self._settings.STORE if store == QuaccDefault else store
 
         # Get trajectory
         if trajectory:
@@ -195,7 +178,7 @@ class Summarize:
             raise RuntimeError(msg)
 
         # Base task doc
-        base_task_doc = self.run(final_atoms, initial_atoms, store=None)
+        base_task_doc = self.run(final_atoms, initial_atoms)
 
         # Clean up the opt parameters
         parameters_opt = dyn.todict()
@@ -212,18 +195,10 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def md(
-        self,
-        dyn: MolecularDynamics,
-        trajectory: list[Atoms] | None = None,
-        store: Store | None | DefaultSetting = QuaccDefault,
+        self, dyn: MolecularDynamics, trajectory: list[Atoms] | None = None
     ) -> DynSchema:
         """
         Get tabulated results from an ASE MD run.
@@ -235,8 +210,6 @@ class Summarize:
         trajectory
             ASE Trajectory object or list[Atoms] from reading a trajectory file. If
             None, the trajectory must be found in `dyn.trajectory.filename`.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
         Returns
         -------
@@ -244,12 +217,8 @@ class Summarize:
             Dictionary representation of the task document
         """
         # Check and set up variables
-        store = self._settings.STORE if store == QuaccDefault else store
-        base_task_doc = self.opt(
-            dyn, trajectory=trajectory, check_convergence=False, store=None
-        )
+        base_task_doc = self.opt(dyn, trajectory=trajectory, check_convergence=False)
         del base_task_doc["converged"]
-        directory = self.directory or base_task_doc["dir_name"]
 
         # Clean up the opt parameters
         parameters_md = base_task_doc.pop("parameters_opt")
@@ -270,12 +239,7 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | md_fields | self.additional_fields
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def neb(
         self,
@@ -283,7 +247,6 @@ class Summarize:
         n_images: int,
         n_iter_return: int = -1,
         trajectory: TrajectoryWriter | list[Atoms] | None = None,
-        store: Store | None | DefaultSetting = QuaccDefault,
     ) -> OptSchema:
         """
         Summarize the NEB run results and store them in a database-friendly format.
@@ -298,15 +261,12 @@ class Summarize:
             Number of iterations to return. If -1, all iterations are returned.
         trajectory
             Trajectory of the NEB run, either as a Trajectory object or a list of Atoms objects.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`.
 
         Returns
         -------
         OptSchema
             A dictionary containing the summarized NEB run results.
         """
-        store = self._settings.STORE if store == QuaccDefault else store
 
         # Get trajectory
         if trajectory:
@@ -351,12 +311,7 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=None,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
 
 class VibSummarize:
@@ -387,15 +342,11 @@ class VibSummarize:
         None
         """
         self.vib_object = vib_object
-        self.directory = directory
+        self.directory = directory or "."
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
-    def vib(
-        self,
-        is_molecule: bool = False,
-        store: Store | None | DefaultSetting = QuaccDefault,
-    ) -> VibSchema:
+    def vib(self, *, is_molecule: bool) -> VibSchema:
         """
         Get tabulated results from an ASE Vibrations object and store them in a database-
         friendly format.
@@ -406,16 +357,12 @@ class VibSummarize:
             Whether the Atoms object is a molecule. If True, the vibrational modes are
             sorted by their absolute value and the 3N-5 or 3N-6 modes are taken. If False,
             all vibrational modes are taken.
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
         Returns
         -------
         VibSchema
             Dictionary representation of the task document
         """
-        store = self._settings.STORE if store == QuaccDefault else store
-
         # Tabulate input parameters
         vib_freqs_raw = self.vib_object.get_frequencies().tolist()
         vib_energies_raw = self.vib_object.get_energies().tolist()
@@ -495,12 +442,7 @@ class VibSummarize:
             atoms_metadata | inputs | vib_results | self.additional_fields
         )
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def vib_and_thermo(
         self,
@@ -508,7 +450,6 @@ class VibSummarize:
         energy: float = 0.0,
         temperature: float = 298.15,
         pressure: float = 1.0,
-        store: Store | None | DefaultSetting = QuaccDefault,
     ) -> VibThermoSchema:
         """
         Get tabulated results from an ASE Vibrations object and thermochemistry.
@@ -524,16 +465,12 @@ class VibSummarize:
             Temperature in K for thermochemistry calculations.
         pressure
             Pressure in atm for thermochemistry calculations
-        store
-            Maggma Store object to store the results in. Defaults to `QuaccSettings.STORE`
 
         Returns
         -------
         VibThermoSchema
             Dictionary representation of the task document
         """
-        store = self._settings.STORE if store == QuaccDefault else store
-
         atoms = (
             self.vib_object._atoms
             if isinstance(self.vib_object, VibrationsData)
@@ -542,7 +479,7 @@ class VibSummarize:
         is_molecule = bool(thermo_method == "ideal_gas")
 
         # Generate vib data
-        vib_schema = self.vib(is_molecule=is_molecule, store=None)
+        vib_schema = self.vib(is_molecule=is_molecule)
         directory = vib_schema["dir_name"]
 
         # Generate thermo data
@@ -555,11 +492,11 @@ class VibSummarize:
         )
         if thermo_method == "ideal_gas":
             thermo_schema = thermo_summary.ideal_gas(
-                temperature=temperature, pressure=pressure, store=None
+                temperature=temperature, pressure=pressure
             )
         elif thermo_method == "harmonic":
             thermo_schema = thermo_summary.harmonic(
-                temperature=temperature, pressure=pressure, store=None
+                temperature=temperature, pressure=pressure
             )
         else:
             raise ValueError(f"Unsupported thermo_method: {thermo_method}.")
@@ -567,12 +504,7 @@ class VibSummarize:
         # Merge the vib and thermo data
         unsorted_task_doc = recursive_dict_merge(vib_schema, thermo_schema)
 
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
 
 def _get_nth_iteration(

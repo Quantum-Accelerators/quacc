@@ -14,7 +14,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc import QuaccDefault, __version__, get_settings
 from quacc.atoms.core import get_spin_multiplicity_attribute
 from quacc.schemas.atoms import atoms_to_metadata
-from quacc.utils.dicts import finalize_dict
+from quacc.utils.dicts import clean_dict
 from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
@@ -41,7 +41,6 @@ class ThermoSummarize:
         atoms: Atoms,
         vib_freqs: list[float | complex],
         energy: float = 0.0,
-        directory: str | Path | None = None,
         additional_fields: dict[str, Any] | None = None,
     ) -> None:
         """
@@ -55,9 +54,6 @@ class ThermoSummarize:
             Vibrational frequencies.
         energy
             Potential energy used for a reference in thermochemistry calculations.
-        directory
-            Directory to store the output files. Defaults to the directory of the
-            atoms object's calculator, if available.
         additional_fields
             Additional fields to store in the document.
 
@@ -74,7 +70,6 @@ class ThermoSummarize:
         self.vib_freqs = vib_freqs_
         self.vib_energies = [f * invcm for f in self.vib_freqs]
         self.energy = energy
-        self.directory = Path(directory or atoms.calc.directory)
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
@@ -83,7 +78,6 @@ class ThermoSummarize:
         temperature: float = 298.15,
         pressure: float = 1.0,
         spin_multiplicity: int | None = None,
-        store: Store | None | DefaultSetting = QuaccDefault,
     ) -> ThermoSchema:
         """
         Get tabulated results from an ASE IdealGasThermo object and store them in a
@@ -98,15 +92,12 @@ class ThermoSummarize:
         spin_multiplicity
             Spin multiplicity of the system. If not provided, will attempt to detect
             from the Atoms object.
-        store
-            Whether to store the document in the database.
 
         Returns
         -------
         ThermoSchema
             Dictionary representation of the task document
         """
-        store = self._settings.STORE if store == QuaccDefault else store
 
         # Get the spin multiplicity
         if spin_multiplicity is None:
@@ -130,8 +121,6 @@ class ThermoSummarize:
                 "n_imag": igt.n_imag,
                 "method": "ideal_gas",
             },
-            "nid": get_uri(self.directory).split(":")[0],
-            "dir_name": self.directory,
             "quacc_version": __version__,
         }
 
@@ -148,18 +137,10 @@ class ThermoSummarize:
         unsorted_task_doc = (
             atoms_to_metadata(igt.atoms) | inputs | results | self.additional_fields
         )
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=self.directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def harmonic(
-        self,
-        temperature: float = 298.15,
-        pressure: float = 1.0,
-        store: Store | None | DefaultSetting = QuaccDefault,
+        self, temperature: float = 298.15, pressure: float = 1.0
     ) -> ThermoSchema:
         """
         Get tabulated results from an ASE HarmonicThermo object and store them in a
@@ -171,16 +152,12 @@ class ThermoSummarize:
             Temperature in Kelvins.
         pressure
             Pressure in bar.
-        store
-            Whether to store the document in the database.
 
         Returns
         -------
         ThermoSchema
             Dictionary representation of the task document
         """
-        store = self._settings.STORE if store == QuaccDefault else store
-
         # Generate the ASE HarmonicThermo object
         harmonic_thermo = self._make_harmonic_thermo()
 
@@ -212,12 +189,7 @@ class ThermoSummarize:
         unsorted_task_doc = (
             atoms_to_metadata(self.atoms) | inputs | results | self.additional_fields
         )
-        return finalize_dict(
-            unsorted_task_doc,
-            directory=self.directory,
-            gzip_file=self._settings.GZIP_FILES,
-            store=store,
-        )
+        return clean_dict(unsorted_task_doc)
 
     def _make_ideal_gas(self, spin_multiplicity: int | None = None) -> IdealGasThermo:
         """

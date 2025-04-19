@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from ase.calculators import calculator
+from ase.calculators.gaussian import Gaussian
 from ase.filters import FrechetCellFilter
 from ase.io import Trajectory, read
 from ase.md.md import MolecularDynamics
@@ -92,9 +93,7 @@ class Runner(BaseRunner):
             self.atoms.calc = calculator
             self.setup()
 
-    def run_calc(
-        self, geom_file: str | None = None, properties: list[str] | None = None
-    ) -> Atoms:
+    def run_calc(self, geom_file: str | None = None) -> Atoms:
         """
         This is a wrapper around `atoms.calc.calculate()`.
 
@@ -105,20 +104,22 @@ class Runner(BaseRunner):
             update the atoms object's positions and cell after a job. It is better
             to specify this rather than relying on ASE to update the positions, as the
             latter behavior varies between codes.
-        properties
-            List of properties to calculate. Defaults to ["energy"] if `None`.
 
         Returns
         -------
         Atoms
             The updated Atoms object.
         """
-        if properties is None:
-            properties = ["energy"]
+        if isinstance(self.atoms.calc, Gaussian):
+            properties = ["energy"]  # TODO: Use GaussianOptimizer to avoid this hack
+        else:
+            properties = ["energy", "forces"]
 
         # Run calculation
         try:
-            self.atoms.calc.calculate(self.atoms, properties, calculator.all_changes)
+            self.atoms.calc.calculate(
+                self.atoms, properties=properties, system_changes=calculator.all_changes
+            )
         except Exception as exception:
             terminate(self.tmpdir, exception)
 
@@ -234,9 +235,9 @@ class Runner(BaseRunner):
             self.atoms = FrechetCellFilter(self.atoms, **filter_kwargs)
 
         # Run optimization
-        full_run_kwargs = {"steps": max_steps, **run_kwargs}
-        if fmax is not None:
-            full_run_kwargs |= {"fmax": fmax}
+        full_run_kwargs = {"fmax": fmax, "steps": max_steps, **run_kwargs}
+        if not issubclass(optimizer, MolecularDynamics):
+            full_run_kwargs["fmax"] = fmax
         try:
             with traj, optimizer(self.atoms, **merged_optimizer_kwargs) as dyn:
                 if issubclass(optimizer, SciPyOptimizer | MolecularDynamics):
