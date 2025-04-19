@@ -10,7 +10,6 @@ from shutil import which
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import psutil
-from maggma.core import Store
 from monty.serialization import loadfn
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
