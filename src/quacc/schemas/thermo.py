@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from logging import getLogger
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.thermochemistry import HarmonicThermo, IdealGasThermo
@@ -11,7 +10,7 @@ from ase.units import invcm
 from emmet.core.symmetry import PointGroupData
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc import QuaccDefault, __version__, get_settings
+from quacc import __version__, get_settings
 from quacc.atoms.core import get_spin_multiplicity_attribute
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import clean_dict
@@ -24,9 +23,8 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from maggma.core import Store
 
-    from quacc.types import DefaultSetting, ThermoSchema
+    from quacc.types import ThermoSchema
 
 LOGGER = getLogger(__name__)
 

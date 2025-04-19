@@ -15,7 +15,7 @@ from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
 from quacc.schemas.thermo import ThermoSummarize
-from quacc.utils.dicts import clean_dict, finalize_dict, recursive_dict_merge
+from quacc.utils.dicts import clean_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
@@ -27,7 +27,6 @@ if TYPE_CHECKING:
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.vibrations import Vibrations
-    from maggma.core import Store
 
     from quacc.types import (
         DefaultSetting,

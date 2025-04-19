@@ -7,7 +7,6 @@ from shutil import copytree, move
 
 import pytest
 from ase.io import read
-from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp

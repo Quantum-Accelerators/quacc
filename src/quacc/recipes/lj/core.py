@@ -19,15 +19,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import (
-        Filenames,
-        OptParams,
-        OptSchema,
-        RunSchema,
-        SourceDirectory,
-        VibKwargs,
-        VibThermoSchema,
-    )
+    from quacc.types import OptParams, OptSchema, RunSchema, VibKwargs, VibThermoSchema
 
 
 @job
