@@ -436,20 +436,6 @@ class QuaccSettings(BaseSettings):
             v.mkdir(exist_ok=True, parents=True)
         return v
 
-    @field_validator("STORE")
-    @classmethod
-    def generate_store(cls, v: Union[dict[str, dict[str, Any]], Store]) -> Store:
-        """Generate the Maggma store."""
-        from maggma import stores
-
-        if isinstance(v, dict):
-            store_name = next(iter(v.keys()))
-            store = getattr(stores, store_name)
-
-            return store(**v[store_name])
-        else:
-            return v
-
     @field_validator("ESPRESSO_PARALLEL_CMD")
     @classmethod
     def validate_espresso_parallel_cmd(
