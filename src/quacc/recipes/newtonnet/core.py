@@ -11,6 +11,7 @@ from monty.dev import requires
 from quacc import get_settings, job
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize, VibSummarize
+from quacc.schemas.thermo import ThermoSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
@@ -192,16 +193,16 @@ def freq_job(
     ).run(final_atoms, atoms)
 
     vib = VibrationsData(final_atoms, summary["results"]["hessian"])
-    return VibSummarize(
-        vib,
-        directory=summary["dir_name"],
-        additional_fields={"name": "ASE Vibrations and Thermo Analysis"},
-    ).vib_and_thermo(
-        "ideal_gas",
-        energy=summary["results"]["energy"],
-        temperature=temperature,
-        pressure=pressure,
+    vib_summary = VibSummarize(vib, additional_fields=additional_fields).vib(
+        is_molecule=True
     )
+    thermo_summary = ThermoSummarize(
+        vib_summary["atoms"],
+        vib_summary["vib_freqs"],
+        energy=summary["results"]["energy"],
+        additional_fields=additional_fields,
+    ).ideal_gas(temperature=temperature, pressure=pressure)
+    return recursive_dict_merge(vib_summary, thermo_summary)
 
 
 def _add_stdev_and_hess(summary: dict[str, Any], **calc_kwargs) -> dict[str, Any]:

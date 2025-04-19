@@ -14,6 +14,7 @@ from ase.vibrations import Vibrations
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.schemas.ase import Summarize, VibSummarize
+from quacc.schemas.thermo import ThermoSummarize
 
 FILE_DIR = Path(__file__).parent
 
@@ -232,7 +233,7 @@ def test_summarize_vib_and_thermo_run1(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = VibSummarize(vib).vib_and_thermo("ideal_gas")
+    results = VibSummarize(vib).vib(is_molecule=True)
     assert results["atoms"] == input_atoms
     assert results["molecule_metadata"]["natoms"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -269,7 +270,7 @@ def test_summarize_vib_and_thermo_run2(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = VibSummarize(vib).vib_and_thermo("ideal_gas")
+    results = VibSummarize(vib).vib(is_molecule=True)
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
 
     # test document can be jsanitized and decoded
@@ -287,7 +288,7 @@ def test_summarize_vib_and_thermo_run3(tmp_path, monkeypatch):
     vib = Vibrations(atoms)
     vib.run()
 
-    results = VibSummarize(vib).vib_and_thermo("harmonic")
+    results = VibSummarize(vib).vib(is_molecule=False)
     assert results["atoms"] == input_atoms
     assert results["structure_metadata"]["nsites"] == len(atoms)
     assert results["parameters_vib"]["delta"] == vib.delta
@@ -306,7 +307,10 @@ def test_summarize_vib_and_thermo_run4(tmp_path, monkeypatch):
 
     vib = Vibrations(atoms)
     vib.run()
-    results = VibSummarize(vib).vib_and_thermo("harmonic")
+    vib_summary = VibSummarize(vib).vib(is_molecule=False)
+    results = ThermoSummarize(
+        vib_summary["atoms"], vib_summary["results"]["vib_freqs"]
+    ).harmonic()
 
     assert len(results["parameters_thermo"]["vib_energies"]) > 1
     assert results["parameters_thermo"]["vib_energies"][-1] == pytest.approx(
@@ -330,7 +334,10 @@ def test_summarize_vib_and_thermo_run5(tmp_path, monkeypatch):
     atoms.calc = EMT()
     vib = Vibrations(atoms)
     vib.run()
-    results = VibSummarize(vib).vib_and_thermo("ideal_gas")
+    vib_summary = VibSummarize(vib).vib(is_molecule=True)
+    results = ThermoSummarize(
+        vib_summary["atoms"], vib_summary["results"]["vib_freqs"]
+    ).ideal_gas()
 
     assert results["molecule_metadata"]["natoms"] == len(atoms)
     assert results["atoms"] == atoms
@@ -363,13 +370,6 @@ def test_errors(tmp_path, monkeypatch):
         ValueError, match="ASE Atoms object's calculator has no results."
     ):
         Summarize().run(atoms, initial_atoms)
-
-    atoms = molecule("H2")
-    atoms.calc = EMT()
-    vib = Vibrations(atoms)
-    vib.run()
-    with pytest.raises(ValueError, match="Unsupported thermo_method"):
-        VibSummarize(vib, directory=tmp_path).vib_and_thermo("bad")
 
 
 def test_summarize_neb(monkeypatch, tmp_path):

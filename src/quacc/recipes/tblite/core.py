@@ -10,6 +10,7 @@ from monty.dev import requires
 from quacc import job
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize, VibSummarize
+from quacc.schemas.thermo import ThermoSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
 has_tblite = bool(find_spec("tblite"))
@@ -160,10 +161,17 @@ def freq_job(
     calc = TBLite(**calc_flags)
 
     vib = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
-    return VibSummarize(
+
+    vib_summary = VibSummarize(
         vib,
         additional_fields={"name": "TBLite Frequency and Thermo"}
         | (additional_fields or {}),
-    ).vib_and_thermo(
-        "ideal_gas", energy=energy, temperature=temperature, pressure=pressure
-    )
+    ).vib(is_molecule=True)
+    thermo_summary = ThermoSummarize(
+        vib_summary["atoms"],
+        vib_summary["vib_freqs"],
+        energy=energy,
+        additional_fields=additional_fields,
+    ).ideal_gas(temperature=temperature, pressure=pressure)
+
+    return recursive_dict_merge(vib_summary, thermo_summary)
