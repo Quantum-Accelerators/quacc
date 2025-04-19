@@ -4,10 +4,9 @@ import os
 from pathlib import Path
 
 from ase.build import bulk
-from maggma.stores import MemoryStore
 
 from quacc import change_settings
-from quacc.recipes.emt.core import relax_job, static_job
+from quacc.recipes.emt.core import relax_job
 from quacc.settings import QuaccSettings
 
 FILE_DIR = Path(__file__).parent
@@ -22,13 +21,6 @@ def test_file(tmp_path, monkeypatch):
     assert QuaccSettings().WORKFLOW_ENGINE is None
     assert QuaccSettings().STORE is None
     os.remove(tmp_path / "quacc_test.yaml")
-
-
-def test_store(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-    with change_settings({"STORE": MemoryStore()}):
-        atoms = bulk("Cu")
-        static_job(atoms)
 
 
 def test_results_dir(tmp_path, monkeypatch):

@@ -479,14 +479,12 @@ class VibSummarize:
 
         # Generate vib data
         vib_schema = self.vib(is_molecule=is_molecule)
-        directory = vib_schema["dir_name"]
 
         # Generate thermo data
         thermo_summary = ThermoSummarize(
             atoms,
             vib_schema["results"]["vib_freqs_raw"],
             energy=energy,
-            directory=directory,
             additional_fields=self.additional_fields,
         )
         if thermo_method == "ideal_gas":
