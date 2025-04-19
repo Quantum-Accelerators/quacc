@@ -49,9 +49,8 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    return Recipe(LennardJones).run(
-        atoms, additional_fields=additional_fields, **calc_kwargs
-    )
+    calc = LennardJones(**calc_kwargs)
+    return Recipe(calc).run(atoms, additional_fields=additional_fields)
 
 
 @job
@@ -89,14 +88,16 @@ def relax_job(
     OptSchema
         Results dictionary
     """
-    return Recipe(LennardJones).relax(
+    _opt_params = calc_kwargs.pop("opt_params", None)  # deprecated
+    calc = LennardJones(**calc_kwargs)
+    return Recipe(calc).relax(
         atoms,
         fmax=fmax,
         max_steps=max_steps,
         optimizer=optimizer,
         optimizer_kwargs=optimizer_kwargs,
         additional_fields=additional_fields,
-        **calc_kwargs,
+        opt_params=_opt_params,
     )
 
 
@@ -137,12 +138,12 @@ def freq_job(
     VibThermoSchema
         Dictionary of results
     """
-    vib_summary = Recipe(LennardJones).vib(
+    calc = LennardJones(**calc_kwargs)
+    vib_summary = Recipe(calc).vib(
         atoms,
         is_molecule=not atoms.pbc.any(),
         vib_kwargs=vib_kwargs,
         additional_fields=additional_fields,
-        **calc_kwargs,
     )
     thermo_summary = ThermoSummarize(
         vib_summary["atoms"],

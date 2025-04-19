@@ -43,7 +43,8 @@ def static_job(
     RunSchema
         Results dictionary
     """
-    return Recipe(EMT).static(atoms, additional_fields=additional_fields, **calc_kwargs)
+    calc = EMT(**calc_kwargs)
+    return Recipe(calc).static(atoms, additional_fields=additional_fields)
 
 
 @job
@@ -83,7 +84,9 @@ def relax_job(
     OptSchema
         Results dictionary
     """
-    return Recipe(EMT).relax(
+    _opt_params = calc_kwargs.pop("opt_params", None)  # deprecated
+    calc = EMT(**calc_kwargs)
+    return Recipe(calc).relax(
         atoms,
         relax_cell=relax_cell,
         fmax=fmax,
@@ -91,5 +94,5 @@ def relax_job(
         optimizer=optimizer,
         optimizer_kwargs=optimizer_kwargs,
         additional_fields=additional_fields,
-        **calc_kwargs,
+        opt_params=_opt_params,
     )

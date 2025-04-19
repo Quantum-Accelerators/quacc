@@ -9,7 +9,6 @@ from ase.optimize import BFGS
 
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize, VibSummarize
-from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -25,22 +24,15 @@ if TYPE_CHECKING:
 class Recipe:
     """Base class for all discrete compute tasks."""
 
-    def __init__(
-        self,
-        calculator_class: type[BaseCalculator],
-        calc_defaults: dict[str, Any] | None = None,
-    ):
+    def __init__(self, calculator: BaseCalculator) -> None:
         """Initialize the recipe.
 
         Parameters
         ----------
-        calculator_class
-            The ASE calculator class to use
-        calc_defaults
-            Default calculator parameters
+        calculator
+            The instantiated ASE calculator
         """
-        self.calculator_class = calculator_class
-        self.calc_defaults = calc_defaults or {}
+        self.calculator = calculator
 
     def run(
         self,
@@ -48,7 +40,6 @@ class Recipe:
         geom_file: str | None = None,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
         additional_fields: dict[str, Any] | None = None,
-        **calc_kwargs,
     ) -> RunSchema:
         """Run the executable with the parameters.
 
@@ -75,11 +66,10 @@ class Recipe:
         """
         additional_fields = additional_fields or {}
         additional_fields = {
-            "name": f"{self.calculator_class.__name__}"
+            "name": f"{self.calculator.__class__.__name__}"
         } | additional_fields
 
-        calc = self._prepare_calculator(**calc_kwargs)
-        final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
+        final_atoms = Runner(atoms, self.calculator, copy_files=copy_files).run_calc(
             geom_file=geom_file
         )
         return Summarize(additional_fields=additional_fields).run(final_atoms, atoms)
@@ -89,7 +79,6 @@ class Recipe:
         atoms: Atoms,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
         additional_fields: dict[str, Any] | None = None,
-        **calc_kwargs,
     ) -> RunSchema:
         """Run a static calculation.
 
@@ -101,8 +90,6 @@ class Recipe:
             Files to copy to runtime directory
         additional_fields
             Additional fields for results
-        **calc_kwargs
-            Calculator parameters that override defaults
 
         Returns
         -------
@@ -111,14 +98,11 @@ class Recipe:
         """
         additional_fields = additional_fields or {}
         additional_fields = {
-            "name": f"{self.calculator_class.__name__} Static"
+            "name": f"{self.calculator.__class__.__name__} Static"
         } | additional_fields
 
         return self.run(
-            atoms,
-            copy_files=copy_files,
-            additional_fields=additional_fields,
-            **calc_kwargs,
+            atoms, copy_files=copy_files, additional_fields=additional_fields
         )
 
     def relax(
@@ -136,7 +120,6 @@ class Recipe:
         opt_params: dict[str, Any] | None = None,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
         additional_fields: dict[str, Any] | None = None,
-        **calc_kwargs,
     ) -> OptSchema:
         """Run a geometry optimization with ASE as the optimizer.
 
@@ -173,8 +156,6 @@ class Recipe:
             Files to copy to runtime directory
         additional_fields
             Additional fields for results
-        **calc_kwargs
-            Calculator parameters that override defaults
 
         Returns
         -------
@@ -183,7 +164,7 @@ class Recipe:
         """
         additional_fields = additional_fields or {}
         additional_fields = {
-            "name": f"{self.calculator_class.__name__} Relax"
+            "name": f"{self.calculator.__class__.__name__} Relax"
         } | additional_fields
 
         opt_params = opt_params or {}
@@ -207,8 +188,9 @@ class Recipe:
         }
         opt_params = params | opt_params
 
-        calc = self._prepare_calculator(**calc_kwargs)
-        dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_params)
+        dyn = Runner(atoms, self.calculator, copy_files=copy_files).run_opt(
+            **opt_params
+        )
         return Summarize(additional_fields=additional_fields).opt(dyn)
 
     def vib(
@@ -217,7 +199,6 @@ class Recipe:
         is_molecule: bool = False,
         vib_kwargs: dict[str, Any] | None = None,
         additional_fields: dict[str, Any] | None = None,
-        **calc_kwargs,
     ) -> VibSchema:
         """Run a vibrational frequency calculation.
 
@@ -232,8 +213,6 @@ class Recipe:
             frequencies are cut to 3N-5 or 3N-6.
         additional_fields
             Additional fields for results
-        **calc_kwargs
-            Calculator parameters that override defaults
 
         Returns
         -------
@@ -242,28 +221,11 @@ class Recipe:
         """
         additional_fields = additional_fields or {}
         additional_fields = {
-            "name": f"{self.calculator_class.__name__} Vibrations"
+            "name": f"{self.calculator.__class__.__name__} Vibrations"
         } | additional_fields
 
         vib_kwargs = vib_kwargs or {}
-        calc = self._prepare_calculator(**calc_kwargs)
-        vib = Runner(atoms, calc).run_vib(vib_kwargs=vib_kwargs)
+        vib = Runner(atoms, self.calculator).run_vib(vib_kwargs=vib_kwargs)
         return VibSummarize(vib, additional_fields=additional_fields).vib(
             is_molecule=is_molecule
         )
-
-    def _prepare_calculator(self, **calc_kwargs) -> BaseCalculator:
-        """Prepare the calculator with merged parameters.
-
-        Parameters
-        ----------
-        **calc_kwargs
-            Calculator parameters that override defaults
-
-        Returns
-        -------
-        BaseCalculator
-            Configured calculator instance
-        """
-        calc_flags = recursive_dict_merge(self.calc_defaults, calc_kwargs)
-        return self.calculator_class(**calc_flags)

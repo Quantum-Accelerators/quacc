@@ -9,8 +9,7 @@ from quacc import get_settings
 if TYPE_CHECKING:
     from typing import Any
 
-_LABEL = "Gaussian"
-_LOG_FILE = f"{_LABEL}.log"
+_LABEL: str = "Gaussian"
 
 
 def create_gaussian_defaults(
@@ -37,10 +36,10 @@ def create_gaussian_defaults(
     settings = get_settings()
 
     return {
-        "command": f"{settings.GAUSSIAN_CMD} < {_LABEL}.com > {_LOG_FILE}",
+        "command": f"{settings.GAUSSIAN_CMD} < {_LABEL}.com > {_LABEL}.log",
         "label": _LABEL,
+        "chk": f"{_LABEL}.chk",
         "mem": "16GB",
-        "chk": "Gaussian.chk",
         "nprocshared": psutil.cpu_count(logical=False),
         "xc": xc,
         "basis": basis,

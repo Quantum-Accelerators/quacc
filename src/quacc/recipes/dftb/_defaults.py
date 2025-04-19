@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
+from quacc import Remove
+
 if TYPE_CHECKING:
     from typing import Any
 
@@ -31,11 +33,9 @@ def create_dftb_defaults(
     dict[str, Any]
         Default calculator kwargs for [ase.calculators.dftb.Dftb][]
     """
-    calc_defaults = {
+    return {
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_MaxSccIterations": 200,
         "kpts": kpts or ((1, 1, 1) if is_periodic else None),
+        "Hamiltonian_Method": method if "xtb" in method.lower() else Remove,
     }
-    if "xtb" in method.lower():
-        calc_defaults["Hamiltonian_Method"] = method
-    return calc_defaults

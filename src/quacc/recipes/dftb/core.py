@@ -9,6 +9,7 @@ from ase.calculators.dftb import Dftb
 from quacc import job
 from quacc.recipes.common.core import Recipe
 from quacc.recipes.dftb._defaults import _GEOM_FILE, create_dftb_defaults
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -52,12 +53,13 @@ def static_job(
     calc_defaults = create_dftb_defaults(
         method=method, kpts=kpts, is_periodic=bool(atoms.pbc.any())
     )
-    return Recipe(Dftb, calc_defaults=calc_defaults).run(
+    calc_params = recursive_dict_merge(calc_defaults, calc_kwargs)
+    calc = Dftb(**calc_params)
+    return Recipe(calc).run(
         atoms,
         geom_file=_GEOM_FILE,
         copy_files=copy_files,
         additional_fields=additional_fields,
-        **calc_kwargs,
     )
 
 
@@ -104,10 +106,11 @@ def relax_job(
         "Driver_LatticeOpt": "Yes" if relax_cell else "No",
         "Driver_MaxSteps": 2000,
     }
-    return Recipe(Dftb, calc_defaults=calc_defaults).run(
+    calc_params = recursive_dict_merge(calc_defaults, calc_kwargs)
+    calc = Dftb(**calc_params)
+    return Recipe(calc).run(
         atoms,
         geom_file=_GEOM_FILE,
         copy_files=copy_files,
         additional_fields=additional_fields,
-        **calc_kwargs,
     )

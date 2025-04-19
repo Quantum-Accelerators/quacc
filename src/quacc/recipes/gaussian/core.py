@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.gaussian import Gaussian
 
-from quacc import job
+from quacc import Remove, job
 from quacc.recipes.common.core import Recipe
 from quacc.recipes.gaussian._defaults import create_gaussian_defaults
+from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
     from typing import Any
@@ -61,9 +62,12 @@ def static_job(
     calc_defaults = create_gaussian_defaults(
         xc=xc, basis=basis, charge=charge, spin_multiplicity=spin_multiplicity
     )
-    calc_defaults.update({"force": "", "gfinput": "", "ioplist": ["6/7=3", "2/9=2000"]})
-    return Recipe(Gaussian, calc_defaults=calc_defaults).run(
-        atoms, copy_files=copy_files, additional_fields=additional_fields, **calc_kwargs
+    calc_defaults |= {"force": "", "gfinput": "", "ioplist": ["6/7=3", "2/9=2000"]}
+    calc_params = recursive_dict_merge(calc_defaults, calc_kwargs)
+    calc = Gaussian(**calc_params)
+
+    return Recipe(calc).run(
+        atoms, copy_files=copy_files, additional_fields=additional_fields
     )
 
 
@@ -113,10 +117,14 @@ def relax_job(
     calc_defaults = create_gaussian_defaults(
         xc=xc, basis=basis, charge=charge, spin_multiplicity=spin_multiplicity
     )
-    calc_defaults |= {"opt": "", "ioplist": ["2/9=2000"]}  # ASE issue #660
-    if freq:
-        calc_defaults |= {"freq": ""}
+    calc_defaults |= {
+        "opt": "",
+        "freq": "" if freq else Remove,
+        "ioplist": ["2/9=2000"],  # https://gitlab.com/ase/ase/-/issues/660
+    }
+    calc_params = recursive_dict_merge(calc_defaults, calc_kwargs)
+    calc = Gaussian(**calc_params)
 
-    return Recipe(Gaussian, calc_defaults=calc_defaults).run(
-        atoms, copy_files=copy_files, additional_fields=additional_fields, **calc_kwargs
+    return Recipe(calc).run(
+        atoms, copy_files=copy_files, additional_fields=additional_fields
     )
