@@ -5,12 +5,11 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
+from ase.optimize import BFGS
 from monty.dev import requires
 
 from quacc import job
 from quacc.recipes.common.core import Recipe
-from quacc.runners.ase import Runner
-from quacc.schemas.ase import Summarize, VibSummarize
 from quacc.schemas.thermo import ThermoSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -22,6 +21,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.atoms import Atoms
+    from ase.optimize.optimize import Optimizer
 
     from quacc.types import OptParams, OptSchema, RunSchema, VibKwargs, VibThermoSchema
 
