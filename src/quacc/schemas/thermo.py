@@ -169,8 +169,6 @@ class ThermoSummarize:
                 "n_imag": harmonic_thermo.n_imag,
                 "method": "harmonic",
             },
-            "nid": get_uri(self.directory).split(":")[0],
-            "dir_name": self.directory,
             "quacc_version": __version__,
         }
 

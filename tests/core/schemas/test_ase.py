@@ -197,9 +197,6 @@ def test_vib_run1(monkeypatch, tmp_path):
     assert len(results["results"]["vib_energies"]) == 1
     assert results["results"]["vib_energies"][0] == pytest.approx(0.11507528256667966)
 
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
-
 
 def test_vib_run2(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
@@ -272,9 +269,6 @@ def test_summarize_vib_and_thermo_run1(tmp_path, monkeypatch):
     assert len(results["results"]["vib_energies"]) == 1
     assert results["results"]["vib_energies"][0] == pytest.approx(0.11507528256667966)
 
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
-
 
 def test_summarize_vib_and_thermo_run2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
@@ -289,9 +283,6 @@ def test_summarize_vib_and_thermo_run2(tmp_path, monkeypatch):
 
     results = VibSummarize(vib).vib_and_thermo("ideal_gas")
     assert results["atoms"].info.get("test_dict", None) == {"hi": "there", "foo": "bar"}
-
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
 
     # test document can be jsanitized and decoded
     d = jsanitize(results, strict=True, enum_values=True)
@@ -316,9 +307,6 @@ def test_summarize_vib_and_thermo_run3(tmp_path, monkeypatch):
     assert len(results["results"]["vib_energies_raw"]) == 6
     assert len(results["results"]["vib_freqs"]) == 6
     assert len(results["results"]["vib_energies"]) == 6
-
-    json_results = loadfn(Path(results["dir_name"], "quacc_results.json.gz"))
-    assert json_results.keys() == results.keys()
 
 
 def test_summarize_vib_and_thermo_run4(tmp_path, monkeypatch):
