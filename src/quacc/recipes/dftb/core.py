@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import job
+from quacc import Remove, job
 from quacc.recipes.dftb._base import run_and_summarize
 
 if TYPE_CHECKING:
@@ -55,9 +55,8 @@ def static_job(
         "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
         "Hamiltonian_MaxSccIterations": 200,
         "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+        "Hamiltonian_Method": method if "xtb" in method.lower() else Remove,
     }
-    if "xtb" in method.lower():
-        calc_defaults["Hamiltonian_Method"] = method
 
     return run_and_summarize(
         atoms,
@@ -109,16 +108,15 @@ def relax_job(
         See the return type-hint for the data structure.
     """
     calc_defaults = {
+        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
+        "Hamiltonian_MaxSccIterations": 200,
+        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
+        "Hamiltonian_Method": method if "xtb" in method.lower() else Remove,
         "Driver_": "GeometryOptimization",
         "Driver_AppendGeometries": "Yes",
         "Driver_LatticeOpt": "Yes" if relax_cell else "No",
         "Driver_MaxSteps": 2000,
-        "Hamiltonian_": "xTB" if "xtb" in method.lower() else "DFTB",
-        "Hamiltonian_MaxSccIterations": 200,
-        "kpts": kpts or ((1, 1, 1) if atoms.pbc.any() else None),
     }
-    if "xtb" in method.lower():
-        calc_defaults["Hamiltonian_Method"] = method
 
     return run_and_summarize(
         atoms,

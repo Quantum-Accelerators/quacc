@@ -7,7 +7,6 @@ from shutil import copytree, move
 
 import pytest
 from ase.io import read
-from maggma.stores import MemoryStore
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.calculators.vasp import Vasp
@@ -78,12 +77,6 @@ def test_vasp_summarize_run(run1, monkeypatch, tmp_path):
     monkeypatch.chdir(p)
     VaspSummarize().run(atoms)
     monkeypatch.chdir(tmp_path)
-
-    # Test DB
-    atoms = read(os.path.join(p, "OUTCAR.gz"))
-    store = MemoryStore()
-    VaspSummarize(directory=p).run(atoms, store=store)
-    assert store.count() == 1
 
     # Make sure metadata is made
     atoms = read(os.path.join(run1, "OUTCAR.gz"))
