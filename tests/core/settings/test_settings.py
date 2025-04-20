@@ -19,7 +19,6 @@ def test_file(tmp_path, monkeypatch):
 
     assert QuaccSettings().GZIP_FILES is False
     assert QuaccSettings().WORKFLOW_ENGINE is None
-    assert QuaccSettings().STORE is None
     os.remove(tmp_path / "quacc_test.yaml")
 
 

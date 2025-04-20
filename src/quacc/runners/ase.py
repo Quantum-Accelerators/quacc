@@ -235,7 +235,7 @@ class Runner(BaseRunner):
             self.atoms = FrechetCellFilter(self.atoms, **filter_kwargs)
 
         # Run optimization
-        full_run_kwargs = {"fmax": fmax, "steps": max_steps, **run_kwargs}
+        full_run_kwargs = {"steps": max_steps, **run_kwargs}
         if not issubclass(optimizer, MolecularDynamics):
             full_run_kwargs["fmax"] = fmax
         try:
