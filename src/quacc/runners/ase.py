@@ -240,10 +240,12 @@ class Runner(BaseRunner):
         if relax_cell and self.atoms.pbc.any():
             self.atoms = FrechetCellFilter(self.atoms, **filter_kwargs)
 
-        # Run optimization
+        # Define run kwargs
         full_run_kwargs = {"steps": max_steps, **run_kwargs}
         if not issubclass(optimizer, MolecularDynamics):
             full_run_kwargs["fmax"] = fmax
+
+        # Run optimization
         try:
             with traj, optimizer(self.atoms, **merged_optimizer_kwargs) as dyn:
                 if issubclass(optimizer, SciPyOptimizer | MolecularDynamics):
@@ -372,7 +374,7 @@ class Runner(BaseRunner):
         relax_cell: bool = False,
         fmax: float = 0.01,
         max_steps: int | None = 1000,
-        optimizer: Optimizer = NEBOptimizer,
+        optimizer: type[Optimizer] = NEBOptimizer,
         optimizer_kwargs: dict[str, Any] | None = None,
         neb_kwargs: dict[str, Any] | None = None,
         run_kwargs: dict[str, Any] | None = None,
