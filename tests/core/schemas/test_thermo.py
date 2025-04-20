@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from logging import WARNING, getLogger
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -9,7 +8,6 @@ from ase.build import molecule
 from ase.calculators.emt import EMT
 from ase.units import invcm
 from monty.json import MontyDecoder, jsanitize
-from monty.serialization import loadfn
 
 from quacc.schemas.thermo import ThermoSummarize
 
