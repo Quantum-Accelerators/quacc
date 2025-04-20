@@ -93,7 +93,9 @@ class Runner(BaseRunner):
             self.atoms.calc = calculator
             self.setup()
 
-    def run_calc(self, geom_file: str | None = None) -> Atoms:
+    def run_calc(
+        self, properties: list[str] | None = None, geom_file: str | None = None
+    ) -> Atoms:
         """
         This is a wrapper around `atoms.calc.calculate()`.
 
@@ -104,16 +106,20 @@ class Runner(BaseRunner):
             update the atoms object's positions and cell after a job. It is better
             to specify this rather than relying on ASE to update the positions, as the
             latter behavior varies between codes.
+        properties
+            A list of properties to obtain. Defaults to ["energy", "forces"]
 
         Returns
         -------
         Atoms
             The updated Atoms object.
         """
-        if isinstance(self.atoms.calc, Gaussian):
-            properties = ["energy"]  # TODO: Use GaussianOptimizer to avoid this hack
-        else:
-            properties = ["energy", "forces"]
+        if not properties:
+            properties = (
+                ["energy"]
+                if isinstance(self.atoms.calc, Gaussian)
+                else ["energy", "forces"]
+            )  # TODO: Use GaussianOptimizer to avoid this hack
 
         # Run calculation
         try:
