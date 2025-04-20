@@ -14,7 +14,6 @@ from quacc import __version__, get_settings
 from quacc.atoms.core import get_spin_multiplicity_attribute
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.utils.dicts import clean_dict
-from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
