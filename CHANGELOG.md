@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Removed
 
 - There is no more `quacc_results.json.gz` file written out to disk. This turned out to be way more trouble than it was worth, over-complicating recipes by requiring the use of schemas with knowledge of the current working directory at all times.
-- There is no more `STORE` quacc setting. Storing in databases will require calling the `results_to_db` function or using a workflow engine (e.g. Jobflow, FireWorks, Prefect, Covalent). 
+- There is no more `STORE` quacc setting. Storing in databases will require calling the `results_to_db` function or using a workflow engine (e.g. Jobflow, FireWorks, Prefect, Covalent).
 
 ## [0.13.0]
 
