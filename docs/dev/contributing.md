@@ -46,8 +46,6 @@ If contributing new recipes, please abide by the following guidelines:
 
 - Decorate your individual compute jobs with a `#!Python @job` decorator and your flows with a `#!Python @flow` decorator. Name them accordingly.
 
-- Add your new recipe to the [List of Recipes](../user/recipes/recipes_list.md).
-
 - In general, your tests for new recipes should use a small molecule/solid (and cheap settings, where possible) to ensure that the unit tests run quickly.
 
 ### Style
