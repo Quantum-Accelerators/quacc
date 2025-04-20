@@ -228,6 +228,7 @@ def test_static_job_test_run(tmp_path, monkeypatch):
             test_run=True,
         )
 
+
 def test_relax_job(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
