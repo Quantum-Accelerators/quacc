@@ -11,6 +11,7 @@ import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
+from pymatgen.core import Structure
 
 from quacc import QuaccDefault, get_settings
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
@@ -180,18 +181,34 @@ class Vasp(Vasp_):
         if self._settings.VASP_PP_PATH:
             os.environ["VASP_PP_PATH"] = str(self._settings.VASP_PP_PATH)
 
-        # Set the ASE_VASP_VDW environmentvariable
+        # Set the ASE_VASP_VDW environment variable
         if self._settings.VASP_VDW:
             os.environ["ASE_VASP_VDW"] = str(self._settings.VASP_VDW)
 
         # Return vanilla ASE command
+        if np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1:
+            use_gamma = True
+        elif kspacing := self.user_calc_params.get("kspacing"):
+            nk = [
+                int(
+                    max(
+                        1,
+                        np.ceil(
+                            Structure.from_ase_atoms(
+                                self.input_atoms
+                            ).lattice.reciprocal_lattice.abc[ik]
+                            / kspacing
+                        ),
+                    )
+                )
+                for ik in range(3)
+            ]
+            use_gamma = bool(np.prod(nk) == 1)
+        else:
+            use_gamma = False
+
         vasp_cmd = (
-            self._settings.VASP_GAMMA_CMD
-            if (
-                np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1
-                and not self.user_calc_params.get("kspacing", None)
-            )
-            else self._settings.VASP_CMD
+            self._settings.VASP_GAMMA_CMD if use_gamma else self._settings.VASP_CMD
         )
 
         return f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"

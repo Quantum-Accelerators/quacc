@@ -164,8 +164,9 @@ def test_kspacing():
     calc = Vasp(atoms, kspacing=0.1, gamma=True)
     assert calc.float_params["kspacing"] == 0.1
     assert calc.input_params["gamma"] is None
+    assert calc.kpts is None
 
-    calc = Vasp(atoms, kgamma=True)
+    calc = Vasp(atoms, kpts=[1, 1, 1], kgamma=True)
     assert calc.bool_params["kgamma"] is None
 
 
