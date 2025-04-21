@@ -101,3 +101,33 @@ def convert_pmg_kpts(
         gamma = max_pmg_kpts.style.name.lower() == "gamma"
 
     return kpts, gamma
+
+
+def bandgap_to_kspacing(bandgap: float) -> float:
+    """
+    Takes the bandgap energy and computes the required KSPACING value.
+    Refer to https://drive.google.com/file/d/1fUUx0wrrtMRcSss5yv3NiQuC7J5IiEKL/view
+
+    Parameters
+    ----------
+    bandgap
+        The bandgap of the material in eV.
+
+    Returns
+    ----------
+    kspacing
+        Value of the KSPACING INCAR tag in inverse angstroms.
+    """
+
+    deltak_min = 0.2
+    deltak_max = 0.45
+    a = 0.9
+    b = 2.35
+    c = 8.0
+
+    delta = a * (bandgap - b)
+    return 0.5 * (
+        deltak_min
+        + deltak_max
+        + (deltak_max - deltak_min) * delta / ((1 + delta**c) ** (1 / c))
+    )
