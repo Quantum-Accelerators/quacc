@@ -53,8 +53,8 @@ def test_vanilla_vasp():
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot=False)
-    assert calc.input_params.get("gamma", None) is None
-    assert calc.input_params.get("kpts", None) is None
+    assert calc.input_params["gamma"] is None
+    assert calc.kpts is None
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, encut=None, incar_copilot=False)
