@@ -254,7 +254,11 @@ class Vasp(Vasp_):
             self.user_calc_params.pop(k, None)
 
         # Make automatic k-point mesh
-        if self.pmg_kpts and not self.user_calc_params.get("kpts"):
+        if (
+            self.pmg_kpts
+            and not self.user_calc_params.get("kpts")
+            and not self.user_calc_params.get("kspacing")
+        ):
             self.user_calc_params = set_pmg_kpts(
                 self.user_calc_params, self.pmg_kpts, self.input_atoms
             )
