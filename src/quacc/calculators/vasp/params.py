@@ -302,7 +302,7 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
 
     # Handle kspacing flags
     if user_calc_params.get("kspacing"):
-        user_calc_params.pop("gamma", None)
+        user_calc_params["gamma"] = None
         user_calc_params["kpts"] = None
     else:
         user_calc_params.pop("kgamma", None)

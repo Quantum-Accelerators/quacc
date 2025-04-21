@@ -11,7 +11,6 @@ import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 from ase.constraints import FixAtoms
-from pymatgen.core import Structure
 
 from quacc import QuaccDefault, get_settings
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
@@ -187,6 +186,8 @@ class Vasp(Vasp_):
 
         # Return vanilla ASE command
         if kspacing := self.user_calc_params.get("kspacing"):
+            from pymatgen.core import Structure
+
             nk = [
                 int(
                     max(
