@@ -129,5 +129,5 @@ def bandgap_to_kspacing(bandgap: float) -> float:
     return 0.5 * (
         deltak_min
         + deltak_max
-        + (deltak_max - deltak_min) * delta / ((1 + delta ** c) ** (1 / c))
+        + (deltak_max - deltak_min) * delta / ((1 + delta**c) ** (1 / c))
     )
