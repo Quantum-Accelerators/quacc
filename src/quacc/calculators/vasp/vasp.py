@@ -186,9 +186,7 @@ class Vasp(Vasp_):
             os.environ["ASE_VASP_VDW"] = str(self._settings.VASP_VDW)
 
         # Return vanilla ASE command
-        if np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1:
-            use_gamma = True
-        elif kspacing := self.user_calc_params.get("kspacing"):
+        if kspacing := self.user_calc_params.get("kspacing"):
             nk = [
                 int(
                     max(
@@ -204,6 +202,8 @@ class Vasp(Vasp_):
                 for ik in range(3)
             ]
             use_gamma = bool(np.prod(nk) == 1)
+        elif np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1:
+            use_gamma = True
         else:
             use_gamma = False
 
