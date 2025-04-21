@@ -6,5 +6,4 @@ from quacc.utils.kpts import bandgap_to_kspacing
 
 
 def test_bandgap_to_kspacing():
-    bandgap_to_kspacing(0.60)
-    assert pytest.approx(0.2004)
+    assert bandgap_to_kspacing(0.60) == pytest.approx(0.2004)
