@@ -202,7 +202,7 @@ class Vasp(Vasp_):
                 )
                 for ik in range(3)
             ]
-            use_gamma = True if np.prod(nk) == 1 else False
+            use_gamma = np.prod(nk) == 1
         elif np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1:
             use_gamma = True
         else:
