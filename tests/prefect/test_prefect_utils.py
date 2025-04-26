@@ -3,9 +3,9 @@ from __future__ import annotations
 import pytest
 from ase.build import bulk
 from prefect import flow, task
+from prefect.futures import resolve_futures_to_results
 
 from quacc.recipes.emt.phonons import phonon_flow
-from prefect.futures import resolve_futures_to_results
 
 
 def test_resolve_futures_to_results():
