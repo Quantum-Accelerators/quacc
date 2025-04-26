@@ -6,8 +6,6 @@ from collections.abc import Callable
 from functools import partial, wraps
 from typing import TYPE_CHECKING, Any
 
-from prefect.futures import resolve_futures_to_results
-
 from quacc.settings import change_settings_wrap
 
 if TYPE_CHECKING:
@@ -636,6 +634,7 @@ def _get_prefect_wrapped_flow(
     _func: Callable, settings: QuaccSettings, **kwargs
 ) -> Callable:
     from prefect import flow as prefect_flow
+    from prefect.futures import resolve_futures_to_results
     from prefect.utilities.asyncutils import is_async_fn
 
     if is_async_fn(_func):
