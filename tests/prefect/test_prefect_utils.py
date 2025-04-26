@@ -5,10 +5,7 @@ from ase.build import bulk
 from prefect import flow, task
 
 from quacc.recipes.emt.phonons import phonon_flow
-from quacc.wflow_tools.prefect_utils import (
-    resolve_futures_to_results,
-    resolve_futures_to_results_async,
-)
+from prefect.futures import resolve_futures_to_results
 
 
 def test_resolve_futures_to_results():
@@ -51,7 +48,7 @@ async def test_resolve_futures_to_results_async():
     async def test_flow():
         future = test_task.submit()
         nested_future = {"nest": future}
-        return await resolve_futures_to_results_async(nested_future)
+        return resolve_futures_to_results(nested_future)
 
     result = await test_flow()
     assert result["nest"]["test"] == 5
