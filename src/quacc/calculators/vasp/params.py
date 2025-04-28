@@ -300,8 +300,19 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
         for ldau_flag in ldau_flags:
             user_calc_params.pop(ldau_flag, None)
 
+    # Handle kspacing flags
+    if user_calc_params.get("kspacing"):
+        user_calc_params["gamma"] = None
+        user_calc_params["kpts"] = None
+    else:
+        user_calc_params.pop("kgamma", None)
+
     # Remove None keys
-    none_keys = [k for k, v in user_calc_params.items() if v is None]
+    none_keys = [
+        k
+        for k, v in user_calc_params.items()
+        if v is None and k not in Vasp_().input_params
+    ]
     for none_key in none_keys:
         del user_calc_params[none_key]
 

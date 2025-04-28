@@ -180,18 +180,36 @@ class Vasp(Vasp_):
         if self._settings.VASP_PP_PATH:
             os.environ["VASP_PP_PATH"] = str(self._settings.VASP_PP_PATH)
 
-        # Set the ASE_VASP_VDW environmentvariable
+        # Set the ASE_VASP_VDW environment variable
         if self._settings.VASP_VDW:
             os.environ["ASE_VASP_VDW"] = str(self._settings.VASP_VDW)
 
         # Return vanilla ASE command
+        if kspacing := self.user_calc_params.get("kspacing"):
+            from pymatgen.core import Structure
+
+            nk = [
+                int(
+                    max(
+                        1,
+                        np.ceil(
+                            Structure.from_ase_atoms(
+                                self.input_atoms
+                            ).lattice.reciprocal_lattice.abc[ik]
+                            / kspacing
+                        ),
+                    )
+                )
+                for ik in range(3)
+            ]
+            use_gamma = np.prod(nk) == 1
+        elif np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1:
+            use_gamma = True
+        else:
+            use_gamma = False
+
         vasp_cmd = (
-            self._settings.VASP_GAMMA_CMD
-            if (
-                np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1
-                and not self.user_calc_params.get("kspacing", None)
-            )
-            else self._settings.VASP_CMD
+            self._settings.VASP_GAMMA_CMD if use_gamma else self._settings.VASP_CMD
         )
 
         return f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"
@@ -254,7 +272,11 @@ class Vasp(Vasp_):
             self.user_calc_params.pop(k, None)
 
         # Make automatic k-point mesh
-        if self.pmg_kpts and not self.user_calc_params.get("kpts"):
+        if (
+            self.pmg_kpts
+            and not self.user_calc_params.get("kpts")
+            and not self.user_calc_params.get("kspacing")
+        ):
             self.user_calc_params = set_pmg_kpts(
                 self.user_calc_params, self.pmg_kpts, self.input_atoms
             )

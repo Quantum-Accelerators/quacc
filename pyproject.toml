@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.13.0"
+version = "0.15.0"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -26,7 +26,7 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "ase>=3.24.0", # for Atoms object and calculators
+    "ase>=3.25.0", # for Atoms object and calculators
     "custodian>=2024.10.15", # for automated error corrections
     "emmet-core>=0.84.6", # for pre-made schemas
     "frozendict>=2.4.6", # for caching of dictionaries in @lru_cache
@@ -52,7 +52,7 @@ mp = ["atomate2>=0.0.14"]
 newtonnet = ["newtonnet>=1.1"]
 parsl = ["parsl[monitoring]>=2024.5.27; platform_system!='Windows'"]
 phonons = ["phonopy>=2.20.0", "seekpath>=2.1.0"]
-prefect = ["prefect[dask]>=2.19.0", "dask-jobqueue>=0.8.2"]
+prefect = ["prefect[dask]>=3.3.6", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
 sella = ["sella>=2.3.5"]
 tblite = ["tblite>=0.3.0; platform_system=='Linux'"]

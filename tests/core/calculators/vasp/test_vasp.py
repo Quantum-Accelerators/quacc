@@ -52,6 +52,11 @@ def test_vanilla_vasp():
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
+    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot=False)
+    assert calc.input_params["gamma"] is None
+    assert calc.kpts is None
+
+    atoms = bulk("Cu")
     calc = Vasp(atoms, encut=None, incar_copilot=False)
     assert calc.asdict() == Vasp_().asdict()
 
@@ -156,6 +161,18 @@ def test_kspacing():
 
     calc = Vasp(atoms, kspacing=100, ismear=-5)
     assert calc.int_params["ismear"] == -5
+
+    calc = Vasp(atoms, kspacing=0.1, preset="BulkSet")
+    assert calc.float_params["kspacing"] == 0.1
+    assert calc.kpts is None
+
+    calc = Vasp(atoms, kspacing=0.1, gamma=True)
+    assert calc.float_params["kspacing"] == 0.1
+    assert calc.input_params["gamma"] is None
+    assert calc.kpts is None
+
+    calc = Vasp(atoms, kpts=[1, 1, 1], kgamma=True)
+    assert calc.bool_params["kgamma"] is None
 
 
 def test_kspacing_aggressive():

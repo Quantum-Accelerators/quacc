@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
 
-GEOM_FILE = "geo_end.gen"
+_GEOM_FILE = "geo_end.gen"
 
 
 def run_and_summarize(
@@ -55,7 +55,7 @@ def run_and_summarize(
 
     calc = Dftb(**calc_flags)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
-        geom_file=GEOM_FILE
+        geom_file=_GEOM_FILE
     )
 
     return Summarize(additional_fields=additional_fields).run(final_atoms, atoms)

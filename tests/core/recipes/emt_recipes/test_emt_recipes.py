@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from logging import getLogger
-from pathlib import Path
 
 import numpy as np
 import pytest
@@ -172,9 +171,9 @@ def test_md_job3():
         md_params={"dynamics_kwargs": {"ttime": 50 * fs}},
     )
     assert output["parameters"]["asap_cutoff"] is False
-    assert len(output["trajectory"]) == 500
+    assert len(output["trajectory"]) == 501
     assert output["name"] == "EMT MD"
-    assert output["trajectory_log"][0]["temperature"] == pytest.approx(759.8829)
+    assert output["trajectory_log"][1]["temperature"] == pytest.approx(759.8829)
     assert output["trajectory_results"][-1]["energy"] == pytest.approx(2.0363759)
 
 
@@ -225,7 +224,6 @@ def test_customizer_v2():
     results = bulk_to_slabs_flow(atoms, job_params={"relax_job": {"asap_cutoff": True}})
     for result in results:
         assert result["parameters"]["asap_cutoff"] is False
-        assert Path(result["dir_name"], "quacc_results.json.gz").exists()
 
 
 def test_all_customizers():

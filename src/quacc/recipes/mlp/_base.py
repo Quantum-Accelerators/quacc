@@ -1,4 +1,4 @@
-"""Base functions for universal machine-learned interatomic potentials."""
+"""Common utility functions for universal machine-learned interatomic potentials."""
 
 from __future__ import annotations
 
@@ -7,9 +7,12 @@ from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
 
-from frozendict import frozendict
+from monty.dev import requires
+
+has_frozen = bool(find_spec("frozendict"))
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from typing import Literal
 
     from ase.calculators.calculator import BaseCalculator
@@ -17,11 +20,24 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
-def freezeargs(func):
-    """Convert a mutable dictionary into immutable.
+@requires(has_frozen, "frozendict must be installed. Run pip install frozendict.")
+def freezeargs(func: Callable) -> Callable:
+    """
+    Convert a mutable dictionary into immutable.
     Useful to make sure dictionary args are compatible with cache
     From https://stackoverflow.com/a/53394430
+
+    Parameters
+    ----------
+    func
+        Function to be wrapped.
+
+    Returns
+    -------
+    Callable
+        Wrapped function with frozen dictionary arguments.
     """
+    from frozendict import frozendict
 
     @wraps(func)
     def wrapped(*args, **kwargs):
@@ -63,8 +79,8 @@ def pick_calculator(
 
     Returns
     -------
-    Calculator
-        The chosen calculator
+    BaseCalculator
+        The instantiated calculator
     """
     import torch
 
