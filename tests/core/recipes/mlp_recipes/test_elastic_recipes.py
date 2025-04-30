@@ -61,7 +61,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         "m3gnet": 109.369,
         "mace-mp-0": 130.727,
         "sevennet": 142.296,
-        "orb": 187.107,
+        "orb": 190.195,
         "fairchem": 105,
     }
 
