@@ -1,1 +1,1 @@
-fairchem-core==1.10.0
+fairchem-core[torch_extras]==1.10.0
