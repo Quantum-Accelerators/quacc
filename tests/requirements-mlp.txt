@@ -2,4 +2,4 @@ chgnet==0.4.0
 torch-dftd==0.5.1
 sevenn==0.11.0
 orb-models==0.5.3
-pynanoflann@git+https://github.com/dwastberg/pynanoflann
+pynanoflann@git+https://github.com/dwastberg/pynanoflann # needed for orb
