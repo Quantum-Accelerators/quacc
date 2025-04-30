@@ -128,7 +128,7 @@ def pick_calculator(
         from orb_models.forcefield import pretrained
         from orb_models.forcefield.calculator import ORBCalculator
 
-        orb_model = calc_kwargs.get("model", "orb_v2")
+        orb_model = calc_kwargs.get("model", "orb_v3")
         orbff = getattr(pretrained, orb_model)()
         calc = ORBCalculator(model=orbff, **calc_kwargs)
 
