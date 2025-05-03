@@ -959,12 +959,14 @@ def test_ldau_mp():
     assert len(parameters["magmom"]) == 4
     assert parameters["magmom"] == [0.6, 0.6, 0.6, 5.0]
 
+
 def test_command():
     atoms = bulk("Cu")
     assert Vasp(atoms, kpts=[1, 1, 1]).command.strip() == "vasp_gam"
     assert Vasp(atoms, kpts=[2, 1, 1]).command.strip() == "vasp_std"
     assert Vasp(atoms, kspacing=50).command.strip() == "vasp_gam"
     assert Vasp(atoms, kspacing=0.1).command.strip() == "vasp_std"
+
 
 @pytest.mark.skipif(which(get_settings().VASP_CMD), reason="VASP is installed")
 def test_run(monkeypatch, tmp_path):
