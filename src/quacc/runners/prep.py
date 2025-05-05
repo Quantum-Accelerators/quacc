@@ -127,7 +127,7 @@ def calc_cleanup(
     if settings.CREATE_UNIQUE_DIR:
         move(tmpdir, job_results_dir)
     else:
-        for file_name in os.listdir(tmpdir):
+        for file_name in Path.iterdir(tmpdir):
             move(tmpdir / file_name, job_results_dir / file_name)
         rmtree(tmpdir)
     LOGGER.info(f"Calculation results stored at {job_results_dir}")
