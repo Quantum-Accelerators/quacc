@@ -263,6 +263,6 @@ def prepare_copy(
 
     if isinstance(copy_files, list):
         exact_files_to_copy = prepare_copy_files(calc_params, binary=binary)
-        return {source: exact_files_to_copy for source in copy_files}
+        return dict.fromkeys(copy_files, exact_files_to_copy)
 
     return copy_files
