@@ -163,6 +163,7 @@ lint.ignore = [
   "PLR",    # Design related pylint codes
   "PERF203",  # try-except-in-loop
   "RET505", # Unnecessary `elif` after `return`
+  "PTH208", # os-listdir
 ]
 src = ["src"]
 lint.pydocstyle.convention = "numpy"
