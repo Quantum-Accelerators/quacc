@@ -158,7 +158,7 @@ class VaspSummarize:
         ).run(final_atoms, initial_atoms)
 
         if nsteps := len(
-            [f for f in os.listdir(directory) if str(f).startswith("step")]
+            [f for f in os.listdir(directory) if f.startswith("step")]
         ):
             intermediate_vasp_task_docs = {
                 "steps": {
