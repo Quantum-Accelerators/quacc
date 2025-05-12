@@ -8,7 +8,6 @@ description="A platform to enable high-throughput, database-driven quantum chemi
 version = "0.15.0"
 readme = "README.md"
 license = { text = "BSD-3" }
-license-files = ["LICENSE.md"]
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
 maintainers = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
 keywords = ["high-throughput", "automated", "workflow", "dft"]
