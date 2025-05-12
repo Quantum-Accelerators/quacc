@@ -1,5 +1,5 @@
 ase==3.25.0
-custodian==2025.4.14
+custodian==2025.5.12
 emmet-core==0.84.7rc1
 frozendict==2.4.6
 maggma==0.71.5
