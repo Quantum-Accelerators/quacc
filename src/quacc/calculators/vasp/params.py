@@ -232,7 +232,7 @@ def get_param_swaps(
     if calc.bool_params["lelf"] is True and (
         calc.int_params["npar"] != 1 or calc.int_params["ncore"] != 1
     ):
-        LOGGER.info("Recommending NPAR = 1 per the VASP manual.")
+        LOGGER.info("Recommending NPAR = 1 per the VASP manual when LELF is True.")
         calc.set(npar=1, ncore=None)
 
     if (
