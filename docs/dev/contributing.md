@@ -14,7 +14,7 @@ To contribute to quacc, we recommend doing the following:
 
 - [Clone this forked repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) to your local machine, e.g. via `git clone <repo url>.git`.
 
-- In the newly downloaded `quacc` base directory, run `pip install -e .[dev]` to install quacc in editable mode and with the development dependencies. For reproducibility purposes, we strongly recommend installing quacc in a fresh virtual environment.
+- In the newly downloaded `quacc` base directory, run `pip install -e '.[dev]'` to install quacc in editable mode and with the development dependencies. For reproducibility purposes, we strongly recommend installing quacc in a fresh virtual environment.
 
 - [Commit your changes](https://github.com/git-guides/git-commit) and [push them](https://github.com/git-guides/git-push) to your personal forked repository _in a new branch_.
 
