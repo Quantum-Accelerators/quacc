@@ -15,7 +15,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     To install Covalent, run
 
     ```bash
-    pip install quacc[covalent]
+    pip install 'quacc[covalent]'
     ```
 
     **Starting the Server**
@@ -43,7 +43,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     To install Dask, run the following:
 
     ```bash
-    pip install quacc[dask]
+    pip install 'quacc[dask]'
     ```
 
 === "Parsl"
@@ -53,7 +53,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     To install Parsl, run the following:
 
     ```bash
-    pip install quacc[parsl]
+    pip install 'quacc[parsl]'
     ```
 
     Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
@@ -65,7 +65,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     To install Prefect, run the following:
 
     ```bash
-    pip install quacc[prefect]
+    pip install 'quacc[prefect]'
     ```
 
     To connect to Prefect Cloud, run the following as well:
@@ -87,7 +87,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     To install Redun, run the following:
 
     ```bash
-    pip install quacc[redun]
+    pip install 'quacc[redun]'
     ```
 
 === "Jobflow"
@@ -99,7 +99,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         To install Jobflow with support for Jobflow-Remote, run the following:
 
         ```bash
-        pip install quacc[jobflow]
+        pip install 'quacc[jobflow]'
         ```
 
         **MongoDB Setup**
@@ -202,7 +202,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         To install Jobflow with support for Fireworks, run the following:
 
         ```bash
-        pip install quacc[jobflow] fireworks
+        pip install 'quacc[jobflow]' fireworks
         ```
 
         **MongoDB Setup**

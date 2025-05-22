@@ -99,7 +99,7 @@ If you haven't done so already:
     On both the local and remote machines:
 
     ```bash
-    pip install quacc[covalent]
+    pip install 'quacc[covalent]'
     quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR false  # (1)!
     ```
 
@@ -125,7 +125,7 @@ If you haven't done so already:
     On the remote machine:
 
     ```bash
-    pip install quacc[dask]
+    pip install 'quacc[dask]'
     quacc set WORKFLOW_ENGINE dask
     ```
 
@@ -138,7 +138,7 @@ If you haven't done so already:
     On the remote machine:
 
     ```bash
-    pip install quacc[parsl]
+    pip install 'quacc[parsl]'
     quacc set WORKFLOW_ENGINE parsl
     ```
 
@@ -147,7 +147,7 @@ If you haven't done so already:
     On the remote machine:
 
     ```bash
-    pip install quacc[prefect]
+    pip install 'quacc[prefect]'
     quacc set WORKFLOW_ENGINE prefect
     ```
 
@@ -168,13 +168,13 @@ If you haven't done so already:
     === "Jobflow Remote"
 
         ```bash
-        pip install quacc[jobflow]
+        pip install 'quacc[jobflow]'
         ```
 
     === "Fireworks"
 
         ```bash
-        pip install quacc[jobflow] fireworks
+        pip install 'quacc[jobflow]' fireworks
         ```
 
 ### Concurrent Non-MPI Jobs
@@ -300,7 +300,7 @@ If you haven't done so already:
     On the remote machine, first make sure to install the necessary dependencies:
 
     ```
-    pip install quacc[tblite]
+    pip install 'quacc'[tblite]'
     ```
 
     From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, run the following to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) that will request two Slurm allocations of one node each, with each `#!Python @job` running on one core of the allocation:
@@ -379,7 +379,7 @@ If you haven't done so already:
     On the remote machine, make sure to install the necessary dependencies:
 
     ```
-    pip install quacc[tblite]
+    pip install 'quacc[tblite]'
     ```
 
     Now we will request a single Slurm allocation with 2 nodes, and each compute job will run on one core of that allocation.
@@ -506,7 +506,7 @@ If you haven't done so already:
     On the remote machine, first make sure to install the necessary dependencies:
 
     ```
-    pip install quacc[tblite]
+    pip install 'quacc[tblite]'
     ```
 
     From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) that will request one Slurm allocation for one node, with a `#!Python @job` running on each core of the allocation:

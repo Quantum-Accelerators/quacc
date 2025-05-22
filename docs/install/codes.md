@@ -50,13 +50,13 @@ Several pre-trained "universal" machine-learned potentials (MLPs) are natively s
 To use these potentials, you will need to install the corresponding packages. This can be done as follows:
 
 ```bash
-pip install quacc[mlp1]
+pip install 'quacc[mlp1]'
 ```
 
 or
 
 ```bash
-pip install quacc[mlp2]
+pip install 'quacc[mlp2]'
 ```
 
 Each set of extras comes with different pre-trained MLPs.
@@ -66,7 +66,7 @@ Each set of extras comes with different pre-trained MLPs.
 If you plan to use NewtonNet with Quacc, you will need to install it prior to use. This can be done as follows:
 
 ```bash
-pip install quacc[newtonnet]
+pip install 'quacc[newtonnet]'
 ```
 
 ## ONETEP
@@ -140,7 +140,7 @@ If you plan to use TBLite with quacc, you will need to install the tblite interf
 === "Pip"
 
     ```bash
-    pip install quacc[tblite] # only on Linux
+    pip install 'quacc[tblite]' # only on Linux
     ```
 
 Refer to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html) for details on how to parallelize calculations and adjust the memory limits.
