@@ -190,7 +190,7 @@ def get_param_swaps(
                 LOGGER.info(
                     f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
                 )
-                calc.set(ncore=ncore)
+                calc.set(ncore=ncore, npar=None)
                 break
 
     if (
@@ -228,12 +228,6 @@ def get_param_swaps(
             "Recommending ISYM = -1 because you are running an SOC calculation."
         )
         calc.set(isym=-1)
-
-    if calc.bool_params["lelf"] is True and (
-        calc.int_params["npar"] != 1 or calc.int_params["ncore"] != 1
-    ):
-        LOGGER.info("Recommending NPAR = 1 per the VASP manual when LELF is True.")
-        calc.set(npar=1, ncore=None)
 
     if (
         calc.string_params["metagga"]
