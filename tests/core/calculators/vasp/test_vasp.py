@@ -7,6 +7,7 @@ from pathlib import Path
 from shutil import which
 
 import numpy as np
+import psutil
 import pytest
 from ase.atoms import Atoms
 from ase.build import bulk
@@ -25,6 +26,8 @@ FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 LOGGER = getLogger(__name__)
 LOGGER.propagate = True
+
+ncores = psutil.cpu_count(logical=False) or 1
 
 
 @pytest.fixture
@@ -106,15 +109,13 @@ def test_rosen_preset1():
     calc = Vasp(atoms, preset="RosenSetPBE")
     assert calc.parameters == {
         "algo": "fast",
-        "ediff": 1e-05,
+        "ediff": 1e-06,
         "ediffg": -0.02,
         "efermi": "midgap",
         "encut": 520,
         "gamma": None,
         "gga": "PE",
         "gga_compat": False,
-        "ibrion": 2,
-        "isif": 3,
         "ismear": 0,
         "ivdw": 12,
         "kpts": None,
@@ -125,10 +126,9 @@ def test_rosen_preset1():
         "lorbit": 11,
         "lreal": False,
         "lwave": False,
-        "ncore": 4,
+        "ncore": int(np.sqrt(ncores)),
         "nelm": 150,
         "nelmin": 3,
-        "nsw": 200,
         "pp": "PBE",
         "prec": "accurate",
         "setups": {
@@ -240,14 +240,11 @@ def test_rosen_preset2():
     calc = Vasp(atoms, preset="RosenSetR2SCAN")
     assert calc.parameters == {
         "algo": "all",
-        "ediff": 1e-05,
-        "ediffg": -0.02,
+        "ediff": 1e-06,
         "efermi": "midgap",
         "encut": 520,
         "gamma": None,
         "gga_compat": False,
-        "ibrion": 2,
-        "isif": 3,
         "ismear": 0,
         "ivdw": 13,
         "kpts": None,
@@ -259,10 +256,9 @@ def test_rosen_preset2():
         "lreal": False,
         "lwave": False,
         "metagga": "R2SCAN",
-        "ncore": 4,
+        "ncore": int(np.sqrt(ncores)),
         "nelm": 150,
         "nelmin": 3,
-        "nsw": 200,
         "pp": "PBE",
         "prec": "accurate",
         "setups": {

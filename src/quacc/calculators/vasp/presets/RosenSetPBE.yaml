@@ -1,12 +1,9 @@
 inputs:
   algo: fast
-  ediff: 1.0e-5
-  ediffg: -0.02
+  ediff: 1.0e-6
   efermi: midgap
   encut: 520
   gga_compat: false
-  ibrion: 2
-  isif: 3
   ismear: 0
   ivdw: 12
   kspacing: 0.2
@@ -17,7 +14,6 @@ inputs:
   lwave: false
   nelm: 150
   nelmin: 3
-  nsw: 200
   prec: accurate
   sigma: 0.05
   xc: pbe
