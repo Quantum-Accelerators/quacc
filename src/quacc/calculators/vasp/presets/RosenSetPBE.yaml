@@ -6,7 +6,7 @@ inputs:
   gga_compat: false
   ismear: 0
   ivdw: 12
-  kspacing: auto
+  kspacing: 0.2
   lasph: true
   lcharg: false
   lorbit: 11
