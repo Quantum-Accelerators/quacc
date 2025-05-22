@@ -129,7 +129,7 @@ def test_rosen_preset1():
         "lorbit": 11,
         "lreal": False,
         "lwave": False,
-        "ncore": 4,
+        "ncore": int(np.sqrt(ncores)),
         "nelm": 150,
         "nelmin": 3,
         "nsw": 100,
@@ -241,7 +241,7 @@ def test_rosen_preset1():
 
 def test_rosen_preset2():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="RosenSetR2SCAN")
+    calc = Vasp(atoms, preset="RosenSetR2SCAN", nsw=100)
     assert calc.parameters == {
         "algo": "all",
         "ediff": 1e-06,
@@ -263,7 +263,7 @@ def test_rosen_preset2():
         "lreal": False,
         "lwave": False,
         "metagga": "R2SCAN",
-        "ncore": 4,
+        "ncore": int(np.sqrt(ncores)),
         "nelm": 150,
         "nelmin": 3,
         "nsw": 100,
