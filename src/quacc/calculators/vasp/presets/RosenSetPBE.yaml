@@ -17,6 +17,7 @@ inputs:
   lwave: false
   nelm: 150
   nelmin: 3
+  nsw: 0
   prec: accurate
   sigma: 0.05
   xc: pbe

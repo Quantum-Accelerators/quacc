@@ -106,15 +106,19 @@ def test_presets_mp():
 
 def test_rosen_preset1():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="RosenSetPBE")
+    calc = Vasp(atoms, preset="RosenSetPBE", nsw=100)
+
     assert calc.parameters == {
         "algo": "fast",
         "ediff": 1e-06,
+        "ediffg": -0.02,
         "efermi": "midgap",
         "encut": 520,
         "gamma": None,
         "gga": "PE",
         "gga_compat": False,
+        "ibrion": 2,
+        "isif": 3,
         "ismear": 0,
         "ivdw": 12,
         "kpts": None,
@@ -125,9 +129,10 @@ def test_rosen_preset1():
         "lorbit": 11,
         "lreal": False,
         "lwave": False,
-        "ncore": int(np.sqrt(ncores)),
+        "ncore": 4,
         "nelm": 150,
         "nelmin": 3,
+        "nsw": 100,
         "pp": "PBE",
         "prec": "accurate",
         "setups": {
@@ -240,10 +245,13 @@ def test_rosen_preset2():
     assert calc.parameters == {
         "algo": "all",
         "ediff": 1e-06,
+        "ediffg": -0.02,
         "efermi": "midgap",
         "encut": 520,
         "gamma": None,
         "gga_compat": False,
+        "ibrion": 2,
+        "isif": 3,
         "ismear": 0,
         "ivdw": 13,
         "kpts": None,
@@ -255,9 +263,10 @@ def test_rosen_preset2():
         "lreal": False,
         "lwave": False,
         "metagga": "R2SCAN",
-        "ncore": int(np.sqrt(ncores)),
+        "ncore": 4,
         "nelm": 150,
         "nelmin": 3,
+        "nsw": 100,
         "pp": "PBE",
         "prec": "accurate",
         "setups": {
