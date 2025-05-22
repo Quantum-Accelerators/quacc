@@ -110,7 +110,6 @@ def test_rosen_preset1():
     assert calc.parameters == {
         "algo": "fast",
         "ediff": 1e-06,
-        "ediffg": -0.02,
         "efermi": "midgap",
         "encut": 520,
         "gamma": None,
