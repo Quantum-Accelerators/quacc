@@ -50,7 +50,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
 
     if method == "fairchem":
         calc_kwargs = {
-            {'predictor_kwargs': 'uma-sm'},
+            'get_predict_unit_kwargs': {'model_name': 'uma-sm'},
             'task_name': 'omat',
         }
     else:

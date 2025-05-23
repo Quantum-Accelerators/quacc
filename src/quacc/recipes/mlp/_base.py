@@ -133,12 +133,20 @@ def pick_calculator(
         calc = ORBCalculator(model=orbff, **calc_kwargs)
 
     elif method.lower() == "fairchem":
-        from fairchem.core import pretrained_mlip, FAIRChemCalculator, __version__
+        from fairchem.core import pretrained_mlip, FAIRChemCalculator, load_predict_unit, __version__
 
-        predictor_kwargs = calc_kwargs.pop("predictor_kwargs", {})
-                        
-        predictor = pretrained_mlip.get_predict_unit(**predictor_kwargs)
-        calc =  FAIRChemCalculator(predictor, **calc_kwargs)
+        load_predict_unit_kwargs = calc_kwargs.pop("load_predict_unit_kwargs", None)
+        if load_predict_unit_kwargs is not None:
+            predict_unit = load_predict_unit(**load_predict_unit_kwargs)
+        else:
+            
+            get_predict_unit_kwargs = calc_kwargs.pop("get_predict_unit_kwargs", None)
+
+            if get_predict_unit_kwargs is None:
+                raise ValueError("Either `load_predict_unit_kwargs` or `get_predict_unit_kwargs` must be provided.")
+            predict_unit = pretrained_mlip.get_predict_unit(**get_predict_unit_kwargs)
+            
+        calc =  FAIRChemCalculator(predict_unit, **calc_kwargs)
 
     else:
         raise ValueError(f"Unrecognized {method=}.")
