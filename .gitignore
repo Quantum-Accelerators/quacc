@@ -11,6 +11,7 @@ package.json
 # Workflow ignores
 *parsl.log
 runinfo
+covalent.conf
 
 # Docs
 .cache/
