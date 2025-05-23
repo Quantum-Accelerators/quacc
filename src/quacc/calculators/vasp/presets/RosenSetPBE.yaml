@@ -6,7 +6,6 @@ inputs:
   encut: 520
   gga_compat: false
   ibrion: 2
-  isif: 3
   ismear: 0
   ivdw: 12
   kspacing: 0.2
