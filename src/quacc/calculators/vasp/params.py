@@ -111,7 +111,7 @@ def get_param_swaps(
         calc.int_params["ismear"] != -5
         and calc.int_params["nsw"] in (None, 0)
         and (
-            np.prod(calc.kpts) >= 4
+            (calc.kpts and np.prod(calc.kpts) >= 4)
             or (calc.float_params["kspacing"] and calc.float_params["kspacing"] <= 0.5)
         )
     ):
