@@ -152,7 +152,7 @@ def get_param_swaps(
         )
         calc.set(sigma=0.05)
 
-    if calc.int_params["ismear"] == -5 and calc.string_params["algo"].lower() == "all":
+    if calc.int_params["ismear"] == -5 and calc.string_params["algo"].get("normal").lower() == "all":
         LOGGER.info(
             "Recommending ALGO = Normal because ISMEAR = -5 was requested, and ALGO = All is not compatible."
         )
