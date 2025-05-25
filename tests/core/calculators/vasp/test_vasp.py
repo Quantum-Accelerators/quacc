@@ -1080,10 +1080,8 @@ def test_kpoint_schemes():
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, pmg_kpts={"line_density": 100})
-    assert calc.reciprocal == True
-    assert calc.kpts[-1] == pytest.approx(
-        np.array([0.375, 0.75 , 0.375])
-    )
+    assert calc.reciprocal
+    assert calc.kpts[-1] == pytest.approx(np.array([0.375, 0.75, 0.375]))
 
 
 def test_constraints():
