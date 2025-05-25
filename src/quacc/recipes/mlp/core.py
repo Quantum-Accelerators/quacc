@@ -42,7 +42,7 @@ def static_job(
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`,
         `orb_models.forcefield.calculator.ORBCalculator`,
-        `fairchem.core.FAIRChemCalculator` calculators.
+        `fairchem.core.common.relaxation.ase_utils.OCPCalculator` calculators.
 
     Returns
     -------
@@ -88,7 +88,7 @@ def relax_job(
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`,
         `orb_models.forcefield.calculator.ORBCalculator`,
-        `fairchem.core.FAIRChemCalculator` calculators.
+        `fairchem.core.common.relaxation.ase_utils.OCPCalculator` calculators.
 
     Returns
     -------

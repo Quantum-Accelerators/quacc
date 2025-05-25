@@ -1,1 +1,2 @@
-fairchem-core==2.1.0
+fairchem-core[torch_extras]==1.10.0
+-f https://data.pyg.org/whl/torch-2.4.1+cpu.html
