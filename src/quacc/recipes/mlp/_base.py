@@ -92,16 +92,16 @@ def pick_calculator(
         from matgl import __version__
         from matgl.ext.ase import PESCalculator
 
-        model = matgl.load_model("M3GNet-MP-2021.2.8-DIRECT-PES")
-        if "stress_weight" not in calc_kwargs:
-            calc_kwargs["stress_weight"] = 1.0 / 160.21766208
+        model = matgl.load_model("M3GNet-MatPES-r2SCAN-v2025.1-PES")
         calc = PESCalculator(potential=model, **calc_kwargs)
 
     elif method.lower() == "chgnet":
-        from chgnet import __version__
-        from chgnet.model.dynamics import CHGNetCalculator
+        import matgl
+        from matgl import __version__
+        from matgl.ext.ase import PESCalculator
 
-        calc = CHGNetCalculator(**calc_kwargs)
+        model = matgl.load_model("CHGNet-MatPES-r2SCAN-2025.2.10-2.7M-PES")
+        calc = PESCalculator(potential=model, **calc_kwargs)
 
     elif method.lower() == "mace-mp-0":
         from mace import __version__
@@ -128,7 +128,7 @@ def pick_calculator(
         from orb_models.forcefield import pretrained
         from orb_models.forcefield.calculator import ORBCalculator
 
-        orb_model = calc_kwargs.get("model", "orb_v2")
+        orb_model = calc_kwargs.get("model", "orb_v3_conservative_inf_omat")
         orbff = getattr(pretrained, orb_model)()
         calc = ORBCalculator(model=orbff, **calc_kwargs)
 
