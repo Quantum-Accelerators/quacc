@@ -120,7 +120,7 @@ def get_param_swaps(
 
     if (
         calc.int_params["ismear"] == -5
-        and np.prod(calc.kpts) < 4
+        and (calc.kpts is not None and np.prod(calc.kpts) < 4)
         and calc.float_params["kspacing"] is None
     ):
         LOGGER.info(
@@ -209,7 +209,7 @@ def get_param_swaps(
 
     if (
         calc.int_params["kpar"]
-        and calc.int_params["kpar"] > np.prod(calc.kpts)
+        and (calc.kpts is not None and calc.int_params["kpar"] > np.prod(calc.kpts))
         and calc.float_params["kspacing"] is None
     ):
         LOGGER.info(
