@@ -66,7 +66,7 @@ def convert_pmg_kpts(
             has_magmoms=np.any(struct.site_properties.get("magmom", None)),
         )
         kpts, _ = kpath.get_kpoints(
-            line_density=pmg_kpts["line_density"], coords_are_cartesian=True
+            line_density=pmg_kpts["line_density"], coords_are_cartesian=False
         )
         kpts = np.stack(kpts)
         gamma = False
