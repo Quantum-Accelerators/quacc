@@ -756,9 +756,10 @@ def test_algo():
 
     calc = Vasp(atoms, xc="m06l")
     assert calc.string_params["algo"] == "normal"
-    
+
     calc = Vasp(atoms, xc="hse06")
     assert calc.string_params["algo"] == "normal"
+
 
 def test_algo_aggressive():
     with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
