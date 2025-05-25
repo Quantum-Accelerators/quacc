@@ -870,13 +870,16 @@ def test_ismear_aggressive():
         calc = Vasp(atoms, pmg_kpts={"line_density": 100}, ismear=1)
         assert calc.int_params["ismear"] == 0
         assert calc.float_params["sigma"] == 0.01
+        assert calc.reciprocal is True
 
         calc = Vasp(atoms, pmg_kpts={"line_density": 100}, ismear=0, sigma=1e-3)
         assert calc.int_params["ismear"] == 0
         assert calc.float_params["sigma"] == 1e-3
+        assert calc.reciprocal is True
 
         calc = Vasp(atoms, pmg_kpts={"line_density": 100}, ismear=-5)
         assert calc.int_params["ismear"] == 0
+        assert calc.reciprocal is True
 
         calc = Vasp(atoms, kspacing=1.0, ismear=-5)
         assert calc.int_params["ismear"] == 0
@@ -1077,8 +1080,9 @@ def test_kpoint_schemes():
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, pmg_kpts={"line_density": 100})
+    assert calc.reciprocal == True
     assert calc.kpts[-1] == pytest.approx(
-        np.array([1.30537091e00, 1.11022302e-16, 1.30537091e00])
+        np.array([0.375, 0.75 , 0.375])
     )
 
 
