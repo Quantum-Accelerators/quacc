@@ -59,8 +59,8 @@ def test_static_job(tmp_path, monkeypatch, method):
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "get_predict_unit_kwargs": {"model_name": "uma-sm"},
-            "task_name": "omat",
+            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
+            "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:
         calc_kwargs = {}
@@ -117,8 +117,8 @@ def test_relax_job(tmp_path, monkeypatch, method):
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "get_predict_unit_kwargs": {"model_name": "uma-sm"},
-            "task_name": "omat",
+            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
+            "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:
         calc_kwargs = {}
@@ -169,8 +169,8 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "get_predict_unit_kwargs": {"model_name": "uma-sm"},
-            "task_name": "omat",
+            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
+            "local_cache": "./fairchem_checkpoint_cache/",
         }
     else:
         calc_kwargs = {}
