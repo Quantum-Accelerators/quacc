@@ -133,11 +133,7 @@ def pick_calculator(
         calc = ORBCalculator(model=orbff, **calc_kwargs)
 
     elif method.lower() == "fairchem":
-        from fairchem.core import (
-            FAIRChemCalculator,
-            __version__,
-            pretrained_mlip,
-        )
+        from fairchem.core import FAIRChemCalculator, __version__, pretrained_mlip
         from fairchem.core.units.mlip_unit import load_predict_unit
 
         load_predict_unit_kwargs = calc_kwargs.pop("load_predict_unit_kwargs", None)
