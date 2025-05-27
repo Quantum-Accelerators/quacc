@@ -136,9 +136,9 @@ def pick_calculator(
         from fairchem.core import (
             FAIRChemCalculator,
             __version__,
-            load_predict_unit,
             pretrained_mlip,
         )
+        from fairchem.core.units.mlip_unit import load_predict_unit
 
         load_predict_unit_kwargs = calc_kwargs.pop("load_predict_unit_kwargs", None)
         if load_predict_unit_kwargs is not None:
