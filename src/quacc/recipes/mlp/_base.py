@@ -135,9 +135,13 @@ def pick_calculator(
     elif method.lower() == "fairchem":
         from fairchem.core import FAIRChemCalculator, __version__, pretrained_mlip
         from fairchem.core.units.mlip_unit import load_predict_unit
+        import torch
 
+        
         load_predict_unit_kwargs = calc_kwargs.pop("load_predict_unit_kwargs", None)
         if load_predict_unit_kwargs is not None:
+            if load_predict_unit_kwargs.get("device", None) is None:
+                load_predict_unit_kwargs["device"] = "cuda" if torch.cuda.is_available() else "cpu"
             predict_unit = load_predict_unit(**load_predict_unit_kwargs)
         else:
             get_predict_unit_kwargs = calc_kwargs.pop("get_predict_unit_kwargs", None)
@@ -146,6 +150,9 @@ def pick_calculator(
                 raise ValueError(
                     "Either `load_predict_unit_kwargs` or `get_predict_unit_kwargs` must be provided."
                 )
+
+            if get_predict_unit_kwargs.get("device", None) is None:
+                get_predict_unit_kwargs["device"] = "cuda" if torch.cuda.is_available() else "cpu"
             predict_unit = pretrained_mlip.get_predict_unit(**get_predict_unit_kwargs)
 
         calc = FAIRChemCalculator(predict_unit, **calc_kwargs)
