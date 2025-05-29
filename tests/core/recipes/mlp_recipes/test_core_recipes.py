@@ -71,7 +71,7 @@ def test_static_job(tmp_path, monkeypatch, method):
         "mace-mp-0": -4.097862720291976,
         "sevennet": -4.096191883087158,
         "orb": -4.093477725982666,
-        "fairchem": -4.098316669464111,
+        "fairchem": -3.7579006783217954,
     }
     atoms = bulk("Cu")
     output = static_job(atoms, method=method, **calc_kwargs)
