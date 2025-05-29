@@ -59,8 +59,8 @@ def test_static_job(tmp_path, monkeypatch, method):
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
-            "local_cache": "./fairchem_checkpoint_cache/",
+            "get_predict_unit_kwargs": {"model_name": "uma-sm", "device": "cpu"},
+            "task_name": "omat",
         }
     else:
         calc_kwargs = {}
@@ -71,7 +71,7 @@ def test_static_job(tmp_path, monkeypatch, method):
         "mace-mp-0": -4.097862720291976,
         "sevennet": -4.096191883087158,
         "orb": -4.093477725982666,
-        "fairchem": -4.098316669464111,
+        "fairchem": -3.7579006783217954,
     }
     atoms = bulk("Cu")
     output = static_job(atoms, method=method, **calc_kwargs)
@@ -117,8 +117,8 @@ def test_relax_job(tmp_path, monkeypatch, method):
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
-            "local_cache": "./fairchem_checkpoint_cache/",
+            "get_predict_unit_kwargs": {"model_name": "uma-sm", "device": "cpu"},
+            "task_name": "omat",
         }
     else:
         calc_kwargs = {}
@@ -129,7 +129,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
         "mace-mp-0": -32.78264569638644,
         "sevennet": -32.76924133300781,
         "orb": -32.7361946105957,
-        "fairchem": -32.80327224731445,
+        "fairchem": -30.004380887389797,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
@@ -169,8 +169,8 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
-            "local_cache": "./fairchem_checkpoint_cache/",
+            "get_predict_unit_kwargs": {"model_name": "uma-sm", "device": "cpu"},
+            "task_name": "omat",
         }
     else:
         calc_kwargs = {}
@@ -181,7 +181,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         "mace-mp-0": -32.8069374165035,
         "sevennet": -32.76963806152344,
         "orb": -32.73428726196289,
-        "fairchem": -32.82823944091797,
+        "fairchem": -30.005004590392726,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)

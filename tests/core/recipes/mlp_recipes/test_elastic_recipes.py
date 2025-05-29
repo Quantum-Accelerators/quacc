@@ -50,8 +50,8 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
 
     if method == "fairchem":
         calc_kwargs = {
-            "model_name": "EquiformerV2-31M-OMAT24-MP-sAlex",
-            "local_cache": "./fairchem_checkpoint_cache/",
+            "get_predict_unit_kwargs": {"model_name": "uma-sm", "device": "cpu"},
+            "task_name": "omat",
         }
     else:
         calc_kwargs = {}
@@ -62,7 +62,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         "mace-mp-0": 130.727,
         "sevennet": 142.296,
         "orb": 190.195,
-        "fairchem": 105,
+        "fairchem": 151.367,
     }
 
     atoms = bulk("Cu")
