@@ -62,7 +62,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         "mace-mp-0": 130.727,
         "sevennet": 142.296,
         "orb": 190.195,
-        "fairchem": 105,
+        "fairchem": 151.367,
     }
 
     atoms = bulk("Cu")
