@@ -169,7 +169,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {
-            "get_predict_unit_kwargs": {"model_name": "uma-sm"},
+            "get_predict_unit_kwargs": {"model_name": "uma-sm", "device": "cpu"},
             "task_name": "omat",
         }
     else:
