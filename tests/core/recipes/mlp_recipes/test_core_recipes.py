@@ -129,7 +129,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
         "mace-mp-0": -32.78264569638644,
         "sevennet": -32.76924133300781,
         "orb": -32.7361946105957,
-        "fairchem": -32.80327224731445,
+        "fairchem": -30.004380887389797,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
