@@ -1,5 +1,5 @@
 inputs:
-  algo: fast
+  algo: all
   ediff: 1.0e-6
   ediffg: -0.02
   efermi: midgap

@@ -1,5 +1,4 @@
 inputs:
-  algo: all
   ivdw: 13
   xc: r2scan
 parent: RosenSetPBE

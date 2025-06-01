@@ -109,7 +109,7 @@ def test_rosen_preset1():
     calc = Vasp(atoms, preset="RosenSetPBE", nsw=100)
 
     assert calc.parameters == {
-        "algo": "fast",
+        "algo": "all",
         "ediff": 1e-06,
         "ediffg": -0.02,
         "efermi": "midgap",
