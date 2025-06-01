@@ -24,16 +24,16 @@ pytest tests/core/recipes/gaussian_recipes --noconftest
 # ORCA
 export PATH=$SOFTWARE/orca_6_0_1_linux_x86-64_shared_openmpi416:$PATH
 module purge
-module load nvhpc/24.5 openmpi/nvhpc-24.5/4.1.6
+module load openmpi/gcc/4.1.6
 pytest tests/core/recipes/orca_recipes --noconftest
 
 # VASP
 export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node 32"
 export VASP_PP_PATH=$SOFTWARE/vasp/vasp_potcars
 export ASE_VASP_VDW=$SOFTWARE/vasp/vdw_kernel
-export PATH=$SOFTWARE/vasp/vasp.6.5.0/bin:$PATH
+export PATH=$SOFTWARE/vasp/6.5.1/bin:$PATH
 module purge
-module load intel/2021.1.2 intel-mpi/intel/2021.3.1 intel-mkl/2021.1.1
+module load intel-oneapi/2024.2 intel-mpi/oneapi/2021.13 intel-mkl/2024.2 hdf5/oneapi-2024.2/intel-mpi/1.14.4
 pytest tests/core/recipes/vasp_recipes/jenkins --noconftest
 
 # Q-Chem
