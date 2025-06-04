@@ -262,6 +262,7 @@ def test_concurrency():
     assert dt < 10
 
 
+@pytest.mark.asyncio
 async def test_prefect_decorators_async(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -276,6 +277,7 @@ async def test_prefect_decorators_async(tmp_path, monkeypatch):
     assert (await add_flow(1, 2)) == 3
 
 
+@pytest.mark.asyncio
 async def test_prefect_decorators3_async(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
