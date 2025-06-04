@@ -46,7 +46,7 @@ covalent = ["covalent>=0.234.1-rc.0; platform_system!='Windows'", "covalent-clou
 dask = ["dask[distributed]>=2023.12.1", "dask-jobqueue>=0.8.2"]
 defects = ["pymatgen-analysis-defects>=2024.10.22", "shakenbreak>=3.2.0"]
 jobflow = ["jobflow>=0.1.14", "jobflow-remote[gui]>=0.1.0"]
-mlp1 = ["chgnet>=0.3.3", "torch-dftd>=0.4.0", "sevenn>=0.10.1",  "orb-models>=0.4.1", "fairchem-core>=2.1.0"]
+mlp1 = ["chgnet>=0.3.3", "torch-dftd>=0.4.0", "sevenn>=0.10.1",  "orb-models>=0.4.1", "fairchem-core>=2.2.0"]
 mlp2 = ["mace-torch>=0.3.3", "matgl>=1.1.2"]
 mp = ["atomate2>=0.0.14"]
 newtonnet = ["newtonnet>=1.1", "numpy<=1.26.4"]
