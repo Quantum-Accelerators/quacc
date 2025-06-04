@@ -136,7 +136,7 @@ def pick_calculator(
         from fairchem.core import FAIRChemCalculator, __version__
 
         calc = FAIRChemCalculator.from_model_checkpoint(**calc_kwargs)
-        
+
     else:
         raise ValueError(f"Unrecognized {method=}.")
 
