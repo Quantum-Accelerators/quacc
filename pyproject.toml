@@ -56,7 +56,7 @@ prefect = ["prefect[dask]>=3.3.6", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
 sella = ["sella>=2.3.5"]
 tblite = ["tblite>=0.3.0; platform_system=='Linux'"]
-dev = ["pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
+dev = ["pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285", "pytest-asyncio>=0.26.0"]
 docs = [
     "blacken-docs>=1.16.0",
     "mkdocs-material>=9.5.16",
