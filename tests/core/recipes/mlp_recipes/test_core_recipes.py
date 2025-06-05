@@ -58,7 +58,7 @@ def test_static_job(tmp_path, monkeypatch, method):
 
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
-        calc_kwargs = {"name_or_path": "uma-sm-1", "task_name": "omat"}
+        calc_kwargs = {"name_or_path": "uma-s-1", "task_name": "omat"}
     else:
         calc_kwargs = {}
 
@@ -113,7 +113,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
 
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
-        calc_kwargs = {"name_or_path": "uma-sm-1", "task_name": "omat"}
+        calc_kwargs = {"name_or_path": "uma-s-1", "task_name": "omat"}
     else:
         calc_kwargs = {}
 
@@ -162,7 +162,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
 
     if method == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
-        calc_kwargs = {"name_or_path": "uma-sm-1", "task_name": "omat"}
+        calc_kwargs = {"name_or_path": "uma-s-1", "task_name": "omat"}
     else:
         calc_kwargs = {}
 
