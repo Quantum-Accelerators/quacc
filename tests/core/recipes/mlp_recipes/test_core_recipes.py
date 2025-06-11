@@ -109,8 +109,8 @@ def test_relax_job(tmp_path, monkeypatch, method):
         calc_kwargs = {}
 
     ref_energy = {
-        "chgnet": -29.952457427978516 ,
-        "m3gnet": -29.9184513092041 ,
+        "chgnet": -29.952457427978516,
+        "m3gnet": -29.9184513092041,
         "mace-mp": -32.78264569638644,
         "tensornet": 5.0,
         "sevennet": -32.76924133300781,
@@ -160,7 +160,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
 
     ref_energy = {
         "chgnet": -29.966711044311523,
-        "m3gnet": -29.933645248413086 ,
+        "m3gnet": -29.933645248413086,
         "mace-mp": -32.8069374165035,
         "tensornet": 5.0,
         "sevennet": -32.76963806152344,
