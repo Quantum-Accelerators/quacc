@@ -6,7 +6,7 @@ from functools import lru_cache, wraps
 from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
-
+from ase.units import GPa as _GPa_to_eV_per_A3
 from monty.dev import requires
 
 has_frozen = bool(find_spec("frozendict"))
@@ -74,10 +74,7 @@ def pick_calculator(
         Name of the calculator to use.
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
-        `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`, or
-        `orb_models.forcefield.calculator.ORBCalculator` calculators.
+        `quacc.Remove` to remove a pre-existing key entirely.
 
     Returns
     -------
@@ -100,6 +97,10 @@ def pick_calculator(
             model = matgl.load_model("CHGNet-MatPES-PBE-2025.2.10-2.7M-PES")
         elif method == "tensornet":
             model = matgl.load_model("TensorNet-MatPES-PBE-v2025.1-PES")
+
+        if "stress_weight" not in calc_kwargs:
+            calc_kwargs["stress_weight"] = _GPa_to_eV_per_A3
+    
         calc = PESCalculator(potential=model, **calc_kwargs)
 
     elif method.lower() == "mace-mp":
