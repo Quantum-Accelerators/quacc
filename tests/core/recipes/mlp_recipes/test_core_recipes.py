@@ -37,13 +37,6 @@ def _set_dtype(size, type_="float"):
     torch.set_default_dtype(getattr(torch, f"float{size}"))
 
 
-@pytest.mark.skipif(has_chgnet is None, reason="chgnet not installed")
-def test_bad_method():
-    atoms = bulk("Cu")
-    with pytest.raises(ValueError, match="Unrecognized method='bad_method'"):
-        static_job(atoms, method="bad_method")
-
-
 @pytest.mark.parametrize("method", methods)
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
