@@ -41,7 +41,7 @@ def _set_dtype(size, type_="float"):
 def test_static_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace-mp-0":
+    if method == "mace-mp":
         _set_dtype(64)
     else:
         _set_dtype(32)
@@ -53,9 +53,10 @@ def test_static_job(tmp_path, monkeypatch, method):
         calc_kwargs = {}
 
     ref_energy = {
-        "chgnet": -4.083308219909668,
-        "m3gnet": -4.0938973,
-        "mace-mp-0": -4.097862720291976,
+        "chgnet": -3.7441039085388184,
+        "m3gnet": -3.7398147583007812,
+        "tensornet": 5.0,
+        "mace-mp": -4.097862720291976,
         "sevennet": -4.096191883087158,
         "orb": -4.093477725982666,
         "fairchem": -3.7579006783217954,
@@ -96,7 +97,7 @@ def test_relax_job_missing_pynanoflann(monkeypatch):
 def test_relax_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace-mp-0":
+    if method == "mace-mp":
         _set_dtype(64)
     else:
         _set_dtype(32)
@@ -108,9 +109,10 @@ def test_relax_job(tmp_path, monkeypatch, method):
         calc_kwargs = {}
 
     ref_energy = {
-        "chgnet": -32.665428161621094,
-        "m3gnet": -32.75003433227539,
-        "mace-mp-0": -32.78264569638644,
+        "chgnet": -29.952457427978516 ,
+        "m3gnet": -29.9184513092041 ,
+        "mace-mp": -32.78264569638644,
+        "tensornet": 5.0,
         "sevennet": -32.76924133300781,
         "orb": -32.7361946105957,
         "fairchem": -30.004380887389797,
@@ -134,7 +136,7 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method="mace-mp-0", dispersion=True)
+    output = relax_job(atoms, method="mace-mp", dispersion=True)
     assert output["results"]["energy"] == pytest.approx(-37.4518034464096)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
@@ -145,7 +147,7 @@ def test_relax_job_dispersion(tmp_path, monkeypatch):
 def test_relax_cell_job(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace-mp-0":
+    if method == "mace-mp":
         _set_dtype(64)
     else:
         _set_dtype(32)
@@ -157,9 +159,10 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         calc_kwargs = {}
 
     ref_energy = {
-        "chgnet": -32.66698455810547,
-        "m3gnet": -32.750858306884766,
-        "mace-mp-0": -32.8069374165035,
+        "chgnet": -29.966711044311523,
+        "m3gnet": -29.933645248413086 ,
+        "mace-mp": -32.8069374165035,
+        "tensornet": 5.0,
         "sevennet": -32.76963806152344,
         "orb": -32.73428726196289,
         "fairchem": -30.005004590392726,
