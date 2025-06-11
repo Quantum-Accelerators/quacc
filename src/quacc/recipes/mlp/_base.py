@@ -53,7 +53,7 @@ def freezeargs(func: Callable) -> Callable:
 @freezeargs
 @lru_cache
 def pick_calculator(
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
+    method: Literal["mace-mp", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"],
     **calc_kwargs,
 ) -> BaseCalculator:
     """
@@ -87,23 +87,20 @@ def pick_calculator(
     if not torch.cuda.is_available():
         LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
-    if method.lower() == "m3gnet":
+    if method.lower() in ("m3gnet", "chgnet", "tensornet"):
         import matgl
         from matgl import __version__
         from matgl.ext.ase import PESCalculator
 
-        model = matgl.load_model("M3GNet-MP-2021.2.8-DIRECT-PES")
-        if "stress_weight" not in calc_kwargs:
-            calc_kwargs["stress_weight"] = 1.0 / 160.21766208
+        if method == "m3gnet":
+            model = matgl.load_model("M3GNet-MatPES-PBE-v2025.1-PES")
+        elif method == "chgnet":
+            model = matgl.load_model("CHGNet-MatPES-PBE-2025.2.10-2.7M-PES")
+        elif method == "tensornet":
+            model = matgl.load_model("TensorNet-MatPES-PBE-v2025.1-PES")
         calc = PESCalculator(potential=model, **calc_kwargs)
-
-    elif method.lower() == "chgnet":
-        from chgnet import __version__
-        from chgnet.model.dynamics import CHGNetCalculator
-
-        calc = CHGNetCalculator(**calc_kwargs)
-
-    elif method.lower() == "mace-mp-0":
+    
+    elif method.lower() == "mace-mp":
         from mace import __version__
         from mace.calculators import mace_mp
 
