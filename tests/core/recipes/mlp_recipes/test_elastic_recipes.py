@@ -40,7 +40,7 @@ def _set_dtype(size, type_="float"):
 def test_elastic_jobs(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace-mp-0":
+    if method == "mace-mp":
         _set_dtype(64)
     else:
         _set_dtype(32)
@@ -53,8 +53,8 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
     ref_elastic_modulus = {
         "chgnet": 128.184,
         "m3gnet": 126.527,
-        "tensornet": 5.0,
-        "mace-mp-0": 130.727,
+        "tensornet": 123.915,
+        "mace-mp": 130.727,
         "sevennet": 142.296,
         "orb": 190.195,
         "fairchem": 151.367,
