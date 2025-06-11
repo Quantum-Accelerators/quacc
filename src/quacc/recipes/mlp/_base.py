@@ -53,7 +53,9 @@ def freezeargs(func: Callable) -> Callable:
 @freezeargs
 @lru_cache
 def pick_calculator(
-    method: Literal["mace-mp", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"],
+    method: Literal[
+        "mace-mp", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"
+    ],
     **calc_kwargs,
 ) -> BaseCalculator:
     """
@@ -99,7 +101,7 @@ def pick_calculator(
         elif method == "tensornet":
             model = matgl.load_model("TensorNet-MatPES-PBE-v2025.1-PES")
         calc = PESCalculator(potential=model, **calc_kwargs)
-    
+
     elif method.lower() == "mace-mp":
         from mace import __version__
         from mace.calculators import mace_mp
