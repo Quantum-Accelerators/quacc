@@ -12,13 +12,10 @@ from importlib.util import find_spec
 
 methods = []
 if has_mace := find_spec("mace"):
-    methods.append("mace-mp-0")
+    methods.append("mace-mp")
 
 if has_matgl := find_spec("matgl"):
-    methods.append("m3gnet")
-
-if has_chgnet := find_spec("chgnet"):
-    methods.append("chgnet")
+    methods.extend(["m3gnet", "chgnet", "tensornet"])
 
 if has_sevennet := find_spec("sevenn"):
     methods.append("sevennet")
@@ -43,7 +40,7 @@ def _set_dtype(size, type_="float"):
 def test_elastic_jobs(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace-mp-0":
+    if method == "mace-mp":
         _set_dtype(64)
     else:
         _set_dtype(32)
@@ -54,9 +51,10 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         calc_kwargs = {}
 
     ref_elastic_modulus = {
-        "chgnet": 199,
-        "m3gnet": 109.369,
-        "mace-mp-0": 130.727,
+        "chgnet": 128.184,
+        "m3gnet": 126.527,
+        "tensornet": 123.915,
+        "mace-mp": 130.727,
         "sevennet": 142.296,
         "orb": 190.195,
         "fairchem": 151.367,
