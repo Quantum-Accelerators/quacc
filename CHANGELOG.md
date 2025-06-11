@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0]
+
+### Added
+
+- Added support for TensorNet
+
+### Changed
+
+- Default MLP calculators have been updated across the board: M3GNET and CHGNet now default to the MatPES PBE models, CHGNet relies on matgl, and mace-mp-0 has been renamed mace-mp to get the default model.
+
 ## [0.15.5]
 
 ### Changed
