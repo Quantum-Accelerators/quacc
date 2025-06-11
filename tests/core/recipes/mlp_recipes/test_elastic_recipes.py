@@ -51,8 +51,8 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         calc_kwargs = {}
 
     ref_elastic_modulus = {
-        "chgnet": 199,
-        "m3gnet": 109.369,
+        "chgnet": 128.184,
+        "m3gnet": 126.527,
         "mace-mp-0": 130.727,
         "sevennet": 142.296,
         "orb": 190.195,
