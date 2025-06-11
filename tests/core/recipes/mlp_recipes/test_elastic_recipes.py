@@ -12,13 +12,10 @@ from importlib.util import find_spec
 
 methods = []
 if has_mace := find_spec("mace"):
-    methods.append("mace-mp-0")
+    methods.append("mace-mp")
 
 if has_matgl := find_spec("matgl"):
-    methods.append("m3gnet")
-
-if has_chgnet := find_spec("chgnet"):
-    methods.append("chgnet")
+    methods.extend(["m3gnet", "chgnet", "tensornet"])
 
 if has_sevennet := find_spec("sevenn"):
     methods.append("sevennet")
