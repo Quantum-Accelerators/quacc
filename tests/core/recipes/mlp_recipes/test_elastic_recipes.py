@@ -53,6 +53,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
     ref_elastic_modulus = {
         "chgnet": 128.184,
         "m3gnet": 126.527,
+        "tensornet": 5.0,
         "mace-mp-0": 130.727,
         "sevennet": 142.296,
         "orb": 190.195,
