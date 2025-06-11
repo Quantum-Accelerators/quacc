@@ -6,6 +6,7 @@ from functools import lru_cache, wraps
 from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
+
 from ase.units import GPa as _GPa_to_eV_per_A3
 from monty.dev import requires
 
@@ -100,7 +101,7 @@ def pick_calculator(
 
         if "stress_weight" not in calc_kwargs:
             calc_kwargs["stress_weight"] = _GPa_to_eV_per_A3
-    
+
         calc = PESCalculator(potential=model, **calc_kwargs)
 
     elif method.lower() == "mace-mp":
