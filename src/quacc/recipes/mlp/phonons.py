@@ -60,7 +60,7 @@ def phonon_flow(
     !!! Note
 
         Phonon calculations rely on a structure that is tightly converged.
-        We suggest running a pre-relaxation with `opt_params: {"fmax": 1e-3}`
+        We suggest running a pre-relaxation with `opt_params = {"fmax": 1e-3}`
         or tighter before running this workflow.
 
     Parameters
