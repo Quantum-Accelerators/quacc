@@ -33,7 +33,9 @@ if TYPE_CHECKING:
 )
 def phonon_flow(
     atoms: Atoms,
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
+    method: Literal[
+        "mace-mp-0", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"
+    ],
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -60,7 +62,7 @@ def phonon_flow(
     !!! Note
 
         Phonon calculations rely on a structure that is tightly converged.
-        We suggest running a pre-relaxation with `opt_params: {"fmax": 1e-3}`
+        We suggest running a pre-relaxation with `opt_params = {"fmax": 1e-3}`
         or tighter before running this workflow.
 
     Parameters
