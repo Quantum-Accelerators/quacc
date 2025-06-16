@@ -5,7 +5,7 @@ frozendict==2.4.6
 maggma==0.71.5
 monty==2025.3.3
 psutil==6.1.1
-pydantic==2.11.5
+pydantic==2.11.7
 pydantic-settings==2.9.1
 pymatgen==2025.5.28
 ruamel.yaml==0.18.14
