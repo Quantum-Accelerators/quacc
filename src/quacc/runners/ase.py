@@ -250,7 +250,6 @@ class Runner(BaseRunner):
             with traj, optimizer(self.atoms, **merged_optimizer_kwargs) as dyn:
                 if issubclass(optimizer, SciPyOptimizer):
                     # https://gitlab.com/ase/ase/-/issues/1475
-                    # https://gitlab.com/ase/ase/-/issues/1497
                     dyn.run(**full_run_kwargs)
                 else:
                     for i, _ in enumerate(dyn.irun(**full_run_kwargs)):
