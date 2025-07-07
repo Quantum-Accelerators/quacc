@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from rich import print as rich_print
 from typer import Exit, Option, Typer
@@ -39,7 +39,7 @@ def callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: Optional[bool] = Option(  # noqa: UP007
+    version: bool | None = Option(
         None,
         "--version",
         "-v",
