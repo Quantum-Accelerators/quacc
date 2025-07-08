@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from functools import wraps
 from pathlib import Path
 from shutil import which
-from typing import TYPE_CHECKING, Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal, Union
 
 import psutil
 from monty.serialization import loadfn
@@ -58,9 +58,9 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
 
-    WORKFLOW_ENGINE: Optional[
-        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"]
-    ] = Field(None, description=("The workflow manager to use, if any."))
+    WORKFLOW_ENGINE: (
+        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"] | None
+    ) = Field(None, description=("The workflow manager to use, if any."))
 
     # ---------------------------
     # General Settings
@@ -75,7 +75,7 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    SCRATCH_DIR: Optional[Path] = Field(
+    SCRATCH_DIR: Path | None = Field(
         None,
         description=(
             """
@@ -183,7 +183,7 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    ESPRESSO_PSEUDO: Optional[Path] = Field(
+    ESPRESSO_PSEUDO: Path | None = Field(
         None, description=("Path to a pseudopotential library for espresso.")
     )
     ESPRESSO_PRESET_DIR: Path = Field(
@@ -209,7 +209,7 @@ class QuaccSettings(BaseSettings):
     # GULP Settings
     # ---------------------------
     GULP_CMD: str = Field("gulp", description=("Path to the GULP executable."))
-    GULP_LIB: Optional[Path] = Field(
+    GULP_LIB: Path | None = Field(
         os.environ.get("GULP_LIB"),
         description=(
             "Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."
@@ -237,11 +237,11 @@ class QuaccSettings(BaseSettings):
     VASP_GAMMA_CMD: str = Field(
         "vasp_gam", description="Command to run the gamma-point only version of VASP."
     )
-    VASP_PP_PATH: Optional[Path] = Field(
+    VASP_PP_PATH: Path | None = Field(
         os.environ.get("VASP_PP_PATH"),
         description="Path to the VASP pseudopotential library. Must contain the directories `potpaw_PBE` and `potpaw` for PBE and LDA pseudopotentials, respectively. If ASE's VASP_PP_PATH is set, you do not need to set this.",
     )
-    VASP_VDW: Optional[Path] = Field(
+    VASP_VDW: Path | None = Field(
         os.environ.get("ASE_VASP_VDW"),
         description="Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals. If ASE's ASE_VASP_VDW is set, you do not need to set this.",
     )
@@ -343,7 +343,7 @@ class QuaccSettings(BaseSettings):
         ["VasprunXMLValidator", "VaspFilesValidator"],
         description="Validators for Custodian",
     )
-    VASP_CUSTODIAN_WALL_TIME: Optional[int] = Field(
+    VASP_CUSTODIAN_WALL_TIME: int | None = Field(
         None,
         description=(
             """
@@ -382,7 +382,7 @@ class QuaccSettings(BaseSettings):
     )
 
     # NBO Settings
-    QCHEM_NBO_EXE: Optional[Path] = Field(
+    QCHEM_NBO_EXE: Path | None = Field(
         None, description="Full path to the NBO executable."
     )
 
@@ -399,11 +399,9 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     # Logger Settings
     # ---------------------------
-    LOG_FILENAME: Optional[Path] = Field(
-        None, description="Path to store the log file."
-    )
-    LOG_LEVEL: Optional[Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]] = (
-        Field("INFO", description=("Logger level."))
+    LOG_FILENAME: Path | None = Field(None, description="Path to store the log file.")
+    LOG_LEVEL: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] | None = Field(
+        "INFO", description=("Logger level.")
     )
 
     # --8<-- [end:settings]
@@ -421,7 +419,7 @@ class QuaccSettings(BaseSettings):
         "VASP_VDW",
     )
     @classmethod
-    def expand_paths(cls, v: Optional[Path]) -> Optional[Path]:
+    def expand_paths(cls, v: Path | None) -> Path | None:
         """Expand ~/ and $ENV_VARS in paths."""
         if v:
             v = Path(os.path.expandvars(v)).expanduser()
@@ -429,7 +427,7 @@ class QuaccSettings(BaseSettings):
 
     @field_validator("RESULTS_DIR", "SCRATCH_DIR")
     @classmethod
-    def make_directories(cls, v: Optional[Path]) -> Optional[Path]:
+    def make_directories(cls, v: Path | None) -> Path | None:
         """Make directories."""
         if v:
             v.mkdir(exist_ok=True, parents=True)

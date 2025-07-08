@@ -159,11 +159,7 @@ class Summarize:
         )
 
         # Get trajectory
-        if trajectory:
-            atoms_trajectory = trajectory
-        else:
-            atoms_trajectory = read(dyn.trajectory.filename, index=":")  # type: ignore[union-attr]
-
+        atoms_trajectory = trajectory or read(dyn.trajectory.filename, index=":")
         trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
 
         initial_atoms = atoms_trajectory[0]
@@ -268,10 +264,7 @@ class Summarize:
         """
 
         # Get trajectory
-        if trajectory:
-            atoms_trajectory = trajectory
-        else:
-            atoms_trajectory = read(dyn.trajectory.filename, index=":")  # type: ignore[union-attr]
+        atoms_trajectory = trajectory or read(dyn.trajectory.filename, index=":")
 
         if n_iter_return == -1:
             atoms_trajectory = atoms_trajectory[-(n_images):]
