@@ -164,6 +164,7 @@ lint.ignore = [
   "PERF203",  # try-except-in-loop
   "RET505", # Unnecessary `elif` after `return`
   "PTH208", # os-listdir
+  "PLC0415", # `import` should be at the top-level of a file
 ]
 src = ["src"]
 lint.pydocstyle.convention = "numpy"
