@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.17.0]
+
+### Added
+
+- Added `RosenFastSetPBE.yaml`, `RosenFastSetR2SCAN.yaml`, and `setups_rosen.yaml`
+- The user will now be warned if they are likely to have Pulay stresses due to the use of `Li_sv` and `ENCUT` < 650
+
+### Changed
+
+- Renamed `magmoms_base.yaml` to `magmoms_high.yaml`
+- Merged the identical `setups_54.yaml` and `setups_64.yaml` files into a single `setups_recommended.yaml`
+- The RosenSets will now use `Eu_3` and `Yb_3` instead of `Eu_2` and `Yb_2`
+
 ## [0.16.0]
 
 ### Added
