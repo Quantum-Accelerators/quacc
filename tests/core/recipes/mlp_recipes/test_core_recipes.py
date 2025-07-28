@@ -15,13 +15,13 @@ methods = []
 if has_mace := find_spec("mace"):
     methods.append("mace-mp")
 
-if has_matgl := find_spec("matgl"):
+if find_spec("matgl"):
     methods.extend(["m3gnet", "chgnet", "tensornet"])
 
 if has_sevennet := find_spec("sevenn"):
     methods.append("sevennet")
 
-if has_orb := find_spec("orb_models"):
+if find_spec("orb_models"):
     methods.append("orb")
 
 if find_spec("fairchem"):

@@ -1,11 +1,14 @@
-# Last modified: 10-07-2023
+# Last modified: 07-28-2025
 inputs:
   algo: fast
   pmg_kpts:
     kppvol: 100
   ediff: 1.0e-5
+  ediffg: -0.02
   efermi: midgap
   encut: 520
+  gga_compat: false
+  ibrion: 2
   ismear: 0
   ivdw: 12
   lasph: true
@@ -15,6 +18,7 @@ inputs:
   lwave: false
   nelm: 150
   nelmin: 3
+  nsw: 0
   prec: accurate
   sigma: 0.05
   xc: pbe

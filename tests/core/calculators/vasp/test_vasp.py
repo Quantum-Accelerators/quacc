@@ -7,7 +7,6 @@ from pathlib import Path
 from shutil import which
 
 import numpy as np
-import psutil
 import pytest
 from ase.atoms import Atoms
 from ase.build import bulk
@@ -26,8 +25,6 @@ FILE_DIR = Path(__file__).parent
 PSEUDO_DIR = FILE_DIR / "fake_pseudos"
 LOGGER = getLogger(__name__)
 LOGGER.propagate = True
-
-ncores = psutil.cpu_count(logical=False) or 1
 
 
 @pytest.fixture
@@ -128,7 +125,7 @@ def test_rosen_preset1():
         "lorbit": 11,
         "lreal": False,
         "lwave": False,
-        "ncore": int(np.sqrt(ncores)),
+        "ncore": calc.parameters["ncore"],
         "nelm": 150,
         "nelmin": 3,
         "nsw": 100,
@@ -261,7 +258,7 @@ def test_rosen_preset2():
         "lreal": False,
         "lwave": False,
         "metagga": "R2SCAN",
-        "ncore": int(np.sqrt(ncores)),
+        "ncore": calc.parameters["ncore"],
         "nelm": 150,
         "nelmin": 3,
         "nsw": 100,
