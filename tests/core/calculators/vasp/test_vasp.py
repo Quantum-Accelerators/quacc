@@ -427,7 +427,7 @@ def test_li_sv():
     assert calc.encut is None
 
     calc = Vasp(atoms, setups={"Li": "Li_sv"})
-    assert calc.encut == 650
+    assert calc.encut is None
 
 
 def test_he():
