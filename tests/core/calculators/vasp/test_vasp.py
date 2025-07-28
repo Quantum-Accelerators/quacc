@@ -1018,7 +1018,7 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == "_sv"
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, setups="setups_pbe54.yaml", preset="BulkSet")
+    calc = Vasp(atoms, setups="setups_recommended.yaml", preset="BulkSet")
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
