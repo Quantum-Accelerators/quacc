@@ -408,25 +408,6 @@ def test_lmaxmix():
     assert calc.int_params["lmaxmix"] == 6
 
 
-def test_li_sv():
-    atoms = bulk("Cu") * (2, 2, 2)
-    atoms[0].symbol = "Li"
-    calc = Vasp(atoms, encut=1000, setups={"Li": "Li_sv"})
-    assert calc.encut == 1000
-
-    calc = Vasp(atoms, encut=400, setups={"Li": "Li_sv"})
-    assert calc.encut == 400
-
-    calc = Vasp(atoms, setups={"Li": "Li_sv"})
-    assert calc.encut == 650
-
-    calc = Vasp(atoms, setups={"Li": "_sv"})
-    assert calc.encut == 650
-
-    calc = Vasp(atoms, setups={"Li": ""})
-    assert calc.encut is None
-
-
 def test_autodipole():
     atoms = bulk("Cu")
     com = atoms.get_center_of_mass(scaled=True)

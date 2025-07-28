@@ -229,16 +229,18 @@ def get_param_swaps(
         )
         calc.set(isym=-1)
 
-    if (
-        calc.parameters.get("setups")
-        and isinstance(calc.parameters["setups"], dict)
-        and calc.parameters["setups"].get("Li", "") in ("Li_sv", "_sv")
-        and (calc.encut is None or calc.encut < 500 * 1.3)
+    if calc.int_params["isif"] == 3 and (
+        calc.encut is None
+        or (
+            calc.parameters.get("setups")
+            and isinstance(calc.parameters["setups"], dict)
+            and calc.parameters["setups"].get("Li", "") in ("Li_sv", "_sv")
+            and calc.encut < 500 * 1.3
+        )
     ):
         LOGGER.info(
-            "Recommending ENCUT = 650 to prevent pulay stresses because Li_sv is used."
+            "You have a low ENCUT. To avoid Pulay stresses, make sure ENCUT is 1.3*ENMAX or simply be sure to re-relax your structure."
         )
-        calc.set(encut=650)
 
     if (
         calc.string_params["metagga"]
