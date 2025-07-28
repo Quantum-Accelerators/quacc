@@ -243,7 +243,7 @@ def test_rosen_preset1():
     params2["kpts"] = [10, 10, 10]
     params2.pop("kspacing")
     params2["ediff"] = 1e-5
-    assert calc.parameters == params
+    assert calc.parameters == params2
 
 
 def test_rosen_preset2():
@@ -388,7 +388,7 @@ def test_rosen_preset2():
     params2["kpts"] = [10, 10, 10]
     params2.pop("kspacing")
     params2["ediff"] = 1e-5
-    assert calc.parameters == params
+    assert calc.parameters == params2
 
 
 def test_lmaxmix():
