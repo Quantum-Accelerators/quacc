@@ -105,10 +105,7 @@ def test_presets_mp():
 
 
 def test_rosen_preset1():
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="RosenSetPBE", nsw=100)
-
-    assert calc.parameters == {
+{
         "algo": "all",
         "ediff": 1e-06,
         "ediffg": -0.02,
@@ -237,11 +234,19 @@ def test_rosen_preset1():
         "xc": "pbe",
     }
 
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, preset="RosenSetPBE", nsw=100)
+    assert calc.parameters == params
+
+    calc = Vasp(atoms, preset="RosenFastSetPBE", nsw=100)
+    params2 = params.copy()
+    params2["kpts"] = [10, 10, 10]
+    params2.pop("kspacing")
+    params2["ediff"] = 1e-5
+    assert calc.parameters == params
 
 def test_rosen_preset2():
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="RosenSetR2SCAN", nsw=100)
-    assert calc.parameters == {
+    params = {
         "algo": "all",
         "ediff": 1e-06,
         "ediffg": -0.02,
@@ -373,7 +378,16 @@ def test_rosen_preset2():
         "vdw_s8": 0.6018749,
         "xc": "r2scan",
     }
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, preset="RosenSetR2SCAN", nsw=100)
+    assert calc.parameters == params
 
+    calc = Vasp(atoms, preset="RosenFastSetR2SCAN", nsw=100)
+    params2 = params.copy()
+    params2["kpts"] = [10, 10, 10]
+    params2.pop("kspacing")
+    params2["ediff"] = 1e-5
+    assert calc.parameters == params
 
 def test_lmaxmix():
     atoms = bulk("Cu")
