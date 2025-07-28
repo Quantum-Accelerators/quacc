@@ -245,6 +245,7 @@ def test_rosen_preset1():
     params2["ediff"] = 1e-5
     assert calc.parameters == params
 
+
 def test_rosen_preset2():
     params = {
         "algo": "all",
@@ -388,6 +389,7 @@ def test_rosen_preset2():
     params2.pop("kspacing")
     params2["ediff"] = 1e-5
     assert calc.parameters == params
+
 
 def test_lmaxmix():
     atoms = bulk("Cu")
