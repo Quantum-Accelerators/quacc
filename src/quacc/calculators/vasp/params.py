@@ -238,9 +238,10 @@ def get_param_swaps(
             and calc.encut < 500 * 1.3
         )
     ):
-        LOGGER.warning(
-            "You have a low ENCUT. To avoid Pulay stresses, make sure ENCUT is 1.3*ENMAX or simply be sure to re-relax your structure."
+        LOGGER.info(
+            "Recommending ENCUT = 650 to avoid Pulay stresses. Alternatively, be sure to re-relax your structure with your current ENCUT."
         )
+        calc.set(encut=650)
 
     if (
         calc.string_params["metagga"]
