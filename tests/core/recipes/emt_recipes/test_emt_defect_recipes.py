@@ -3,6 +3,7 @@ from __future__ import annotations
 import pytest
 
 pytest.importorskip("pymatgen.analysis.defects")
+pytest.importorskip("shakenbreak")
 
 from ase.build import bulk
 
