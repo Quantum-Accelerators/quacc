@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 from copy import deepcopy
-from logging import INFO, getLogger
+from logging import INFO, WARNING, getLogger
 from pathlib import Path
 from shutil import which
 
@@ -408,39 +408,91 @@ def test_lmaxmix():
     assert calc.int_params["lmaxmix"] == 6
 
 
-def test_li_sv():
+def test_li_sv(caplog):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].symbol = "Li"
-    calc = Vasp(atoms, isif=3, nsw=2, encut=1000, setups={"Li": "Li_sv"})
-    assert calc.encut == 1000
-
-    calc = Vasp(atoms, isif=3, nsw=2, encut=400, setups={"Li": "Li_sv"})
-    assert calc.encut == 400
-
-    calc = Vasp(atoms, isif=3, nsw=2, setups={"Li": "Li_sv"})
-    assert calc.encut == 650
-
-    calc = Vasp(atoms, isif=3, nsw=2, setups={"Li": "_sv"})
-    assert calc.encut == 650
-
-    calc = Vasp(atoms, isif=3, nsw=2, setups={"Li": ""})
-    assert calc.encut is None
-
-    calc = Vasp(atoms, setups={"Li": "Li_sv"})
-    assert calc.encut is None
+    with caplog.at_level(WARNING):
+        Vasp(atoms, isif=3, nsw=2, encut=1000, setups={"Li": "Li_sv"})
+    assert "Pulay" not in caplog.text
 
 
-def test_he():
+def test_li_sv2(caplog):
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].symbol = "Li"
+    with caplog.at_level(WARNING):
+        Vasp(atoms, isif=3, nsw=2, encut=400, setups={"Li": "Li_sv"})
+    assert "Pulay" in caplog.text
+
+
+def test_li_sv3(caplog):
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].symbol = "Li"
+    with caplog.at_level(WARNING):
+        Vasp(atoms, isif=3, nsw=2, setups={"Li": "Li_sv"})
+    assert "Pulay" in caplog.text
+
+
+def test_li_sv4(caplog):
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].symbol = "Li"
+    with caplog.at_level(WARNING):
+        Vasp(atoms, isif=3, nsw=2, preset="BulkSet")
+    assert "Pulay" in caplog.text
+
+
+def test_li_sv5(caplog):
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].symbol = "Li"
+    with caplog.at_level(WARNING):
+        Vasp(atoms, isif=3, nsw=2, setups={"Li": ""})
+    assert "Pulay" in caplog.text
+
+
+def test_he(caplog):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].symbol = "He"
-    calc = Vasp(atoms, isif=3, nsw=2, encut=1000)
-    assert calc.encut == 1000
+    with caplog.at_level(WARNING):
+        Vasp(atoms, isif=3, nsw=2, encut=1000)
+    assert "Pulay" not in caplog.text
 
-    calc = Vasp(atoms, isif=3, nsw=2, encut=400)
-    assert calc.encut == 400
 
-    calc = Vasp(atoms, isif=3, nsw=2)
-    assert calc.encut == 625
+def test_he2(caplog):
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].symbol = "He"
+    with caplog.at_level(WARNING):
+        Vasp(atoms, isif=3, nsw=2, encut=400)
+    assert "Pulay" in caplog.text
+
+
+def test_he3(caplog):
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].symbol = "He"
+    with caplog.at_level(WARNING):
+        Vasp(atoms, isif=3, nsw=2)
+    assert "Pulay" in caplog.text
+
+
+def test_no_encut(caplog):
+    atoms = bulk("Cu")
+    with caplog.at_level(WARNING):
+        Vasp(atoms)
+    assert "Pulay" not in caplog.text
+
+
+def test_no_encut2(caplog):
+    atoms = bulk("Cu")
+
+    with caplog.at_level(WARNING):
+        Vasp(atoms, isif=3, nsw=2)
+    assert "Pulay" in caplog.text
+
+
+def test_no_encut3(caplog):
+    atoms = bulk("Cu")
+
+    with caplog.at_level(WARNING):
+        Vasp(atoms, isif=3, nsw=2, encut=30000)
+    assert "Pulay" not in caplog.text
 
 
 def test_autodipole():
