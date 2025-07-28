@@ -105,7 +105,7 @@ def test_presets_mp():
 
 
 def test_rosen_preset1():
-{
+    params = {
         "algo": "all",
         "ediff": 1e-06,
         "ediffg": -0.02,
