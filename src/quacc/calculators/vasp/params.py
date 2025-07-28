@@ -230,6 +230,17 @@ def get_param_swaps(
         calc.set(isym=-1)
 
     if (
+        calc.parameters.get("setups")
+        and isinstance(calc.parameters["setups"], dict)
+        and calc.parameters["setups"].get("Li", "") in ("Li_sv", "_sv")
+        and (calc.encut is None or calc.encut < 500 * 1.3)
+    ):
+        LOGGER.info(
+            "Recommending ENCUT = 650 to prevent pulay stresses because Li_sv is used."
+        )
+        calc.set(encut=650)
+
+    if (
         calc.string_params["metagga"]
         and calc.string_params["metagga"].lower() == "r2scan"
         and calc.int_params["ivdw"] == 13

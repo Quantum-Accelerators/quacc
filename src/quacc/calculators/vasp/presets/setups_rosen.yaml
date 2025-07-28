@@ -3,6 +3,5 @@
 inputs:
   setups:
     Eu: Eu_3
-    Li: Li
     Yb: Yb_3
 parent_setups: setups_recommended
