@@ -1,0 +1,8 @@
+# Rosen-recommended PAW PBE potentials
+# Last modified: 07-28-2025
+inputs:
+  setups:
+    Eu: Eu_3
+    Li: Li
+    Yb: Yb_3
+parent_setups: setups_recommended

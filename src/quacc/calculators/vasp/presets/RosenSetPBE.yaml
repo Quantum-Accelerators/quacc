@@ -20,5 +20,5 @@ inputs:
   prec: accurate
   sigma: 0.05
   xc: pbe
-parent_magmoms: magmoms_base
-parent_setups: setups_pbe64
+parent_magmoms: magmoms_high
+parent_setups: setups_recommended
