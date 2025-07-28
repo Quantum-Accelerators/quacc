@@ -102,10 +102,7 @@ def test_presets_mp():
 
 
 def test_rosen_preset1():
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="RosenSetPBE", nsw=100)
-
-    assert calc.parameters == {
+    params = {
         "algo": "all",
         "ediff": 1e-06,
         "ediffg": -0.02,
@@ -125,7 +122,6 @@ def test_rosen_preset1():
         "lorbit": 11,
         "lreal": False,
         "lwave": False,
-        "ncore": calc.parameters["ncore"],
         "nelm": 150,
         "nelmin": 3,
         "nsw": 100,
@@ -234,11 +230,24 @@ def test_rosen_preset1():
         "xc": "pbe",
     }
 
+    atoms = bulk("Cu")
+
+    calc = Vasp(atoms, preset="RosenSetPBE", nsw=100)
+    calc.parameters.pop("ncore")
+    assert calc.parameters == params
+
+    calc = Vasp(atoms, preset="RosenFastSetPBE", nsw=100)
+    calc.parameters.pop("ncore")
+    params2 = deepcopy(params)
+    params2.pop("kspacing")
+    params2["kpts"] = [12, 12, 12]
+    params2["gamma"] = True
+    params2["ediff"] = 1e-5
+    assert calc.parameters == params2
+
 
 def test_rosen_preset2():
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="RosenSetR2SCAN", nsw=100)
-    assert calc.parameters == {
+    params = {
         "algo": "all",
         "ediff": 1e-06,
         "ediffg": -0.02,
@@ -258,7 +267,6 @@ def test_rosen_preset2():
         "lreal": False,
         "lwave": False,
         "metagga": "R2SCAN",
-        "ncore": calc.parameters["ncore"],
         "nelm": 150,
         "nelmin": 3,
         "nsw": 100,
@@ -370,6 +378,19 @@ def test_rosen_preset2():
         "vdw_s8": 0.6018749,
         "xc": "r2scan",
     }
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, preset="RosenSetR2SCAN", nsw=100)
+    calc.parameters.pop("ncore")
+    assert calc.parameters == params
+
+    calc = Vasp(atoms, preset="RosenFastSetR2SCAN", nsw=100)
+    calc.parameters.pop("ncore")
+    params2 = deepcopy(params)
+    params2.pop("kspacing")
+    params2["kpts"] = [12, 12, 12]
+    params2["gamma"] = True
+    params2["ediff"] = 1e-5
+    assert calc.parameters == params2
 
 
 def test_lmaxmix():
