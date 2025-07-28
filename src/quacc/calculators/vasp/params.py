@@ -238,7 +238,7 @@ def get_param_swaps(
             and calc.encut < 500 * 1.3
         )
     ):
-        LOGGER.info(
+        LOGGER.warning(
             "You have a low ENCUT. To avoid Pulay stresses, make sure ENCUT is 1.3*ENMAX or simply be sure to re-relax your structure."
         )
 
