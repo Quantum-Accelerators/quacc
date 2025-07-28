@@ -411,10 +411,10 @@ def test_lmaxmix():
 def test_li_sv():
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].symbol = "Li"
-    calc = Vasp(atoms, isif=3, encut=1000, setups={"Li": "Li_sv"})
+    calc = Vasp(atoms, isif=3, nsw=2, encut=1000, setups={"Li": "Li_sv"})
     assert calc.encut == 1000
 
-    calc = Vasp(atoms, isif=3, encut=400, setups={"Li": "Li_sv"})
+    calc = Vasp(atoms, isif=3, nsw=2, encut=400, setups={"Li": "Li_sv"})
     assert calc.encut == 400
 
     calc = Vasp(atoms, isif=3, nsw=2, setups={"Li": "Li_sv"})
@@ -428,6 +428,19 @@ def test_li_sv():
 
     calc = Vasp(atoms, setups={"Li": "Li_sv"})
     assert calc.encut == 650
+
+
+def test_he():
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].symbol = "He"
+    calc = Vasp(atoms, isif=3, nsw=2, encut=1000)
+    assert calc.encut == 1000
+
+    calc = Vasp(atoms, isif=3, nsw=2, encut=400)
+    assert calc.encut == 400
+
+    calc = Vasp(atoms, isif=3, nsw=2)
+    assert calc.encut == 625
 
 
 def test_autodipole():
