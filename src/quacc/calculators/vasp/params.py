@@ -229,18 +229,32 @@ def get_param_swaps(
         )
         calc.set(isym=-1)
 
-    if calc.int_params["isif"] == 3 and (
-        calc.encut is None
-        or (
-            calc.parameters.get("setups")
+    if (
+        calc.int_params.get("isif", 2) in (3, 6, 7, 8)
+        and calc.int_params["nsw"]
+        and calc.int_params["nsw"] > 0
+    ):
+        if calc.encut is None:
+            LOGGER.warning(
+                "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT=1.3*max(ENMAX)."
+            )
+        if "He" in input_atoms.get_chemical_symbols() and (
+            calc.encut is None or calc.encut < 478.896 * 1.3
+        ):
+            LOGGER.warning(
+                "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=623."
+            )
+
+        if (
+            "Li" in input_atoms.get_chemical_symbols()
+            and calc.parameters.get("setups")
             and isinstance(calc.parameters["setups"], dict)
             and calc.parameters["setups"].get("Li", "") in ("Li_sv", "_sv")
-            and calc.encut < 500 * 1.3
-        )
-    ):
-        LOGGER.warning(
-            "You have a low ENCUT. To avoid Pulay stresses, make sure ENCUT is 1.3*ENMAX or simply be sure to re-relax your structure."
-        )
+            and (calc.encut is None or calc.encut < 499.034 * 1.3)
+        ):
+            LOGGER.warning(
+                "Be careful of Pulay stresses.  At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=650."
+            )
 
     if (
         calc.string_params["metagga"]
