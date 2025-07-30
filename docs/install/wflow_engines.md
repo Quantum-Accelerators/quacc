@@ -319,7 +319,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         **QAdapter**
 
-        Assuming you plan to use a queuing system for your compute jobs, you will need to make a `my_qadapter.yaml` file. For this, you will need to follow the instructions in the [FireWorks documentation](https://materialsproject.github.io/fireworks/qadapter_programming.html) for your specific job scheduling system. An example `my_qadapter.yaml` file is shown below for Slurm.
+        Assuming you plan to use a queuing system for your compute jobs, you will need to make a `my_qadapter.yaml` file. For this, you will need to follow the instructions in the [FireWorks documentation](https://materialsproject.github.io/fireworks/qadapter_programming.html) for your specific job scheduling system. An example `my_qadapter.yaml` file is shown below for Slurm, assuming that you have a `cms` Conda environment.
 
         ```yaml title="my_qadapter.yaml"
         _fw_name: CommonAdapter
@@ -331,6 +331,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         job_name: quacc_firework
         qos: regular
         pre_rocket: |
+                    conda activate cms
                     export QUACC_WORKFLOW_ENGINE=jobflow
                     export QUACC_CREATE_UNIQUE_DIR=False
         ```
