@@ -163,15 +163,17 @@ If you haven't done so already:
 
 === "Jobflow"
 
-    On both the local and remote machines:
-
     === "Jobflow Remote"
+
+        On both the local and remote machines:
 
         ```bash
         pip install quacc[jobflow]
         ```
 
     === "Fireworks"
+
+        On both the remote machine:
 
         ```bash
         pip install quacc[jobflow] fireworks
@@ -630,13 +632,20 @@ If you haven't done so already:
 
         **Dispatching Calculations**
 
-        With a workflow added to your launch pad, on the desired machine of choice, you can run `qlaunch rapidfire --nlaunches <N>` (where `<N>` is the number of jobs to submit) in the command line to submit your workflows to the job scheduler. Running `qlaunch rapidfire -m <N>` will ensure that `<N>` jobs are always in the queue or running. To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
-
-        By default, `qlaunch` will launch compute jobs that each poll for a single FireWork to run. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
+        With a workflow added to your launch pad, on the login node of the desired machine of choice, you can "launch fireworks" (i.e. submit jobs to the queue) via several ways:
+        - qlaunch rapidfire --nlaunches <N> to submit <N> jobs to the job scheduler.
+        - qlaunch rapidfire -m <N> to submit enough jobs such that you only have a maximum of <N> total jobs in the queue.
+        - qlaunch rapidfire -m <N> --nlaunches infinite to have this this run as a light-weight background process that continually ensures you have a maximum of <N> total jobs in the queue.
+        
+        To modify the order in which jobs are run, a priority can be set via lpad set_priority <priority> -i <FWID> where <priority> is a number.
+        
+        By default, `qlaunch` will launch Slurm jobs that each poll for a single FireWork to run. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
 
         **Monitoring the Launchpad**
 
-        The easiest way to monitor the state of your launched FireWorks and workflows is through the GUI, which can be viewed with `lpad webgui`. To get the status of running fireworks from the command line, you can run `lpad get_fws -s RUNNING`. Other statuses can also be provided as well as individual FireWorks IDs.
+        The easiest way to monitor the state of your launched FireWorks and workflows is through the GUI, which can be viewed with `lpad webgui`. If you are using a NERSC machine, follow the instructions in the [NERSC documentation](https://docs.nersc.gov/jobs/workflow/fireworks/#display-the-fireworks-dashboard) for accessing the GUI.
+        
+        To get the status of running fireworks from the command line, you can run `lpad get_fws -s RUNNING`. Other statuses can also be provided as well as individual FireWorks IDs.
 
         To rerun a specific FireWork, one can use the `rerun_fws` command like so: `lpad rerun_fws -i <FWID>` where `<FWID>` is the FireWork ID. Similarly, one can rerun all fizzled jobs via `lpad rerun_fws -s FIZZLED`. More complicated Mongo-style queries can also be carried out. Cancelling a workflow can be done with `lpad delete_wflows -i <FWID>`. Refer to the `lpad -h` help menu for more details.
 
@@ -1025,7 +1034,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
 
         !!! Tip "Job Packing"
 
-            FireWorks allows you to do something called "job packing" (also known as a pilot job model in Parsl or parallel batch mode in Jobflow-Remote) where you can request a big allocation and run many concurrent jobs on that allocation. If you wanted to have each Slurm allocation request 4 nodes and have each VASP job run on one node, you can do that as follows:
+            FireWorks allows you to do something called "job packing" (also known as a pilot job model in Parsl or parallel batch mode in Jobflow-Remote) where you can request a relatively large allocation and run many concurrent jobs on that allocation. If you wanted to have each Slurm allocation request 4 nodes and have each VASP job run on one of those four nodes, you can do that as follows:
 
         ```yaml title="my_qadapter.yaml"
         _fw_name: CommonAdapter
