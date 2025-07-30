@@ -638,11 +638,11 @@ If you haven't done so already:
 
         With a workflow added to your launch pad, on the login node of the desired machine of choice, you can "launch fireworks" (i.e. submit jobs to the queue) via several ways:
 
-        - qlaunch rapidfire --nlaunches <N> to submit <N> jobs to the job scheduler.
-        - qlaunch rapidfire -m <N> to submit enough jobs such that you only have a maximum of <N> total jobs in the queue.
-        - qlaunch rapidfire -m <N> --nlaunches infinite to have this this run as a light-weight background process that continually ensures you have a maximum of <N> total jobs in the queue.
+        - `qlaunch rapidfire --nlaunches <N>` to submit <N> jobs to the job scheduler.
+        - `qlaunch rapidfire -m <N>` to submit enough jobs such that you only have a maximum of <N> total jobs in the queue.
+        - `qlaunch rapidfire -m <N> --nlaunches infinite` to have this this run as a light-weight background process that continually ensures you have a maximum of <N> total jobs in the queue.
 
-        To modify the order in which jobs are run, a priority can be set via lpad set_priority <priority> -i <FWID> where <priority> is a number.
+        To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
 
         By default, `qlaunch` will launch Slurm jobs that each poll for a single FireWork to run. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
 
