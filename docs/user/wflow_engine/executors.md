@@ -652,7 +652,7 @@ If you haven't done so already:
 
 Here we will run a sample VASP recipe that will highlight the use of a more complicated MPI-based configuration. This example can only be run if you are a licensed VASP user, but the same fundamental principles apply to many other DFT codes with recipes in quacc.
 
-First, prepare your `QUACC_VASP_PP_PATH` environment variable in the `~/.bashrc` of your remote machine as described in the [Calculator Setup guide](../../install/codes.md). When you're done, follow the steps below.
+Once you have ensured that you can run VASP with quacc by following the [Calculator Setup guide](../../install/codes.md), follow the steps below.
 
 === "Covalent"
 
