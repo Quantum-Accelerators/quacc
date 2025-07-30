@@ -1060,3 +1060,5 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
                         export QUACC_WORKFLOW_ENGINE=jobflow
                         export QUACC_CREATE_UNIQUE_DIR=False
             ```
+
+            Then you can do `rlaunch multi 4` to launch 4 jobs across 4 nodes for 1 job/node. Maybe. Please test and report back.
