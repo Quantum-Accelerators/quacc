@@ -64,6 +64,8 @@ In the previous examples, we have been running calculations on the local machine
         from fireworks import LaunchPad
         from jobflow.managers.fireworks import job_to_firework
 
+        # make your Jobflow `job` here
+
         fw = job_to_firework(job)
         lpad = LaunchPad.auto_load()
         lpad.add_wf(fw)
@@ -76,6 +78,8 @@ In the previous examples, we have been running calculations on the local machine
         ```python
         from fireworks import LaunchPad
         from jobflow.managers.fireworks import flow_to_workflow
+
+        # make your Jobflow `flow` here
 
         wf = flow_to_workflow(flow)
         lpad = LaunchPad.auto_load()
