@@ -637,18 +637,19 @@ If you haven't done so already:
         **Dispatching Calculations**
 
         With a workflow added to your launch pad, on the login node of the desired machine of choice, you can "launch fireworks" (i.e. submit jobs to the queue) via several ways:
+
         - qlaunch rapidfire --nlaunches <N> to submit <N> jobs to the job scheduler.
         - qlaunch rapidfire -m <N> to submit enough jobs such that you only have a maximum of <N> total jobs in the queue.
         - qlaunch rapidfire -m <N> --nlaunches infinite to have this this run as a light-weight background process that continually ensures you have a maximum of <N> total jobs in the queue.
-        
+
         To modify the order in which jobs are run, a priority can be set via lpad set_priority <priority> -i <FWID> where <priority> is a number.
-        
+
         By default, `qlaunch` will launch Slurm jobs that each poll for a single FireWork to run. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
 
         **Monitoring the Launchpad**
 
         The easiest way to monitor the state of your launched FireWorks and workflows is through the GUI, which can be viewed with `lpad webgui`. If you are using a NERSC machine, follow the instructions in the [NERSC documentation](https://docs.nersc.gov/jobs/workflow/fireworks/#display-the-fireworks-dashboard) for accessing the GUI.
-        
+
         To get the status of running fireworks from the command line, you can run `lpad get_fws -s RUNNING`. Other statuses can also be provided as well as individual FireWorks IDs.
 
         To rerun a specific FireWork, one can use the `rerun_fws` command like so: `lpad rerun_fws -i <FWID>` where `<FWID>` is the FireWork ID. Similarly, one can rerun all fizzled jobs via `lpad rerun_fws -s FIZZLED`. More complicated Mongo-style queries can also be carried out. Cancelling a workflow can be done with `lpad delete_wflows -i <FWID>`. Refer to the `lpad -h` help menu for more details.
@@ -1003,7 +1004,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
                     export OMP_NUM_THREADS=8
                     export OMP_PLACES=threads
                     export OMP_PROC_BIND=spread
-                    export QUACC_VASP_PARALLEL_CMD="srun -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
+                    export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
                     export QUACC_WORKFLOW_ENGINE=jobflow
                     export QUACC_CREATE_UNIQUE_DIR=False
         ```
@@ -1039,7 +1040,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
         ??? Tip "Job Packing"
 
             FireWorks allows you to do something called "job packing" (also known as a pilot job model in Parsl or parallel batch mode in Jobflow-Remote) where you can request a relatively large allocation and run many concurrent jobs on that allocation. If you wanted to have each Slurm allocation request 4 nodes and have each VASP job run on one of those four nodes, you can do that as follows:
-    
+
             ```yaml title="my_qadapter.yaml"
             _fw_name: CommonAdapter
             _fw_q_type: SLURM
@@ -1055,7 +1056,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
                         export OMP_NUM_THREADS=8
                         export OMP_PLACES=threads
                         export OMP_PROC_BIND=spread
-                        export QUACC_VASP_PARALLEL_CMD="srun -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
+                        export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
                         export QUACC_WORKFLOW_ENGINE=jobflow
                         export QUACC_CREATE_UNIQUE_DIR=False
             ```
