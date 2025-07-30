@@ -637,6 +637,7 @@ If you haven't done so already:
         **Dispatching Calculations**
 
         With a workflow added to your launch pad, on the login node of the desired machine of choice, you can "launch fireworks" (i.e. submit jobs to the queue) via several ways:
+
         - qlaunch rapidfire --nlaunches <N> to submit <N> jobs to the job scheduler.
         - qlaunch rapidfire -m <N> to submit enough jobs such that you only have a maximum of <N> total jobs in the queue.
         - qlaunch rapidfire -m <N> --nlaunches infinite to have this this run as a light-weight background process that continually ensures you have a maximum of <N> total jobs in the queue.
