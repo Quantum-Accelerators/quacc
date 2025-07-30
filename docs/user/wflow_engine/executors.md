@@ -1036,26 +1036,26 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
         qlaunch rapidfire -m 1
         ```
 
-        !!! Tip "Job Packing"
+        ??? Tip "Job Packing"
 
             FireWorks allows you to do something called "job packing" (also known as a pilot job model in Parsl or parallel batch mode in Jobflow-Remote) where you can request a relatively large allocation and run many concurrent jobs on that allocation. If you wanted to have each Slurm allocation request 4 nodes and have each VASP job run on one of those four nodes, you can do that as follows:
-
-        ```yaml title="my_qadapter.yaml"
-        _fw_name: CommonAdapter
-        _fw_q_type: SLURM
-        rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
-        nodes: 4
-        walltime: 00:30:00
-        account: MySlurmAccountName
-        job_name: quacc_firework
-        qos: debug
-        pre_rocket: |
-                    conda activate cms
-                    module load vasp/6.5.1_gpu
-                    export OMP_NUM_THREADS=8
-                    export OMP_PLACES=threads
-                    export OMP_PROC_BIND=spread
-                    export QUACC_VASP_PARALLEL_CMD="srun -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
-                    export QUACC_WORKFLOW_ENGINE=jobflow
-                    export QUACC_CREATE_UNIQUE_DIR=False
-        ```
+    
+            ```yaml title="my_qadapter.yaml"
+            _fw_name: CommonAdapter
+            _fw_q_type: SLURM
+            rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
+            nodes: 4
+            walltime: 00:30:00
+            account: MySlurmAccountName
+            job_name: quacc_firework
+            qos: debug
+            pre_rocket: |
+                        conda activate cms
+                        module load vasp/6.5.1_gpu
+                        export OMP_NUM_THREADS=8
+                        export OMP_PLACES=threads
+                        export OMP_PROC_BIND=spread
+                        export QUACC_VASP_PARALLEL_CMD="srun -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
+                        export QUACC_WORKFLOW_ENGINE=jobflow
+                        export QUACC_CREATE_UNIQUE_DIR=False
+            ```
