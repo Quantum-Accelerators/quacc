@@ -1003,7 +1003,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
                     export OMP_NUM_THREADS=8
                     export OMP_PLACES=threads
                     export OMP_PROC_BIND=spread
-                    export QUACC_VASP_PARALLEL_CMD="srun -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
+                    export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
                     export QUACC_WORKFLOW_ENGINE=jobflow
                     export QUACC_CREATE_UNIQUE_DIR=False
         ```
@@ -1055,7 +1055,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
                         export OMP_NUM_THREADS=8
                         export OMP_PLACES=threads
                         export OMP_PROC_BIND=spread
-                        export QUACC_VASP_PARALLEL_CMD="srun -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
+                        export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
                         export QUACC_WORKFLOW_ENGINE=jobflow
                         export QUACC_CREATE_UNIQUE_DIR=False
             ```
