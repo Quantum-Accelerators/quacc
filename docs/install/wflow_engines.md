@@ -229,7 +229,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
             collection_name: <collection name>
         ```
 
-        !!! Note "MongoDB Atlas"
+        ??? Note "MongoDB Atlas"
 
             If you are using a URI (as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
 
@@ -302,7 +302,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         wf_user_indices: []
         ```
 
-        !!! Note "MongoDB Atlas"
+        ??? Note "MongoDB Atlas"
 
             If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then you will use the following `my_launchpad.yaml` template instead.
 
