@@ -170,8 +170,8 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         flows_collection: jf_flows
         auxiliary_collection: jf_aux
         exec_config: {}
-        jobstore:
-        docs_store:
+        JOB_STORE:
+          docs_store:
             type: MongoStore
             database: <MongoDB Database Name>
             host: localhost
