@@ -48,7 +48,7 @@ export QUACC_WORKFLOW_ENGINE=None
 
 !!! Warning "Be Careful!"
 
-    If you try to modify environment variables within Python using `os.environ`, make sure you do this before you make any `quacc`-related imports.
+    If you try to modify environment variables within Python using `os.environ`, make sure you do this before you make any `quacc`-related imports. Note that any changes to your environment variables via `os.environ` only happen on the machine where the command is run!
 
 ## Modifying the Global Settings in a Script
 
