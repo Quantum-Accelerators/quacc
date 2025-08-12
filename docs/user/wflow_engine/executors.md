@@ -998,6 +998,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
         account: MySlurmAccountName
         job_name: quacc_firework
         qos: debug
+        constraint: gpu
         pre_rocket: |
                     conda activate cms
                     module load vasp/6.5.1_gpu
@@ -1050,6 +1051,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
             account: MySlurmAccountName
             job_name: quacc_firework
             qos: debug
+            constraint: gpu
             pre_rocket: |
                         conda activate cms
                         module load vasp/6.5.1_gpu
