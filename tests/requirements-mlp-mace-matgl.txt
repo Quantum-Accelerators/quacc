@@ -1,2 +1,2 @@
-mace-torch==0.3.13
+mace-torch==0.3.14
 matgl==1.2.1
