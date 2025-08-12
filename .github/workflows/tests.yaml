@@ -376,7 +376,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install dgl -f https://data.dgl.ai/wheels/torch-2.4/repo.html
+          uv pip install dgl==2.4.0 -f https://data.dgl.ai/wheels/torch-2.4/repo.html
           uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp-mace-matgl.txt "quacc[dev] @ ."
 
       - name: Set coverage core
