@@ -330,6 +330,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         account: <account>
         job_name: quacc_firework
         qos: regular
+        signal: SIGINT@60
         pre_rocket: |
                     conda activate cms
                     export QUACC_WORKFLOW_ENGINE=jobflow
