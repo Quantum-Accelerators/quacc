@@ -1,5 +1,4 @@
 ase==3.26.0
-git+https://github.com/Andrew-S-Rosen/custodian.git@patch-6
 emmet-core==0.84.9
 frozendict==2.4.6
 maggma==0.71.5
@@ -10,3 +9,4 @@ pydantic-settings==2.10.1
 pymatgen==2025.6.14
 ruamel.yaml==0.18.14
 typer==0.15.4
+git+https://github.com/Andrew-S-Rosen/custodian.git@patch-6
