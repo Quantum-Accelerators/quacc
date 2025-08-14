@@ -998,6 +998,8 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
         account: MySlurmAccountName
         job_name: quacc_firework
         qos: debug
+        constraint: gpu
+        signal: SIGINT@60
         pre_rocket: |
                     conda activate cms
                     module load vasp/6.5.1_gpu
@@ -1007,6 +1009,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
                     export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
                     export QUACC_WORKFLOW_ENGINE=jobflow
                     export QUACC_CREATE_UNIQUE_DIR=False
+        post_rocket: null
         ```
 
         From the login node of the remote machine, run the following:
@@ -1039,17 +1042,19 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
 
         ??? Tip "Job Packing"
 
-            FireWorks allows you to do something called "job packing" (also known as a pilot job model in Parsl or parallel batch mode in Jobflow-Remote) where you can request a relatively large allocation and run many concurrent jobs on that allocation. If you wanted to have each Slurm allocation request 4 nodes and have each VASP job run on one of those four nodes, you can do that as follows:
+            FireWorks allows you to do something called "job packing" (also known as a pilot job model in Parsl or parallel batch mode in Jobflow-Remote) where you can request a relatively large allocation and run many concurrent jobs on that allocation. If you wanted to have each Slurm allocation request 5 nodes and have each VASP job run on one of those four nodes, you can do that as follows:
 
             ```yaml title="my_qadapter.yaml"
             _fw_name: CommonAdapter
             _fw_q_type: SLURM
-            rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
-            nodes: 4
+            rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> multi 5 --nlaunches 0
+            nodes: 5
             walltime: 00:30:00
             account: MySlurmAccountName
             job_name: quacc_firework
             qos: debug
+            constraint: gpu
+            signal: SIGINT@60
             pre_rocket: |
                         conda activate cms
                         module load vasp/6.5.1_gpu
@@ -1059,6 +1064,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
                         export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
                         export QUACC_WORKFLOW_ENGINE=jobflow
                         export QUACC_CREATE_UNIQUE_DIR=False
+            post_rocket: null
             ```
 
-            Then you can do `rlaunch multi 4` to launch 4 jobs across 4 nodes for 1 job/node. Maybe. Please test and report back.
+            Then you can do `rlaunch multi 5` to launch 5 jobs across 5 nodes for 1 job/node. Maybe. Please test and report back.
