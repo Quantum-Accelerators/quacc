@@ -253,7 +253,7 @@ def get_param_swaps(
             and (calc.encut is None or calc.encut < 499.034 * 1.3)
         ):
             LOGGER.warning(
-                "Be careful of Pulay stresses.  At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=650."
+                "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=650."
             )
 
     if (

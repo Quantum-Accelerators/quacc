@@ -24,6 +24,7 @@ from quacc.calculators.vasp.params import (
 from quacc.calculators.vasp.vasp_custodian import run_custodian
 from quacc.schemas.prep import set_magmoms
 from quacc.utils.dicts import sort_dict
+from quacc.utils.kpts import kspacing_to_kpts
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -186,22 +187,7 @@ class Vasp(Vasp_):
 
         # Return vanilla ASE command
         if kspacing := self.user_calc_params.get("kspacing"):
-            from pymatgen.core import Structure
-
-            nk = [
-                int(
-                    max(
-                        1,
-                        np.ceil(
-                            Structure.from_ase_atoms(
-                                self.input_atoms
-                            ).lattice.reciprocal_lattice.abc[ik]
-                            / kspacing
-                        ),
-                    )
-                )
-                for ik in range(3)
-            ]
+            nk = kspacing_to_kpts(kspacing, self.input_atoms)
             use_gamma = np.prod(nk) == 1
         elif np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1:
             use_gamma = True
@@ -242,6 +228,11 @@ class Vasp(Vasp_):
             calc_preset_inputs = load_vasp_yaml_calc(preset_path)["inputs"]
         else:
             calc_preset_inputs = {}
+
+        # Prioritize user's setting of k-points over the preset where applicable
+        if self.kwargs.get("kpts") or self.kwargs.get("kspacing") or self.pmg_kpts:
+            for param in ("kpts", "kspacing", "pmg_kpts"):
+                calc_preset_inputs.pop(param, None)
 
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.

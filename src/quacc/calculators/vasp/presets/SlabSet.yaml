@@ -1,9 +1,6 @@
-# Last modified: 08-01-2023
+# Last modified: 08-16-2023
 inputs:
   auto_dipole: true
   pmg_kpts:
     length_densities: [50, 50, 1]
-  encut: 450
-  ivdw: 0
-  xc: rpbe
-parent: BulkSet
+parent: DefaultPBESet

@@ -209,7 +209,7 @@ def test_non_scf_job2(patch_metallic_taskdoc):
     output = non_scf_job(
         atoms,
         MOCKED_DIR / "metallic",
-        preset="BulkSet",
+        preset="DefaultPBESet",
         nbands_factor=1,
         calculate_optics=True,
     )
@@ -235,7 +235,7 @@ def test_non_scf_job2(patch_metallic_taskdoc):
 def test_non_scf_job3(patch_metallic_taskdoc):
     atoms = bulk("Al")
     output = non_scf_job(
-        atoms, MOCKED_DIR / "metallic", preset="BulkSet", kpts_mode="line"
+        atoms, MOCKED_DIR / "metallic", preset="DefaultPBESet", kpts_mode="line"
     )
     assert np.shape(output["parameters"]["kpts"]) == (250, 3)
     assert output["parameters"]["sigma"] == 0.2
@@ -245,7 +245,7 @@ def test_non_scf_job3(patch_metallic_taskdoc):
 def test_non_scf_job4(patch_nonmetallic_taskdoc):
     atoms = bulk("Si")
     output = non_scf_job(
-        atoms, MOCKED_DIR / "nonmetallic", preset="BulkSet", kpts_mode="line"
+        atoms, MOCKED_DIR / "nonmetallic", preset="DefaultPBESet", kpts_mode="line"
     )
     assert np.shape(output["parameters"]["kpts"]) == (193, 3)
     assert output["parameters"]["sigma"] == 0.01
@@ -267,14 +267,14 @@ def test_slab_static_job(patch_metallic_taskdoc):
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] is True
-    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["encut"] == 520
 
     output = slab_static_job(atoms, nelmin=6)
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] is True
-    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
 
     output = slab_static_job(atoms, encut=None)

@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    preset: str | None = "BulkSet",
+    preset: str | None = "DefaultPBESet",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -87,7 +87,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    preset: str | None = "BulkSet",
+    preset: str | None = "DefaultPBESet",
     relax_cell: bool = False,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -143,7 +143,7 @@ def relax_job(
 @flow
 def double_relax_flow(
     atoms: Atoms,
-    preset: str | None = "BulkSet",
+    preset: str | None = "DefaultPBESet",
     relax_cell: bool = True,
     relax1_kwargs: dict[str, Any] | None = None,
     relax2_kwargs: dict[str, Any] | None = None,
@@ -199,7 +199,7 @@ def double_relax_flow(
 @job
 def ase_relax_job(
     atoms: Atoms,
-    preset: str | None = "BulkSet",
+    preset: str | None = "DefaultPBESet",
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
@@ -253,7 +253,7 @@ def ase_relax_job(
 def non_scf_job(
     atoms: Atoms,
     prev_dir: SourceDirectory,
-    preset: str | None = "BulkSet",
+    preset: str | None = "DefaultPBESet",
     nbands_factor: float = 1.2,
     kpts_mode: Literal["uniform", "line"] = "uniform",
     uniform_kppvol: float = 100,
@@ -345,7 +345,7 @@ def non_scf_job(
 @job
 def freq_job(
     atoms: Atoms,
-    preset: str | None = "BulkSet",
+    preset: str | None = "DefaultPBESet",
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
