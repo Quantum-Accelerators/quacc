@@ -9,7 +9,6 @@ inputs:
   ibrion: 2
   ismear: 0
   ivdw: 12
-  kspacing: 0.3
   lasph: true
   lcharg: false
   lorbit: 11
@@ -18,6 +17,8 @@ inputs:
   nelm: 150
   nelmin: 3
   nsw: 0
+  pmg_kpts:
+    kppvol: 100
   prec: accurate
   sigma: 0.05
   xc: pbe

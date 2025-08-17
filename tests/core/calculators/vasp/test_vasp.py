@@ -1125,6 +1125,11 @@ def test_setups():
 
 def test_kpoint_schemes():
     atoms = bulk("Cu")
+    calc = Vasp(atoms, preset="DefaultPBESet")
+    assert calc.kpts == [12, 12, 12]
+    assert calc.float_params.get("kspacing", None) is None
+
+    atoms = bulk("Cu")
     calc = Vasp(atoms, kpts=[1, 1, 1], preset="DefaultPBESet")
     assert calc.kpts == [1, 1, 1]
 
