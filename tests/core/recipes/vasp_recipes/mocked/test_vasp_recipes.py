@@ -26,13 +26,10 @@ from quacc.recipes.vasp.core import (
     static_job,
 )
 from quacc.recipes.vasp.mp import (
-    mp_gga_relax_flow,
-    mp_gga_relax_job,
-    mp_gga_static_job,
-    mp_metagga_prerelax_job,
     mp_metagga_relax_flow,
     mp_metagga_relax_job,
     mp_metagga_static_job,
+    mp_prerelax_job,
 )
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
@@ -454,17 +451,18 @@ def test_qmof(patch_nonmetallic_taskdoc):
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
-def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
+def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
-    output = mp_metagga_prerelax_job(atoms)
+    output = mp_prerelax_job(atoms)
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
-        "algo": "all",
+        "algo": "normal",
         "ediff": 1e-5,
-        "ediffg": -0.05,
+        "ediffg": -0.02,
         "enaug": 1360,
-        "encut": 680,
+        "encut": 680.0,
         "gga": "ps",
+        "gga_compat": False,
         "ibrion": 2,
         "isif": 3,
         "ismear": 0,
@@ -474,9 +472,10 @@ def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
         "lasph": True,
         "lcharg": True,
         "lelf": False,
+        "lmaxmix": 6,
         "lmixtau": True,
         "lorbit": 11,
-        "lreal": "auto",
+        "lreal": False,
         "lvtot": True,
         "lwave": True,
         "magmom": [0.6],
@@ -488,11 +487,11 @@ def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
         "pp": "pbe",
     }
 
-    output = mp_metagga_prerelax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
+    output = mp_prerelax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
-    assert output["parameters"]["ediffg"] == -0.05
-    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680.0
     assert output["parameters"]["kspacing"] == 0.22
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
@@ -501,14 +500,14 @@ def test_mp_metagga_prerelax_job_metallic(patch_metallic_taskdoc):
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
-def test_mp_metagga_prerelax_job_nonmetallic(patch_nonmetallic_taskdoc):
+def test_mp_prerelax_job_nonmetallic(patch_nonmetallic_taskdoc):
     atoms = bulk("Si")
-    output = mp_metagga_prerelax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
+    output = mp_prerelax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
-    assert output["parameters"]["ediffg"] == -0.05
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["kspacing"] == pytest.approx(0.28752476644932956)
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680.0
+    assert output["parameters"]["kspacing"] == pytest.approx(0.22007848304887767)
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
@@ -519,11 +518,12 @@ def test_mp_metagga_prerelax_job_nonmetallic(patch_nonmetallic_taskdoc):
 def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
     ref_parameters = {
-        "algo": "all",
+        "algo": "normal",
         "ediff": 1e-5,
         "ediffg": -0.02,
         "enaug": 1360,
-        "encut": 680,
+        "encut": 680.0,
+        "gga_compat": False,
         "ibrion": 2,
         "isif": 3,
         "ismear": 0,
@@ -533,9 +533,10 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
         "lasph": True,
         "lcharg": True,
         "lelf": False,
+        "lmaxmix": 6,
         "lmixtau": True,
         "lorbit": 11,
-        "lreal": "auto",
+        "lreal": False,
         "lvtot": True,
         "lwave": True,
         "magmom": [0.6],
@@ -573,7 +574,7 @@ def test_mp_metagga_relax_job_nonmetallic(patch_nonmetallic_taskdoc):
     assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
     assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["kspacing"] == pytest.approx(0.28752476644932956)
+    assert output["parameters"]["kspacing"] == pytest.approx(0.22007848304887767)
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
@@ -586,17 +587,20 @@ def test_mp_metagga_static_job(patch_metallic_taskdoc):
     output = mp_metagga_static_job(atoms)
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
-        "algo": "fast",
+        "algo": "normal",
         "ediff": 1e-05,
         "enaug": 1360,
-        "encut": 680,
+        "encut": 680.0,
+        "gga_compat": False,
         "ismear": -5,
         "ispin": 2,
+        "kpar": 1,
         "kspacing": 0.22,
         "laechg": True,
         "lasph": True,
         "lcharg": True,
-        "lelf": False,
+        "lelf": True,
+        "lmaxmix": 6,
         "lmixtau": True,
         "lorbit": 11,
         "lreal": False,
@@ -652,7 +656,7 @@ def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
         assert output["relax2"]["parameters"]["encut"] == 680
         assert output["relax2"]["parameters"]["ismear"] == 0
         assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
-            0.28752476644932956
+            0.22007848304887767
         )
         assert output["relax2"]["parameters"]["pp"] == "pbe"
         assert output["static"]["structure_metadata"]["nsites"] == len(atoms)
@@ -671,182 +675,15 @@ def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
         assert output["relax2"]["parameters"]["encut"] == 680
         assert output["relax2"]["parameters"]["ismear"] == 0
         assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
-            0.28752476644932956
+            0.22007848304887767
         )
         assert output["relax2"]["parameters"]["pp"] == "pbe"
         assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
         assert output["static"]["structure_metadata"]["nsites"] == len(atoms)
         assert output["static"]["parameters"]["ismear"] == -5
         assert output["static"]["parameters"]["nsw"] == 0
-        assert output["static"]["parameters"]["algo"] == "fast"
+        assert output["static"]["parameters"]["algo"] == "normal"
         assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
-
-
-@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
-def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
-    atoms = bulk("Ni") * (2, 1, 1)
-    atoms[0].symbol = "O"
-    del atoms.arrays["initial_magmoms"]
-    output = mp_gga_relax_job(atoms)
-
-    assert output["structure_metadata"]["nsites"] == len(atoms)
-    assert output["parameters"] == {
-        "algo": "fast",
-        "ediff": 0.0001,
-        "encut": 520,
-        "gamma": True,
-        "ibrion": 2,
-        "isif": 3,
-        "ismear": -5,
-        "ispin": 2,
-        "kpts": (5, 11, 11),
-        "lasph": True,
-        "ldau": True,
-        "ldauj": [0, 0],
-        "ldaul": [0, 2],
-        "ldauprint": 1,
-        "ldautype": 2,
-        "ldauu": [0, 6.2],
-        "lmaxmix": 4,
-        "lorbit": 11,
-        "lreal": "auto",
-        "lwave": False,
-        "magmom": [0.6, 5.0],
-        "nelm": 100,
-        "nsw": 99,
-        "prec": "accurate",
-        "sigma": 0.05,
-        "pp": "pbe",
-        "setups": {"O": "", "Ni": "_pv"},
-    }
-    assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
-
-
-@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
-def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
-    atoms = bulk("Ni") * (2, 1, 1)
-    atoms[0].symbol = "O"
-    del atoms.arrays["initial_magmoms"]
-    output = mp_gga_static_job(atoms)
-    assert output["structure_metadata"]["nsites"] == len(atoms)
-    assert output["parameters"] == {
-        "algo": "fast",
-        "ediff": 0.0001,
-        "encut": 520,
-        "gamma": True,
-        "ismear": -5,
-        "ispin": 2,
-        "kpts": (6, 13, 13),
-        "lasph": True,
-        "lcharg": True,
-        "ldau": True,
-        "ldauj": [0, 0],
-        "ldaul": [0, 2],
-        "ldauprint": 1,
-        "ldautype": 2,
-        "ldauu": [0, 6.2],
-        "lmaxmix": 4,
-        "lorbit": 11,
-        "lreal": False,
-        "lwave": False,
-        "magmom": [0.6, 5],
-        "nelm": 100,
-        "nsw": 0,
-        "prec": "accurate",
-        "sigma": 0.05,
-        "pp": "pbe",
-        "setups": {"Ni": "_pv", "O": ""},
-    }
-
-
-@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
-def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
-    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
-        copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
-
-        atoms = bulk("Ni") * (2, 1, 1)
-        atoms[0].symbol = "O"
-        del atoms.arrays["initial_magmoms"]
-        output = mp_gga_relax_flow(atoms)
-        relax_params = {
-            "algo": "fast",
-            "ediff": 0.0001,
-            "encut": 520,
-            "gamma": True,
-            "ibrion": 2,
-            "isif": 3,
-            "ismear": -5,
-            "ispin": 2,
-            "kpts": (5, 11, 11),
-            "lasph": True,
-            "ldau": True,
-            "ldauj": [0, 0],
-            "ldaul": [0, 2],
-            "ldauprint": 1,
-            "ldautype": 2,
-            "ldauu": [0, 6.2],
-            "lmaxmix": 4,
-            "lorbit": 11,
-            "lreal": "auto",
-            "lwave": False,
-            "magmom": [0.6, 5],
-            "nelm": 100,
-            "nsw": 99,
-            "prec": "accurate",
-            "sigma": 0.05,
-            "pp": "pbe",
-            "setups": {"O": "", "Ni": "_pv"},
-        }
-        relax2_params = relax_params.copy()
-        relax2_params["magmom"] = [0.0, 0.0]
-
-        assert output["relax1"]["parameters"] == relax_params
-        assert output["relax2"]["parameters"] == relax2_params
-        assert output["static"]["parameters"] == {
-            "algo": "fast",
-            "ediff": 0.0001,
-            "encut": 520,
-            "gamma": True,
-            "ismear": -5,
-            "ispin": 2,
-            "kpts": (6, 13, 13),
-            "lasph": True,
-            "lcharg": True,
-            "ldau": True,
-            "ldauj": [0, 0],
-            "ldaul": [0, 2],
-            "ldauprint": 1,
-            "ldautype": 2,
-            "ldauu": [0, 6.2],
-            "lmaxmix": 4,
-            "lorbit": 11,
-            "lreal": False,
-            "lwave": False,
-            "magmom": [0.0, 0.0],
-            "nelm": 100,
-            "nsw": 0,
-            "prec": "accurate",
-            "sigma": 0.05,
-            "pp": "pbe",
-            "setups": {"Ni": "_pv", "O": ""},
-        }
-
-
-@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
-def test_mp_relax_flow_custom(tmp_path, patch_nonmetallic_taskdoc):
-    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
-        copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
-
-        atoms = bulk("Ni") * (2, 1, 1)
-        atoms[0].symbol = "O"
-        del atoms.arrays["initial_magmoms"]
-        output = mp_metagga_relax_flow(
-            mp_gga_relax_flow(atoms, job_params={"mp_gga_relax_job": {"nsw": 0}})[
-                "static"
-            ]["atoms"],
-            job_params={"mp_metagga_relax_job": {"nsw": 0}},
-        )
-        assert output["relax2"]["parameters"]["nsw"] == 0
 
 
 def test_freq_job():
