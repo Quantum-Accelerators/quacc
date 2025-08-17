@@ -1,13 +1,10 @@
 from __future__ import annotations
 
-import os
-
-import pytest
-
 from importlib import util
 from pathlib import Path
 
 import numpy as np
+import pytest
 from ase.build import bulk, molecule
 from monty.shutil import copy_r
 
