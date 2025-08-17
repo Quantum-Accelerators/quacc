@@ -268,6 +268,14 @@ def get_param_swaps(
         LOGGER.info("Setting VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN.")
         calc.set(vdw_s6=1.0, vdw_s8=0.60187490, vdw_a1=0.51559235, vdw_a2=5.77342911)
 
+    if (
+        input_atoms.get_chemical_formula() == "O2"
+        and input_atoms.get_initial_magnetic_moments().sum() == 0
+    ):
+        LOGGER.warning(
+            "You are running O2 without magnetic moments, but its ground state should have 2 unpaired electrons!"
+        )
+
     new_parameters = (
         calc.parameters
         if incar_copilot == "aggressive"
