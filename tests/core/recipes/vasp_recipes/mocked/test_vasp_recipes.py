@@ -294,7 +294,7 @@ def test_slab_relax_job(patch_metallic_taskdoc):
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["lwave"] is False
-    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["encut"] == 520
 
     output = slab_relax_job(atoms, nelmin=6)
     assert output["structure_metadata"]["nsites"] == len(atoms)
@@ -302,7 +302,7 @@ def test_slab_relax_job(patch_metallic_taskdoc):
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["lwave"] is False
-    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
 
 
@@ -339,7 +339,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert outputs[3]["structure_metadata"]["nsites"] == 42
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
+    assert [output["parameters"]["encut"] == 520 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
         atoms, job_params={"relax_job": {"preset": "SlabSet", "nelmin": 6}}
@@ -351,7 +351,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert outputs[3]["structure_metadata"]["nsites"] == 42
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
+    assert [output["parameters"]["encut"] == 520 for output in outputs]
 
     ### --------- Test slab_to_ads_flow --------- ###
     atoms = outputs[0]["atoms"]
@@ -376,7 +376,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
+    assert [output["parameters"]["encut"] == 520 for output in outputs]
 
     outputs = slab_to_ads_flow(
         atoms, adsorbate, job_params={"relax_job": {"preset": "SlabSet", "nelmin": 6}}
@@ -385,7 +385,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
+    assert [output["parameters"]["encut"] == 520 for output in outputs]
 
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
