@@ -4,11 +4,6 @@ import os
 
 import pytest
 
-pytestmark = pytest.mark.skipif(
-    os.environ.get("GITHUB_ACTIONS") and os.name == "nt",
-    reason="Skipping this test on Windows in GitHub Actions.",
-)  # this works locally on Windows, but no clue why it fails on GitHub Actions
-
 from importlib import util
 from pathlib import Path
 
