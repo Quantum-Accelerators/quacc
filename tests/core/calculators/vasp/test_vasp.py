@@ -84,7 +84,7 @@ def test_presets_basic(preset):
 def test_presets2():
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    calc = Vasp(atoms, xc="rpbe", preset="SlabSet")
+    calc = Vasp(atoms, xc="rpbe", preset="SlabSetPBE")
     assert calc.xc.lower() == "rpbe"
     assert calc.string_params["algo"] == "normal"
     assert calc.exp_params["ediff"] == 1e-5
@@ -490,22 +490,22 @@ def test_autodipole():
     assert calc.int_params["idipol"] == 2
     assert np.array_equal(calc.list_float_params["dipol"], com)
 
-    calc = Vasp(atoms, preset="SlabSet")
+    calc = Vasp(atoms, preset="SlabSetPBE")
     assert calc.bool_params["ldipol"] is True
     assert calc.int_params["idipol"] == 3
     assert np.array_equal(calc.list_float_params["dipol"], com)
 
-    calc = Vasp(atoms, preset="SlabSet", idipol=2)
+    calc = Vasp(atoms, preset="SlabSetPBE", idipol=2)
     assert calc.bool_params["ldipol"] is True
     assert calc.int_params["idipol"] == 2
     assert np.array_equal(calc.list_float_params["dipol"], com)
 
-    calc = Vasp(atoms, auto_dipole=False, preset="SlabSet", idipol=2)
+    calc = Vasp(atoms, auto_dipole=False, preset="SlabSetPBE", idipol=2)
     assert calc.bool_params["ldipol"] is None
     assert calc.int_params["idipol"] == 2
     assert calc.list_float_params["dipol"] is None
 
-    calc = Vasp(atoms, auto_dipole=False, preset="SlabSet", idipol=2)
+    calc = Vasp(atoms, auto_dipole=False, preset="SlabSetPBE", idipol=2)
     assert calc.bool_params["ldipol"] is None
     assert calc.int_params["idipol"] == 2
     assert calc.list_float_params["dipol"] is None
@@ -577,7 +577,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 
     atoms = bulk("Eu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    calc = Vasp(atoms, preset="SlabSet")
+    calc = Vasp(atoms, preset="SlabSetPBE")
     atoms.calc = calc
     assert atoms.get_initial_magnetic_moments().tolist() == [7.0] * (len(atoms) - 1) + [
         5.0
@@ -1094,7 +1094,7 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="SlabSet")
+    calc = Vasp(atoms, preset="SlabSetPBE")
     assert calc.parameters["setups"]["Ba"] == "_sv"
     assert calc.parameters["setups"]["Cu"] == ""
 
