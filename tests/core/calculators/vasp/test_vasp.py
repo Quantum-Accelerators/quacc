@@ -660,7 +660,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
     calc = Vasp(atoms, preset="DefaultPBESet")
     atoms.calc = calc
-    assert np.all(atoms.get_initial_magnetic_moments() == 1)
+    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
 
     atoms = deepcopy(atoms_nospin)
     calc = Vasp(atoms, preset="DefaultPBESet")
@@ -670,7 +670,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
     calc = Vasp(atoms, preset="DefaultPBESet")
     atoms.calc = calc
-    assert np.all(atoms.get_initial_magnetic_moments() == 1)
+    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="DefaultPBESet", copy_magmoms=False)
@@ -684,7 +684,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = bulk("Mg")
     calc = Vasp(atoms, preset="DefaultPBESet")
     atoms.calc = calc
-    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
+    assert np.all(atoms.get_initial_magnetic_moments() == 0.5)
     atoms.calc.results = {"magmoms": [0.0] * len(atoms)}
     calc = Vasp(atoms, preset="DefaultPBESet")
     atoms.calc = calc
@@ -693,7 +693,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = bulk("Mg")
     calc = Vasp(atoms, preset="DefaultPBESet")
     atoms.calc = calc
-    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
+    assert np.all(atoms.get_initial_magnetic_moments() == 0.5)
     atoms.calc.results = {"magmoms": [-0.01] * len(atoms)}
     calc = Vasp(atoms, preset="DefaultPBESet")
     atoms.calc = calc
@@ -702,7 +702,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = bulk("Mg")
     calc = Vasp(atoms, preset="DefaultPBESet")
     atoms.calc = calc
-    assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
+    assert np.all(atoms.get_initial_magnetic_moments() == 0.5)
     atoms.calc.results = {"magmoms": [-5] * len(atoms)}
     calc = Vasp(atoms, preset="DefaultPBESet")
     atoms.calc = calc
