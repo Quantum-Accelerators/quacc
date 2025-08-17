@@ -456,12 +456,13 @@ def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
     output = mp_prerelax_job(atoms)
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
-        "algo": "all",
+        "algo": "normal",
         "ediff": 1e-5,
-        "ediffg": -0.05,
+        "ediffg": -0.02,
         "enaug": 1360,
-        "encut": 680,
+        "encut": 680.0,
         "gga": "ps",
+        "gga_compat": False,
         "ibrion": 2,
         "isif": 3,
         "ismear": 0,
@@ -471,9 +472,10 @@ def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
         "lasph": True,
         "lcharg": True,
         "lelf": False,
+        "lmaxmix": 6,
         "lmixtau": True,
         "lorbit": 11,
-        "lreal": "auto",
+        "lreal": False,
         "lvtot": True,
         "lwave": True,
         "magmom": [0.6],
@@ -488,8 +490,8 @@ def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
     output = mp_prerelax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
-    assert output["parameters"]["ediffg"] == -0.05
-    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680.0
     assert output["parameters"]["kspacing"] == 0.22
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
@@ -503,8 +505,8 @@ def test_mp_prerelax_job_nonmetallic(patch_nonmetallic_taskdoc):
     output = mp_prerelax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["gga"] == "ps"
-    assert output["parameters"]["ediffg"] == -0.05
-    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["ediffg"] == -0.02
+    assert output["parameters"]["encut"] == 680.0
     assert output["parameters"]["kspacing"] == pytest.approx(0.22007848304887767)
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
@@ -516,11 +518,12 @@ def test_mp_prerelax_job_nonmetallic(patch_nonmetallic_taskdoc):
 def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
     ref_parameters = {
-        "algo": "all",
+        "algo": "normal",
         "ediff": 1e-5,
         "ediffg": -0.02,
         "enaug": 1360,
-        "encut": 680,
+        "encut": 680.0,
+        "gga_compat": False,
         "ibrion": 2,
         "isif": 3,
         "ismear": 0,
@@ -530,9 +533,10 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
         "lasph": True,
         "lcharg": True,
         "lelf": False,
+        "lmaxmix": 6,
         "lmixtau": True,
         "lorbit": 11,
-        "lreal": "auto",
+        "lreal": False,
         "lvtot": True,
         "lwave": True,
         "magmom": [0.6],
@@ -583,17 +587,20 @@ def test_mp_metagga_static_job(patch_metallic_taskdoc):
     output = mp_metagga_static_job(atoms)
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
-        "algo": "fast",
+        "algo": "normal",
         "ediff": 1e-05,
         "enaug": 1360,
-        "encut": 680,
+        "encut": 680.0,
+        "gga_compat": False,
         "ismear": -5,
         "ispin": 2,
+        "kpar": 1,
         "kspacing": 0.22,
         "laechg": True,
         "lasph": True,
         "lcharg": True,
-        "lelf": False,
+        "lelf": True,
+        "lmaxmix": 6,
         "lmixtau": True,
         "lorbit": 11,
         "lreal": False,
@@ -675,7 +682,7 @@ def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
         assert output["static"]["structure_metadata"]["nsites"] == len(atoms)
         assert output["static"]["parameters"]["ismear"] == -5
         assert output["static"]["parameters"]["nsw"] == 0
-        assert output["static"]["parameters"]["algo"] == "fast"
+        assert output["static"]["parameters"]["algo"] == "normal"
         assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
 
 
