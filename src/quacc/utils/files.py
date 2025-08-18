@@ -155,8 +155,8 @@ def copy_decompress_files(
                 copytree(
                     source_filepath,
                     destination_filepath,
-                    dirs_exist_ok=True,
                     symlinks=True,
+                    dirs_exist_ok=True,
                 )
                 decompress_dir(destination_filepath)
 
