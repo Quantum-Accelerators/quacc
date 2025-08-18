@@ -1085,7 +1085,7 @@ def test_lorbit():
     assert calc.int_params["lorbit"] == 11
 
 
-def test_d4():
+def test_dispersion():
     atoms = bulk("Cu")
     calc = Vasp(atoms, xc="r2scan", ivdw=13)
     assert calc.float_params["vdw_s6"] == 1.0
@@ -1104,6 +1104,24 @@ def test_d4():
 
     calc = Vasp(atoms, metagga="r2scan")
     assert calc.float_params["vdw_s6"] is None
+
+    calc = Vasp(atoms, xc="hse06")
+    assert calc.float_params["vdw_s6"] is None
+
+    calc = Vasp(atoms, lhfcalc=True, hfscreen=0.25, ivdw=12)
+    assert calc.float_params["vdw_s6"] is None
+
+    calc = Vasp(atoms, xc="hse06", ivdw=12)
+    assert calc.float_params["vdw_s6"] == 1.0
+    assert calc.float_params["vdw_s8"] == 2.310
+    assert calc.float_params["vdw_a1"] == 0.383
+    assert calc.float_params["vdw_a2"] == 5.685
+
+    calc = Vasp(atoms, lhfcalc=True, hfscreen=0.2, ivdw=12)
+    assert calc.float_params["vdw_s6"] == 1.0
+    assert calc.float_params["vdw_s8"] == 2.310
+    assert calc.float_params["vdw_a1"] == 0.383
+    assert calc.float_params["vdw_a2"] == 5.685
 
 
 def test_setups():
