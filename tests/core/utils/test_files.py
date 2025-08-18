@@ -50,7 +50,7 @@ def test_copy_decompress_files(tmp_path, files_to_copy):
 
     assert os.listdir(dst) == ["src"]
     assert sorted(os.listdir(dst / "src")) == ["dir1", "file1", "nested"]
-    assert sorted(os.listdir(dst / "src" / "dir1")) == ["file2"]
+    assert sorted(os.listdir(dst / "src" / "dir1")) == ["file2", "symlink1"]
     assert sorted(os.listdir(dst / "src" / "nested")) == ["nested"]
 
 
