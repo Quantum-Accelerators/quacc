@@ -156,7 +156,7 @@ def copy_decompress_files(
                     source_filepath,
                     destination_filepath,
                     dirs_exist_ok=True,
-                    ignore_dangling_symlinks=True,
+                    symlinks=True,
                 )
                 decompress_dir(destination_filepath)
 
