@@ -44,13 +44,14 @@ def test_generic_runner(tmp_path, monkeypatch):
 
     assert results.stdout == "VAR=custom_value\nSHOULD_NOT=missing\n"
 
-    gr = GenericRunner(
-        command="sh -c 'exit 1'",
-    )
+    gr = GenericRunner(command="sh -c 'exit 1'")
 
     try:
         results = gr.run_cmd()
         assert results.returncode == 1
     except CalledProcessError as e:
-        assert e.returncode == 1 # noqa: PT017
-        assert "Command '['sh', '-c', 'exit 1']' returned non-zero exit status 1." in str(e) # noqa: PT017
+        assert e.returncode == 1  # noqa: PT017
+        assert (
+            "Command '['sh', '-c', 'exit 1']' returned non-zero exit status 1."
+            in str(e)
+        )  # noqa: PT017
