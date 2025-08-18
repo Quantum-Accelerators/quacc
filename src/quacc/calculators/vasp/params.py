@@ -259,6 +259,7 @@ def get_param_swaps(
     if (
         calc.string_params["metagga"]
         and calc.string_params["metagga"].lower() == "r2scan"
+        and calc.int_params["ivdw"]
         and calc.int_params["ivdw"] == 13
         and not calc.float_params["vdw_s6"]
         and not calc.float_params["vdw_s8"]
@@ -273,6 +274,7 @@ def get_param_swaps(
         and calc.bool_params["lhfcalc"] is True
         and calc.float_params["hfscreen"]
         and calc.float_params["hfscreen"] == 0.2
+        and calc.int_params["ivdw"]
         and calc.int_params["ivdw"] == 12
         and not calc.float_params["vdw_s6"]
         and not calc.float_params["vdw_s8"]
