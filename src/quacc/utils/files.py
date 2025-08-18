@@ -10,12 +10,12 @@ from datetime import datetime, timezone
 from logging import getLogger
 from pathlib import Path
 from random import randint
-from shutil import copy
+from shutil import copy, copytree
 from typing import TYPE_CHECKING
 
 from monty.io import zopen
 from monty.os.path import zpath
-from monty.shutil import copy_r, decompress_dir, decompress_file
+from monty.shutil import decompress_dir, decompress_file
 from ruamel.yaml import YAML
 
 if TYPE_CHECKING:
@@ -152,7 +152,7 @@ def copy_decompress_files(
                 copy(source_filepath, destination_filepath)
                 decompress_file(destination_filepath)
             elif source_filepath.is_dir():
-                copy_r(source_filepath, destination_filepath)
+                copytree(source_filepath, destination_filepath, dirs_exist_ok=True)
                 decompress_dir(destination_filepath)
 
 
