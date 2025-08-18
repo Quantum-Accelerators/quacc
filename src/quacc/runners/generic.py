@@ -18,15 +18,6 @@ if TYPE_CHECKING:
 class GenericRunner(BaseRunner):
     """
     A class to run generic (IO) commands in a subprocess. Inherits from BaseRunner, which handles setup and cleanup of the calculation.
-
-    Parameters
-    ----------
-    command
-        The command to run in the subprocess.
-    copy_files
-        Files to copy to the runtime directory.
-    environment
-        Environment variables to set for the subprocess. If None, the current environment is used.
     """
 
     filepaths: ClassVar[dict[str, SourceDirectory | None]] = {
@@ -39,8 +30,23 @@ class GenericRunner(BaseRunner):
         command: str,
         copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
         environment: dict[str, str] | None = None,
-    ):
-        """Initialize the `GenericRunner` with the command and optional copy files and environment variables."""
+    ) -> None:
+        """
+        Initialize the `GenericRunner` with the command and optional copy files and environment variables.
+        
+        Parameters
+        ----------
+        command
+            The command to run in the subprocess.
+        copy_files
+            Files to copy to the runtime directory.
+        environment
+            Environment variables to set for the subprocess. If None, the current environment is used.
+
+        Returns
+        -------
+        None
+        """
         self.command: Final[list[str]] = split(command)
         self.environment = environment
 
