@@ -54,4 +54,4 @@ def test_generic_runner(tmp_path, monkeypatch):
         assert (
             "Command '['sh', '-c', 'exit 1']' returned non-zero exit status 1."
             in str(e)
-        )  # noqa: PT017
+        )

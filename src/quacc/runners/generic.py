@@ -33,7 +33,7 @@ class GenericRunner(BaseRunner):
     ) -> None:
         """
         Initialize the `GenericRunner` with the command and optional copy files and environment variables.
-        
+
         Parameters
         ----------
         command
