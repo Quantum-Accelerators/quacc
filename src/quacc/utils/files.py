@@ -152,7 +152,7 @@ def copy_decompress_files(
                 copy(source_filepath, destination_filepath)
                 decompress_file(destination_filepath)
             elif source_filepath.is_dir():
-                copytree(source_filepath, destination_filepath, dirs_exist_ok=True)
+                copytree(source_filepath, destination_filepath, dirs_exist_ok=True, ignore_dangling_symlinks=True)
                 decompress_dir(destination_filepath)
 
 
