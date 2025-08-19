@@ -1,6 +1,0 @@
-inputs:
-  ediff: 1.0e-5
-  kspacing: null
-  pmg_kpts:
-    kppvol: 100
-parent: RosenSetPBE

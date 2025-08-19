@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    preset: str | None = "SlabSet",
+    preset: str | None = "SlabSetPBE",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -74,7 +74,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    preset: str | None = "SlabSet",
+    preset: str | None = "SlabSetPBE",
     copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,

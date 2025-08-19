@@ -198,7 +198,7 @@ def test_non_scf_job2(patch_metallic_taskdoc):
     output = non_scf_job(
         atoms,
         MOCKED_DIR / "metallic",
-        preset="BulkSet",
+        preset="DefaultSetPBE",
         nbands_factor=1,
         calculate_optics=True,
     )
@@ -224,7 +224,7 @@ def test_non_scf_job2(patch_metallic_taskdoc):
 def test_non_scf_job3(patch_metallic_taskdoc):
     atoms = bulk("Al")
     output = non_scf_job(
-        atoms, MOCKED_DIR / "metallic", preset="BulkSet", kpts_mode="line"
+        atoms, MOCKED_DIR / "metallic", preset="DefaultSetPBE", kpts_mode="line"
     )
     assert np.shape(output["parameters"]["kpts"]) == (250, 3)
     assert output["parameters"]["sigma"] == 0.2
@@ -234,7 +234,7 @@ def test_non_scf_job3(patch_metallic_taskdoc):
 def test_non_scf_job4(patch_nonmetallic_taskdoc):
     atoms = bulk("Si")
     output = non_scf_job(
-        atoms, MOCKED_DIR / "nonmetallic", preset="BulkSet", kpts_mode="line"
+        atoms, MOCKED_DIR / "nonmetallic", preset="DefaultSetPBE", kpts_mode="line"
     )
     assert np.shape(output["parameters"]["kpts"]) == (193, 3)
     assert output["parameters"]["sigma"] == 0.01
@@ -256,14 +256,14 @@ def test_slab_static_job(patch_metallic_taskdoc):
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] is True
-    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["encut"] == 520
 
     output = slab_static_job(atoms, nelmin=6)
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["idipol"] == 3
     assert output["parameters"]["nsw"] == 0
     assert output["parameters"]["lvhar"] is True
-    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
 
     output = slab_static_job(atoms, encut=None)
@@ -283,7 +283,7 @@ def test_slab_relax_job(patch_metallic_taskdoc):
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["lwave"] is False
-    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["encut"] == 520
 
     output = slab_relax_job(atoms, nelmin=6)
     assert output["structure_metadata"]["nsites"] == len(atoms)
@@ -291,7 +291,7 @@ def test_slab_relax_job(patch_metallic_taskdoc):
     assert output["parameters"]["nsw"] > 0
     assert output["parameters"]["isym"] == 0
     assert output["parameters"]["lwave"] is False
-    assert output["parameters"]["encut"] == 450
+    assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
 
 
@@ -318,7 +318,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
 
     outputs = bulk_to_slabs_flow(
         atoms,
-        job_params={"relax_job": {"preset": "SlabSet", "nelmin": 6}},
+        job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
         run_static=False,
     )
     assert len(outputs) == 4
@@ -328,10 +328,10 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert outputs[3]["structure_metadata"]["nsites"] == 42
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
+    assert [output["parameters"]["encut"] == 520 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
-        atoms, job_params={"relax_job": {"preset": "SlabSet", "nelmin": 6}}
+        atoms, job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}}
     )
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
@@ -340,7 +340,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert outputs[3]["structure_metadata"]["nsites"] == 42
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
+    assert [output["parameters"]["encut"] == 520 for output in outputs]
 
     ### --------- Test slab_to_ads_flow --------- ###
     atoms = outputs[0]["atoms"]
@@ -358,23 +358,25 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     outputs = slab_to_ads_flow(
         atoms,
         adsorbate,
-        job_params={"relax_job": {"preset": "SlabSet", "nelmin": 6}},
+        job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
         run_static=False,
     )
 
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
+    assert [output["parameters"]["encut"] == 520 for output in outputs]
 
     outputs = slab_to_ads_flow(
-        atoms, adsorbate, job_params={"relax_job": {"preset": "SlabSet", "nelmin": 6}}
+        atoms,
+        adsorbate,
+        job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
     )
 
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
-    assert [output["parameters"]["encut"] == 450 for output in outputs]
+    assert [output["parameters"]["encut"] == 520 for output in outputs]
 
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])

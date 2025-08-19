@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+from pymatgen.core.structure import Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
@@ -131,3 +132,33 @@ def bandgap_to_kspacing(bandgap: float) -> float:
         + deltak_max
         + (deltak_max - deltak_min) * delta / ((1 + delta**c) ** (1 / c))
     )
+
+
+def kspacing_to_kpts(kspacing: float, atoms: Atoms) -> list[int]:
+    """
+    Converts KSPACING to k-points.
+
+    Parameters
+    ----------
+    kspacing
+        The KSPACING value in inverse angstroms.
+    atoms
+        The input atoms.
+
+    Returns
+    -------
+    list[int]
+        The k-points as a list of integers.
+    """
+    return [
+        int(
+            max(
+                1,
+                np.ceil(
+                    Structure.from_ase_atoms(atoms).lattice.reciprocal_lattice.abc[ik]
+                    / kspacing
+                ),
+            )
+        )
+        for ik in range(3)
+    ]

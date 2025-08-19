@@ -1,11 +1,12 @@
-# Last modified: 10-07-2023
+# Last modified: 08-16-2025
 inputs:
-  algo: fast
-  pmg_kpts:
-    kppvol: 100
+  algo: normal
   ediff: 1.0e-5
+  ediffg: -0.02
   efermi: midgap
   encut: 520
+  gga_compat: false
+  ibrion: 2
   ismear: 0
   ivdw: 12
   lasph: true
@@ -15,8 +16,11 @@ inputs:
   lwave: false
   nelm: 150
   nelmin: 3
+  nsw: 0
+  pmg_kpts:
+    kppvol: 100
   prec: accurate
   sigma: 0.05
   xc: pbe
 parent_magmoms: magmoms_high
-parent_setups: setups_recommended
+parent_setups: setups_default

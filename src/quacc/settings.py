@@ -277,7 +277,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_PRESET_MAG_DEFAULT: float = Field(
-        1.0,
+        0.5,
         description=(
             """
             Default initial magmom to use for a given element if a preset
