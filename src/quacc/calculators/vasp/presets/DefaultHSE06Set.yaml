@@ -1,6 +1,0 @@
-# Last modified: 08-19-2025
-inputs:
-  algo: all
-  xc: hse06
-  ivdw: 12
-parent: DefaultPBESet

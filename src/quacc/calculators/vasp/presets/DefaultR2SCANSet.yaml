@@ -1,6 +1,0 @@
-# Last modified: 08-19-2025
-inputs:
-  algo: all
-  xc: r2scan
-  ivdw: 13
-parent: DefaultPBESet
