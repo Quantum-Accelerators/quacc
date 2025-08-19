@@ -4,6 +4,100 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0]
+
+### Added
+
+- A `GenericRunner` to run arbitrary commands
+- D3(BJ) parameters for HSE06 in the `Vasp` calculator
+
+### Changed
+
+- The default `BulkSet.yaml` will be removed and replaced with `DefaultSetPBE.yaml`. The two are extremely similar. Updates include: ALGO = Fast --> ALGO = Normal, GGA_COMPAT = False, and changing the default Yb and Eu pseudopotentials from _2 to _3.
+- The `SlabSet.yaml` will be removed and replaced with `SlabSetPBE.yaml` to ensure internal consistency with the base `DefaultSetPBE.yaml`.
+- The `VASP_PRESET_MAG_DEFAULT` setting has been changed from a default of 1.0 to 0.5 to prevent accidental convergence to erroneous radical states, particularly in molecular systems.
+- The Materials Project recipes were updated to match the newer MP24 settings
+
+## [0.17.1]
+
+### Changed
+
+- Makes ASE 3.26.0 the minimum supporte version
+
+## [0.17.0]
+
+### Added
+
+- Added `RosenFastSetPBE.yaml`, `RosenFastSetR2SCAN.yaml`, and `setups_rosen.yaml`
+- The user will now be warned if they are likely to have Pulay stresses due to the use of `Li_sv` and `ENCUT` < 650
+
+### Changed
+
+- Renamed `magmoms_base.yaml` to `magmoms_high.yaml`
+- Merged the identical `setups_54.yaml` and `setups_64.yaml` files into a single `setups_recommended.yaml`
+- The RosenSets will now use `Eu_3` and `Yb_3` instead of `Eu_2` and `Yb_2`
+
+## [0.16.0]
+
+### Added
+
+- Added support for TensorNet
+
+### Changed
+
+- Default MLP calculators have been updated across the board: M3GNET and CHGNet now default to the MatPES PBE models, CHGNet relies on matgl, and mace-mp-0 has been renamed mace-mp to get the default model.
+
+## [0.15.5]
+
+### Changed
+
+- Simplified FAIRChem MLP usage
+
+## [0.15.4]
+
+### Changed
+
+- `RosenPBESet.yaml` now uses ALGO = "All" instead of "Fast"
+
+## [0.15.3]
+
+### Added
+
+- Updated FAIRChem models to support UMA and redesigned FAIRChem repo
+
+## [0.15.2]
+
+### Fixed
+
+- Allow for `kpts=None` with VASP auto-swaps
+
+## [0.15.1]
+
+### Added
+
+- Added `RosenSetPBE.yaml` and `RosenSetR2CAN.yaml` for recommended VASP parameters that Rosen likes to use.
+
+### Changed
+
+- No longer automatically sets `NPAR = 1` when `LELF = True` due to convergence issues that can arise.
+
+## [0.15.0]
+
+### Fixed
+
+- Various dependency fixes
+
+## [0.14.0]
+
+### Fixed
+
+- Force `relax_cell=False` for elastic calculations
+
+### Removed
+
+- There is no more `quacc_results.json.gz` file written out to disk. This turned out to be way more trouble than it was worth, over-complicating recipes by requiring the use of schemas with knowledge of the current working directory at all times.
+- There is no more `STORE` quacc setting. Storing in databases will require calling the `results_to_db` function or using a workflow engine (e.g. Jobflow, FireWorks, Prefect, Covalent).
+
 ## [0.13.0]
 
 ### Added

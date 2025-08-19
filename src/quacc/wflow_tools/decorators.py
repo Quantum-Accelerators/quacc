@@ -634,12 +634,8 @@ def _get_prefect_wrapped_flow(
     _func: Callable, settings: QuaccSettings, **kwargs
 ) -> Callable:
     from prefect import flow as prefect_flow
+    from prefect.futures import resolve_futures_to_results
     from prefect.utilities.asyncutils import is_async_fn
-
-    from quacc.wflow_tools.prefect_utils import (
-        resolve_futures_to_results,
-        resolve_futures_to_results_async,
-    )
 
     if is_async_fn(_func):
         if settings.PREFECT_RESOLVE_FLOW_RESULTS:
@@ -647,7 +643,7 @@ def _get_prefect_wrapped_flow(
             @wraps(_func)
             async def async_wrapper(*f_args, **f_kwargs):
                 result = await _func(*f_args, **f_kwargs)
-                return await resolve_futures_to_results_async(result)
+                return resolve_futures_to_results(result)
 
             return prefect_flow(async_wrapper, validate_parameters=False, **kwargs)
 

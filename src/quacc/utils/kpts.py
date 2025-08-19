@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import numpy as np
+from pymatgen.core.structure import Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.io.vasp.inputs import Kpoints
 from pymatgen.symmetry.bandstructure import HighSymmKpath
@@ -66,7 +67,7 @@ def convert_pmg_kpts(
             has_magmoms=np.any(struct.site_properties.get("magmom", None)),
         )
         kpts, _ = kpath.get_kpoints(
-            line_density=pmg_kpts["line_density"], coords_are_cartesian=True
+            line_density=pmg_kpts["line_density"], coords_are_cartesian=False
         )
         kpts = np.stack(kpts)
         gamma = False
@@ -101,3 +102,63 @@ def convert_pmg_kpts(
         gamma = max_pmg_kpts.style.name.lower() == "gamma"
 
     return kpts, gamma
+
+
+def bandgap_to_kspacing(bandgap: float) -> float:
+    """
+    Takes the bandgap energy and computes the required KSPACING value.
+    Refer to https://drive.google.com/file/d/1fUUx0wrrtMRcSss5yv3NiQuC7J5IiEKL/view
+
+    Parameters
+    ----------
+    bandgap
+        The bandgap of the material in eV.
+
+    Returns
+    ----------
+    kspacing
+        Value of the KSPACING INCAR tag in inverse angstroms.
+    """
+
+    deltak_min = 0.2
+    deltak_max = 0.45
+    a = 0.9
+    b = 2.35
+    c = 8.0
+
+    delta = a * (bandgap - b)
+    return 0.5 * (
+        deltak_min
+        + deltak_max
+        + (deltak_max - deltak_min) * delta / ((1 + delta**c) ** (1 / c))
+    )
+
+
+def kspacing_to_kpts(kspacing: float, atoms: Atoms) -> list[int]:
+    """
+    Converts KSPACING to k-points.
+
+    Parameters
+    ----------
+    kspacing
+        The KSPACING value in inverse angstroms.
+    atoms
+        The input atoms.
+
+    Returns
+    -------
+    list[int]
+        The k-points as a list of integers.
+    """
+    return [
+        int(
+            max(
+                1,
+                np.ceil(
+                    Structure.from_ase_atoms(atoms).lattice.reciprocal_lattice.abc[ik]
+                    / kspacing
+                ),
+            )
+        )
+        for ik in range(3)
+    ]

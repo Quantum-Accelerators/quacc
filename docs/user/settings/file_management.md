@@ -1,4 +1,4 @@
-# Results Handling
+# File Management
 
 It can be useful to understand how quacc handles files so that you can adjust the behavior for your needs. Let's consider a recipe that writes an input file `INPUT` and an output file `OUTPUT`.
 
@@ -80,8 +80,7 @@ Once the job successfully completes, the file structure looks like:
 RESULTS_DIR
 ├── quacc-2023-12-08-67890
 │   ├── INPUT.gz
-    ├── OUTPUT.gz
-    └── quacc_results.json.gz
+    └── OUTPUT.gz
 ```
 
 ```text

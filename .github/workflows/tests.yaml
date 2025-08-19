@@ -17,11 +17,11 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10", "3.12"]
+        python-version: ["3.10", "3.13"]
         os: [ubuntu-latest, windows-latest]
         exclude:
           - os: windows-latest
-            python-version: "3.12"
+            python-version: "3.10"
 
     runs-on: ${{ matrix.os }}
     defaults:
@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -71,7 +71,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -84,12 +84,12 @@ jobs:
         if: matrix.wflow_engine == 'dask'
         uses: conda-incubator/setup-miniconda@v3
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           activate-environment: quacc-env
 
       - name: Install conda packages
         if: matrix.wflow_engine == 'dask'
-        run: conda install -c conda-forge qe=7.4
+        run: conda install -c conda-forge qe=7.4 'libgcc<15'
 
       - name: Install pip packages
         run: |
@@ -131,12 +131,12 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -181,7 +181,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -197,7 +197,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: conda install -c conda-forge qe=7.4
+        run: conda install -c conda-forge qe=7.4 'libgcc<15.0'
 
       - name: Install pip packages
         run: |
@@ -229,12 +229,12 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -277,12 +277,12 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -314,7 +314,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-mlp1:
+  tests-mlp:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -325,7 +325,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -337,7 +337,86 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp1.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
+
+      - name: Run tests with pytest
+        run: pytest -k 'mlp or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
+
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
+
+  tests-mlp-mace-matgl:
+    strategy:
+      fail-fast: true
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: tests/requirements**.txt
+
+      - name: Install pip packages
+        run: |
+          pip install uv
+          uv pip install --system dgl==2.4.0 -f https://data.dgl.ai/wheels/torch-2.4/repo.html
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp-mace-matgl.txt "quacc[dev] @ ."
+
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
+
+      - name: Run tests with pytest
+        run: pytest -k 'mlp' --durations=10 --cov=quacc --cov-report=xml
+
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
+
+  tests-mlp-fairchem:
+    strategy:
+      fail-fast: true
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: tests/requirements**.txt
+
+      - name: Install pip packages
+        run: |
+          pip install uv
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp-fairchem.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
@@ -352,45 +431,6 @@ jobs:
           else
             echo "HF_TOKEN is not set. Skipping login."
           fi
-
-      - name: Run tests with pytest
-        run: pytest -k 'mlp or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
-
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ github.job }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
-
-  tests-mlp2:
-    strategy:
-      fail-fast: true
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: tests/requirements**.txt
-
-      - name: Install pip packages
-        run: |
-          pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp2.txt "quacc[dev] @ ."
-
-      - name: Set coverage core
-        run: |
-          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
       - name: Run tests with pytest
         run: pytest -k 'mlp' --durations=10 --cov=quacc --cov-report=xml
@@ -413,12 +453,12 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: "3.13"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -449,16 +489,17 @@ jobs:
       - tests-defects-phonons-espresso
       - tests-tblite-dftbplus
       - tests-qchem-sella
-      - tests-mlp1
-      - tests-mlp2
+      - tests-mlp
+      - tests-mlp-mace-matgl
+      - tests-mlp-fairchem
       - tests-mp
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download coverage artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v5

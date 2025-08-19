@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 from rich import print as rich_print
 from typer import Exit, Option, Typer
@@ -10,11 +10,11 @@ from typer import Exit, Option, Typer
 from quacc import get_settings
 from quacc.settings import QuaccSettings, _type_handler
 
-app = Typer()
-
 if TYPE_CHECKING:
     from pathlib import Path
     from typing import Any
+
+app = Typer()
 
 
 def callback(value: bool) -> None:
@@ -39,7 +39,7 @@ def callback(value: bool) -> None:
 
 @app.callback()
 def main(
-    version: Optional[bool] = Option(  # noqa: UP007
+    version: bool | None = Option(
         None,
         "--version",
         "-v",

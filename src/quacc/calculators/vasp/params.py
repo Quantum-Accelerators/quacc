@@ -111,7 +111,7 @@ def get_param_swaps(
         calc.int_params["ismear"] != -5
         and calc.int_params["nsw"] in (None, 0)
         and (
-            np.prod(calc.kpts) >= 4
+            (calc.kpts is not None and np.prod(calc.kpts) >= 4)
             or (calc.float_params["kspacing"] and calc.float_params["kspacing"] <= 0.5)
         )
     ):
@@ -120,7 +120,7 @@ def get_param_swaps(
 
     if (
         calc.int_params["ismear"] == -5
-        and np.prod(calc.kpts) < 4
+        and (calc.kpts is not None and np.prod(calc.kpts) < 4)
         and calc.float_params["kspacing"] is None
     ):
         LOGGER.info(
@@ -190,7 +190,7 @@ def get_param_swaps(
                 LOGGER.info(
                     f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
                 )
-                calc.set(ncore=ncore)
+                calc.set(ncore=ncore, npar=None)
                 break
 
     if (
@@ -209,7 +209,7 @@ def get_param_swaps(
 
     if (
         calc.int_params["kpar"]
-        and calc.int_params["kpar"] > np.prod(calc.kpts)
+        and (calc.kpts is not None and calc.int_params["kpar"] > np.prod(calc.kpts))
         and calc.float_params["kspacing"] is None
     ):
         LOGGER.info(
@@ -229,23 +229,70 @@ def get_param_swaps(
         )
         calc.set(isym=-1)
 
-    if calc.bool_params["lelf"] is True and (
-        calc.int_params["npar"] != 1 or calc.int_params["ncore"] != 1
+    if (
+        calc.int_params.get("isif", 2) in (3, 6, 7, 8)
+        and calc.int_params["nsw"]
+        and calc.int_params["nsw"] > 0
     ):
-        LOGGER.info("Recommending NPAR = 1 per the VASP manual.")
-        calc.set(npar=1, ncore=None)
+        if calc.encut is None:
+            LOGGER.warning(
+                "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT=1.3*max(ENMAX)."
+            )
+        if "He" in input_atoms.get_chemical_symbols() and (
+            calc.encut is None or calc.encut < 478.896 * 1.3
+        ):
+            LOGGER.warning(
+                "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=623."
+            )
+
+        if (
+            "Li" in input_atoms.get_chemical_symbols()
+            and calc.parameters.get("setups")
+            and isinstance(calc.parameters["setups"], dict)
+            and calc.parameters["setups"].get("Li", "") in ("Li_sv", "_sv")
+            and (calc.encut is None or calc.encut < 499.034 * 1.3)
+        ):
+            LOGGER.warning(
+                "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=650."
+            )
 
     if (
         calc.string_params["metagga"]
         and calc.string_params["metagga"].lower() == "r2scan"
+        and calc.int_params["ivdw"]
         and calc.int_params["ivdw"] == 13
         and not calc.float_params["vdw_s6"]
         and not calc.float_params["vdw_s8"]
         and not calc.float_params["vdw_a1"]
         and not calc.float_params["vdw_a2"]
     ):
-        LOGGER.info("Setting VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN.")
+        LOGGER.info("Setting VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN-D4.")
         calc.set(vdw_s6=1.0, vdw_s8=0.60187490, vdw_a1=0.51559235, vdw_a2=5.77342911)
+
+    if (
+        calc.bool_params["lhfcalc"]
+        and calc.bool_params["lhfcalc"] is True
+        and calc.float_params["hfscreen"]
+        and calc.float_params["hfscreen"] == 0.2
+        and calc.int_params["ivdw"]
+        and calc.int_params["ivdw"] == 12
+        and not calc.float_params["vdw_s6"]
+        and not calc.float_params["vdw_s8"]
+        and not calc.float_params["vdw_a1"]
+        and not calc.float_params["vdw_a2"]
+    ):
+        LOGGER.info(
+            "Setting VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for HSE06-D3(BJ)."
+        )
+        calc.set(vdw_s6=1.0, vdw_s8=2.310, vdw_a1=0.383, vdw_a2=5.685)
+
+    if (
+        input_atoms.get_chemical_formula() == "O2"
+        and input_atoms.get_initial_magnetic_moments().sum() == 0
+    ):
+        LOGGER.warning(
+            "You are running O2 without magnetic moments, but its ground state should have 2 unpaired electrons!"
+        )
 
     new_parameters = (
         calc.parameters
@@ -300,8 +347,19 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
         for ldau_flag in ldau_flags:
             user_calc_params.pop(ldau_flag, None)
 
+    # Handle kspacing flags
+    if user_calc_params.get("kspacing"):
+        user_calc_params["gamma"] = None
+        user_calc_params["kpts"] = None
+    else:
+        user_calc_params.pop("kgamma", None)
+
     # Remove None keys
-    none_keys = [k for k, v in user_calc_params.items() if v is None]
+    none_keys = [
+        k
+        for k, v in user_calc_params.items()
+        if v is None and k not in Vasp_().input_params
+    ]
     for none_key in none_keys:
         del user_calc_params[none_key]
 

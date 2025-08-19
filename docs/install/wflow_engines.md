@@ -170,8 +170,8 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         flows_collection: jf_flows
         auxiliary_collection: jf_aux
         exec_config: {}
-        jobstore:
-        docs_store:
+        JOB_STORE:
+          docs_store:
             type: MongoStore
             database: <MongoDB Database Name>
             host: localhost
@@ -219,7 +219,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         ```yaml title="jobflow.yaml"
         JOB_STORE:
-        docs_store:
+          docs_store:
             type: MongoStore
             host: <host name>
             port: 27017
@@ -229,13 +229,13 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
             collection_name: <collection name>
         ```
 
-        !!! Note "MongoDB Atlas"
+        ??? Note "MongoDB Atlas"
 
             If you are using a URI (as is common with MongoDB Atlas), then you will instead have a `jobflow.yaml` file that looks like the example below. Here, you will put the full URI in the `host` field. The `username` and `password` are part of the URI and so should not be included elsewhere in the YAML file.
 
             ```yaml title="jobflow.yaml"
             JOB_STORE:
-            docs_store:
+              docs_store:
                 type: MongoStore
                 host: <URI>
                 port: 27017
@@ -302,7 +302,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         wf_user_indices: []
         ```
 
-        !!! Note "MongoDB Atlas"
+        ??? Note "MongoDB Atlas"
 
             If you are accessing your MongoDB via a URI (e.g. as with MongoDB Atlas), then you will use the following `my_launchpad.yaml` template instead.
 
@@ -319,7 +319,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
         **QAdapter**
 
-        Assuming you plan to use a queuing system for your compute jobs, you will need to make a `my_qadapter.yaml` file. For this, you will need to follow the instructions in the [FireWorks documentation](https://materialsproject.github.io/fireworks/qadapter_programming.html) for your specific job scheduling system. An example `my_qadapter.yaml` file is shown below for Slurm.
+        Assuming you plan to use a queuing system for your compute jobs, you will need to make a `my_qadapter.yaml` file. For this, you will need to follow the instructions in the [FireWorks documentation](https://materialsproject.github.io/fireworks/qadapter_programming.html) for your specific job scheduling system. An example `my_qadapter.yaml` file is shown below for Slurm, assuming that you have a `cms` Conda environment.
 
         ```yaml title="my_qadapter.yaml"
         _fw_name: CommonAdapter
@@ -330,7 +330,9 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         account: <account>
         job_name: quacc_firework
         qos: regular
+        signal: SIGINT@60
         pre_rocket: |
+                    conda activate cms
                     export QUACC_WORKFLOW_ENGINE=jobflow
                     export QUACC_CREATE_UNIQUE_DIR=False
         ```

@@ -45,7 +45,7 @@ No setup needed!
 
 ## MLPs
 
-Several pre-trained "universal" machine-learned potentials (MLPs) are natively supported in quacc, including those based on [MACE](https://github.com/ACEsuit/mace), [CHGNet](https://github.com/CederGroupHub/chgnet), [M3GNet](https://github.com/materialsvirtuallab/matgl), [Orb](https://github.com/orbital-materials/orb-models), and [FAIR-Chem](https://github.com/FAIR-Chem/fairchem).
+Several pre-trained "universal" machine-learned potentials (MLPs) are natively supported in quacc, including those provided in the [MACE](https://github.com/ACEsuit/mace), [matgl](https://github.com/materialsvirtuallab/matgl), [Orb](https://github.com/orbital-materials/orb-models), and [FAIR-Chem](https://github.com/FAIR-Chem/fairchem) repositories.
 
 To use these potentials, you will need to install the corresponding packages. This can be done as follows:
 

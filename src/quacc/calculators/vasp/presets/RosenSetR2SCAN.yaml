@@ -1,0 +1,5 @@
+# WILL BE REMOVED IN 1.0.0
+inputs:
+  ivdw: 13
+  xc: r2scan
+parent: RosenSetPBE

@@ -46,6 +46,10 @@ export QUACC_WORKFLOW_ENGINE=None
 
     This approach is ideal when you want to dynamically modify the quacc settings for a given set of calculations, as the environment variable can be modified on-the-fly (e.g. in the job's submission script) without modifying the YAML file that is read by all other calculations.
 
+!!! Warning "Be Careful!"
+
+    If you try to modify environment variables within Python using `os.environ`, make sure you do this before you make any `quacc`-related imports. Note that any changes to your environment variables via `os.environ` only happen on the machine where the command is run!
+
 ## Modifying the Global Settings in a Script
 
 If you want to define quacc settings on-the-fly without writing them to a YAML file or using environment variables, you can do so using the context handler function [quacc.settings.change_settings][] as follows:

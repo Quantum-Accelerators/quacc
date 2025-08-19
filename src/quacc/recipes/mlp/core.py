@@ -22,7 +22,6 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
-    properties: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -35,8 +34,6 @@ def static_job(
         Atoms object
     method
         Universal ML interatomic potential method to use
-    properties
-        A list of properties to obtain. Defaults to ["energy", "forces"]
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -45,7 +42,7 @@ def static_job(
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`,
         `orb_models.forcefield.calculator.ORBCalculator`,
-        `fairchem.core.common.relaxation.ase_utils.OCPCalculator` calculators.
+        `fairchem.core.FAIRChemCalculator` calculators.
 
     Returns
     -------
@@ -54,9 +51,7 @@ def static_job(
         See the type-hint for the data structure.
     """
     calc = pick_calculator(method, **calc_kwargs)
-    if properties is None:
-        properties = ["energy", "forces"]
-    final_atoms = Runner(atoms, calc).run_calc(properties=properties)
+    final_atoms = Runner(atoms, calc).run_calc()
     return Summarize(
         additional_fields={"name": f"{method} Static"} | (additional_fields or {})
     ).run(final_atoms, atoms)
@@ -93,7 +88,7 @@ def relax_job(
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`,
         `orb_models.forcefield.calculator.ORBCalculator`,
-        `fairchem.core.common.relaxation.ase_utils.OCPCalculator` calculators.
+        `fairchem.core.FAIRChemCalculator` calculators.
 
     Returns
     -------

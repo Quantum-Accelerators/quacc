@@ -1,5 +1,6 @@
-# VASP-recommended .54 PAW PBE potentials
-# Last modified: 08-01-2023
+# Rosen-recommended PAW PBE potentials
+# Same as VASP-recommended except for Eu_3 and Yb_3
+# Last modified: 07-28-2025
 inputs:
   setups:
     Ac: Ac
@@ -28,7 +29,7 @@ inputs:
     Cu: Cu
     Dy: Dy_3
     Er: Er_3
-    Eu: Eu_2
+    Eu: Eu_3
     F: F
     Fe: Fe
     Fr: Fr_sv
@@ -96,6 +97,6 @@ inputs:
     W: W_sv
     Xe: Xe
     Y: Y_sv
-    Yb: Yb_2
+    Yb: Yb_3
     Zn: Zn
     Zr: Zr_sv

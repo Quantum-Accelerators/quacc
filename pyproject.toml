@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "0.13.0"
+version = "1.0.0"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -18,6 +18,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering",
     "Operating System :: Microsoft :: Windows",
@@ -26,9 +27,9 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = [
-    "ase>=3.24.0", # for Atoms object and calculators
-    "custodian>=2024.10.15", # for automated error corrections
-    "emmet-core>=0.84.3rc6", # for pre-made schemas
+    "ase>=3.26.0", # for Atoms object and calculators
+    "custodian>=2025.5.12", # for automated error corrections
+    "emmet-core>=0.84.6", # for pre-made schemas
     "frozendict>=2.4.6", # for caching of dictionaries in @lru_cache
     "maggma>=0.64.0", # for database handling
     "monty>=2024.5.15", # miscellaneous Python utilities
@@ -45,18 +46,18 @@ dependencies = [
 covalent = ["covalent>=0.234.1-rc.0; platform_system!='Windows'", "covalent-cloud>=0.39.0; platform_system!='Windows'"]
 dask = ["dask[distributed]>=2023.12.1", "dask-jobqueue>=0.8.2"]
 defects = ["pymatgen-analysis-defects>=2024.10.22", "shakenbreak>=3.2.0"]
-jobflow = ["jobflow>=0.1.14", "jobflow-remote[gui]>=0.1.0"]
-mlp1 = ["chgnet>=0.3.3", "torch-dftd>=0.4.0", "sevenn>=0.10.1",  "orb-models>=0.4.1", "fairchem-core>=1.6.0"]
+jobflow = ["jobflow>=0.1.14", "jobflow-remote>=0.1.0"]
+mlp1 = ["torch-dftd>=0.4.0", "sevenn>=0.10.1",  "orb-models>=0.4.1", "fairchem-core>=2.2.0"]
 mlp2 = ["mace-torch>=0.3.3", "matgl>=1.1.2"]
 mp = ["atomate2>=0.0.14"]
-newtonnet = ["newtonnet>=1.1"]
+newtonnet = ["newtonnet>=1.1,<2.0", "numpy<=1.26.4"]
 parsl = ["parsl[monitoring]>=2024.5.27; platform_system!='Windows'"]
 phonons = ["phonopy>=2.20.0", "seekpath>=2.1.0"]
-prefect = ["prefect[dask]>=2.19.0", "dask-jobqueue>=0.8.2"]
+prefect = ["prefect[dask]>=3.3.6", "dask-jobqueue>=0.8.2"]
 redun = ["redun>=0.16.2"]
 sella = ["sella>=2.3.5"]
 tblite = ["tblite>=0.3.0; platform_system=='Linux'"]
-dev = ["pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285"]
+dev = ["pytest>=7.4.0", "pytest-cov>=3.0.0", "ruff>=0.0.285", "pytest-asyncio>=0.26.0"]
 docs = [
     "blacken-docs>=1.16.0",
     "mkdocs-material>=9.5.16",
@@ -163,6 +164,8 @@ lint.ignore = [
   "PLR",    # Design related pylint codes
   "PERF203",  # try-except-in-loop
   "RET505", # Unnecessary `elif` after `return`
+  "PTH208", # os-listdir
+  "PLC0415", # `import` should be at the top-level of a file
 ]
 src = ["src"]
 lint.pydocstyle.convention = "numpy"

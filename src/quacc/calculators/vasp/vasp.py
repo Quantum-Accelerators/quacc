@@ -24,6 +24,7 @@ from quacc.calculators.vasp.params import (
 from quacc.calculators.vasp.vasp_custodian import run_custodian
 from quacc.schemas.prep import set_magmoms
 from quacc.utils.dicts import sort_dict
+from quacc.utils.kpts import kspacing_to_kpts
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -180,18 +181,21 @@ class Vasp(Vasp_):
         if self._settings.VASP_PP_PATH:
             os.environ["VASP_PP_PATH"] = str(self._settings.VASP_PP_PATH)
 
-        # Set the ASE_VASP_VDW environmentvariable
+        # Set the ASE_VASP_VDW environment variable
         if self._settings.VASP_VDW:
             os.environ["ASE_VASP_VDW"] = str(self._settings.VASP_VDW)
 
         # Return vanilla ASE command
+        if kspacing := self.user_calc_params.get("kspacing"):
+            nk = kspacing_to_kpts(kspacing, self.input_atoms)
+            use_gamma = np.prod(nk) == 1
+        elif np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1:
+            use_gamma = True
+        else:
+            use_gamma = False
+
         vasp_cmd = (
-            self._settings.VASP_GAMMA_CMD
-            if (
-                np.prod(self.user_calc_params.get("kpts", [1, 1, 1])) == 1
-                and not self.user_calc_params.get("kspacing", None)
-            )
-            else self._settings.VASP_CMD
+            self._settings.VASP_GAMMA_CMD if use_gamma else self._settings.VASP_CMD
         )
 
         return f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"
@@ -225,6 +229,11 @@ class Vasp(Vasp_):
         else:
             calc_preset_inputs = {}
 
+        # Prioritize user's setting of k-points over the preset where applicable
+        if self.kwargs.get("kpts") or self.kwargs.get("kspacing") or self.pmg_kpts:
+            for param in ("kpts", "kspacing", "pmg_kpts"):
+                calc_preset_inputs.pop(param, None)
+
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.
         self.user_calc_params = calc_preset_inputs | self.kwargs
@@ -254,7 +263,11 @@ class Vasp(Vasp_):
             self.user_calc_params.pop(k, None)
 
         # Make automatic k-point mesh
-        if self.pmg_kpts and not self.user_calc_params.get("kpts"):
+        if (
+            self.pmg_kpts
+            and not self.user_calc_params.get("kpts")
+            and not self.user_calc_params.get("kspacing")
+        ):
             self.user_calc_params = set_pmg_kpts(
                 self.user_calc_params, self.pmg_kpts, self.input_atoms
             )

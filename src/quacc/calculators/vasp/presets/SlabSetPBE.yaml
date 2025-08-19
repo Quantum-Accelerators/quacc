@@ -1,0 +1,6 @@
+# Last modified: 08-16-2023
+inputs:
+  auto_dipole: true
+  pmg_kpts:
+    length_densities: [50, 50, 1]
+parent: DefaultSetPBE
