@@ -46,12 +46,9 @@ def test_generic_runner(tmp_path, monkeypatch):
 
     gr = GenericRunner(command="sh -c 'exit 1'")
 
-    try:
+    with pytest.raises(CalledProcessError) as exc_info:
         results = gr.run_cmd()
-        assert results.returncode == 1
-    except CalledProcessError as e:
-        assert e.returncode == 1  # noqa: PT017
-        assert (
-            "Command '['sh', '-c', 'exit 1']' returned non-zero exit status 1."
-            in str(e)
-        )
+
+    e = exc_info.value
+    assert e.returncode == 1
+    assert "Command '['sh', '-c', 'exit 1']' returned non-zero exit status 1." in str(e)
