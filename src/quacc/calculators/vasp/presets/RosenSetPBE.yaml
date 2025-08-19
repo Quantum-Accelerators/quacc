@@ -1,3 +1,4 @@
+# WILL BE REMOVED IN 1.0.0
 inputs:
   algo: all
   ediff: 1.0e-6
