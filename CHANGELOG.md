@@ -4,9 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0]
+
+### Added
+
+- A `GenericRunner` to run arbitrary commands
+- D3(BJ) parameters for HSE06 in the `Vasp` calculator
+
+### Changed
+
+- The default `BulkSet.yaml` will be removed and replaced with `DefaultSetPBE.yaml`. The two are extremely similar. Updates include: ALGO = Fast --> ALGO = Normal, GGA_COMPAT = False, and changing the default Yb and Eu pseudopotentials from _2 to _3.
+- The `SlabSet.yaml` will be removed and replaced with `SlabSetPBE.yaml` to ensure internal consistency with the base `DefaultSetPBE.yaml`.
+- The `VASP_PRESET_MAG_DEFAULT` setting has been changed from a default of 1.0 to 0.5 to prevent accidental convergence to erroneous radical states, particularly in molecular systems.
+- The Materials Project recipes were updated to match the newer MP24 settings
+
 ## [0.17.1]
 
-## Changes
+### Changed
 
 - Makes ASE 3.26.0 the minimum supporte version
 
