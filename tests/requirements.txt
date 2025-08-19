@@ -2,7 +2,7 @@ ase==3.26.0
 custodian==2025.5.12
 emmet-core==0.84.9
 frozendict==2.4.6
-maggma==0.71.5
+maggma==0.72.0
 monty==2025.3.3
 psutil==6.1.1
 pydantic==2.11.7
