@@ -10,7 +10,7 @@ readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
 maintainers = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
-keywords = ["high-throughput", "automated", "workflow", "dft"]
+keywords = ["high-throughput", "automated", "workflow", "dft", "materials science"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
