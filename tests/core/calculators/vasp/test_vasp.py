@@ -101,7 +101,7 @@ def test_presets_mp():
     assert calc.exp_params["ediff"] == 1e-5
 
 
-def test_rosen_preset1():
+def test_full_preset():
     params = {
         "algo": "all",
         "ediff": 1e-06,
@@ -232,7 +232,7 @@ def test_rosen_preset1():
 
     atoms = bulk("Cu")
 
-    calc = Vasp(atoms, preset="RosenSetPBE", nsw=100)
+    calc = Vasp(atoms, preset="DefaultSetPBE", nsw=100)
     calc.parameters.pop("ncore")
     assert calc.parameters == params
 
@@ -370,7 +370,7 @@ def test_rosen_preset2():
         "xc": "r2scan",
     }
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="RosenSetR2SCAN", nsw=100)
+    calc = Vasp(atoms, preset="DefaultSetPBE", xc="R2SCAN", ivdw=13, nsw=100)
     calc.parameters.pop("ncore")
     assert calc.parameters == params
 
