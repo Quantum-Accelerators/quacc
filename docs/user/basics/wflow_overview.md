@@ -4,20 +4,13 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
 !!! Tip "Note"
 
-    We are planning to further enhance the support for Prefect and Jobflow starting in fall, 2025.
+    We are planning to further enhance the support for Prefect and Jobflow starting in fall 2025.
 
 ## Summary
 
 !!! Tip "Recommendations"
 
-    Not sure which to choose? In general, we recommend starting with **Parsl** for most HPC users. For a more feature-rich workflow orchestration platform, we recommend trying **Prefect** or **Jobflow** depending on your needs. Some additional opinions on the matter:
-
-    - Covalent: You want a visual dashboard and are prioritizing the use of distributed compute resources, especially cloud compute.
-    - Dask: You already are familiar with the Dask ecosystem and are happy to stick with it.
-    - Parsl: You want to run many workflows as fast as possible on one or more job scheduler-based HPC machines.
-    - Prefect: You want a visual dashboard with a robust workflow management platform and are familiar with the basic concepts of workflow orchestration.
-    - Redun: You are running calculations on AWS.
-    - Jobflow: You are familiar with using MongoDB.
+    Not sure which to choose? If you simply want to launch lots of calculations, we recommend starting with **Parsl**. For a more feature-rich workflow orchestration platform, we recommend using **Prefect** or **Jobflow** depending on your needs. Some additional opinions on the matter.
 
 === "Covalent"
 
