@@ -236,7 +236,7 @@ def test_full_preset():
     assert calc.parameters == params
 
 
-def test_full_preset2():
+def test_full_preset_r2scan():
     params = {
         "algo": "all",
         "ediff": 1e-05,
@@ -373,7 +373,7 @@ def test_full_preset2():
     assert calc.parameters == params
 
 
-def test_full_preset3():
+def test_full_preset_hse06():
     params = {
         "algo": "all",
         "ediff": 1e-05,
