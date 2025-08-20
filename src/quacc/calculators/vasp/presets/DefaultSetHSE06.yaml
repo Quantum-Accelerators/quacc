@@ -1,0 +1,6 @@
+# Last modified: 08-16-2025
+inputs:
+  algo: all
+  ivdw: 12
+  xc: HSE06
+parent: DefaultSetPBE
