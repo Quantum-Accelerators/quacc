@@ -8,9 +8,11 @@ from typing import TYPE_CHECKING
 from monty.json import jsanitize
 
 if TYPE_CHECKING:
+    from importlib.util import find_spec
     from typing import Any
 
-    from maggma.core import Store
+    if find_spec("maggma"):
+        from maggma.core import Store
 
 
 def results_to_db(store: Store, results: dict[str, Any] | list[dict]) -> None:
