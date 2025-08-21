@@ -42,7 +42,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-db.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
