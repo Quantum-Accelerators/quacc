@@ -76,7 +76,7 @@ def test_presets_basic(preset):
     calc = Vasp(atoms, preset=preset)
     atoms.calc = calc
     assert calc.xc.lower() == "pbe"
-    assert calc.string_params["algo"] == "normal"
+    assert calc.string_params["algo"] == "fast"
     assert calc.exp_params["ediff"] == 1e-5
     assert calc.float_params["encut"] == 520
 
@@ -86,7 +86,7 @@ def test_presets2():
     atoms[-1].symbol = "Fe"
     calc = Vasp(atoms, xc="rpbe", preset="SlabSetPBE")
     assert calc.xc.lower() == "rpbe"
-    assert calc.string_params["algo"] == "normal"
+    assert calc.string_params["algo"] == "fast"
     assert calc.exp_params["ediff"] == 1e-5
     assert calc.float_params["encut"] == 520
 
@@ -842,7 +842,7 @@ def test_algo():
     assert calc.string_params["algo"] == "all"
 
     calc = Vasp(atoms, xc="hse06")
-    assert calc.string_params["algo"] == "normal"
+    assert calc.string_params["algo"] == "fast"
 
 
 def test_algo_aggressive():
@@ -859,7 +859,7 @@ def test_algo_aggressive():
         assert calc.string_params["algo"] == "all"
 
         calc = Vasp(atoms, xc="hse06")
-        assert calc.string_params["algo"] == "normal"
+        assert calc.string_params["algo"] == "fast"
 
 
 def test_kpar():
