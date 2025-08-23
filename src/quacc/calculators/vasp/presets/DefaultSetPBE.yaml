@@ -1,6 +1,6 @@
 # Last modified: 08-16-2025
 inputs:
-  algo: normal
+  algo: fast
   ediff: 1.0e-5
   ediffg: -0.02
   efermi: midgap
