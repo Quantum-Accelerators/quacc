@@ -842,7 +842,7 @@ def test_algo():
     assert calc.string_params["algo"] == "all"
 
     calc = Vasp(atoms, xc="hse06")
-    assert calc.string_params["algo"] == "fast"
+    assert calc.string_params["algo"] == "normal"
 
 
 def test_algo_aggressive():
@@ -859,7 +859,7 @@ def test_algo_aggressive():
         assert calc.string_params["algo"] == "all"
 
         calc = Vasp(atoms, xc="hse06")
-        assert calc.string_params["algo"] == "fast"
+        assert calc.string_params["algo"] == "normal"
 
 
 def test_kpar():
