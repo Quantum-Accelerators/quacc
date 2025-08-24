@@ -198,7 +198,7 @@ def test_non_scf_job2(patch_metallic_taskdoc):
     output = non_scf_job(
         atoms,
         MOCKED_DIR / "metallic",
-        preset="DefaultSetPBE",
+        preset="DefaultSetGGA",
         nbands_factor=1,
         calculate_optics=True,
     )
@@ -224,7 +224,7 @@ def test_non_scf_job2(patch_metallic_taskdoc):
 def test_non_scf_job3(patch_metallic_taskdoc):
     atoms = bulk("Al")
     output = non_scf_job(
-        atoms, MOCKED_DIR / "metallic", preset="DefaultSetPBE", kpts_mode="line"
+        atoms, MOCKED_DIR / "metallic", preset="DefaultSetGGA", kpts_mode="line"
     )
     assert np.shape(output["parameters"]["kpts"]) == (250, 3)
     assert output["parameters"]["sigma"] == 0.2
@@ -234,7 +234,7 @@ def test_non_scf_job3(patch_metallic_taskdoc):
 def test_non_scf_job4(patch_nonmetallic_taskdoc):
     atoms = bulk("Si")
     output = non_scf_job(
-        atoms, MOCKED_DIR / "nonmetallic", preset="DefaultSetPBE", kpts_mode="line"
+        atoms, MOCKED_DIR / "nonmetallic", preset="DefaultSetGGA", kpts_mode="line"
     )
     assert np.shape(output["parameters"]["kpts"]) == (193, 3)
     assert output["parameters"]["sigma"] == 0.01

@@ -64,9 +64,9 @@ def test_vanilla_vasp():
 @pytest.mark.parametrize(
     "preset",
     [
-        "DefaultSetPBE",
-        Path(presets.__file__).parent / "DefaultSetPBE.yaml",
-        str(Path(presets.__file__).parent / "DefaultSetPBE.yaml"),
+        "DefaultSetGGA",
+        Path(presets.__file__).parent / "DefaultSetGGA.yaml",
+        str(Path(presets.__file__).parent / "DefaultSetGGA.yaml"),
     ],
 )
 def test_presets_basic(preset):
@@ -99,6 +99,418 @@ def test_presets_mp():
     assert calc.xc.lower() == "scan"
     assert calc.string_params["algo"].lower() == "all"
     assert calc.exp_params["ediff"] == 1e-5
+
+
+def test_gga_preset():
+    params = {
+        "algo": "fast",
+        "ediff": 1e-05,
+        "ediffg": -0.02,
+        "efermi": "midgap",
+        "encut": 520,
+        "gamma": True,
+        "gga": "PE",
+        "gga_compat": False,
+        "ibrion": 2,
+        "ismear": 0,
+        "ivdw": 12,
+        "kpts": [12, 12, 12],
+        "lasph": True,
+        "lcharg": False,
+        "lmaxmix": 4,
+        "lorbit": 11,
+        "lreal": False,
+        "lwave": False,
+        "nelm": 150,
+        "nelmin": 3,
+        "nsw": 100,
+        "pp": "PBE",
+        "prec": "accurate",
+        "setups": {
+            "Ac": "",
+            "Ag": "",
+            "Al": "",
+            "Am": "",
+            "Ar": "",
+            "As": "",
+            "At": "",
+            "Au": "",
+            "B": "",
+            "Ba": "_sv",
+            "Be": "",
+            "Bi": "_d",
+            "Br": "",
+            "C": "",
+            "Ca": "_sv",
+            "Cd": "",
+            "Ce": "",
+            "Cf": "",
+            "Cl": "",
+            "Cm": "",
+            "Co": "",
+            "Cr": "_pv",
+            "Cs": "_sv",
+            "Cu": "",
+            "Dy": "_3",
+            "Er": "_3",
+            "Eu": "_3",
+            "F": "",
+            "Fe": "",
+            "Fr": "_sv",
+            "Ga": "_d",
+            "Gd": "_3",
+            "Ge": "_d",
+            "H": "",
+            "He": "",
+            "Hf": "_pv",
+            "Hg": "",
+            "Ho": "_3",
+            "I": "",
+            "In": "_d",
+            "Ir": "",
+            "K": "_sv",
+            "Kr": "",
+            "La": "",
+            "Li": "_sv",
+            "Lu": "_3",
+            "Mg": "",
+            "Mn": "_pv",
+            "Mo": "_sv",
+            "N": "",
+            "Na": "_pv",
+            "Nb": "_sv",
+            "Nd": "_3",
+            "Ne": "",
+            "Ni": "",
+            "Np": "",
+            "O": "",
+            "Os": "",
+            "P": "",
+            "Pa": "",
+            "Pb": "_d",
+            "Pd": "",
+            "Pm": "_3",
+            "Po": "_d",
+            "Pr": "_3",
+            "Pt": "",
+            "Pu": "",
+            "Ra": "_sv",
+            "Rb": "_sv",
+            "Re": "",
+            "Rh": "_pv",
+            "Rn": "",
+            "Ru": "_pv",
+            "S": "",
+            "Sb": "",
+            "Sc": "_sv",
+            "Se": "",
+            "Si": "",
+            "Sm": "_3",
+            "Sn": "_d",
+            "Sr": "_sv",
+            "Ta": "_pv",
+            "Tb": "_3",
+            "Tc": "_pv",
+            "Te": "",
+            "Th": "",
+            "Ti": "_sv",
+            "Tl": "_d",
+            "Tm": "_3",
+            "U": "",
+            "V": "_sv",
+            "W": "_sv",
+            "Xe": "",
+            "Y": "_sv",
+            "Yb": "_3",
+            "Zn": "",
+            "Zr": "_sv",
+        },
+        "sigma": 0.05,
+        "xc": "pbe",
+    }
+
+    atoms = bulk("Cu")
+
+    calc = Vasp(atoms, preset="DefaultSetGGA", nsw=100)
+    calc.parameters.pop("ncore")
+    assert calc.parameters == params
+
+
+def test_metagga_preset():
+    params = {
+        "algo": "all",
+        "bparam": 11.95,
+        "cparam": 0.0093,
+        "ediff": 1e-05,
+        "ediffg": -0.02,
+        "efermi": "midgap",
+        "encut": 520,
+        "gamma": True,
+        "gga_compat": False,
+        "ibrion": 2,
+        "ismear": 0,
+        "kpts": [12, 12, 12],
+        "lasph": True,
+        "lcharg": False,
+        "lmaxmix": 4,
+        "lorbit": 11,
+        "lreal": False,
+        "lwave": False,
+        "metagga": "R2SCAN",
+        "nelm": 150,
+        "nelmin": 3,
+        "nsw": 100,
+        "pp": "PBE",
+        "prec": "accurate",
+        "setups": {
+            "Ac": "",
+            "Ag": "",
+            "Al": "",
+            "Am": "",
+            "Ar": "",
+            "As": "",
+            "At": "",
+            "Au": "",
+            "B": "",
+            "Ba": "_sv",
+            "Be": "",
+            "Bi": "_d",
+            "Br": "",
+            "C": "",
+            "Ca": "_sv",
+            "Cd": "",
+            "Ce": "",
+            "Cf": "",
+            "Cl": "",
+            "Cm": "",
+            "Co": "",
+            "Cr": "_pv",
+            "Cs": "_sv",
+            "Cu": "",
+            "Dy": "_3",
+            "Er": "_3",
+            "Eu": "_3",
+            "F": "",
+            "Fe": "",
+            "Fr": "_sv",
+            "Ga": "_d",
+            "Gd": "_3",
+            "Ge": "_d",
+            "H": "",
+            "He": "",
+            "Hf": "_pv",
+            "Hg": "",
+            "Ho": "_3",
+            "I": "",
+            "In": "_d",
+            "Ir": "",
+            "K": "_sv",
+            "Kr": "",
+            "La": "",
+            "Li": "_sv",
+            "Lu": "_3",
+            "Mg": "",
+            "Mn": "_pv",
+            "Mo": "_sv",
+            "N": "",
+            "Na": "_pv",
+            "Nb": "_sv",
+            "Nd": "_3",
+            "Ne": "",
+            "Ni": "",
+            "Np": "",
+            "O": "",
+            "Os": "",
+            "P": "",
+            "Pa": "",
+            "Pb": "_d",
+            "Pd": "",
+            "Pm": "_3",
+            "Po": "_d",
+            "Pr": "_3",
+            "Pt": "",
+            "Pu": "",
+            "Ra": "_sv",
+            "Rb": "_sv",
+            "Re": "",
+            "Rh": "_pv",
+            "Rn": "",
+            "Ru": "_pv",
+            "S": "",
+            "Sb": "",
+            "Sc": "_sv",
+            "Se": "",
+            "Si": "",
+            "Sm": "_3",
+            "Sn": "_d",
+            "Sr": "_sv",
+            "Ta": "_pv",
+            "Tb": "_3",
+            "Tc": "_pv",
+            "Te": "",
+            "Th": "",
+            "Ti": "_sv",
+            "Tl": "_d",
+            "Tm": "_3",
+            "U": "",
+            "V": "_sv",
+            "W": "_sv",
+            "Xe": "",
+            "Y": "_sv",
+            "Yb": "_3",
+            "Zn": "",
+            "Zr": "_sv",
+        },
+        "sigma": 0.05,
+        "xc": "r2scan+rvv10",
+    }
+
+    atoms = bulk("Cu")
+
+    calc = Vasp(atoms, preset="DefaultSetMetaGGA", nsw=100)
+    calc.parameters.pop("ncore")
+    assert calc.parameters == params
+
+
+def test_hybrid_preset():
+    params = {
+        "algo": "all",
+        "ediff": 1e-05,
+        "ediffg": -0.02,
+        "efermi": "midgap",
+        "encut": 520,
+        "gamma": True,
+        "gga": "PE",
+        "gga_compat": False,
+        "hfscreen": 0.2,
+        "ibrion": 2,
+        "ismear": 0,
+        "ivdw": 12,
+        "kpts": [12, 12, 12],
+        "lasph": True,
+        "lcharg": False,
+        "lhfcalc": True,
+        "lmaxmix": 4,
+        "lorbit": 11,
+        "lreal": False,
+        "lwave": False,
+        "nelm": 150,
+        "nelmin": 3,
+        "nsw": 100,
+        "pp": "PBE",
+        "prec": "accurate",
+        "setups": {
+            "Ac": "",
+            "Ag": "",
+            "Al": "",
+            "Am": "",
+            "Ar": "",
+            "As": "",
+            "At": "",
+            "Au": "",
+            "B": "",
+            "Ba": "_sv",
+            "Be": "",
+            "Bi": "_d",
+            "Br": "",
+            "C": "",
+            "Ca": "_sv",
+            "Cd": "",
+            "Ce": "",
+            "Cf": "",
+            "Cl": "",
+            "Cm": "",
+            "Co": "",
+            "Cr": "_pv",
+            "Cs": "_sv",
+            "Cu": "",
+            "Dy": "_3",
+            "Er": "_3",
+            "Eu": "_3",
+            "F": "",
+            "Fe": "",
+            "Fr": "_sv",
+            "Ga": "_d",
+            "Gd": "_3",
+            "Ge": "_d",
+            "H": "",
+            "He": "",
+            "Hf": "_pv",
+            "Hg": "",
+            "Ho": "_3",
+            "I": "",
+            "In": "_d",
+            "Ir": "",
+            "K": "_sv",
+            "Kr": "",
+            "La": "",
+            "Li": "_sv",
+            "Lu": "_3",
+            "Mg": "",
+            "Mn": "_pv",
+            "Mo": "_sv",
+            "N": "",
+            "Na": "_pv",
+            "Nb": "_sv",
+            "Nd": "_3",
+            "Ne": "",
+            "Ni": "",
+            "Np": "",
+            "O": "",
+            "Os": "",
+            "P": "",
+            "Pa": "",
+            "Pb": "_d",
+            "Pd": "",
+            "Pm": "_3",
+            "Po": "_d",
+            "Pr": "_3",
+            "Pt": "",
+            "Pu": "",
+            "Ra": "_sv",
+            "Rb": "_sv",
+            "Re": "",
+            "Rh": "_pv",
+            "Rn": "",
+            "Ru": "_pv",
+            "S": "",
+            "Sb": "",
+            "Sc": "_sv",
+            "Se": "",
+            "Si": "",
+            "Sm": "_3",
+            "Sn": "_d",
+            "Sr": "_sv",
+            "Ta": "_pv",
+            "Tb": "_3",
+            "Tc": "_pv",
+            "Te": "",
+            "Th": "",
+            "Ti": "_sv",
+            "Tl": "_d",
+            "Tm": "_3",
+            "U": "",
+            "V": "_sv",
+            "W": "_sv",
+            "Xe": "",
+            "Y": "_sv",
+            "Yb": "_3",
+            "Zn": "",
+            "Zr": "_sv",
+        },
+        "sigma": 0.05,
+        "vdw_a1": 0.383,
+        "vdw_a2": 5.685,
+        "vdw_s6": 1.0,
+        "vdw_s8": 2.31,
+        "xc": "hse06",
+    }
+
+    atoms = bulk("Cu")
+
+    calc = Vasp(atoms, preset="DefaultSetHybrid", nsw=100)
+    calc.parameters.pop("ncore")
+    assert calc.parameters == params
 
 
 def test_rosen_preset1():
@@ -418,7 +830,7 @@ def test_li_sv4(caplog):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].symbol = "Li"
     with caplog.at_level(WARNING):
-        Vasp(atoms, isif=3, nsw=2, preset="DefaultSetPBE")
+        Vasp(atoms, isif=3, nsw=2, preset="DefaultSetGGA")
     assert "Pulay" in caplog.text
 
 
@@ -523,7 +935,7 @@ def test_kspacing():
     calc = Vasp(atoms, kspacing=100, ismear=-5)
     assert calc.int_params["ismear"] == -5
 
-    calc = Vasp(atoms, kspacing=0.1, preset="DefaultSetPBE")
+    calc = Vasp(atoms, kspacing=0.1, preset="DefaultSetGGA")
     assert calc.float_params["kspacing"] == 0.1
     assert calc.kpts is None
 
@@ -560,7 +972,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert atoms.get_chemical_symbols() == ["Cu", "Cu", "Cu", "Fe"]
     assert atoms.get_initial_magnetic_moments().tolist() == [2.0] * (len(atoms) - 1) + [
@@ -569,7 +981,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 
     atoms = bulk("Zn") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    calc = Vasp(atoms, preset="DefaultSetPBE", preset_mag_default=2.5)
+    calc = Vasp(atoms, preset="DefaultSetGGA", preset_mag_default=2.5)
     atoms.calc = calc
     assert atoms.get_initial_magnetic_moments().tolist() == [2.5] * (len(atoms) - 1) + [
         5.0
@@ -604,33 +1016,33 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([0.0] * len(atoms))
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_mag)
     mags = atoms.get_magnetic_moments()
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.array_equal(atoms.get_initial_magnetic_moments(), mags) is True
 
     atoms = deepcopy(atoms_mag)
-    calc = Vasp(atoms, preset="DefaultSetPBE", mag_cutoff=2.0)
+    calc = Vasp(atoms, preset="DefaultSetGGA", mag_cutoff=2.0)
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_mag)
     assert atoms.get_magnetic_moments()[0] == 0.468
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert atoms.get_initial_magnetic_moments()[0] == 0.468
 
     atoms = deepcopy(atoms_nomag)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"energy": -1.0}  # mock calculation run
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
@@ -638,73 +1050,73 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = deepcopy(atoms_nomag)
     calc = SinglePointDFTCalculator(atoms, magmoms=[0.0] * len(atoms))
     atoms.calc = calc
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_nomag)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [0.0] * len(atoms)}
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_nomag)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
 
     atoms = deepcopy(atoms_nospin)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
     atoms.calc.results = {"magmoms": [1.0] * len(atoms)}
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 1.0)
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="DefaultSetPBE", copy_magmoms=False)
+    calc = Vasp(atoms, preset="DefaultSetGGA", copy_magmoms=False)
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 2.0)
     atoms.calc.results = {"magmoms": [3.0] * len(atoms)}
-    calc = Vasp(atoms, preset="DefaultSetPBE", copy_magmoms=False)
+    calc = Vasp(atoms, preset="DefaultSetGGA", copy_magmoms=False)
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 2.0)
 
     atoms = bulk("Mg")
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0.5)
     atoms.calc.results = {"magmoms": [0.0] * len(atoms)}
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = bulk("Mg")
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0.5)
     atoms.calc.results = {"magmoms": [-0.01] * len(atoms)}
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = bulk("Mg")
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == 0.5)
     atoms.calc.results = {"magmoms": [-5] * len(atoms)}
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert np.all(atoms.get_initial_magnetic_moments() == -5)
 
@@ -713,28 +1125,28 @@ def test_prep_magmoms2(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = deepcopy(atoms_mag)
     mags = atoms.get_magnetic_moments()
     atoms = prep_next_run(atoms, move_magmoms=True)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert atoms.get_initial_magnetic_moments().tolist() == mags.tolist()
 
     atoms = deepcopy(atoms_nomag)
     atoms = prep_next_run(atoms, move_magmoms=True)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_nospin)
     atoms = prep_next_run(atoms, move_magmoms=True)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
 
     atoms = deepcopy(atoms_mag)
     atoms = prep_next_run(atoms, move_magmoms=True)
-    calc = Vasp(atoms, preset="DefaultSetPBE", mag_cutoff=10.0)
+    calc = Vasp(atoms, preset="DefaultSetGGA", mag_cutoff=10.0)
     atoms.calc = calc
     assert atoms.has("initial_magmoms") is True
     assert np.all(atoms.get_initial_magnetic_moments() == 0)
@@ -745,7 +1157,7 @@ def test_prep_magmoms2(atoms_mag, atoms_nomag, atoms_nospin):
     atoms.calc.results = {"energy": -1.0, "magmoms": [0.0] * len(atoms)}
     atoms = prep_next_run(atoms, move_magmoms=True)
     atoms *= (2, 2, 2)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     np.all(atoms.get_initial_magnetic_moments() == 0.0)
 
@@ -755,7 +1167,7 @@ def test_prep_magmoms2(atoms_mag, atoms_nomag, atoms_nospin):
     atoms.calc.results = {"energy": -1.0, "magmoms": [-0.02] * len(atoms)}
     atoms = prep_next_run(atoms, move_magmoms=True)
     atoms *= (2, 2, 2)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     np.all(atoms.get_initial_magnetic_moments() == 0.0)
 
@@ -765,24 +1177,24 @@ def test_prep_magmoms2(atoms_mag, atoms_nomag, atoms_nospin):
     atoms.calc.results = {"energy": -1.0}
     atoms = prep_next_run(atoms, move_magmoms=True)
     atoms *= (2, 2, 2)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     np.all(atoms.get_initial_magnetic_moments() == 0.0)
 
     atoms = bulk("Mg")
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     atoms.calc.results = {"energy": -1.0, "magmoms": [3.14] * len(atoms)}
     atoms = prep_next_run(atoms, move_magmoms=True)
     atoms *= (2, 2, 2)
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     atoms.calc = calc
     np.all(atoms.get_initial_magnetic_moments() == 3.14)
 
 
 def test_unused_flags():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="DefaultSetPBE", potim=1.5, nsw=0)
+    calc = Vasp(atoms, preset="DefaultSetGGA", potim=1.5, nsw=0)
     assert calc.int_params["nsw"] == 0
     assert calc.exp_params["ediffg"] is None
     assert calc.int_params["isif"] is None
@@ -1108,7 +1520,7 @@ def test_dispersion():
 
 def test_setups():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
@@ -1122,15 +1534,15 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == "_pv"
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, setups=FILE_DIR / "test_setups.yaml", preset="DefaultSetPBE")
+    calc = Vasp(atoms, setups=FILE_DIR / "test_setups.yaml", preset="DefaultSetGGA")
     assert calc.parameters["setups"]["Cu"] == "_sv"
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, setups="setups_vasp_recommended.yaml", preset="DefaultSetPBE")
+    calc = Vasp(atoms, setups="setups_vasp_recommended.yaml", preset="DefaultSetGGA")
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, setups="minimal", preset="DefaultSetPBE")
+    calc = Vasp(atoms, setups="minimal", preset="DefaultSetGGA")
     assert isinstance(calc.parameters["setups"], str)
     assert calc.parameters["setups"] == "minimal"
 
@@ -1143,16 +1555,16 @@ def test_setups():
 
 def test_kpoint_schemes():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="DefaultSetPBE")
+    calc = Vasp(atoms, preset="DefaultSetGGA")
     assert calc.kpts == [12, 12, 12]
     assert calc.float_params.get("kspacing", None) is None
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, kpts=[1, 1, 1], preset="DefaultSetPBE")
+    calc = Vasp(atoms, kpts=[1, 1, 1], preset="DefaultSetGGA")
     assert calc.kpts == [1, 1, 1]
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="DefaultSetPBE", kspacing=0.1)
+    calc = Vasp(atoms, preset="DefaultSetGGA", kspacing=0.1)
     assert calc.kpts is None
     assert calc.float_params["kspacing"] == 0.1
 
@@ -1173,7 +1585,7 @@ def test_kpoint_schemes():
     assert isinstance(calc.kpts[0], int)
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="DefaultSetPBE", pmg_kpts={"kppa": 1000}, gamma=False)
+    calc = Vasp(atoms, preset="DefaultSetGGA", pmg_kpts={"kppa": 1000}, gamma=False)
     assert calc.kpts == [10, 10, 10]
     assert calc.input_params["gamma"] is False
 
@@ -1245,7 +1657,7 @@ def test_bad():
 def test_preset_override():
     atoms = bulk("Cu")
 
-    calc = Vasp(atoms, preset="DefaultSetPBE", efermi=None)
+    calc = Vasp(atoms, preset="DefaultSetGGA", efermi=None)
     assert calc.parameters.get("efermi") is None
 
 
