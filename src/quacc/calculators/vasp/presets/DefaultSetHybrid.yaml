@@ -1,0 +1,6 @@
+# Last modified: 08-23-2025
+# HSE06-D3(BJ)
+inputs:
+  algo: all
+  xc: HSE06
+parent: DefaultSetGGA

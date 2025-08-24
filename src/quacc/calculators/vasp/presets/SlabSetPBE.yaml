@@ -3,4 +3,4 @@ inputs:
   auto_dipole: true
   pmg_kpts:
     length_densities: [50, 50, 1]
-parent: DefaultSetPBE
+parent: DefaultSetGGA

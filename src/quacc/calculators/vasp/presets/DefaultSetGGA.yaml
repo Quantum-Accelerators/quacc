@@ -1,4 +1,5 @@
-# Last modified: 08-16-2025
+# Last modified: 08-22-2025
+# PBE-D3(BJ)
 inputs:
   algo: fast
   ediff: 1.0e-5

@@ -1,0 +1,7 @@
+# Last modified: 08-23-2025
+# r2SCAN-D4
+inputs:
+  algo: all
+  ivdw: 13
+  xc: r2SCAN
+parent: DefaultSetGGA

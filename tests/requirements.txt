@@ -1,4 +1,4 @@
-ase==3.26.0
+ase @ git+https://gitlab.com/ase/ase.git
 custodian==2025.8.13
 emmet-core==0.84.9
 frozendict==2.4.6
