@@ -239,8 +239,6 @@ def test_gga_preset():
 def test_metagga_preset():
     params = {
         "algo": "all",
-        "bparam": 11.95,
-        "cparam": 0.0093,
         "ediff": 1e-05,
         "ediffg": -0.02,
         "efermi": "midgap",
@@ -249,6 +247,7 @@ def test_metagga_preset():
         "gga_compat": False,
         "ibrion": 2,
         "ismear": 0,
+        "ivdw": 13,
         "kpts": [12, 12, 12],
         "lasph": True,
         "lcharg": False,
@@ -256,7 +255,6 @@ def test_metagga_preset():
         "lorbit": 11,
         "lreal": False,
         "lwave": False,
-        "luse_vdw": True,
         "metagga": "R2SCAN",
         "nelm": 150,
         "nelmin": 3,
@@ -363,7 +361,11 @@ def test_metagga_preset():
             "Zr": "_sv",
         },
         "sigma": 0.05,
-        "xc": "r2scan+rvv10",
+        "xc": "r2scan",
+        "vdw_s6": 1.0,
+        "vdw_s8": 0.60187490,
+        "vdw_a1": 0.51559235,
+        "vdw_a2": 5.77342911,
     }
 
     atoms = bulk("Cu")

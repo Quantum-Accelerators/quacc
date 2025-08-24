@@ -2,6 +2,6 @@
 # r2SCAN+rVV10
 inputs:
   algo: all
-  ivdw: null
-  xc: r2SCAN+rVV10
+  ivdw: 13
+  xc: r2SCAN
 parent: DefaultSetGGA
