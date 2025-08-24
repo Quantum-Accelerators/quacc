@@ -256,6 +256,7 @@ def test_metagga_preset():
         "lorbit": 11,
         "lreal": False,
         "lwave": False,
+        "luse_vdw": True,
         "metagga": "R2SCAN",
         "nelm": 150,
         "nelmin": 3,
