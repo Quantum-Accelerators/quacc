@@ -1,4 +1,5 @@
 # Last modified: 08-01-2023
+# NOTE: You must use the VASP .54 PAW PBE pseudopotentials
 inputs:
   algo: all
   pmg_kpts:
