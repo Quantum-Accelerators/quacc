@@ -257,19 +257,6 @@ def get_param_swaps(
             )
 
     if (
-        calc.string_params["metagga"]
-        and calc.string_params["metagga"].lower() == "r2scan"
-        and calc.int_params["ivdw"]
-        and calc.int_params["ivdw"] == 13
-        and not calc.float_params["vdw_s6"]
-        and not calc.float_params["vdw_s8"]
-        and not calc.float_params["vdw_a1"]
-        and not calc.float_params["vdw_a2"]
-    ):
-        LOGGER.info("Setting VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN-D4.")
-        calc.set(vdw_s6=1.0, vdw_s8=0.60187490, vdw_a1=0.51559235, vdw_a2=5.77342911)
-
-    if (
         calc.bool_params["lhfcalc"]
         and calc.bool_params["lhfcalc"] is True
         and calc.float_params["hfscreen"]
