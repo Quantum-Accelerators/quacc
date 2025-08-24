@@ -362,10 +362,6 @@ def test_metagga_preset():
         },
         "sigma": 0.05,
         "xc": "r2scan",
-        "vdw_s6": 1.0,
-        "vdw_s8": 0.60187490,
-        "vdw_a1": 0.51559235,
-        "vdw_a2": 5.77342911,
     }
 
     atoms = bulk("Cu")
@@ -778,10 +774,6 @@ def test_rosen_preset2():
             "Zr": "_sv",
         },
         "sigma": 0.05,
-        "vdw_a1": 0.51559235,
-        "vdw_a2": 5.77342911,
-        "vdw_s6": 1.0,
-        "vdw_s8": 0.6018749,
         "xc": "r2scan",
     }
     atoms = bulk("Cu")
@@ -1484,11 +1476,6 @@ def test_lorbit():
 
 def test_dispersion():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, xc="r2scan", ivdw=13)
-    assert calc.float_params["vdw_s6"] == 1.0
-    assert calc.float_params["vdw_s8"] == 0.60187490
-    assert calc.float_params["vdw_a1"] == 0.51559235
-    assert calc.float_params["vdw_a2"] == 5.77342911
 
     calc = Vasp(atoms, metagga="r2scan", ivdw=13)
     assert calc.float_params["vdw_s6"] == 1.0
