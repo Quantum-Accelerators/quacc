@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "1.0.1"
+version = "1.0.2"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
@@ -28,10 +28,9 @@ classifiers = [
 requires-python = ">=3.10"
 dependencies = [
     "ase>=3.26.0", # for Atoms object and calculators
-    "custodian>=2025.5.12", # for automated error corrections
+    "custodian>=2025.8.13", # for automated error corrections
     "emmet-core>=0.84.6", # for pre-made schemas
     "frozendict>=2.4.6", # for caching of dictionaries in @lru_cache
-    "maggma>=0.64.0", # for database handling
     "monty>=2024.5.15", # miscellaneous Python utilities
     "numpy>=1.25.0", # for array handling
     "psutil", # for getting compute architecture details
@@ -45,6 +44,7 @@ dependencies = [
 [project.optional-dependencies]
 covalent = ["covalent>=0.234.1-rc.0; platform_system!='Windows'", "covalent-cloud>=0.39.0; platform_system!='Windows'"]
 dask = ["dask[distributed]>=2023.12.1", "dask-jobqueue>=0.8.2"]
+db = ["maggma>=0.64.0"]
 defects = ["pymatgen-analysis-defects>=2024.10.22", "shakenbreak>=3.2.0"]
 jobflow = ["jobflow>=0.1.14", "jobflow-remote>=0.1.0"]
 mlp1 = ["torch-dftd>=0.4.0", "sevenn>=0.10.1",  "orb-models>=0.4.1", "fairchem-core>=2.2.0"]
