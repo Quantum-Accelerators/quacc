@@ -1,5 +1,5 @@
 """
-Materials Project-compatible recipes.
+Materials Project-compatible recipes using the MP24 sets.
 
 !!! Important
 
@@ -174,19 +174,19 @@ def mp_metagga_relax_flow(
 
     1. MP-compatible pre-relax
         - name: "mpa_prerelax_job"
-        - job: [quacc.recipes.vasp.mp.mp_prerelax_job][]
+        - job: [quacc.recipes.vasp.mp24.mp_prerelax_job][]
 
     2. MP-compatible relax
         - name: "mp_metagga_relax_job"
-        - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
+        - job: [quacc.recipes.vasp.mp24.mp_metagga_relax_job][]
 
     3. MP-compatible (second) relax
         - name: "mp_metagga_relax_job"
-        - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
+        - job: [quacc.recipes.vasp.mp24.mp_metagga_relax_job][]
 
     4. MP-compatible static
         - name: "mp_metagga_static_job"
-        - job: [quacc.recipes.vasp.mp.mp_metagga_static_job][]
+        - job: [quacc.recipes.vasp.mp24.mp_metagga_static_job][]
 
     Parameters
     ----------
