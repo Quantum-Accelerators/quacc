@@ -25,11 +25,20 @@ if has_atomate2:
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Any
+    from typing import Any, TypedDict
 
     from ase.atoms import Atoms
 
-    from quacc.types import MPMetaGGARelaxFlowSchema, SourceDirectory, VaspSchema
+    from quacc.types import SourceDirectory, VaspSchema
+
+    class MPMetaGGARelaxFlowSchema(TypedDict):
+        """Type hint associated with the MP meta-GGA relaxation flows."""
+
+        prerelax: VaspSchema
+        relax1: VaspSchema
+        relax2: VaspSchema
+        static: VaspSchema
+
 
 _MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
 
@@ -70,7 +79,7 @@ def mp_prerelax_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP PBESol Pre-Relax"},
-            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+            copy_files={prev_dir: ["WAVECAR*"]},
         )
 
 
@@ -109,7 +118,7 @@ def mp_metagga_relax_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP r2SCAN Relax"},
-            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+            copy_files={prev_dir: ["WAVECAR*"]},
         )
 
 
@@ -149,7 +158,7 @@ def mp_metagga_static_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP r2SCAN Static"},
-            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+            copy_files={prev_dir: ["WAVECAR*"]},
         )
 
 
