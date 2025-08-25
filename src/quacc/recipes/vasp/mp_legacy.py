@@ -130,15 +130,15 @@ def mp_gga_relax_flow(
 
     1. MP-compatible relax
         - name: "mp_gga_relax_job"
-        - job: [quacc.recipes.vasp.mp.mp_gga_relax_job][]
+        - job: [quacc.recipes.vasp.mp_legacy.mp_gga_relax_job][]
 
     2. MP-compatible (second) relax
         - name: "mp_gga_relax_job"
-        - job: [quacc.recipes.vasp.mp.mp_gga_relax_job][]
+        - job: [quacc.recipes.vasp.mp_lmp_legacyegacy.mp_gga_relax_job][]
 
     3. MP-compatible static
         - name: "mp_gga_static_job"
-        - job: [quacc.recipes.vasp.mp.mp_gga_static_job][]
+        - job: [quacc.recipes.vasp.mp_legacy.mp_gga_static_job][]
 
     Parameters
     ----------
