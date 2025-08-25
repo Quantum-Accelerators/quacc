@@ -1,5 +1,5 @@
 """
-Materials Project-compatible recipes.
+Materials Project-compatible recipes using the MP24 sets.
 
 !!! Important
 
