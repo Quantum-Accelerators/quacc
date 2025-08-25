@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.3]
+
+### Added
+
+- The "old" MP recipes are back, now under the `quacc.recipes.vasp.mp_legacy` module
+
+### Changed
+
+- The "new" MP recipes are moved from `quacc.recipes.vasp.mp` to `quacc.recipes.vasp.mp24`
+- The MP recipes, both new and old, no longer copy CHGCARs between runs because this never did anything in the first place
+
+### Fixed
+
+- Fixed a bug that would lead to a crash when setting `Atoms=None` in the `MPtoASEConverter`
+
 ## [1.0.2]
 
 ### Added
