@@ -480,6 +480,8 @@ class MPtoASEConverter:
         if self.atoms:
             self.ase_sort, self.ase_resort = Vasp_()._make_sort(self.atoms)
             self.structure = AseAtomsAdaptor.get_structure(self.atoms[self.ase_sort])
+        else:
+            self.structure = None
 
     def convert_dict_set(self, dict_set: DictSet) -> dict:
         """
@@ -488,21 +490,22 @@ class MPtoASEConverter:
         Parameters
         ----------
         dict_set
-            The pymatgen DictSet.
+            The instantiated Pymatgen DictSet.
 
         Returns
         -------
         dict
             The ASE VASP parameters.
         """
-        input_set = dict_set(sort_structure=False)
-        vasp_input = input_set.get_input_set(
+        assert hasattr(dict_set, "sort_structure")
+        dict_set.sort_structure = False
+        vasp_input = dict_set.get_input_set(
             structure=self.structure, potcar_spec=True, prev_dir=self.prev_dir
         )
         self.incar_dict = vasp_input["INCAR"]
         self.pmg_kpts = vasp_input.get("KPOINTS")
         self.potcar_symbols = vasp_input["POTCAR.spec"].split("\n")
-        self.potcar_functional = input_set.potcar_functional
+        self.potcar_functional = dict_set.potcar_functional
         self.poscar = vasp_input["POSCAR"]
         return self._convert()
 
@@ -514,14 +517,14 @@ class MPtoASEConverter:
         Parameters
         ----------
         VaspMaker
-            The atomate2 VaspMaker.
+            The instantiated atomate2 VaspMaker.
 
         Returns
         -------
         dict
             The ASE VASP parameters.
         """
-        input_set_generator = VaspMaker().input_set_generator
+        input_set_generator = VaspMaker.input_set_generator
         assert hasattr(input_set_generator, "sort_structure")
         input_set_generator.sort_structure = False
         input_set = input_set_generator.get_input_set(
@@ -549,6 +552,7 @@ class MPtoASEConverter:
         """
         self.incar_dict = {k.lower(): v for k, v in self.incar_dict.items()}
         pp = self.potcar_functional.split("_")[0]
+        assert pp.lower() in ["lda", "pw91", "pbe"]
         potcar_setups = {symbol.split("_")[0]: symbol for symbol in self.potcar_symbols}
         for k, v in potcar_setups.items():
             if k in v:

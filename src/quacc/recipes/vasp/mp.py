@@ -61,7 +61,7 @@ def mp_prerelax_job(
         See the type-hint for the data structure.
     """
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
-        MP24PreRelaxMaker
+        MP24PreRelaxMaker()
     )
     with change_settings(_MP_SETTINGS):
         return run_and_summarize(
@@ -100,7 +100,7 @@ def mp_metagga_relax_job(
         Dictionary of results.
     """
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
-        MP24RelaxMaker
+        MP24RelaxMaker()
     )
     with change_settings(_MP_SETTINGS):
         return run_and_summarize(
@@ -140,7 +140,7 @@ def mp_metagga_static_job(
         See the type-hint for the data structure.
     """
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
-        MP24StaticMaker
+        MP24StaticMaker()
     )
     with change_settings(_MP_SETTINGS):
         return run_and_summarize(
