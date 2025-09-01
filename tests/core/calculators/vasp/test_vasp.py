@@ -101,6 +101,15 @@ def test_presets_mp():
     assert calc.exp_params["ediff"] == 1e-5
 
 
+def test_isearch():
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, algo="all")
+    assert calc.int_params["isearch"] == 1
+
+    calc = Vasp(atoms, algo="all", isearch=0)
+    assert calc.int_params["isearch"] == 0
+
+
 def test_gga_preset():
     params = {
         "algo": "fast",
@@ -246,6 +255,7 @@ def test_metagga_preset():
         "gamma": True,
         "gga_compat": False,
         "ibrion": 2,
+        "isearch": 1,
         "ismear": 0,
         "ivdw": 13,
         "kpts": [12, 12, 12],
@@ -387,6 +397,7 @@ def test_hybrid_preset():
         "gga_compat": False,
         "hfscreen": 0.2,
         "ibrion": 2,
+        "isearch": 1,
         "ismear": 0,
         "ivdw": 12,
         "kpts": [12, 12, 12],
@@ -527,6 +538,7 @@ def test_rosen_preset1():
         "gga": "PE",
         "gga_compat": False,
         "ibrion": 2,
+        "isearch": 1,
         "ismear": 0,
         "ivdw": 12,
         "kpts": None,
@@ -662,6 +674,7 @@ def test_rosen_preset2():
         "gamma": None,
         "gga_compat": False,
         "ibrion": 2,
+        "isearch": 1,
         "ismear": 0,
         "ivdw": 13,
         "kpts": None,

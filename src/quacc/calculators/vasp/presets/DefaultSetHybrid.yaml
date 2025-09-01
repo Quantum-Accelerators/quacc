@@ -2,5 +2,6 @@
 # HSE06-D3(BJ)
 inputs:
   algo: all
+  isearch: 1
   xc: HSE06
 parent: DefaultSetGGA

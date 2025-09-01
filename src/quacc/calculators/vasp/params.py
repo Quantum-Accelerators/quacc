@@ -88,7 +88,7 @@ def get_param_swaps(
         not calc.string_params["algo"] or calc.string_params["algo"].lower() != "all"
     ):
         LOGGER.info("Recommending ALGO = All because you have a meta-GGA calculation.")
-        calc.set(algo="all")
+        calc.set(algo="all", isearch=1)
 
     if calc.bool_params["lhfcalc"] and (
         not calc.string_params["algo"]
@@ -230,6 +230,15 @@ def get_param_swaps(
         calc.set(isym=-1)
 
     if (
+        calc.string_params["algo"]
+        and calc.string_params["algo"].lower() == "all"
+        and not calc.int_params["isearch"]
+        and calc.int_params["isearch"] != 1
+    ):
+        LOGGER.info("Recommending ISEARCH = 1 because you have ALGO = All.")
+        calc.set(isearch=1)
+
+    if (
         calc.int_params.get("isif", 2) in (3, 6, 7, 8)
         and calc.int_params["nsw"]
         and calc.int_params["nsw"] > 0
@@ -259,7 +268,6 @@ def get_param_swaps(
     if (
         calc.string_params["metagga"]
         and calc.string_params["metagga"].lower() == "r2scan"
-        and calc.int_params["ivdw"]
         and calc.int_params["ivdw"] == 13
         and not calc.float_params["vdw_s6"]
         and not calc.float_params["vdw_s8"]
@@ -270,11 +278,8 @@ def get_param_swaps(
         calc.set(vdw_s6=1.0, vdw_s8=0.60187490, vdw_a1=0.51559235, vdw_a2=5.77342911)
 
     if (
-        calc.bool_params["lhfcalc"]
-        and calc.bool_params["lhfcalc"] is True
-        and calc.float_params["hfscreen"]
+        calc.bool_params["lhfcalc"] is True
         and calc.float_params["hfscreen"] == 0.2
-        and calc.int_params["ivdw"]
         and calc.int_params["ivdw"] == 12
         and not calc.float_params["vdw_s6"]
         and not calc.float_params["vdw_s8"]
