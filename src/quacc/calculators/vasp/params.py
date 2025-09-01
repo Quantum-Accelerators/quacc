@@ -231,7 +231,7 @@ def get_param_swaps(
 
     if (
         calc.string_params["algo"]
-        and calc.string_params["algo"].lower() == "all"
+        and calc.string_params["algo"].lower() in ("all", "conjugate")
         and not calc.int_params["isearch"]
         and calc.int_params["isearch"] != 1
     ):
