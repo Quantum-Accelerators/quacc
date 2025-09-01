@@ -122,10 +122,9 @@ plugins:
         python:
           import:
             - https://docs.python.org/3/objects.inv
-            - https://wiki.fysik.dtu.dk/ase/objects.inv
+            - https://ase-lib.org/objects.inv
             - https://pymatgen.org/objects.inv
             - https://materialsproject.github.io/pymatgen-analysis-defects/objects.inv
-            - https://materialsproject.github.io/maggma/objects.inv
             - https://materialsproject.github.io/emmet/objects.inv
             - https://materialsproject.github.io/jobflow/objects.inv
             - https://numpy.org/doc/stable/objects.inv
