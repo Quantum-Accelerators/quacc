@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4]
+
+### Changed
+
+- When ALGO = "All" in VASP, ISEARCH is set to 1 per the VASP manual.
+
 ## [1.0.3]
 
 ### Added
