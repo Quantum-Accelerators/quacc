@@ -16,15 +16,20 @@ from quacc import change_settings, job
 from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
+    from typing import TypedDict
+
     from ase.atoms import Atoms
 
-    from quacc.types import (
-        Filenames,
-        OptSchema,
-        QMOFRelaxSchema,
-        SourceDirectory,
-        VaspSchema,
-    )
+    from quacc.types import Filenames, OptSchema, SourceDirectory, VaspSchema
+
+    class QMOFRelaxSchema(TypedDict):
+        """Type hint associated with the QMOF relaxation jobs."""
+
+        prerelax_lowacc: VaspSchema | None
+        position_relax_lowacc: VaspSchema
+        volume_relax_lowacc: VaspSchema | None
+        double_relax: VaspSchema
+
 
 LOGGER = getLogger(__name__)
 

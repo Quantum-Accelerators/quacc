@@ -637,22 +637,6 @@ if TYPE_CHECKING:
         relax1: VaspSchema
         relax2: VaspSchema
 
-    class MPMetaGGARelaxFlowSchema(TypedDict):
-        """Type hint associated with the MP meta-GGA relaxation flows."""
-
-        prerelax: VaspSchema
-        relax1: VaspSchema
-        relax2: VaspSchema
-        static: VaspSchema
-
-    class QMOFRelaxSchema(VaspSchema):
-        """Type hint associated with the QMOF relaxation jobs."""
-
-        prerelax_lowacc: VaspSchema | None
-        position_relax_lowacc: VaspSchema
-        volume_relax_lowacc: VaspSchema | None
-        double_relax: VaspSchema
-
     class VaspASEOptSchema(VaspSchema, OptSchema):
         """Type hint associated with VASP relaxations run via ASE"""
 

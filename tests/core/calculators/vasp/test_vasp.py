@@ -94,7 +94,7 @@ def test_presets2():
 def test_presets_mp():
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet())
     calc = Vasp(atoms, xc="scan", **parameters)
     assert calc.xc.lower() == "scan"
     assert calc.string_params["algo"].lower() == "all"
@@ -1013,7 +1013,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet())
     calc = Vasp(atoms, **parameters)
     atoms.calc = calc
     assert atoms.get_chemical_symbols() == ["Cu", "Cu", "Cu", "Fe"]
@@ -1022,7 +1022,7 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
     atoms = bulk("Cu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
     atoms.set_initial_magnetic_moments([3.14] * (len(atoms) - 1) + [1.0])
-    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet())
     calc = Vasp(atoms, **parameters)
     atoms.calc = calc
     assert atoms.get_initial_magnetic_moments().tolist() == [3.14] * (
@@ -1545,7 +1545,7 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet())
     calc = Vasp(atoms, **parameters)
     assert calc.parameters["setups"]["Cu"] == "_pv"
 
@@ -1701,7 +1701,7 @@ def test_bad_pmg_converter():
 
 def test_pmg_input_set():
     atoms = bulk("Cu")
-    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet())
     calc = Vasp(atoms, incar_copilot="off", **parameters)
     assert calc.parameters == {
         "algo": "fast",
@@ -1731,7 +1731,7 @@ def test_pmg_input_set():
 def test_pmg_input_set2():
     atoms = bulk("Fe") * (2, 1, 1)
     atoms[0].symbol = "O"
-    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet())
     calc = Vasp(atoms, incar_copilot="off", **parameters)
     assert calc.parameters == {
         "algo": "fast",
@@ -1770,7 +1770,7 @@ def test_ldau_mp():
     atoms.pbc = True
     atoms[0].position += 0.1
     atoms[1].position -= 0.1
-    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet)
+    parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPRelaxSet())
     assert len(parameters["ldauu"]) == 3
     assert parameters["ldauu"] == [0, 0, 3.9]
     assert len(parameters["magmom"]) == 4

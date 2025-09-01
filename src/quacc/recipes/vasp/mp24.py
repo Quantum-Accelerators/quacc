@@ -1,5 +1,5 @@
 """
-Materials Project-compatible recipes.
+Materials Project-compatible recipes using the MP24 sets.
 
 !!! Important
 
@@ -25,11 +25,20 @@ if has_atomate2:
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Any
+    from typing import Any, TypedDict
 
     from ase.atoms import Atoms
 
-    from quacc.types import MPMetaGGARelaxFlowSchema, SourceDirectory, VaspSchema
+    from quacc.types import SourceDirectory, VaspSchema
+
+    class MPMetaGGARelaxFlowSchema(TypedDict):
+        """Type hint associated with the MP meta-GGA relaxation flows."""
+
+        prerelax: VaspSchema
+        relax1: VaspSchema
+        relax2: VaspSchema
+        static: VaspSchema
+
 
 _MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
 
@@ -61,7 +70,7 @@ def mp_prerelax_job(
         See the type-hint for the data structure.
     """
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
-        MP24PreRelaxMaker
+        MP24PreRelaxMaker()
     )
     with change_settings(_MP_SETTINGS):
         return run_and_summarize(
@@ -70,7 +79,7 @@ def mp_prerelax_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP PBESol Pre-Relax"},
-            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+            copy_files={prev_dir: ["WAVECAR*"]},
         )
 
 
@@ -100,7 +109,7 @@ def mp_metagga_relax_job(
         Dictionary of results.
     """
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
-        MP24RelaxMaker
+        MP24RelaxMaker()
     )
     with change_settings(_MP_SETTINGS):
         return run_and_summarize(
@@ -109,7 +118,7 @@ def mp_metagga_relax_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP r2SCAN Relax"},
-            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+            copy_files={prev_dir: ["WAVECAR*"]},
         )
 
 
@@ -140,7 +149,7 @@ def mp_metagga_static_job(
         See the type-hint for the data structure.
     """
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
-        MP24StaticMaker
+        MP24StaticMaker()
     )
     with change_settings(_MP_SETTINGS):
         return run_and_summarize(
@@ -149,7 +158,7 @@ def mp_metagga_static_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP r2SCAN Static"},
-            copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+            copy_files={prev_dir: ["WAVECAR*"]},
         )
 
 
@@ -165,19 +174,19 @@ def mp_metagga_relax_flow(
 
     1. MP-compatible pre-relax
         - name: "mpa_prerelax_job"
-        - job: [quacc.recipes.vasp.mp.mp_prerelax_job][]
+        - job: [quacc.recipes.vasp.mp24.mp_prerelax_job][]
 
     2. MP-compatible relax
         - name: "mp_metagga_relax_job"
-        - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
+        - job: [quacc.recipes.vasp.mp24.mp_metagga_relax_job][]
 
     3. MP-compatible (second) relax
         - name: "mp_metagga_relax_job"
-        - job: [quacc.recipes.vasp.mp.mp_metagga_relax_job][]
+        - job: [quacc.recipes.vasp.mp24.mp_metagga_relax_job][]
 
     4. MP-compatible static
         - name: "mp_metagga_static_job"
-        - job: [quacc.recipes.vasp.mp.mp_metagga_static_job][]
+        - job: [quacc.recipes.vasp.mp24.mp_metagga_static_job][]
 
     Parameters
     ----------
