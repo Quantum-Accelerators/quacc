@@ -334,7 +334,7 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     """
     if user_calc_params.get("nsw", 0) == 0:
         # Turn off opt flags if NSW = 0
-        opt_flags = ("ediffg", "ibrion", "isif", "potim", "iopt")
+        opt_flags = ("ediffg", "ibrion", "potim", "iopt")
         for opt_flag in opt_flags:
             user_calc_params.pop(opt_flag, None)
 
