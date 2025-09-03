@@ -194,3 +194,6 @@ def run_custodian(
     )
 
     return c.run()
+
+if __name__ == "__main__":
+    run_custodian()
