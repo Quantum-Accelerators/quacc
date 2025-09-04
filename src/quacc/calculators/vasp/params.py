@@ -190,15 +190,14 @@ def get_param_swaps(
                 LOGGER.info(
                     f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
                 )
-                calc.set(ncore=ncore, npar=None)
+                calc.set(ncore=ncore)
                 break
 
     if (
         (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
         or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
     ) and (
-        calc.bool_params["lhfcalc"] is True
-        or calc.bool_params["lrpa"] is True
+        calc.bool_params["lrpa"] is True
         or calc.bool_params["lepsilon"] is True
         or calc.int_params["ibrion"] in [5, 6, 7, 8]
     ):
