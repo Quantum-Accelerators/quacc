@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import MutableMapping
+from collections.abc import Mapping
 from copy import deepcopy
 from logging import getLogger
 from typing import TYPE_CHECKING
@@ -28,10 +28,10 @@ class Remove:
 
 
 def recursive_dict_merge(
-    *dicts: MutableMapping[str, Any] | None,
+    *dicts: Mapping[str, Any] | None,
     remove_trigger: Any = Remove,
     verbose: bool = False,
-) -> MutableMapping[str, Any]:
+) -> Mapping[str, Any]:
     """
     Recursively merge several dictionaries, taking the latter in the list as higher
     preference. Also removes any entries that have a value of `remove_trigger` from the
@@ -52,7 +52,7 @@ def recursive_dict_merge(
 
     Returns
     -------
-    MutableMapping[str, Any]
+    Mapping[str, Any]
         Merged dictionary
     """
     old_dict = dicts[0]
@@ -63,10 +63,10 @@ def recursive_dict_merge(
 
 
 def _recursive_dict_pair_merge(
-    dict1: MutableMapping[str, Any] | None,
-    dict2: MutableMapping[str, Any] | None,
+    dict1: Mapping[str, Any] | None,
+    dict2: Mapping[str, Any] | None,
     verbose: bool = False,
-) -> MutableMapping[str, Any]:
+) -> Mapping[str, Any]:
     """
     Recursively merges two dictionaries. If a `None` is provided, it is assumed to be `{}`.
 
@@ -89,9 +89,7 @@ def _recursive_dict_pair_merge(
     merged = deepcopy(dict1)
     for key, value in dict2.items():
         if key in merged:
-            if isinstance(merged[key], MutableMapping) and isinstance(
-                value, MutableMapping
-            ):
+            if isinstance(merged[key], Mapping) and isinstance(value, Mapping):
                 merged[key] = _recursive_dict_pair_merge(
                     merged[key], value, verbose=verbose
                 )
@@ -106,8 +104,8 @@ def _recursive_dict_pair_merge(
 
 
 def remove_dict_entries(
-    start_dict: MutableMapping[str, Any], remove_trigger: Any
-) -> MutableMapping[str, Any]:
+    start_dict: Mapping[str, Any], remove_trigger: Any
+) -> Mapping[str, Any]:
     """
     For a given dictionary, recursively remove all items that are the `remove_trigger`.
 
@@ -123,7 +121,7 @@ def remove_dict_entries(
     dict
         Cleaned dictionary
     """
-    if isinstance(start_dict, MutableMapping):
+    if isinstance(start_dict, Mapping):
         return {
             k: remove_dict_entries(v, remove_trigger)
             for k, v in start_dict.items()
@@ -136,7 +134,7 @@ def remove_dict_entries(
     )
 
 
-def sort_dict(start_dict: MutableMapping[str, Any]) -> MutableMapping[str, Any]:
+def sort_dict(start_dict: Mapping[str, Any]) -> Mapping[str, Any]:
     """
     For a given dictionary, recursively sort all entries alphabetically by key.
 
@@ -151,12 +149,12 @@ def sort_dict(start_dict: MutableMapping[str, Any]) -> MutableMapping[str, Any]:
         Sorted dictionary
     """
     return {
-        k: sort_dict(dict(v)) if isinstance(v, MutableMapping) else v
+        k: sort_dict(dict(v)) if isinstance(v, Mapping) else v
         for k, v in sorted(start_dict.items())
     }
 
 
-def clean_dict(start_dict: MutableMapping[str, Any]) -> MutableMapping[str, Any]:
+def clean_dict(start_dict: Mapping[str, Any]) -> Mapping[str, Any]:
     """
     Clean up a task document dictionary by removing all entries that are None and
     sorting the dictionary alphabetically by key.
