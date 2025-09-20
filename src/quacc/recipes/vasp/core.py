@@ -338,7 +338,7 @@ def non_scf_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Non-SCF"} | (additional_fields or {}),
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]},
+        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]} if prev_dir else None,
     )
 
 

@@ -83,7 +83,6 @@ class Runner(BaseRunner):
         -------
         None
         """
-        self.copy_files = copy_files
         if isinstance(atoms, list):
             self.atoms = [image.copy() for image in atoms]
             for image in self.atoms:
@@ -91,7 +90,7 @@ class Runner(BaseRunner):
         else:
             self.atoms = atoms.copy()
             self.atoms.calc = calculator
-            self.setup()
+            self.setup(copy_files=copy_files)
 
     def run_calc(
         self, properties: list[str] | None = None, geom_file: str | None = None

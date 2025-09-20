@@ -50,9 +50,9 @@ class GenericRunner(BaseRunner):
         self.command: Final[list[str]] = split(command)
         self.environment = environment
 
-        super().__init__(copy_files=copy_files)
+        super().__init__()
 
-        self.setup()
+        self.setup(copy_files=copy_files)
 
     def run_cmd(self) -> CompletedProcess:
         """
