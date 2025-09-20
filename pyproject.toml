@@ -77,9 +77,7 @@ documentation = "https://quantum-accelerators.github.io/quacc/"
 changelog = "https://github.com/Quantum-Accelerators/quacc/blob/main/CHANGELOG.md"
 
 [tool.setuptools.package-data]
-quacc = ["py.typed"]
-"quacc.calculators.vasp.presets" = ["*.yaml"]
-"quacc.calculators.espresso.presets" = ["*.yaml"]
+quacc = ["py.typed", "*.yaml"]
 
 [tool.pyright]
 include = ["quacc"]
