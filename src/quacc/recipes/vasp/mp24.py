@@ -79,7 +79,7 @@ def mp_prerelax_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP PBESol Pre-Relax"},
-            copy_files={prev_dir: ["WAVECAR*"]},
+            copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
         )
 
 
@@ -118,7 +118,7 @@ def mp_metagga_relax_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP r2SCAN Relax"},
-            copy_files={prev_dir: ["WAVECAR*"]},
+            copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
         )
 
 
@@ -158,7 +158,7 @@ def mp_metagga_static_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP r2SCAN Static"},
-            copy_files={prev_dir: ["WAVECAR*"]},
+            copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
         )
 
 

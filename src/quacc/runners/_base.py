@@ -24,23 +24,28 @@ class BaseRunner:
     ----------
     atoms
         Atoms object with calculator attached (or no Atoms object at all).
-    copy_files
-        Files to copy to runtime directory.
     """
 
     atoms: Atoms | None = None
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None
 
-    def setup(self) -> None:
+    def setup(
+        self,
+        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    ) -> None:
         """
         Perform setup operations on the runtime directory.
+
+        Parameters
+        ----------
+        copy_files
+            Files to copy to runtime directory.
 
         Returns
         -------
         None
         """
         self.tmpdir, self.job_results_dir = calc_setup(
-            self.atoms, copy_files=self.copy_files
+            self.atoms, copy_files=copy_files
         )
 
     def cleanup(self) -> None:
