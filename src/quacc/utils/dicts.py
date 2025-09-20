@@ -56,6 +56,7 @@ def recursive_dict_merge(
         Merged dictionary
     """
     old_dict = dicts[0]
+    merged = {}
     for i in range(len(dicts) - 1):
         merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1], verbose=verbose)
         old_dict = deepcopy(merged)
