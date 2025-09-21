@@ -1039,3 +1039,6 @@ def test_matpes(patch_metallic_taskdoc):
         "sigma": 0.05,
         "xc": "hse06",
     }
+
+    with pytest.raises(ValueError, match="Unsupported value"):
+        matpes_static_job(bulk("Al"), level="m06")
