@@ -99,7 +99,7 @@ def matpes_static_job(
     elif level.lower() == "hse06":
         calc_defaults |= {"algo": "all", "isearch": 1, "xc": "hse06"}
     else:
-        raise ValueError(f"Unsupport value for {level}")
+        raise ValueError(f"Unsupported value for {level}")
 
     return run_and_summarize(
         atoms,
