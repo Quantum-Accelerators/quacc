@@ -387,7 +387,7 @@ def test_metagga_preset():
 
 def test_hybrid_preset():
     params = {
-        "algo": "all",
+        "algo": "normal",
         "ediff": 1e-05,
         "ediffg": -0.02,
         "efermi": "midgap",
@@ -397,7 +397,6 @@ def test_hybrid_preset():
         "gga_compat": False,
         "hfscreen": 0.2,
         "ibrion": 2,
-        "isearch": 1,
         "ismear": 0,
         "ivdw": 12,
         "kpts": [12, 12, 12],
