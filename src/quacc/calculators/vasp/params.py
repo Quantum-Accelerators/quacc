@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
@@ -58,7 +59,7 @@ def get_param_swaps(
         The updated user-provided calculator parameters.
     """
     is_metal = check_is_metal(input_atoms)
-    calc = Vasp_(**user_calc_params)
+    calc = Vasp_(**remove_unused_flags(user_calc_params))
     max_Z = input_atoms.get_atomic_numbers().max()
 
     if calc.parameters.get("lmaxmix", 2) < 6 and max_Z > 56:
@@ -328,13 +329,16 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     dict
         The updated user-provided calculator parameters.
     """
-    if user_calc_params.get("nsw", 0) == 0:
+    new_user_calc_params = deepcopy(user_calc_params)
+    if new_user_calc_params.get("nsw", 0) == 0:
         # Turn off opt flags if NSW = 0
         opt_flags = ("ediffg", "ibrion", "potim", "iopt")
         for opt_flag in opt_flags:
-            user_calc_params.pop(opt_flag, None)
+            new_user_calc_params.pop(opt_flag, None)
 
-    if not user_calc_params.get("ldau", False) and not user_calc_params.get("ldau_luj"):
+    if not new_user_calc_params.get("ldau", False) and not new_user_calc_params.get(
+        "ldau_luj"
+    ):
         # Turn off +U flags if +U is not even used
         ldau_flags = (
             "ldau",
@@ -346,25 +350,25 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
             "ldau_luj",
         )
         for ldau_flag in ldau_flags:
-            user_calc_params.pop(ldau_flag, None)
+            new_user_calc_params.pop(ldau_flag, None)
 
     # Handle kspacing flags
-    if user_calc_params.get("kspacing"):
-        user_calc_params["gamma"] = None
-        user_calc_params["kpts"] = None
+    if new_user_calc_params.get("kspacing"):
+        new_user_calc_params["gamma"] = None
+        new_user_calc_params["kpts"] = None
     else:
-        user_calc_params.pop("kgamma", None)
+        new_user_calc_params.pop("kgamma", None)
 
     # Remove None keys
     none_keys = [
         k
-        for k, v in user_calc_params.items()
+        for k, v in new_user_calc_params.items()
         if v is None and k not in Vasp_().input_params
     ]
     for none_key in none_keys:
-        del user_calc_params[none_key]
+        del new_user_calc_params[none_key]
 
-    return user_calc_params
+    return new_user_calc_params
 
 
 def normalize_params(user_calc_params: dict[str, Any]) -> dict[str, Any]:

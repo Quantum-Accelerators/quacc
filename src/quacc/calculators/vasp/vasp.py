@@ -150,7 +150,7 @@ class Vasp(Vasp_):
         self.elemental_magmoms = elemental_magmoms
         self.pmg_kpts = pmg_kpts
         self.auto_dipole = auto_dipole
-        self.kwargs = kwargs
+        self.kwargs = normalize_params(kwargs)
 
         # Initialize for later
         self.user_calc_params: dict[str, Any] = {}
@@ -236,7 +236,7 @@ class Vasp(Vasp_):
 
         # Collect all the calculator parameters and prioritize the kwargs in the
         # case of duplicates.
-        self.user_calc_params = remove_unused_flags(calc_preset_inputs | self.kwargs)
+        self.user_calc_params = calc_preset_inputs | self.kwargs
 
         # Allow the user to use setups='mysetups.yaml' to load in a custom
         # setups from a YAML file
@@ -293,9 +293,7 @@ class Vasp(Vasp_):
         )
 
         # Clean up the user calc parameters
-        self.user_calc_params = sort_dict(
-            normalize_params(remove_unused_flags(self.user_calc_params))
-        )
+        self.user_calc_params = sort_dict(remove_unused_flags(self.user_calc_params))
 
     def _run(
         self,
