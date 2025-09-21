@@ -44,20 +44,20 @@ def atoms_nospin():
 
 def test_vanilla_vasp():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, incar_copilot=False)
+    calc = Vasp(atoms, incar_copilot="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, use_custodian=False, incar_copilot=False)
+    calc = Vasp(atoms, use_custodian=False, incar_copilot="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot=False)
+    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot="off")
     assert calc.input_params["gamma"] is None
     assert calc.kpts is None
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, encut=None, incar_copilot=False)
+    calc = Vasp(atoms, encut=None, incar_copilot="off")
     assert calc.asdict() == Vasp_().asdict()
 
 
@@ -76,9 +76,9 @@ def test_presets_basic(preset):
     calc = Vasp(atoms, preset=preset)
     atoms.calc = calc
     assert calc.xc.lower() == "pbe"
-    assert calc.string_params["algo"] == "fast"
+    assert calc.parameters["algo"] == "fast"
     assert calc.exp_params["ediff"] == 1e-5
-    assert calc.float_params["encut"] == 520
+    assert calc.parameters["encut"] == 520
 
 
 def test_presets2():
@@ -86,9 +86,9 @@ def test_presets2():
     atoms[-1].symbol = "Fe"
     calc = Vasp(atoms, xc="rpbe", preset="SlabSetPBE")
     assert calc.xc.lower() == "rpbe"
-    assert calc.string_params["algo"] == "fast"
+    assert calc.parameters["algo"] == "fast"
     assert calc.exp_params["ediff"] == 1e-5
-    assert calc.float_params["encut"] == 520
+    assert calc.parameters["encut"] == 520
 
 
 def test_presets_mp():
@@ -97,17 +97,17 @@ def test_presets_mp():
     parameters = MPtoASEConverter(atoms=atoms).convert_dict_set(MPScanRelaxSet())
     calc = Vasp(atoms, xc="scan", **parameters)
     assert calc.xc.lower() == "scan"
-    assert calc.string_params["algo"].lower() == "all"
+    assert calc.parameters["algo"].lower() == "all"
     assert calc.exp_params["ediff"] == 1e-5
 
 
 def test_isearch():
     atoms = bulk("Cu")
     calc = Vasp(atoms, algo="all")
-    assert calc.int_params["isearch"] == 1
+    assert calc.parameters["isearch"] == 1
 
     calc = Vasp(atoms, algo="all", isearch=0)
-    assert calc.int_params["isearch"] == 0
+    assert calc.parameters["isearch"] == 0
 
 
 def test_gga_preset():
@@ -387,7 +387,7 @@ def test_metagga_preset():
 
 def test_hybrid_preset():
     params = {
-        "algo": "all",
+        "algo": "normal",
         "ediff": 1e-05,
         "ediffg": -0.02,
         "efermi": "midgap",
@@ -397,7 +397,6 @@ def test_hybrid_preset():
         "gga_compat": False,
         "hfscreen": 0.2,
         "ibrion": 2,
-        "isearch": 1,
         "ismear": 0,
         "ivdw": 12,
         "kpts": [12, 12, 12],
@@ -527,295 +526,19 @@ def test_hybrid_preset():
     assert calc.parameters == params
 
 
-def test_rosen_preset1():
-    params = {
-        "algo": "all",
-        "ediff": 1e-06,
-        "ediffg": -0.02,
-        "efermi": "midgap",
-        "encut": 520,
-        "gamma": None,
-        "gga": "PE",
-        "gga_compat": False,
-        "ibrion": 2,
-        "isearch": 1,
-        "ismear": 0,
-        "ivdw": 12,
-        "kpts": None,
-        "kspacing": 0.2,
-        "lasph": True,
-        "lcharg": False,
-        "lmaxmix": 4,
-        "lorbit": 11,
-        "lreal": False,
-        "lwave": False,
-        "nelm": 150,
-        "nelmin": 3,
-        "nsw": 100,
-        "pp": "PBE",
-        "prec": "accurate",
-        "setups": {
-            "Ac": "",
-            "Ag": "",
-            "Al": "",
-            "Am": "",
-            "Ar": "",
-            "As": "",
-            "At": "",
-            "Au": "",
-            "B": "",
-            "Ba": "_sv",
-            "Be": "",
-            "Bi": "_d",
-            "Br": "",
-            "C": "",
-            "Ca": "_sv",
-            "Cd": "",
-            "Ce": "",
-            "Cf": "",
-            "Cl": "",
-            "Cm": "",
-            "Co": "",
-            "Cr": "_pv",
-            "Cs": "_sv",
-            "Cu": "",
-            "Dy": "_3",
-            "Er": "_3",
-            "Eu": "_3",
-            "F": "",
-            "Fe": "",
-            "Fr": "_sv",
-            "Ga": "_d",
-            "Gd": "_3",
-            "Ge": "_d",
-            "H": "",
-            "He": "",
-            "Hf": "_pv",
-            "Hg": "",
-            "Ho": "_3",
-            "I": "",
-            "In": "_d",
-            "Ir": "",
-            "K": "_sv",
-            "Kr": "",
-            "La": "",
-            "Li": "_sv",
-            "Lu": "_3",
-            "Mg": "",
-            "Mn": "_pv",
-            "Mo": "_sv",
-            "N": "",
-            "Na": "_pv",
-            "Nb": "_sv",
-            "Nd": "_3",
-            "Ne": "",
-            "Ni": "",
-            "Np": "",
-            "O": "",
-            "Os": "",
-            "P": "",
-            "Pa": "",
-            "Pb": "_d",
-            "Pd": "",
-            "Pm": "_3",
-            "Po": "_d",
-            "Pr": "_3",
-            "Pt": "",
-            "Pu": "",
-            "Ra": "_sv",
-            "Rb": "_sv",
-            "Re": "",
-            "Rh": "_pv",
-            "Rn": "",
-            "Ru": "_pv",
-            "S": "",
-            "Sb": "",
-            "Sc": "_sv",
-            "Se": "",
-            "Si": "",
-            "Sm": "_3",
-            "Sn": "_d",
-            "Sr": "_sv",
-            "Ta": "_pv",
-            "Tb": "_3",
-            "Tc": "_pv",
-            "Te": "",
-            "Th": "",
-            "Ti": "_sv",
-            "Tl": "_d",
-            "Tm": "_3",
-            "U": "",
-            "V": "_sv",
-            "W": "_sv",
-            "Xe": "",
-            "Y": "_sv",
-            "Yb": "_3",
-            "Zn": "",
-            "Zr": "_sv",
-        },
-        "sigma": 0.05,
-        "xc": "pbe",
-    }
-
-    atoms = bulk("Cu")
-
-    calc = Vasp(atoms, preset="RosenSetPBE", nsw=100)
-    calc.parameters.pop("ncore")
-    assert calc.parameters == params
-
-
-def test_rosen_preset2():
-    params = {
-        "algo": "all",
-        "ediff": 1e-06,
-        "ediffg": -0.02,
-        "efermi": "midgap",
-        "encut": 520,
-        "gamma": None,
-        "gga_compat": False,
-        "ibrion": 2,
-        "isearch": 1,
-        "ismear": 0,
-        "ivdw": 13,
-        "kpts": None,
-        "kspacing": 0.2,
-        "lasph": True,
-        "lcharg": False,
-        "lmaxmix": 4,
-        "lorbit": 11,
-        "lreal": False,
-        "lwave": False,
-        "metagga": "R2SCAN",
-        "nelm": 150,
-        "nelmin": 3,
-        "nsw": 100,
-        "pp": "PBE",
-        "prec": "accurate",
-        "setups": {
-            "Ac": "",
-            "Ag": "",
-            "Al": "",
-            "Am": "",
-            "Ar": "",
-            "As": "",
-            "At": "",
-            "Au": "",
-            "B": "",
-            "Ba": "_sv",
-            "Be": "",
-            "Bi": "_d",
-            "Br": "",
-            "C": "",
-            "Ca": "_sv",
-            "Cd": "",
-            "Ce": "",
-            "Cf": "",
-            "Cl": "",
-            "Cm": "",
-            "Co": "",
-            "Cr": "_pv",
-            "Cs": "_sv",
-            "Cu": "",
-            "Dy": "_3",
-            "Er": "_3",
-            "Eu": "_3",
-            "F": "",
-            "Fe": "",
-            "Fr": "_sv",
-            "Ga": "_d",
-            "Gd": "_3",
-            "Ge": "_d",
-            "H": "",
-            "He": "",
-            "Hf": "_pv",
-            "Hg": "",
-            "Ho": "_3",
-            "I": "",
-            "In": "_d",
-            "Ir": "",
-            "K": "_sv",
-            "Kr": "",
-            "La": "",
-            "Li": "_sv",
-            "Lu": "_3",
-            "Mg": "",
-            "Mn": "_pv",
-            "Mo": "_sv",
-            "N": "",
-            "Na": "_pv",
-            "Nb": "_sv",
-            "Nd": "_3",
-            "Ne": "",
-            "Ni": "",
-            "Np": "",
-            "O": "",
-            "Os": "",
-            "P": "",
-            "Pa": "",
-            "Pb": "_d",
-            "Pd": "",
-            "Pm": "_3",
-            "Po": "_d",
-            "Pr": "_3",
-            "Pt": "",
-            "Pu": "",
-            "Ra": "_sv",
-            "Rb": "_sv",
-            "Re": "",
-            "Rh": "_pv",
-            "Rn": "",
-            "Ru": "_pv",
-            "S": "",
-            "Sb": "",
-            "Sc": "_sv",
-            "Se": "",
-            "Si": "",
-            "Sm": "_3",
-            "Sn": "_d",
-            "Sr": "_sv",
-            "Ta": "_pv",
-            "Tb": "_3",
-            "Tc": "_pv",
-            "Te": "",
-            "Th": "",
-            "Ti": "_sv",
-            "Tl": "_d",
-            "Tm": "_3",
-            "U": "",
-            "V": "_sv",
-            "W": "_sv",
-            "Xe": "",
-            "Y": "_sv",
-            "Yb": "_3",
-            "Zn": "",
-            "Zr": "_sv",
-        },
-        "sigma": 0.05,
-        "vdw_a1": 0.51559235,
-        "vdw_a2": 5.77342911,
-        "vdw_s6": 1.0,
-        "vdw_s8": 0.6018749,
-        "xc": "r2scan",
-    }
-    atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="RosenSetR2SCAN", nsw=100)
-    calc.parameters.pop("ncore")
-    assert calc.parameters == params
-
-
 def test_lmaxmix():
     atoms = bulk("Cu")
     calc = Vasp(atoms)
-    assert calc.int_params["lmaxmix"] == 4
+    assert calc.parameters["lmaxmix"] == 4
 
     atoms = bulk("Ce")
     calc = Vasp(atoms)
-    assert calc.int_params["lmaxmix"] == 6
+    assert calc.parameters["lmaxmix"] == 6
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[-1].symbol = "Ce"
     calc = Vasp(atoms)
-    assert calc.int_params["lmaxmix"] == 6
+    assert calc.parameters["lmaxmix"] == 6
 
 
 def test_li_sv(caplog):
@@ -909,69 +632,69 @@ def test_autodipole():
     atoms = bulk("Cu")
     com = atoms.get_center_of_mass(scaled=True)
     calc = Vasp(atoms, auto_dipole=True)
-    assert calc.bool_params["ldipol"] is True
-    assert calc.int_params["idipol"] == 3
-    assert np.array_equal(calc.list_float_params["dipol"], com)
+    assert calc.parameters["ldipol"] is True
+    assert calc.parameters["idipol"] == 3
+    assert np.array_equal(calc.parameters["dipol"], com)
 
     calc = Vasp(atoms, auto_dipole=True, idipol=2)
-    assert calc.bool_params["ldipol"] is True
-    assert calc.int_params["idipol"] == 2
-    assert np.array_equal(calc.list_float_params["dipol"], com)
+    assert calc.parameters["ldipol"] is True
+    assert calc.parameters["idipol"] == 2
+    assert np.array_equal(calc.parameters["dipol"], com)
 
     calc = Vasp(atoms, preset="SlabSetPBE")
-    assert calc.bool_params["ldipol"] is True
-    assert calc.int_params["idipol"] == 3
-    assert np.array_equal(calc.list_float_params["dipol"], com)
+    assert calc.parameters["ldipol"] is True
+    assert calc.parameters["idipol"] == 3
+    assert np.array_equal(calc.parameters["dipol"], com)
 
     calc = Vasp(atoms, preset="SlabSetPBE", idipol=2)
-    assert calc.bool_params["ldipol"] is True
-    assert calc.int_params["idipol"] == 2
-    assert np.array_equal(calc.list_float_params["dipol"], com)
+    assert calc.parameters["ldipol"] is True
+    assert calc.parameters["idipol"] == 2
+    assert np.array_equal(calc.parameters["dipol"], com)
 
     calc = Vasp(atoms, auto_dipole=False, preset="SlabSetPBE", idipol=2)
-    assert calc.bool_params["ldipol"] is None
-    assert calc.int_params["idipol"] == 2
-    assert calc.list_float_params["dipol"] is None
+    assert calc.parameters.get("ldipol") is None
+    assert calc.parameters["idipol"] == 2
+    assert calc.parameters.get("dipol") is None
 
     calc = Vasp(atoms, auto_dipole=False, preset="SlabSetPBE", idipol=2)
-    assert calc.bool_params["ldipol"] is None
-    assert calc.int_params["idipol"] == 2
-    assert calc.list_float_params["dipol"] is None
+    assert calc.parameters.get("ldipol") is None
+    assert calc.parameters["idipol"] == 2
+    assert calc.parameters.get("dipol") is None
 
     calc = Vasp(atoms, lsorbit=True)
-    assert calc.bool_params["lsorbit"] is True
-    assert calc.int_params["isym"] == -1
+    assert calc.parameters["lsorbit"] is True
+    assert calc.parameters["isym"] == -1
 
 
 def test_kspacing():
     atoms = bulk("Cu")
     calc = Vasp(atoms, kspacing=0.1, ismear=-5)
-    assert calc.int_params["ismear"] == -5
+    assert calc.parameters["ismear"] == -5
 
     calc = Vasp(atoms, kspacing=100, ismear=-5)
-    assert calc.int_params["ismear"] == -5
+    assert calc.parameters["ismear"] == -5
 
     calc = Vasp(atoms, kspacing=0.1, preset="DefaultSetGGA")
-    assert calc.float_params["kspacing"] == 0.1
+    assert calc.parameters["kspacing"] == 0.1
     assert calc.kpts is None
 
     calc = Vasp(atoms, kspacing=0.1, gamma=True)
-    assert calc.float_params["kspacing"] == 0.1
+    assert calc.parameters["kspacing"] == 0.1
     assert calc.input_params["gamma"] is None
     assert calc.kpts is None
 
     calc = Vasp(atoms, kpts=[1, 1, 1], kgamma=True)
-    assert calc.bool_params["kgamma"] is None
+    assert calc.parameters.get("kgamma") is None
 
 
 def test_kspacing_aggressive():
     with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, kspacing=0.1, ismear=-5)
-        assert calc.int_params["ismear"] == -5
+        assert calc.parameters["ismear"] == -5
 
         calc = Vasp(atoms, kspacing=100, ismear=-5)
-        assert calc.int_params["ismear"] == 0
+        assert calc.parameters["ismear"] == 0
 
 
 def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
@@ -1211,33 +934,33 @@ def test_prep_magmoms2(atoms_mag, atoms_nomag, atoms_nospin):
 def test_unused_flags():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="DefaultSetGGA", potim=1.5, nsw=0)
-    assert calc.int_params["nsw"] == 0
-    assert calc.exp_params["ediffg"] is None
-    assert calc.int_params["isif"] is None
-    assert calc.float_params["potim"] is None
+    assert calc.parameters["nsw"] == 0
+    assert calc.parameters.get("ediffg") is None
+    assert calc.parameters.get("isif") is None
+    assert calc.parameters.get("potim") is None
 
     calc = Vasp(atoms, ldau=False, ldauprint=2)
-    assert calc.int_params["ldauprint"] is None
-    assert calc.bool_params["ldau"] is None
+    assert calc.parameters.get("ldauprint") is None
+    assert calc.parameters.get("ldau") is None
 
 
 def test_lasph():
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, xc="rpbe")
-    assert calc.bool_params["lasph"] is None
+    assert calc.parameters.get("lasph") is None
 
     calc = Vasp(atoms, xc="m06l")
-    assert calc.bool_params["lasph"] is True
+    assert calc.parameters["lasph"] is True
 
     calc = Vasp(atoms, xc="m06l", lasph=False)
-    assert calc.bool_params["lasph"] is False
+    assert calc.parameters["lasph"] is False
 
     calc = Vasp(atoms, xc="hse06")
-    assert calc.bool_params["lasph"] is True
+    assert calc.parameters["lasph"] is True
 
     calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
-    assert calc.bool_params["lasph"] is True
+    assert calc.parameters["lasph"] is True
 
 
 def test_lasph_aggressive():
@@ -1245,32 +968,29 @@ def test_lasph_aggressive():
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, xc="rpbe")
-        assert calc.bool_params["lasph"] is None
+        assert calc.parameters.get("lasph") is None
 
         calc = Vasp(atoms, xc="m06l")
-        assert calc.bool_params["lasph"] is True
+        assert calc.parameters["lasph"] is True
 
         calc = Vasp(atoms, xc="m06l", lasph=False)
-        assert calc.bool_params["lasph"] is True
+        assert calc.parameters["lasph"] is True
 
         calc = Vasp(atoms, xc="hse06")
-        assert calc.bool_params["lasph"] is True
+        assert calc.parameters["lasph"] is True
 
         calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
-        assert calc.bool_params["lasph"] is True
+        assert calc.parameters["lasph"] is True
 
 
 def test_algo():
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, xc="rpbe")
-    assert calc.string_params["algo"] is None
+    assert calc.parameters.get("algo") is None
 
     calc = Vasp(atoms, xc="m06l")
-    assert calc.string_params["algo"] == "all"
-
-    calc = Vasp(atoms, xc="hse06")
-    assert calc.string_params["algo"] == "normal"
+    assert calc.parameters["algo"] == "all"
 
 
 def test_algo_aggressive():
@@ -1278,30 +998,30 @@ def test_algo_aggressive():
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, xc="rpbe")
-        assert calc.string_params["algo"] is None
+        assert calc.parameters.get("algo") is None
 
         calc = Vasp(atoms, xc="m06l")
-        assert calc.string_params["algo"] == "all"
+        assert calc.parameters["algo"] == "all"
 
         calc = Vasp(atoms, xc="m06l", algo="fast")
-        assert calc.string_params["algo"] == "all"
+        assert calc.parameters["algo"] == "all"
 
-        calc = Vasp(atoms, xc="hse06")
-        assert calc.string_params["algo"] == "normal"
+        calc = Vasp(atoms, xc="hse06", algo="all")
+        assert calc.parameters["algo"] == "normal"
 
 
 def test_kpar():
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
-    assert calc.int_params["kpar"] == 4
+    assert calc.parameters["kpar"] == 4
 
     with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
         calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
-        assert calc.int_params["kpar"] == 4
+        assert calc.parameters["kpar"] == 4
 
         calc = Vasp(atoms, kpar=4)
-        assert calc.int_params["kpar"] == 1
+        assert calc.parameters["kpar"] == 1
 
 
 def test_isym_aggressive():
@@ -1309,19 +1029,19 @@ def test_isym_aggressive():
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, isym=2)
-        assert calc.int_params["isym"] == 2
+        assert calc.parameters["isym"] == 2
 
         calc = Vasp(atoms, isym=0)
-        assert calc.int_params["isym"] == 0
+        assert calc.parameters["isym"] == 0
 
         calc = Vasp(atoms, xc="hse06", isym=2)
-        assert calc.int_params["isym"] == 3
+        assert calc.parameters["isym"] == 3
 
         calc = Vasp(atoms, isym=2, nsw=100)
-        assert calc.int_params["isym"] == 2
+        assert calc.parameters["isym"] == 2
 
         calc = Vasp(atoms, xc="hse06", isym=2, nsw=100)
-        assert calc.int_params["isym"] == 3
+        assert calc.parameters["isym"] == 3
 
 
 def test_ncore_aggressive():
@@ -1330,27 +1050,27 @@ def test_ncore_aggressive():
 
         atoms *= (2, 2, 2)
         calc = Vasp(atoms, ncore=4)
-        assert calc.int_params["ncore"] == 4
+        assert calc.parameters["ncore"] == 4
 
         calc = Vasp(atoms, ncore=4, lhfcalc=True)
-        assert calc.int_params["ncore"] == 1
+        assert calc.parameters["ncore"] == 1
 
         calc = Vasp(atoms, npar=4, lhfcalc=True)
-        assert calc.int_params["ncore"] == 1
-        assert calc.int_params["npar"] is None
+        assert calc.parameters["ncore"] == 1
+        assert calc.parameters.get("npar") is None
 
 
 def test_ismear():
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, nsw=10)
-    assert calc.int_params["ismear"] is None
+    assert calc.parameters.get("ismear") is None
 
     calc = Vasp(atoms, nsw=0)
-    assert calc.int_params["ismear"] is None
+    assert calc.parameters.get("ismear") is None
 
     calc = Vasp(atoms, kpts=(10, 10, 10), nsw=0)
-    assert calc.int_params["ismear"] == -5
+    assert calc.parameters["ismear"] == -5
 
 
 def test_ismear_aggressive():
@@ -1358,80 +1078,80 @@ def test_ismear_aggressive():
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, nsw=10)
-        assert calc.int_params["ismear"] is None
+        assert calc.parameters.get("ismear") is None
 
         calc = Vasp(atoms, ismear=-5, nsw=10)
-        assert calc.int_params["ismear"] == 1
-        assert calc.float_params["sigma"] == 0.1
+        assert calc.parameters["ismear"] == 1
+        assert calc.parameters["sigma"] == 0.1
 
         calc = Vasp(atoms, ismear=-5, nsw=0)
-        assert calc.int_params["ismear"] == 0
+        assert calc.parameters["ismear"] == 0
 
         calc = Vasp(atoms, kpts=(10, 10, 10), ismear=-5, nsw=0)
-        assert calc.int_params["ismear"] == -5
+        assert calc.parameters["ismear"] == -5
 
         calc = Vasp(atoms, ismear=0, nsw=10)
-        assert calc.int_params["ismear"] == 0
+        assert calc.parameters["ismear"] == 0
 
         calc = Vasp(atoms, nsw=0)
-        assert calc.int_params["ismear"] is None
+        assert calc.parameters.get("ismear") is None
 
         calc = Vasp(atoms, ismear=-5, nsw=0)
-        assert calc.int_params["ismear"] == 0
+        assert calc.parameters["ismear"] == 0
 
         calc = Vasp(atoms, kpts=(10, 10, 10), nsw=0)
-        assert calc.int_params["ismear"] == -5
+        assert calc.parameters["ismear"] == -5
 
         calc = Vasp(atoms, pmg_kpts={"line_density": 100}, ismear=1)
-        assert calc.int_params["ismear"] == 0
-        assert calc.float_params["sigma"] == 0.01
+        assert calc.parameters["ismear"] == 0
+        assert calc.parameters["sigma"] == 0.01
         assert calc.todict()["reciprocal"] is True
 
         calc = Vasp(atoms, pmg_kpts={"line_density": 100}, ismear=0, sigma=1e-3)
-        assert calc.int_params["ismear"] == 0
-        assert calc.float_params["sigma"] == 1e-3
+        assert calc.parameters["ismear"] == 0
+        assert calc.parameters["sigma"] == 1e-3
         assert calc.todict()["reciprocal"] is True
 
         calc = Vasp(atoms, pmg_kpts={"line_density": 100}, ismear=-5)
-        assert calc.int_params["ismear"] == 0
+        assert calc.parameters["ismear"] == 0
         assert calc.todict()["reciprocal"] is True
 
         calc = Vasp(atoms, kspacing=1.0, ismear=-5)
-        assert calc.int_params["ismear"] == 0
+        assert calc.parameters["ismear"] == 0
 
         calc = Vasp(atoms, nsw=0, kspacing=1.0, ismear=1, sigma=0.1)
-        assert calc.int_params["ismear"] == 1
-        assert calc.float_params["sigma"] == 0.1
+        assert calc.parameters["ismear"] == 1
+        assert calc.parameters["sigma"] == 0.1
 
         atoms[0].symbol = "H"
         calc = Vasp(atoms, kpts=(10, 10, 10), ismear=-5, nsw=10)
-        assert calc.int_params["ismear"] == -5
+        assert calc.parameters["ismear"] == -5
 
 
 def test_laechg_aggressive():
     with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, nsw=10, laechg=True)
-        assert not calc.bool_params["laechg"]
+        assert not calc.parameters["laechg"]
 
         calc = Vasp(atoms, laechg=True)
-        assert calc.bool_params["laechg"]
+        assert calc.parameters["laechg"]
 
         calc = Vasp(atoms, nsw=0, laechg=True)
-        assert calc.bool_params["laechg"]
+        assert calc.parameters["laechg"]
 
         calc = Vasp(atoms, nsw=0, laechg=False)
-        assert not calc.bool_params["laechg"]
+        assert not calc.parameters["laechg"]
 
 
 def test_ldauprint():
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, ldau=True)
-    assert calc.int_params["ldauprint"] == 1
+    assert calc.parameters["ldauprint"] == 1
 
     calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
-    assert calc.int_params["ldauprint"] == 1
+    assert calc.parameters["ldauprint"] == 1
 
 
 def test_ldauprint_aggressive():
@@ -1439,99 +1159,99 @@ def test_ldauprint_aggressive():
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, ldau=True)
-        assert calc.int_params["ldauprint"] == 1
+        assert calc.parameters["ldauprint"] == 1
 
         calc = Vasp(atoms, ldau=True, ldauprint=0)
-        assert calc.int_params["ldauprint"] == 1
+        assert calc.parameters["ldauprint"] == 1
 
         calc = Vasp(atoms, ldau=False, ldauprint=1)
-        assert calc.int_params["ldauprint"] is None
+        assert calc.parameters.get("ldauprint") is None
 
         calc = Vasp(atoms, ldau_luj={"Cu": {"L": 2, "U": 5, "J": 0.0}})
-        assert calc.int_params["ldauprint"] == 1
+        assert calc.parameters["ldauprint"] == 1
 
 
 def test_lreal():
     atoms = bulk("Cu")
 
     calc = Vasp(atoms, nsw=10)
-    assert calc.special_params["lreal"] is None
+    assert calc.parameters.get("lreal") is None
 
 
 def test_lreal_aggressive():
     with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, lreal=True, nsw=0)
-        assert calc.special_params["lreal"] is False
+        assert calc.parameters["lreal"] is False
 
         calc = Vasp(atoms, lreal=True, nsw=10)
-        assert calc.special_params["lreal"] is False
+        assert calc.parameters["lreal"] is False
 
         calc = Vasp(atoms, nsw=10)
-        assert calc.special_params["lreal"] is None
+        assert calc.parameters.get("lreal") is None
 
         calc = Vasp(atoms, lreal="auto", nsw=10)
-        assert calc.special_params["lreal"] is False
+        assert calc.parameters["lreal"] is False
 
         calc = Vasp(atoms * (4, 4, 4), lreal="auto", nsw=10)
-        assert calc.special_params["lreal"] == "auto"
+        assert calc.parameters["lreal"] == "auto"
 
         calc = Vasp(atoms * (4, 4, 4), lreal=False, nsw=10)
-        assert calc.special_params["lreal"] is False
+        assert calc.parameters["lreal"] is False
 
 
 def test_lorbit():
     atoms = bulk("Cu")
     calc = Vasp(atoms, ispin=2)
-    assert calc.int_params["lorbit"] == 11
+    assert calc.parameters["lorbit"] == 11
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, ispin=1)
-    assert calc.int_params["lorbit"] is None
+    assert calc.parameters.get("lorbit") is None
 
     atoms = bulk("Cu")
     atoms.set_initial_magnetic_moments([1.0] * len(atoms))
     calc = Vasp(atoms)
-    assert calc.int_params["lorbit"] == 11
+    assert calc.parameters["lorbit"] == 11
 
 
 def test_dispersion():
     atoms = bulk("Cu")
     calc = Vasp(atoms, xc="r2scan", ivdw=13)
-    assert calc.float_params["vdw_s6"] == 1.0
-    assert calc.float_params["vdw_s8"] == 0.60187490
-    assert calc.float_params["vdw_a1"] == 0.51559235
-    assert calc.float_params["vdw_a2"] == 5.77342911
+    assert calc.parameters["vdw_s6"] == 1.0
+    assert calc.parameters["vdw_s8"] == 0.60187490
+    assert calc.parameters["vdw_a1"] == 0.51559235
+    assert calc.parameters["vdw_a2"] == 5.77342911
 
     calc = Vasp(atoms, metagga="r2scan", ivdw=13)
-    assert calc.float_params["vdw_s6"] == 1.0
-    assert calc.float_params["vdw_s8"] == 0.60187490
-    assert calc.float_params["vdw_a1"] == 0.51559235
-    assert calc.float_params["vdw_a2"] == 5.77342911
+    assert calc.parameters["vdw_s6"] == 1.0
+    assert calc.parameters["vdw_s8"] == 0.60187490
+    assert calc.parameters["vdw_a1"] == 0.51559235
+    assert calc.parameters["vdw_a2"] == 5.77342911
 
     calc = Vasp(atoms, metagga="r2scan", vdw_s6=2.0)
-    assert calc.float_params["vdw_s6"] == 2.0
+    assert calc.parameters["vdw_s6"] == 2.0
 
     calc = Vasp(atoms, metagga="r2scan")
-    assert calc.float_params["vdw_s6"] is None
+    assert calc.parameters.get("vdw_s6") is None
 
     calc = Vasp(atoms, xc="hse06")
-    assert calc.float_params["vdw_s6"] is None
+    assert calc.parameters.get("vdw_s6") is None
 
     calc = Vasp(atoms, lhfcalc=True, hfscreen=0.25, ivdw=12)
-    assert calc.float_params["vdw_s6"] is None
+    assert calc.parameters.get("vdw_s6") is None
 
     calc = Vasp(atoms, xc="hse06", ivdw=12)
-    assert calc.float_params["vdw_s6"] == 1.0
-    assert calc.float_params["vdw_s8"] == 2.310
-    assert calc.float_params["vdw_a1"] == 0.383
-    assert calc.float_params["vdw_a2"] == 5.685
+    assert calc.parameters["vdw_s6"] == 1.0
+    assert calc.parameters["vdw_s8"] == 2.310
+    assert calc.parameters["vdw_a1"] == 0.383
+    assert calc.parameters["vdw_a2"] == 5.685
 
     calc = Vasp(atoms, lhfcalc=True, hfscreen=0.2, ivdw=12)
-    assert calc.float_params["vdw_s6"] == 1.0
-    assert calc.float_params["vdw_s8"] == 2.310
-    assert calc.float_params["vdw_a1"] == 0.383
-    assert calc.float_params["vdw_a2"] == 5.685
+    assert calc.parameters["vdw_s6"] == 1.0
+    assert calc.parameters["vdw_s8"] == 2.310
+    assert calc.parameters["vdw_a1"] == 0.383
+    assert calc.parameters["vdw_a2"] == 5.685
 
 
 def test_setups():
@@ -1573,7 +1293,7 @@ def test_kpoint_schemes():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="DefaultSetGGA")
     assert calc.kpts == [12, 12, 12]
-    assert calc.float_params.get("kspacing", None) is None
+    assert calc.parameters.get("kspacing", None) is None
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, kpts=[1, 1, 1], preset="DefaultSetGGA")
@@ -1582,12 +1302,12 @@ def test_kpoint_schemes():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="DefaultSetGGA", kspacing=0.1)
     assert calc.kpts is None
-    assert calc.float_params["kspacing"] == 0.1
+    assert calc.parameters["kspacing"] == 0.1
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, kspacing=0.1)
     assert calc.kpts is None
-    assert calc.float_params["kspacing"] == 0.1
+    assert calc.parameters["kspacing"] == 0.1
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, pmg_kpts={"kppa": 1000}, gamma=False)
