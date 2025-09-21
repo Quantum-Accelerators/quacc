@@ -180,11 +180,7 @@ def mp_metagga_relax_flow(
         - name: "mp_metagga_relax_job"
         - job: [quacc.recipes.vasp.mp24.mp_metagga_relax_job][]
 
-    3. MP-compatible (second) relax
-        - name: "mp_metagga_relax_job"
-        - job: [quacc.recipes.vasp.mp24.mp_metagga_relax_job][]
-
-    4. MP-compatible static
+    3. MP-compatible static
         - name: "mp_metagga_static_job"
         - job: [quacc.recipes.vasp.mp24.mp_metagga_static_job][]
 
