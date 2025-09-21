@@ -981,6 +981,7 @@ def test_matpes(patch_metallic_taskdoc):
         "efermi": "midgap",
         "encut": 680.0,
         "gga_compat": False,
+        "isearch": 1,
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.22,
