@@ -384,10 +384,12 @@ def normalize_params(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     dict
         The updated user-provided calculator parameters.
     """
-    for k, v in user_calc_params.items():
-        if isinstance(v, str):
-            user_calc_params[k] = v.lower()
-    return user_calc_params
+    return {
+        (k.lower() if isinstance(k, str) else k): (
+            v.lower() if isinstance(v, str) else v
+        )
+        for k, v in user_calc_params.items()
+    }
 
 
 def set_auto_dipole(
