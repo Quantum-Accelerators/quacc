@@ -58,49 +58,44 @@ def get_param_swaps(
         The updated user-provided calculator parameters.
     """
     is_metal = check_is_metal(input_atoms)
-    calc = Vasp_(**user_calc_params)
+    calc = Vasp_(**remove_unused_flags(user_calc_params))
     max_Z = input_atoms.get_atomic_numbers().max()
 
-    if (
-        not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 6
-    ) and max_Z > 56:
+    if calc.parameters.get("lmaxmix", 2) < 6 and max_Z > 56:
         LOGGER.info("Recommending LMAXMIX = 6 because you have f electrons.")
         calc.set(lmaxmix=6)
-    elif (
-        not calc.int_params["lmaxmix"] or calc.int_params["lmaxmix"] < 4
-    ) and max_Z > 20:
+    elif calc.parameters.get("lmaxmix", 2) < 4 and max_Z > 20:
         LOGGER.info("Recommending LMAXMIX = 4 because you have d electrons.")
         calc.set(lmaxmix=4)
 
     if (
-        calc.bool_params["luse_vdw"]
-        or calc.bool_params["lhfcalc"]
-        or calc.bool_params["ldau"]
-        or calc.dict_params["ldau_luj"]
-        or calc.string_params["metagga"]
-    ) and not calc.bool_params["lasph"]:
+        calc.parameters.get("luse_vdw", False)
+        or calc.parameters.get("lhfcalc", False)
+        or calc.parameters.get("ldau", False)
+        or calc.parameters.get("ldau_luj", {})
+        or calc.parameters.get("metagga", "")
+    ) and not calc.parameters.get("lasph"):
         LOGGER.info(
             "Recommending LASPH = True because you have a +U, vdW, meta-GGA, or hybrid calculation."
         )
         calc.set(lasph=True)
 
-    if calc.string_params["metagga"] and (
-        not calc.string_params["algo"] or calc.string_params["algo"].lower() != "all"
+    if calc.parameters.get("metagga", "") and (
+        calc.parameters.get("algo", "normal").lower() != "all"
     ):
         LOGGER.info("Recommending ALGO = All because you have a meta-GGA calculation.")
         calc.set(algo="all", isearch=1)
 
-    if calc.bool_params["lhfcalc"] and (
-        not calc.string_params["algo"]
-        or calc.string_params["algo"].lower() not in ["all", "damped", "normal"]
+    if calc.parameters.get("lhfcalc", False) and (
+        calc.parameters.get("algo", "normal").lower() != "normal"
     ):
         LOGGER.info("Recommending ALGO = Normal because you have a hybrid calculation.")
         calc.set(algo="normal")
 
     if (
         is_metal
-        and (calc.int_params["ismear"] and calc.int_params["ismear"] < 0)
-        and (calc.int_params["nsw"] and calc.int_params["nsw"] > 0)
+        and (calc.parameters.get("ismear", 1) < 0)
+        and (calc.parameters.get("nsw", 0) > 0)
     ):
         LOGGER.info(
             "Recommending ISMEAR = 1 and SIGMA = 0.1 because you are likely relaxing a metal."
@@ -108,8 +103,8 @@ def get_param_swaps(
         calc.set(ismear=1, sigma=0.1)
 
     if (
-        calc.int_params["ismear"] != -5
-        and calc.int_params["nsw"] in (None, 0)
+        calc.parameters.get("ismear", 1) != -5
+        and calc.parameters.get("nsw", 0) == 0
         and (
             (calc.kpts is not None and np.prod(calc.kpts) >= 4)
             or (calc.float_params["kspacing"] and calc.float_params["kspacing"] <= 0.5)
@@ -119,9 +114,9 @@ def get_param_swaps(
         calc.set(ismear=-5)
 
     if (
-        calc.int_params["ismear"] == -5
+        calc.parameters.get("ismear", 1) == -5
         and (calc.kpts is not None and np.prod(calc.kpts) < 4)
-        and calc.float_params["kspacing"] is None
+        and calc.parameters.get("kspacing", None) is None
     ):
         LOGGER.info(
             "Recommending ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5."
@@ -129,53 +124,52 @@ def get_param_swaps(
         calc.set(ismear=0)
 
     if (
-        calc.float_params["kspacing"]
-        and calc.float_params["kspacing"] > 0.5
-        and calc.int_params["ismear"] == -5
+        calc.parameters.get("kspacing", 0.5) > 0.5
+        and calc.parameters.get("ismear", 1) == -5
     ):
         LOGGER.info(
-            "Recocmmending ISMEAR = 0 because KSPACING is likely too large for ISMEAR = -5."
+            "Recommending ISMEAR = 0 because KSPACING is likely too large for ISMEAR = -5."
         )
         calc.set(ismear=0)
 
-    if pmg_kpts and pmg_kpts.get("line_density") and calc.int_params["ismear"] != 0:
+    if (
+        pmg_kpts
+        and pmg_kpts.get("line_density")
+        and calc.parameters.get("ismear", 1) != 0
+    ):
         LOGGER.info(
             "Recommending ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation."
         )
         calc.set(ismear=0, sigma=0.01)
 
-    if calc.int_params["ismear"] == 0 and (
-        not calc.float_params["sigma"] or calc.float_params["sigma"] > 0.05
+    if calc.parameters.get("ismear", 1) == 0 and (
+        calc.parameters.get("sigma", 0.2) > 0.05
     ):
         LOGGER.info(
             "Recommending SIGMA = 0.05 because ISMEAR = 0 was requested with SIGMA > 0.05."
         )
         calc.set(sigma=0.05)
 
-    if (
-        calc.int_params["nsw"]
-        and calc.int_params["nsw"] > 0
-        and calc.bool_params["laechg"]
-    ):
+    if calc.parameters.get("nsw", 0) > 0 and calc.parameters.get("laechg", False):
         LOGGER.info(
             "Recommending LAECHG = False because you have NSW > 0. LAECHG is not compatible with NSW > 0."
         )
         calc.set(laechg=False)
 
-    if calc.int_params["ldauprint"] in (None, 0) and (
-        calc.bool_params["ldau"] or calc.dict_params["ldau_luj"]
+    if calc.parameters.get("ldauprint", 0) == 0 and (
+        calc.parameters.get("ldau", False) or calc.parameters.get("ldau_luj", {})
     ):
         LOGGER.info("Recommending LDAUPRINT = 1 because LDAU = True.")
         calc.set(ldauprint=1)
 
-    if calc.special_params["lreal"] and len(input_atoms) < 30:
+    if calc.parameters.get("lreal", False) and len(input_atoms) < 30:
         LOGGER.info(
             "Recommending LREAL = False because you have a small system (< 30 atoms/cell)."
         )
         calc.set(lreal=False)
 
-    if not calc.int_params["lorbit"] and (
-        calc.int_params["ispin"] == 2
+    if not calc.parameters.get("lorbit", False) and (
+        calc.parameters.get("ispin", 1) == 2
         or np.any(input_atoms.get_initial_magnetic_moments() != 0)
     ):
         LOGGER.info(
@@ -183,7 +177,7 @@ def get_param_swaps(
         )
         calc.set(lorbit=11)
 
-    if not calc.int_params["npar"] and not calc.int_params["ncore"]:
+    if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
         ncores = psutil.cpu_count(logical=False) or 1
         for ncore in range(int(np.sqrt(ncores)), ncores):
             if ncores % ncore == 0:
@@ -194,13 +188,13 @@ def get_param_swaps(
                 break
 
     if (
-        (calc.int_params["ncore"] and calc.int_params["ncore"] > 1)
-        or (calc.int_params["npar"] and calc.int_params["npar"] > 1)
+        calc.parameters.get("ncore", 1) > 1
+        or (calc.parameters.get("npar") and calc.parameters.get("npar", 1) > 1)
     ) and (
-        calc.bool_params["lhfcalc"] is True
-        or calc.bool_params["lrpa"] is True
-        or calc.bool_params["lepsilon"] is True
-        or calc.int_params["ibrion"] in [5, 6, 7, 8]
+        calc.parameters.get("lhfcalc", False) is True
+        or calc.parameters.get("lrpa", False) is True
+        or calc.parameters.get("lepsilon", False) is True
+        or calc.parameters.get("ibrion", 0) in [5, 6, 7, 8]
     ):
         LOGGER.info(
             "Recommending NCORE = 1 because NCORE/NPAR is not compatible with this job type."
@@ -208,8 +202,11 @@ def get_param_swaps(
         calc.set(ncore=1, npar=None)
 
     if (
-        calc.int_params["kpar"]
-        and (calc.kpts is not None and calc.int_params["kpar"] > np.prod(calc.kpts))
+        calc.parameters.get("kpar")
+        and (
+            calc.kpts is not None
+            and calc.parameters.get("kpar", 1) > np.prod(calc.kpts)
+        )
         and calc.float_params["kspacing"] is None
     ):
         LOGGER.info(
@@ -217,31 +214,31 @@ def get_param_swaps(
         )
         calc.set(kpar=1)
 
-    if calc.bool_params["lhfcalc"] is True and calc.int_params["isym"] in (1, 2):
+    if (
+        calc.parameters.get("lhfcalc", False) is True
+        and calc.parameters.get("isym", 3) < 3
+    ):
         LOGGER.info(
             "Recommending ISYM = 3 because you are running a hybrid calculation."
         )
         calc.set(isym=3)
 
-    if calc.bool_params["lsorbit"]:
+    if calc.parameters.get("lsorbit", False):
         LOGGER.info(
             "Recommending ISYM = -1 because you are running an SOC calculation."
         )
         calc.set(isym=-1)
 
     if (
-        calc.string_params["algo"]
-        and calc.string_params["algo"].lower() in ("all", "conjugate")
-        and not calc.int_params["isearch"]
-        and calc.int_params["isearch"] != 1
+        calc.parameters.get("algo", "normal") in ("all", "conjugate")
+        and calc.parameters.get("isearch", 0) != 1
     ):
         LOGGER.info("Recommending ISEARCH = 1 because you have ALGO = All.")
         calc.set(isearch=1)
 
     if (
-        calc.int_params.get("isif", 2) in (3, 6, 7, 8)
-        and calc.int_params["nsw"]
-        and calc.int_params["nsw"] > 0
+        calc.parameters.get("isif", 2) in (3, 6, 7, 8)
+        and calc.parameters.get("nsw", 0) > 0
     ):
         if calc.encut is None:
             LOGGER.warning(
@@ -256,7 +253,7 @@ def get_param_swaps(
 
         if (
             "Li" in input_atoms.get_chemical_symbols()
-            and calc.parameters.get("setups")
+            and calc.parameters.get("setups", {})
             and isinstance(calc.parameters["setups"], dict)
             and calc.parameters["setups"].get("Li", "") in ("Li_sv", "_sv")
             and (calc.encut is None or calc.encut < 499.034 * 1.3)
@@ -266,25 +263,24 @@ def get_param_swaps(
             )
 
     if (
-        calc.string_params["metagga"]
-        and calc.string_params["metagga"].lower() == "r2scan"
-        and calc.int_params["ivdw"] == 13
-        and not calc.float_params["vdw_s6"]
-        and not calc.float_params["vdw_s8"]
-        and not calc.float_params["vdw_a1"]
-        and not calc.float_params["vdw_a2"]
+        calc.parameters.get("metagga", "").lower() == "r2scan"
+        and calc.parameters.get("ivdw", 0) == 13
+        and not calc.parameters.get("vdw_s6")
+        and not calc.parameters.get("vdw_s8")
+        and not calc.parameters.get("vdw_a1")
+        and not calc.parameters.get("vdw_a2")
     ):
         LOGGER.info("Setting VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN-D4.")
         calc.set(vdw_s6=1.0, vdw_s8=0.60187490, vdw_a1=0.51559235, vdw_a2=5.77342911)
 
     if (
-        calc.bool_params["lhfcalc"] is True
-        and calc.float_params["hfscreen"] == 0.2
-        and calc.int_params["ivdw"] == 12
-        and not calc.float_params["vdw_s6"]
-        and not calc.float_params["vdw_s8"]
-        and not calc.float_params["vdw_a1"]
-        and not calc.float_params["vdw_a2"]
+        calc.parameters.get("lhfcalc", False)
+        and calc.parameters.get("hfscreen", 0) == 0.2
+        and calc.parameters.get("ivdw", 1) == 12
+        and not calc.parameters.get("vdw_s6")
+        and not calc.parameters.get("vdw_s8")
+        and not calc.parameters.get("vdw_a1")
+        and not calc.parameters.get("vdw_a2")
     ):
         LOGGER.info(
             "Setting VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for HSE06-D3(BJ)."
@@ -332,13 +328,16 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     dict
         The updated user-provided calculator parameters.
     """
-    if user_calc_params.get("nsw", 0) == 0:
+    new_user_calc_params = user_calc_params.copy()
+    if new_user_calc_params.get("nsw", 0) == 0:
         # Turn off opt flags if NSW = 0
         opt_flags = ("ediffg", "ibrion", "potim", "iopt")
         for opt_flag in opt_flags:
-            user_calc_params.pop(opt_flag, None)
+            new_user_calc_params.pop(opt_flag, None)
 
-    if not user_calc_params.get("ldau", False) and not user_calc_params.get("ldau_luj"):
+    if not new_user_calc_params.get("ldau", False) and not new_user_calc_params.get(
+        "ldau_luj"
+    ):
         # Turn off +U flags if +U is not even used
         ldau_flags = (
             "ldau",
@@ -350,25 +349,25 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
             "ldau_luj",
         )
         for ldau_flag in ldau_flags:
-            user_calc_params.pop(ldau_flag, None)
+            new_user_calc_params.pop(ldau_flag, None)
 
     # Handle kspacing flags
-    if user_calc_params.get("kspacing"):
-        user_calc_params["gamma"] = None
-        user_calc_params["kpts"] = None
+    if new_user_calc_params.get("kspacing"):
+        new_user_calc_params["gamma"] = None
+        new_user_calc_params["kpts"] = None
     else:
-        user_calc_params.pop("kgamma", None)
+        new_user_calc_params.pop("kgamma", None)
 
     # Remove None keys
     none_keys = [
         k
-        for k, v in user_calc_params.items()
+        for k, v in new_user_calc_params.items()
         if v is None and k not in Vasp_().input_params
     ]
     for none_key in none_keys:
-        del user_calc_params[none_key]
+        del new_user_calc_params[none_key]
 
-    return user_calc_params
+    return new_user_calc_params
 
 
 def normalize_params(user_calc_params: dict[str, Any]) -> dict[str, Any]:
@@ -385,10 +384,12 @@ def normalize_params(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     dict
         The updated user-provided calculator parameters.
     """
-    for k, v in user_calc_params.items():
-        if isinstance(v, str):
-            user_calc_params[k] = v.lower()
-    return user_calc_params
+    return {
+        (k.lower() if isinstance(k, str) else k): (
+            v.lower() if isinstance(v, str) else v
+        )
+        for k, v in user_calc_params.items()
+    }
 
 
 def set_auto_dipole(
