@@ -53,7 +53,7 @@ def test_vanilla_vasp():
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot="off")
-    assert calc.input_params["gamma"] is None
+    assert calc.parameters.get("gamma") is None
     assert calc.kpts is None
 
     atoms = bulk("Cu")
@@ -77,7 +77,7 @@ def test_presets_basic(preset):
     atoms.calc = calc
     assert calc.xc.lower() == "pbe"
     assert calc.parameters["algo"] == "fast"
-    assert calc.exp_params["ediff"] == 1e-5
+    assert calc.parameters["ediff"] == 1e-5
     assert calc.parameters["encut"] == 520
 
 
@@ -87,7 +87,7 @@ def test_presets2():
     calc = Vasp(atoms, xc="rpbe", preset="SlabSetPBE")
     assert calc.xc.lower() == "rpbe"
     assert calc.parameters["algo"] == "fast"
-    assert calc.exp_params["ediff"] == 1e-5
+    assert calc.parameters["ediff"] == 1e-5
     assert calc.parameters["encut"] == 520
 
 
@@ -98,7 +98,7 @@ def test_presets_mp():
     calc = Vasp(atoms, xc="scan", **parameters)
     assert calc.xc.lower() == "scan"
     assert calc.parameters["algo"].lower() == "all"
-    assert calc.exp_params["ediff"] == 1e-5
+    assert calc.parameters["ediff"] == 1e-5
 
 
 def test_isearch():
@@ -680,7 +680,7 @@ def test_kspacing():
 
     calc = Vasp(atoms, kspacing=0.1, gamma=True)
     assert calc.parameters["kspacing"] == 0.1
-    assert calc.input_params["gamma"] is None
+    assert calc.parameters.get("gamma") is None
     assert calc.kpts is None
 
     calc = Vasp(atoms, kpts=[1, 1, 1], kgamma=True)
@@ -1312,23 +1312,23 @@ def test_kpoint_schemes():
     atoms = bulk("Cu")
     calc = Vasp(atoms, pmg_kpts={"kppa": 1000}, gamma=False)
     assert calc.kpts == [10, 10, 10]
-    assert calc.input_params["gamma"] is False
+    assert calc.parameters["gamma"] is False
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, pmg_kpts={"kppa": 1000})
     assert calc.kpts == [10, 10, 10]
-    assert calc.input_params["gamma"] is True
+    assert calc.parameters["gamma"] is True
     assert isinstance(calc.kpts[0], int)
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="DefaultSetGGA", pmg_kpts={"kppa": 1000}, gamma=False)
     assert calc.kpts == [10, 10, 10]
-    assert calc.input_params["gamma"] is False
+    assert calc.parameters["gamma"] is False
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, pmg_kpts={"kppa": 1000}, gamma=True)
     assert calc.kpts == [10, 10, 10]
-    assert calc.input_params["gamma"] is True
+    assert calc.parameters["gamma"] is True
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, pmg_kpts={"kppvol": 100})
