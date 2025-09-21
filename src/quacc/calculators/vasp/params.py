@@ -177,17 +177,6 @@ def get_param_swaps(
         )
         calc.set(lorbit=11)
 
-    if (calc.parameters.get("ncore", 1) > 1 or calc.parameters.get("npar", 1) > 1) and (
-        calc.parameters.get("lhfcalc", False) is True
-        or calc.parameters.get("lrpa", False) is True
-        or calc.parameters.get("lepsilon", False) is True
-        or calc.parameters.get("ibrion", 0) in [5, 6, 7, 8]
-    ):
-        LOGGER.info(
-            "Recommending NCORE = 1 because NCORE/NPAR is not compatible with this job type."
-        )
-        calc.set(ncore=1, npar=None)
-
     if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
         ncores = psutil.cpu_count(logical=False) or 1
         for ncore in range(int(np.sqrt(ncores)), ncores):
@@ -197,6 +186,20 @@ def get_param_swaps(
                 )
                 calc.set(ncore=ncore, npar=None)
                 break
+
+    if (
+        calc.parameters.get("ncore", 1) > 1
+        or (calc.parameters.get("npar") and calc.parameters.get("npar", 1) > 1)
+    ) and (
+        calc.parameters.get("lhfcalc", False) is True
+        or calc.parameters.get("lrpa", False) is True
+        or calc.parameters.get("lepsilon", False) is True
+        or calc.parameters.get("ibrion", 0) in [5, 6, 7, 8]
+    ):
+        LOGGER.info(
+            "Recommending NCORE = 1 because NCORE/NPAR is not compatible with this job type."
+        )
+        calc.set(ncore=1, npar=None)
 
     if (
         calc.parameters.get("kpar")
