@@ -177,16 +177,6 @@ def get_param_swaps(
         )
         calc.set(lorbit=11)
 
-    if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
-        ncores = psutil.cpu_count(logical=False) or 1
-        for ncore in range(int(np.sqrt(ncores)), ncores):
-            if ncores % ncore == 0:
-                LOGGER.info(
-                    f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
-                )
-                calc.set(ncore=ncore, npar=None)
-                break
-
     if (calc.parameters.get("ncore", 1) > 1 or calc.parameters.get("npar", 1) > 1) and (
         calc.parameters.get("lhfcalc", False) is True
         or calc.parameters.get("lrpa", False) is True
@@ -197,6 +187,16 @@ def get_param_swaps(
             "Recommending NCORE = 1 because NCORE/NPAR is not compatible with this job type."
         )
         calc.set(ncore=1, npar=None)
+
+    if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
+        ncores = psutil.cpu_count(logical=False) or 1
+        for ncore in range(int(np.sqrt(ncores)), ncores):
+            if ncores % ncore == 0:
+                LOGGER.info(
+                    f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
+                )
+                calc.set(ncore=ncore, npar=None)
+                break
 
     if (
         calc.parameters.get("kpar")
