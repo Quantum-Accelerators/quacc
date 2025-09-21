@@ -472,7 +472,7 @@ jobs:
           echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
       - name: Run tests with pytest
-        run: pytest -k 'mp_ or matpes' --durations=10 --cov=quacc --cov-report=xml
+        run: pytest -k 'matpes or mp_' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v4
