@@ -19,12 +19,6 @@ has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 has_sella = bool(find_spec("sella"))
 has_newtonnet = bool(find_spec("newtonnet"))
 
-if has_sella:
-    from sella import IRC, Sella
-if has_newtonnet:
-    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
-if has_geodesic_interpolate:
-    from quacc.atoms.ts import geodesic_interpolate_wrapper
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -84,6 +78,9 @@ def ts_job(
     TSSchema
         Dictionary of results. See the type-hint for the data structure.
     """
+    from newtonnet.utils.ase_interface import MLAseCalculator
+    from sella import Sella
+
     additional_fields = additional_fields or {}
     freq_job_kwargs = freq_job_kwargs or {}
     settings = get_settings()
@@ -105,7 +102,7 @@ def ts_job(
     if use_custom_hessian:
         opt_flags["optimizer_kwargs"]["hessian_function"] = _get_hessian
 
-    calc = NewtonNet(**calc_flags)
+    calc = MLAseCalculator(**calc_flags)
 
     # Run the TS optimization
     dyn = Runner(atoms, calc).run_opt(**opt_flags)
@@ -167,6 +164,9 @@ def irc_job(
         A dictionary containing the IRC summary and thermodynamic summary.
         See the type-hint for the data structure.
     """
+    from newtonnet.utils.ase_interface import MLAseCalculator
+    from sella import IRC
+
     freq_job_kwargs = freq_job_kwargs or {}
     settings = get_settings()
 
@@ -184,7 +184,7 @@ def irc_job(
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     # Define calculator
-    calc = NewtonNet(**calc_flags)
+    calc = MLAseCalculator(**calc_flags)
 
     # Run IRC
     with change_settings({"CHECK_CONVERGENCE": False}):
@@ -313,6 +313,10 @@ def neb_job(
     NebSchema
         A dictionary containing the NEB results
     """
+    from newtonnet.utils.ase_interface import MLAseCalculator
+
+    from quacc.atoms.ts import geodesic_interpolate_wrapper
+
     relax_job_kwargs = relax_job_kwargs or {}
     settings = get_settings()
 
@@ -330,7 +334,7 @@ def neb_job(
     neb_flags = recursive_dict_merge(neb_defaults, neb_kwargs)
 
     # Define calculator
-    calc = NewtonNet(**calc_flags)
+    calc = MLAseCalculator(**calc_flags)
 
     # Run relax job
     relax_summary_r = strip_decorator(relax_job)(reactant_atoms, **relax_job_kwargs)
@@ -411,6 +415,10 @@ def geodesic_job(
             - 'initial_images': The interpolated images between reactant and product.
             - 'ts_atoms': ASE atoms object for the highest energy structure for the geodesic path
     """
+    from newtonnet.utils.ase_interface import MLAseCalculator
+
+    from quacc.atoms.ts import geodesic_interpolate_wrapper
+
     relax_job_kwargs = relax_job_kwargs or {}
     settings = get_settings()
 
@@ -429,8 +437,8 @@ def geodesic_job(
     )
 
     # Define calculator
-    reactant_atoms.calc = NewtonNet(**calc_flags)
-    product_atoms.calc = NewtonNet(**calc_flags)
+    reactant_atoms.calc = MLAseCalculator(**calc_flags)
+    product_atoms.calc = MLAseCalculator(**calc_flags)
 
     # Run IRC
     relax_summary_r = strip_decorator(relax_job)(reactant_atoms, **relax_job_kwargs)
@@ -444,7 +452,7 @@ def geodesic_job(
 
     potential_energies = []
     for image in images:
-        image.calc = NewtonNet(**calc_flags)
+        image.calc = MLAseCalculator(**calc_flags)
         potential_energies.append(image.get_potential_energy())
 
     ts_index = np.argmax(potential_energies)
@@ -481,6 +489,8 @@ def _get_hessian(atoms: Atoms, **calc_kwargs) -> NDArray:
     NDArray
         The calculated Hessian matrix, reshaped into a 2D array.
     """
+    from newtonnet.utils.ase_interface import MLAseCalculator
+
     settings = get_settings()
     calc_defaults = {
         "model_path": settings.NEWTONNET_MODEL_PATH,
@@ -488,6 +498,6 @@ def _get_hessian(atoms: Atoms, **calc_kwargs) -> NDArray:
         "hess_method": "autograd",
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
-    calc = NewtonNet(**calc_flags)
+    calc = MLAseCalculator(**calc_flags)
     calc.calculate(atoms)
     return calc.results["hessian"].reshape((-1, 3 * len(atoms)))

@@ -13,9 +13,6 @@ LOGGER = logging.getLogger(__name__)
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 
-if has_geodesic_interpolate:
-    from geodesic_interpolate.geodesic import Geodesic
-    from geodesic_interpolate.interpolation import redistribute
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -78,6 +75,9 @@ def geodesic_interpolate_wrapper(
     list[Atoms]
         A list of ASE Atoms objects representing the smoothed path between the reactant and product geometries.
     """
+    from geodesic_interpolate.geodesic import Geodesic
+    from geodesic_interpolate.interpolation import redistribute
+
     reactant = copy_atoms(reactant)
     product = copy_atoms(product)
 

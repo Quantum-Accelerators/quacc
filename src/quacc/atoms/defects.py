@@ -15,8 +15,6 @@ has_shakenbreak = bool(find_spec("shakenbreak"))
 if has_pmg_defects:
     from pymatgen.analysis.defects.generators import VacancyGenerator
     from pymatgen.analysis.defects.thermo import DefectEntry
-if has_shakenbreak:
-    from shakenbreak.input import Distortions
 
 
 if TYPE_CHECKING:
@@ -88,6 +86,8 @@ def make_defects_from_bulk(
     list[Atoms]
         All generated defects
     """
+    from shakenbreak.input import Distortions
+
     # Use pymatgen-analysis-defects and ShakeNBreak to generate defects
     struct = AseAtomsAdaptor.get_structure(atoms)
 

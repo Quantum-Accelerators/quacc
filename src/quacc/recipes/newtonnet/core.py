@@ -16,10 +16,6 @@ from quacc.utils.dicts import recursive_dict_merge
 has_sella = bool(find_spec("sella"))
 has_newtonnet = bool(find_spec("newtonnet"))
 
-if has_sella:
-    from sella import Sella
-if has_newtonnet:
-    from newtonnet.utils.ase_interface import MLAseCalculator as NewtonNet
 
 if TYPE_CHECKING:
     from typing import Any
@@ -68,6 +64,8 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
+    from newtonnet.utils.ase_interface import MLAseCalculator
+
     settings = get_settings()
     calc_defaults = {
         "model_path": settings.NEWTONNET_MODEL_PATH,
@@ -75,7 +73,7 @@ def static_job(
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    calc = NewtonNet(**calc_flags)
+    calc = MLAseCalculator(**calc_flags)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return Summarize(
@@ -119,6 +117,9 @@ def relax_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
+    from newtonnet.utils.ase_interface import MLAseCalculator
+    from sella import Sella
+
     settings = get_settings()
     calc_defaults = {
         "model_path": settings.NEWTONNET_MODEL_PATH,
@@ -129,7 +130,7 @@ def relax_job(
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    calc = NewtonNet(**calc_flags)
+    calc = MLAseCalculator(**calc_flags)
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return _add_stdev_and_hess(
@@ -176,6 +177,8 @@ def freq_job(
     VibThermoSchema
         Dictionary of results. See the type-hint for the data structure.
     """
+    from newtonnet.utils.ase_interface import MLAseCalculator
+
     settings = get_settings()
     calc_defaults = {
         "model_path": settings.NEWTONNET_MODEL_PATH,
@@ -184,7 +187,7 @@ def freq_job(
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
 
-    calc = NewtonNet(**calc_flags)
+    calc = MLAseCalculator(**calc_flags)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     summary = Summarize(
@@ -229,6 +232,8 @@ def _add_stdev_and_hess(summary: dict[str, Any], **calc_kwargs) -> dict[str, Any
         The modified summary dictionary with added standard deviation and
         Hessian values.
     """
+    from newtonnet.utils.ase_interface import MLAseCalculator
+
     settings = get_settings()
     calc_defaults = {
         "model_path": settings.NEWTONNET_MODEL_PATH,
@@ -236,7 +241,7 @@ def _add_stdev_and_hess(summary: dict[str, Any], **calc_kwargs) -> dict[str, Any
     }
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     for i, atoms in enumerate(summary["trajectory"]):
-        calc = NewtonNet(**calc_flags)
+        calc = MLAseCalculator(**calc_flags)
         results = Runner(atoms, calc).run_calc().calc.results
         summary["trajectory_results"][i]["hessian"] = results["hessian"]
         summary["trajectory_results"][i]["energy_std"] = results["energy_disagreement"]

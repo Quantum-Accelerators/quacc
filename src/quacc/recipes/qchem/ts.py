@@ -14,8 +14,6 @@ from quacc.recipes.qchem.core import _BASE_SET
 from quacc.utils.dicts import recursive_dict_merge
 
 has_sella = bool(find_spec("sella"))
-if has_sella:
-    from sella import IRC, Sella
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -71,6 +69,8 @@ def ts_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
+    from sella import Sella
+
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
@@ -141,6 +141,8 @@ def irc_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][]
     """
+    from sella import IRC
+
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
@@ -225,6 +227,8 @@ def quasi_irc_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][]
     """
+    from sella import Sella
+
     calc_defaults = recursive_dict_merge(
         _BASE_SET, {"rem": {"job_type": "force", "method": method, "basis": basis}}
     )
