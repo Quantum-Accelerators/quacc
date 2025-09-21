@@ -71,8 +71,10 @@ def qmof_relax_job(
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely. Applies for all jobs.
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
+        Vasp calculator keyword arguments are supported.
 
     Returns
     -------
@@ -133,8 +135,10 @@ def _prerelax(
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
+        Vasp calculator keyword arguments are supported.
 
     Returns
     -------
@@ -178,8 +182,10 @@ def _loose_relax_positions(
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
+        Vasp calculator keyword arguments are supported.
 
     Returns
     -------
@@ -224,8 +230,10 @@ def _loose_relax_cell(
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
+        Vasp calculator keyword arguments are supported.
 
     Returns
     -------
@@ -271,8 +279,10 @@ def _double_relax(
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
-        Dictionary of custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
+        Vasp calculator keyword arguments are supported.
 
     Returns
     -------
@@ -335,8 +345,10 @@ def _static(
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     **calc_kwargs
-        Custom kwargs for the calculator. Set a value to `None` to remove
-        a pre-existing key entirely.
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
+        Vasp calculator keyword arguments are supported.
 
     Returns
     -------
