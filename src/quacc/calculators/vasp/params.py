@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from copy import deepcopy
 from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
@@ -329,7 +328,7 @@ def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     dict
         The updated user-provided calculator parameters.
     """
-    new_user_calc_params = deepcopy(user_calc_params)
+    new_user_calc_params = user_calc_params.copy()
     if new_user_calc_params.get("nsw", 0) == 0:
         # Turn off opt flags if NSW = 0
         opt_flags = ("ediffg", "ibrion", "potim", "iopt")
