@@ -56,7 +56,8 @@ def matpes_static_job(
         paper. This is likely too expensive in many cases.
     use_improvements
         Whether to make the following improvements to the VASP settings:
-        EFERMI = MIDGAP, GGA_COMPAT = False, and ENAUG deleted.
+        ALGO = All, EFERMI = MIDGAP, GGA_COMPAT = False, ISEARCH = 1,
+        and ENAUG deleted.
     write_extra_files
         Whether to write out the following IO files: LELF = True, LAECHG = True,
         and NEDOS = 3001.
@@ -82,7 +83,7 @@ def matpes_static_job(
     # Set the user-defined KSPACING
     calc_defaults["kspacing"] = kspacing
 
-    # Set some parameters that MatPES should have set
+    # Set some parameters that we think are improvements to MatPES
     if use_improvements:
         calc_defaults |= {
             "algo": "all",
