@@ -948,7 +948,7 @@ def test_matpes(patch_metallic_taskdoc):
         ncore=None,
     )
     assert output["parameters"] == {
-        "algo": "all",
+        "algo": "normal",
         "ediff": 1e-05,
         "enaug": 1360,
         "encut": 680.0,
@@ -985,7 +985,6 @@ def test_matpes(patch_metallic_taskdoc):
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.22,
-        "isearch": 1,
         "laechg": True,
         "lasph": True,
         "lcharg": True,
