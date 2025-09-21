@@ -12,15 +12,12 @@ from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
 
 has_phonopy = bool(find_spec("phonopy"))
 
-if has_phonopy:
-    from phonopy import Phonopy
-    from phonopy.structure.cells import get_supercell
-
 if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
     if has_phonopy:
+        from phonopy import Phonopy
         from phonopy.structure.atoms import PhonopyAtoms
 
 
@@ -61,6 +58,8 @@ def get_phonopy(
     Phonopy
         Phonopy object
     """
+    from phonopy import Phonopy
+
     phonopy_kwargs = phonopy_kwargs or {}
 
     if supercell_matrix is None and min_lengths is not None:
@@ -119,6 +118,7 @@ def get_atoms_supercell_by_phonopy(
     Atoms
         ASE atoms object of the supercell.
     """
+    from phonopy.structure.cells import get_supercell
 
     return phonopy_atoms_to_ase_atoms(
         get_supercell(

@@ -19,8 +19,6 @@ from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 
 has_atomate2 = bool(find_spec("atomate2"))
-if has_atomate2:
-    from atomate2.vasp.jobs.matpes import MatPesGGAStaticMaker
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -74,6 +72,8 @@ def matpes_static_job(
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
+    from atomate2.vasp.jobs.matpes import MatPesGGAStaticMaker
+
     maker = MatPesGGAStaticMaker()
     maker.input_set_generator.auto_ispin = True
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(

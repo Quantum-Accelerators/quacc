@@ -20,8 +20,6 @@ from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
 
 has_atomate2 = bool(find_spec("atomate2"))
-if has_atomate2:
-    from atomate2.vasp.jobs.mp import MP24PreRelaxMaker, MP24RelaxMaker, MP24StaticMaker
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -70,6 +68,8 @@ def mp_prerelax_job(
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
+    from atomate2.vasp.jobs.mp import MP24PreRelaxMaker
+
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MP24PreRelaxMaker()
     )
@@ -110,6 +110,8 @@ def mp_metagga_relax_job(
     VaspSchema
         Dictionary of results.
     """
+    from atomate2.vasp.jobs.mp import MP24RelaxMaker
+
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MP24RelaxMaker()
     )
@@ -150,6 +152,8 @@ def mp_metagga_static_job(
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
+    from atomate2.vasp.jobs.mp import MP24StaticMaker
+
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
         MP24StaticMaker()
     )

@@ -13,8 +13,6 @@ from quacc.schemas.ase import Summarize, VibSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
 has_tblite = bool(find_spec("tblite"))
-if has_tblite:
-    from tblite.ase import TBLite
 
 if TYPE_CHECKING:
     from typing import Any, Literal
@@ -54,6 +52,8 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
+    from tblite.ase import TBLite
+
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
     calc = TBLite(**calc_flags)
@@ -101,6 +101,8 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
+    from tblite.ase import TBLite
+
     opt_params = opt_params or {}
     calc_defaults = {"method": method}
     calc_flags = recursive_dict_merge(calc_defaults, calc_kwargs)
@@ -153,6 +155,8 @@ def freq_job(
     VibThermoSchema
         Dictionary of results
     """
+    from tblite.ase import TBLite
+
     vib_kwargs = vib_kwargs or {}
 
     calc_defaults = {"method": method}
