@@ -84,7 +84,13 @@ def matpes_static_job(
 
     # Set some parameters that MatPES should have set
     if use_improvements:
-        calc_defaults |= {"efermi": "midgap", "enaug": None, "gga_compat": False}
+        calc_defaults |= {
+            "algo": "all",
+            "efermi": "midgap",
+            "enaug": None,
+            "gga_compat": False,
+            "isearch": 1,
+        }
 
     # Write out optional files
     if write_extra_files:
@@ -95,9 +101,10 @@ def matpes_static_job(
     if level.lower() == "pbe":
         calc_defaults |= {"xc": "pbe", "lwave": True}
     elif level.lower() == "r2scan":
-        calc_defaults |= {"algo": "all", "isearch": 1, "xc": "r2scan"}
+        calc_defaults |= {"xc": "r2scan"}
     elif level.lower() == "hse06":
-        calc_defaults |= {"algo": "all", "isearch": 1, "xc": "hse06"}
+        calc_defaults |= {"algo": "normal", "xc": "hse06"}
+        calc_defaults.pop("isearch", None)
     else:
         raise ValueError(f"Unsupported value for {level}")
 

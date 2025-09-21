@@ -875,12 +875,13 @@ def test_freq_job():
 def test_matpes(patch_metallic_taskdoc):
     output = matpes_static_job(bulk("Al"), level="pbe", ncore=None)
     assert output["parameters"] == {
-        "algo": "normal",
+        "algo": "all",
         "ediff": 1e-05,
         "efermi": "midgap",
         "encut": 680.0,
         "gga": "PE",
         "gga_compat": False,
+        "isearch": 1,
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.22,
@@ -908,12 +909,13 @@ def test_matpes(patch_metallic_taskdoc):
     atoms_barium[0].symbol = "Ba"
     output = matpes_static_job(atoms_barium, level="pbe", ncore=None)
     assert output["parameters"] == {
-        "algo": "normal",
+        "algo": "all",
         "ediff": 1e-05,
         "efermi": "midgap",
         "encut": 680.0,
         "gga": "PE",
         "gga_compat": False,
+        "isearch": 1,
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.22,
@@ -946,11 +948,12 @@ def test_matpes(patch_metallic_taskdoc):
         ncore=None,
     )
     assert output["parameters"] == {
-        "algo": "normal",
+        "algo": "all",
         "ediff": 1e-05,
         "enaug": 1360,
         "encut": 680.0,
         "gga": "PE",
+        "isearch": 1,
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.4,
@@ -1008,7 +1011,7 @@ def test_matpes(patch_metallic_taskdoc):
     atoms_no_mag.set_initial_magnetic_moments([0.0] * len(atoms_no_mag))
     output = matpes_static_job(atoms_no_mag, level="hse06", ncore=None)
     assert output["parameters"] == {
-        "algo": "all",
+        "algo": "normal",
         "ediff": 1e-05,
         "efermi": "midgap",
         "encut": 680.0,
@@ -1018,7 +1021,6 @@ def test_matpes(patch_metallic_taskdoc):
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.22,
-        "isearch": 1,
         "laechg": True,
         "lasph": True,
         "lcharg": True,
