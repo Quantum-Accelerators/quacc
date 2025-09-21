@@ -941,7 +941,7 @@ def test_matpes(patch_metallic_taskdoc):
         bulk("Al"),
         level="pbe",
         kspacing=0.4,
-        use_max_io=False,
+        use_improvements=False,
         write_extra_files=False,
         ncore=None,
     )
@@ -1040,5 +1040,5 @@ def test_matpes(patch_metallic_taskdoc):
         "xc": "hse06",
     }
 
-    with pytest.raises(ValueError, match="Unsupported value"):
+    with pytest.raises(ValueError, match="Unsupported value for m06"):
         matpes_static_job(bulk("Al"), level="m06")
