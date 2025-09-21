@@ -44,20 +44,20 @@ def atoms_nospin():
 
 def test_vanilla_vasp():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, incar_copilot=False)
+    calc = Vasp(atoms, incar_copilot="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, use_custodian=False, incar_copilot=False)
+    calc = Vasp(atoms, use_custodian=False, incar_copilot="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot=False)
+    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot="off")
     assert calc.input_params["gamma"] is None
     assert calc.kpts is None
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, encut=None, incar_copilot=False)
+    calc = Vasp(atoms, encut=None, incar_copilot="off")
     assert calc.asdict() == Vasp_().asdict()
 
 
