@@ -953,7 +953,6 @@ def test_matpes(patch_metallic_taskdoc):
         "enaug": 1360,
         "encut": 680.0,
         "gga": "PE",
-        "isearch": 1,
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.4,
