@@ -6,9 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.0.4]
 
+### Added
+
+- A MatPES-compatible job
+
 ### Changed
 
-- When ALGO = "All" in VASP, ISEARCH is set to 1 per the VASP manual.
+- Set ALGO = Normal for DefaultSetHybrid instead of ALGO = All
+- When ALGO = All in VASP, ISEARCH is set to 1 per the VASP manual.
+
+### Fixed
+
+- Fixed various type hints
+
+### Removed
+
+- Removed the deprecated Rosen sets
 
 ## [1.0.3]
 
