@@ -59,8 +59,7 @@ def matpes_static_job(
         ALGO = All, EFERMI = MIDGAP, GGA_COMPAT = False, ISEARCH = 1,
         and ENAUG deleted.
     write_extra_files
-        Whether to write out the following IO files: LELF = True, LAECHG = True,
-        and NEDOS = 3001.
+        Whether to write out the following IO files: LELF = True and NEDOS = 3001.
     prev_dir
         A previous directory for a prior step in the workflow.
     **calc_kwargs
@@ -95,7 +94,7 @@ def matpes_static_job(
 
     # Write out optional files
     if write_extra_files:
-        calc_defaults |= {"lcharg": True, "lelf": True, "nedos": 3001}
+        calc_defaults |= {"lelf": True, "nedos": 3001}
 
     # Set the level of theory
     del calc_defaults["gga"]
