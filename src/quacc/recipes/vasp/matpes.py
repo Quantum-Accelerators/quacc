@@ -3,7 +3,7 @@ MatPES-compatible recipes
 
 !!! Important
 
-    Make sure that you use the Materials Project-compatible pseudpotential
+    Make sure that you use the MatPES-compatible pseudpotential
     versions (i.e. v.64)
 """
 
