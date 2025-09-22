@@ -1,1 +1,1 @@
-parsl[monitoring]==2025.9.8
+parsl[monitoring]==2025.9.15
