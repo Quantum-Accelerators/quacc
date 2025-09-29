@@ -3,6 +3,7 @@ custodian==2025.8.13
 emmet-core==0.84.10
 frozendict==2.4.6
 monty==2025.3.3
+numpy==2.3.3
 psutil==7.1.0
 pydantic==2.11.9
 pydantic-settings==2.11.0
