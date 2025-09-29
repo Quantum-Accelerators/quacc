@@ -147,9 +147,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: |
-          conda install -n base conda-libmamba-solver
-          conda install psi4 -c conda-forge --solver libmamba
+        run: conda install psi4 -c conda-forge
 
       - name: Install pip packages
         run: |
