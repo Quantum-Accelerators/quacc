@@ -197,7 +197,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: conda install -c conda-forge qe=7.4 'libgcc<15.0'
+        run: conda install -c conda-forge qe
 
       - name: Install pip packages
         run: |
