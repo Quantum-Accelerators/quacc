@@ -160,7 +160,7 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
                 time: 04:00:00
                 account: rosengroup
         queue:
-        store:
+          store:
             type: MongoStore
             host: localhost
             database: <MongoDB Database Name>
