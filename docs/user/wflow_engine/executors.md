@@ -317,7 +317,7 @@ If you haven't done so already:
 
     account = "MyAccountName"
 
-    cores_per_node = 128
+    cores_per_node = 112
     slurm_jobs = 2
 
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
@@ -524,7 +524,7 @@ If you haven't done so already:
     account = "MyAccountName"
 
     slurm_jobs = 1
-    cores_per_node = 128
+    cores_per_node = 112
 
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
 
@@ -903,7 +903,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
 
     slurm_jobs = 2
     nodes_per_calc = 1
-    cores_per_node = 128
+    cores_per_node = 112
 
     vasp_parallel_cmd = (
         f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
