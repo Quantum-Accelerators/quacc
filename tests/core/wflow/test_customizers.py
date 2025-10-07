@@ -55,6 +55,6 @@ def test_basic_customizers():
         customize_funcs(["add", "mult"], [add, mult], param_swaps={"bad": {"b": 2}})
 
     with pytest.raises(
-        ValueError, match="Invalid function name: 'all' is a reserved name."
+        ValueError, match="Invalid function name: 'all' is a reserved name"
     ):
         customize_funcs("all", [add], param_swaps={"all": {"b": 2}})

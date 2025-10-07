@@ -362,16 +362,14 @@ def test_errors(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
-    with pytest.raises(
-        ValueError, match="ASE Atoms object has no attached calculator."
-    ):
+    with pytest.raises(ValueError, match="ASE Atoms object has no attached calculator"):
         Summarize().run(atoms, atoms)
 
     initial_atoms = read(os.path.join(RUN1, "POSCAR.gz"))
     atoms = read(os.path.join(RUN1, "OUTCAR.gz"))
     atoms.calc.results = {}
     with pytest.raises(
-        ValueError, match="ASE Atoms object's calculator has no results."
+        ValueError, match="ASE Atoms object's calculator has no results"
     ):
         Summarize().run(atoms, initial_atoms)
 
