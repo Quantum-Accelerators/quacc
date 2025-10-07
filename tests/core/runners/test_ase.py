@@ -313,7 +313,7 @@ def test_run_neb2():
     images = read(geodesic_path, index=":")
 
     with pytest.raises(
-        ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB."
+        ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB"
     ):
         Runner(images, EMT()).run_neb(
             optimizer=BFGSLineSearch, neb_kwargs={"method": "aseneb", "precon": None}
@@ -324,7 +324,7 @@ def test_run_neb_raises_value_error_for_trajectory_kwarg():
     images = [Atoms("H2", positions=[[0, 0, 0], [0, 0, 0.74]])]
 
     with pytest.raises(
-        ValueError, match="Quacc does not support setting the `trajectory` kwarg."
+        ValueError, match="Quacc does not support setting the `trajectory` kwarg"
     ):
         Runner(images, EMT()).run_neb(
             optimizer=NEBOptimizer, optimizer_kwargs={"trajectory": "some_traj.traj"}
