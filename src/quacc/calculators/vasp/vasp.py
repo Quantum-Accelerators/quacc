@@ -209,15 +209,6 @@ class Vasp(Vasp_):
         None
         """
 
-        # Check constraints
-        if (
-            self.use_custodian
-            and self.input_atoms.constraints
-            and not all(isinstance(c, FixAtoms) for c in self.input_atoms.constraints)
-        ):
-            msg = "Atoms object has a constraint that is not compatible with Custodian."
-            raise ValueError(msg)
-
         # Get user-defined preset parameters for the calculator
         if self.preset:
             preset_path = (
