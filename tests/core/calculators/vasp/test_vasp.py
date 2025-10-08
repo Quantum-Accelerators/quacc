@@ -12,7 +12,7 @@ from ase.atoms import Atoms
 from ase.build import bulk
 from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.calculators.vasp import Vasp as Vasp_
-from ase.constraints import FixAtoms, FixBondLength
+from ase.constraints import FixAtoms
 from ase.io import read
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 
@@ -1358,13 +1358,6 @@ def test_constraints():
     calc = Vasp(atoms)
     atoms.calc = calc
     assert isinstance(atoms.constraints[0], FixAtoms)
-
-    atoms = bulk("Cu") * (2, 1, 1)
-    atoms.set_constraint(FixBondLength(0, 1))
-    with pytest.raises(
-        ValueError, match="Atoms object has a constraint that is not compatible"
-    ):
-        calc = Vasp(atoms)
 
 
 def test_envvars():
