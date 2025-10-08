@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
-from ase.constraints import FixAtoms
 
 from quacc import QuaccDefault, get_settings
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
