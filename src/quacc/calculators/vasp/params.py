@@ -34,9 +34,9 @@ LOGGER = getLogger(__name__)
 
 def get_param_swaps(
     user_calc_params: dict[str, Any],
-    pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
     input_atoms: Atoms,
-    incar_copilot: Literal["off", "on", "aggressive"],
+    pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float] | None = None,
+    incar_copilot_mode: Literal["off", "on", "aggressive"] = "on",
 ) -> dict[str, Any]:
     """
     Swaps out bad INCAR flags.
@@ -45,11 +45,11 @@ def get_param_swaps(
     ----------
     user_calc_params
         The user-provided calculator parameters.
-    pmg_kpts
-        The pmg_kpts kwarg.
     input_atoms
         The input atoms.
-    incar_copilot
+    pmg_kpts
+        The pmg_kpts kwarg.
+    incar_copilot_mode
         INCAR copilot mode. See `quacc.calculators.vasp.vasp.Vasp` for more info.
 
     Returns
@@ -297,10 +297,10 @@ def get_param_swaps(
 
     new_parameters = (
         calc.parameters
-        if incar_copilot == "aggressive"
+        if incar_copilot_mode == "aggressive"
         else (
             calc.parameters | user_calc_params
-            if incar_copilot == "on"
+            if incar_copilot_mode == "on"
             else user_calc_params
         )
     )

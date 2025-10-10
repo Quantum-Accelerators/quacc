@@ -289,7 +289,10 @@ class Vasp(Vasp_):
 
         # Handle INCAR swaps
         self.user_calc_params = get_param_swaps(
-            self.user_calc_params, self.pmg_kpts, self.input_atoms, self.incar_copilot
+            self.user_calc_params,
+            self.input_atoms,
+            incar_copilot_mode=self.incar_copilot,
+            pmg_kpts=self.pmg_kpts,
         )
 
         # Clean up the user calc parameters
