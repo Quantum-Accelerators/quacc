@@ -1,6 +1,6 @@
 ase @ git+https://gitlab.com/ase/ase.git
 custodian==2025.10.11
-emmet-core==0.85.0
+emmet-core==0.85.1
 frozendict==2.4.6
 monty==2025.3.3
 psutil==7.1.0
