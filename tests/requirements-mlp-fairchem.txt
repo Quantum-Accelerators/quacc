@@ -1,1 +1,1 @@
-fairchem-core==2.7.1
+fairchem-core==2.9.0
