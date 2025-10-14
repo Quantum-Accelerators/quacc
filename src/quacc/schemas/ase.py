@@ -167,7 +167,10 @@ class Summarize:
         directory = self.directory or final_atoms.calc.directory
 
         # Check convergence
-        is_converged = dyn.converged(dyn.optimizable.get_gradient())
+        gradient = (
+            dyn.optimizable.get_gradient() if hasattr(dyn, "optimizable") else None
+        )
+        is_converged = dyn.converged(gradient)
         if check_convergence and not is_converged:
             msg = f"Optimization did not converge. Refer to {directory}"
             raise RuntimeError(msg)
