@@ -104,19 +104,8 @@ jobs:
         if: matrix.wflow_engine == 'covalent'
         run: covalent start
 
-      - name: Run tests with pytest (Dask - no XML report yet)
-        if: matrix.wflow_engine == 'dask'
-        run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=
-
-      - name: Run tests with pytest (Other engines)
-        if: matrix.wflow_engine != 'dask'
+      - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
-
-      - name: Combine coverage and generate report (Dask only)
-        if: matrix.wflow_engine == 'dask'
-        run: |
-          coverage combine
-          coverage xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v4
