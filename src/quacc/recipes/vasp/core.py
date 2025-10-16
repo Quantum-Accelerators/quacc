@@ -129,7 +129,7 @@ def relax_job(
         "lcharg": False,
         "lwave": False,
         "nsw": 200,
-        "symprec": 1e-8,
+        "symprec": 1e-6,
     }
     return run_and_summarize(
         atoms,
