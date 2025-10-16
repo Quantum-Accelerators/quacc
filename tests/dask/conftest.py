@@ -25,7 +25,7 @@ if has_distributed:
         try:
             get_client()
         except ValueError:
-            Client()
+            Client(processes=False, threads_per_worker=1)
 
     def pytest_sessionfinish(exitstatus):
         rmtree(TEST_RESULTS_DIR, ignore_errors=True)
