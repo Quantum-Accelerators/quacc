@@ -8,4 +8,4 @@ pydantic==2.12.2
 pydantic-settings==2.11.0
 pymatgen==2025.10.7
 ruamel.yaml==0.18.15
-typer==0.17.4
+typer==0.20.0
