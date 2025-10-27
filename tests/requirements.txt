@@ -4,7 +4,7 @@ emmet-core==0.85.1
 frozendict==2.4.6
 monty==2025.3.3
 psutil==7.1.2
-pydantic==2.12.2
+pydantic==2.12.3
 pydantic-settings==2.11.0
 pymatgen==2025.10.7
 ruamel.yaml==0.18.16
