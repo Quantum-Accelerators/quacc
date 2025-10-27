@@ -52,7 +52,7 @@ jobs:
         run: pytest --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.job }} ${{ matrix.python-version }} ${{ matrix.os }} coverage report
           path: "coverage.xml"
@@ -108,7 +108,7 @@ jobs:
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.job }} ${{ matrix.wflow_engine }} coverage report
           path: "coverage.xml"
@@ -156,7 +156,7 @@ jobs:
         run: pytest -k 'psi4' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -204,7 +204,7 @@ jobs:
         run: pytest -k 'defects or phonon or espresso' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -252,7 +252,7 @@ jobs:
         run: pytest -k 'dftb or tblite' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -300,7 +300,7 @@ jobs:
         run: pytest -k 'qchem or sella' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -339,7 +339,7 @@ jobs:
         run: pytest -k 'mlp or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -379,7 +379,7 @@ jobs:
         run: pytest -k 'mlp' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -428,7 +428,7 @@ jobs:
         run: pytest -k 'mlp' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
@@ -467,7 +467,7 @@ jobs:
         run: pytest -k 'matpes or mp_' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ github.job }} coverage report
           path: "coverage.xml"
