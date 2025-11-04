@@ -473,6 +473,34 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
+  tests-torchsim:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: tests/requirements**.txt
+
+      - name: Install pip packages
+        run: |
+          pip install uv
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-torchsim.txt "quacc[dev] @ ."
+
+      - name: Run tests with pytest
+        run: pytest -k 'torchsim' --durations=10 --cov=quacc --cov-report=xml
+
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
+
   codecov:
     needs:
       - tests-core
@@ -485,6 +513,7 @@ jobs:
       - tests-mlp-mace-matgl
       - tests-mlp-fairchem
       - tests-mp
+      - tests-torchsim
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
