@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 import torch_sim as ts
 from torch_sim.autobatching import BinningAutoBatcher, InFlightAutoBatcher
+from torch_sim.models.interface import ModelInterface
 
 from quacc import job
 
@@ -14,7 +15,6 @@ if TYPE_CHECKING:
     import torch
     from ase.atoms import Atoms
     from torch_sim.integrators import Integrator
-    from torch_sim.models.interface import ModelInterface
     from torch_sim.optimizers import Optimizer
     from torch_sim.trajectory import TrajectoryReporter
     from torch_sim.typing import StateLike
@@ -62,41 +62,38 @@ if TYPE_CHECKING:
         integrator_kwargs: dict[str, Any]
 
     class TorchSimStaticSchema(TorchSimSchema):
+        all_properties: list[dict[str, torch.Tensor]]
         trajectory_reporter: TrajectoryReporterDetails | None
         autobatcher: AutobatcherDetails
 
 
 def _get_autobatcher_dict(
-    autobatcher: InFlightAutoBatcher | BinningAutoBatcher | bool,
-    fallback_autobatcher: Literal["BinningAutoBatcher", "InFlightAutoBatcher"],
-    fallback_memory_scales_with: Literal["n_atoms", "n_atoms_x_density"],
+    autobatcher: InFlightAutoBatcher | BinningAutoBatcher,
 ) -> AutobatcherDetails:
-    if isinstance(autobatcher, InFlightAutoBatcher | BinningAutoBatcher):
-        return {
-            "autobatcher": type(autobatcher).__name__,  # type: ignore
-            "memory_scales_with": autobatcher.memory_scales_with,  # type: ignore
-            "max_memory_scaler": autobatcher.max_memory_scaler,
-            "max_atoms_to_try": autobatcher.max_atoms_to_try,
-            "memory_scaling_factor": autobatcher.memory_scaling_factor,
-            "max_iterations": autobatcher.max_iterations,
-            "max_memory_padding": autobatcher.max_memory_padding,
-        }
-    else:
-        return {
-            "autobatcher": fallback_autobatcher,
-            "memory_scales_with": fallback_memory_scales_with,
-            "max_memory_scaler": None,
-            "max_atoms_to_try": None,
-            "memory_scaling_factor": None,
-            "max_iterations": None,
-            "max_memory_padding": None,
-        }
+    return {
+        "autobatcher": type(autobatcher).__name__,  # type: ignore
+        "memory_scales_with": autobatcher.memory_scales_with,  # type: ignore
+        "max_memory_scaler": autobatcher.max_memory_scaler,
+        "max_atoms_to_try": autobatcher.max_atoms_to_try,
+        "memory_scaling_factor": autobatcher.memory_scaling_factor,
+        "max_iterations": (
+            autobatcher.max_iterations
+            if isinstance(autobatcher, InFlightAutoBatcher)
+            else None
+        ),
+        "max_memory_padding": autobatcher.max_memory_padding,
+    }
 
 
 def _get_reporter_dict(
-    trajectory_reporter: TrajectoryReporter | None,
+    trajectory_reporter: TrajectoryReporter | dict | None,
+    properties: list[str] | None = None,
 ) -> TrajectoryReporterDetails | None:
     if trajectory_reporter is not None:
+        trajectory_reporter = ts.runners._configure_reporter(
+            trajectory_reporter, properties=properties
+        )
+
         return {
             "state_frequency": trajectory_reporter.state_frequency,
             "trajectory_kwargs": trajectory_reporter.trajectory_kwargs,
@@ -113,23 +110,90 @@ def _get_reporter_dict(
         return None
 
 
+ModelType = Literal[
+    "FairChemV1Model",
+    "FairChemModel",
+    "GraphPESWrapper",
+    "MaceModel",
+    "MatterSimModel",
+    "MetatomicModel",
+    "NequIPFrameworkModel",
+    "OrbModel",
+    "SevenNetModel",
+]
+
+
+def pick_model(model_type: ModelType, model, **model_kwargs) -> ModelInterface:
+    if model_type == "FairChemV1Model":
+        from torch_sim.models.fairchem_legacy import FairChemV1Model
+
+        return FairChemV1Model(model=model, **model_kwargs)
+    elif model_type == "FairChemModel":
+        from torch_sim.models.fairchem import FairChemModel
+
+        return FairChemModel(model=model, **model_kwargs)
+    elif model_type == "GraphPESWrapper":
+        from torch_sim.models.graphpes import GraphPESWrapper
+
+        return GraphPESWrapper(model=model, **model_kwargs)
+    elif model_type == "MaceModel":
+        from torch_sim.models.mace import MaceModel
+
+        return MaceModel(model=model, **model_kwargs)
+    elif model_type == "MatterSimModel":
+        from torch_sim.models.mattersim import MatterSimModel
+
+        return MatterSimModel(model=model, **model_kwargs)
+    elif model_type == "MetatomicModel":
+        from torch_sim.models.metatomic import MetatomicModel
+
+        return MetatomicModel(model=model, **model_kwargs)
+    elif model_type == "NequIPFrameworkModel":
+        from torch_sim.models.nequip_framework import NequIPFrameworkModel
+
+        return NequIPFrameworkModel(model=model, **model_kwargs)
+    elif model_type == "OrbModel":
+        from torch_sim.models.orb import OrbModel
+
+        return OrbModel(model=model, **model_kwargs)
+    elif model_type == "SevenNetModel":
+        from torch_sim.models.sevennet import SevenNetModel
+
+        return SevenNetModel(model=model, **model_kwargs)
+    else:
+        raise ValueError(f"Invalid model type: {model_type}")
+
+
 @job
 def relax_job(
-    atoms: Atoms,
-    model: ModelInterface,
+    atoms: list[Atoms],
+    model: tuple[ModelType, Any] | ModelInterface,
     optimizer: Optimizer,
     convergence_fn: (
         Callable[[StateLike, torch.Tensor | None], torch.Tensor] | None
     ) = None,
-    trajectory_reporter: TrajectoryReporter | None = None,
+    trajectory_reporter: TrajectoryReporter | dict | None = None,
     autobatcher: InFlightAutoBatcher | bool = False,
     max_steps: int = 10_000,
     steps_between_swaps: int = 5,
     init_kwargs: dict[str, Any] | None = None,
     **optimizer_kwargs: Any,
 ) -> TorchSimOptSchema:
+    reporter_dict = _get_reporter_dict(
+        trajectory_reporter, properties=["potential_energy"]
+    )
+
+    model = model if isinstance(model, ModelInterface) else pick_model(*model)
+
+    state = ts.initialize_state(atoms, model.device, model.dtype)
+    max_iterations = max_steps // steps_between_swaps
+    autobatcher = ts.runners._configure_in_flight_autobatcher(
+        state, model, autobatcher=autobatcher, max_iterations=max_iterations
+    )
+    autobatcher_dict = _get_autobatcher_dict(autobatcher)
+
     state = ts.optimize(
-        system=atoms,
+        system=state,
         model=model,
         optimizer=optimizer,
         convergence_fn=convergence_fn,
@@ -139,11 +203,6 @@ def relax_job(
         steps_between_swaps=steps_between_swaps,
         init_kwargs=init_kwargs,
         **optimizer_kwargs,
-    )
-
-    reporter_dict = _get_reporter_dict(trajectory_reporter)
-    autobatcher_dict = _get_autobatcher_dict(
-        autobatcher, "InFlightAutoBatcher", model.memory_scales_with
     )
 
     return {
@@ -161,16 +220,33 @@ def relax_job(
 
 @job
 def md_job(
-    atoms: Atoms,
-    model: ModelInterface,
+    atoms: list[Atoms],
+    model: tuple[ModelType, Any] | ModelInterface,
     integrator: Integrator,
     n_steps: int,
     temperature: float | list,
     timestep: float,
-    trajectory_reporter: TrajectoryReporter | None = None,
+    trajectory_reporter: TrajectoryReporter | dict | None = None,
     autobatcher: BinningAutoBatcher | bool = False,
     **integrator_kwargs: Any,
 ) -> TorchSimIntegrateSchema:
+    reporter_dict = _get_reporter_dict(
+        trajectory_reporter,
+        properties=["potential_energy", "kinetic_energy", "temperature"],
+    )
+
+    model = model if isinstance(model, ModelInterface) else pick_model(*model)
+
+    state = ts.initialize_state(atoms, model.device, model.dtype)
+    if autobatcher:
+        autobatcher = ts.runners._configure_batches_iterator(
+            state, model, autobatcher=autobatcher
+        )  # type: ignore
+        autobatcher_dict = _get_autobatcher_dict(autobatcher)
+    else:
+        autobatcher = False
+        autobatcher_dict = None
+
     state = ts.integrate(
         system=atoms,
         model=model,
@@ -181,11 +257,6 @@ def md_job(
         trajectory_reporter=trajectory_reporter,
         autobatcher=autobatcher,
         **integrator_kwargs,
-    )
-
-    reporter_dict = _get_reporter_dict(trajectory_reporter)
-    autobatcher_dict = _get_autobatcher_dict(
-        autobatcher, "BinningAutoBatcher", model.memory_scales_with
     )
 
     return {
@@ -203,25 +274,42 @@ def md_job(
 
 @job
 def static_job(
-    atoms: Atoms,
-    model: ModelInterface,
-    trajectory_reporter: TrajectoryReporter | None = None,
+    atoms: list[Atoms],
+    model: tuple[ModelType, Any] | ModelInterface,
+    trajectory_reporter: TrajectoryReporter | dict | None = None,
     autobatcher: BinningAutoBatcher | bool = False,
 ) -> TorchSimStaticSchema:
-    state = ts.static(
+    reporter_dict = _get_reporter_dict(
+        trajectory_reporter, properties=["potential_energy"]
+    )
+
+    model = model if isinstance(model, ModelInterface) else pick_model(*model)
+
+    state = ts.initialize_state(atoms, model.device, model.dtype)
+    if autobatcher:
+        autobatcher = ts.runners._configure_batches_iterator(
+            state, model, autobatcher=autobatcher
+        )  # type: ignore
+        autobatcher_dict = _get_autobatcher_dict(autobatcher)
+    else:
+        autobatcher = False
+        autobatcher_dict = None
+
+    all_properties = ts.static(
         system=atoms,
         model=model,
         trajectory_reporter=trajectory_reporter,
         autobatcher=autobatcher,
     )
 
-    reporter_dict = _get_reporter_dict(trajectory_reporter)
-    autobatcher_dict = _get_autobatcher_dict(
-        autobatcher, "BinningAutoBatcher", model.memory_scales_with
-    )
+    all_properties_numpy = [
+        {name: t.cpu().numpy() for name, t in prop_dict.items()}
+        for prop_dict in all_properties
+    ]
 
     return {
-        "atoms": state.to_atoms(),
+        "atoms": atoms,
+        "all_properties": all_properties_numpy,
         "model": model.__class__.__name__,
         "trajectory_reporter": reporter_dict,
         "autobatcher": autobatcher_dict,
