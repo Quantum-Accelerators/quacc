@@ -3,13 +3,19 @@ from __future__ import annotations
 import traceback
 
 import pytest
-import torch
-import torch_sim as ts
 from ase.atoms import Atoms
 from ase.build import bulk
-from torch_sim.autobatching import BinningAutoBatcher, InFlightAutoBatcher
-from torch_sim.models.lennard_jones import LennardJonesModel
-from torch_sim.models.mace import MaceModel, MaceUrls
+
+try:
+    import torch
+    import torch_sim as ts
+    from torch_sim.autobatching import BinningAutoBatcher, InFlightAutoBatcher
+    from torch_sim.models.lennard_jones import LennardJonesModel
+    from torch_sim.models.mace import MaceModel, MaceUrls
+except ImportError:
+    pytest.skip(
+        f"Torch-Sim not installed: {traceback.format_exc()}", allow_module_level=True
+    )
 
 from quacc.recipes.torchsim.core import md_job, relax_job, static_job
 
