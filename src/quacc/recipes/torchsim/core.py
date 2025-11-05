@@ -26,11 +26,9 @@ if TYPE_CHECKING:
     class TrajectoryReporterDetails(TypedDict):
         state_frequency: int
         trajectory_kwargs: dict[str, Any]
-        # prop_calculators: dict[int, dict[str, Callable]]
         prop_calculators: dict[int, list[str]]
         state_kwargs: dict[str, Any]
         metadata: dict[str, str] | None
-        shape_warned: bool
         filenames: list[str | pathlib.Path] | None
 
     class AutobatcherDetails(TypedDict):
@@ -94,6 +92,11 @@ def _get_reporter_dict(
             trajectory_reporter, properties=properties
         )
 
+        if trajectory_reporter.filenames is not None:
+            filenames = [p.resolve() for p in trajectory_reporter.filenames]
+        else:
+            filenames = None
+
         return {
             "state_frequency": trajectory_reporter.state_frequency,
             "trajectory_kwargs": trajectory_reporter.trajectory_kwargs,
@@ -103,8 +106,7 @@ def _get_reporter_dict(
             },
             "state_kwargs": trajectory_reporter.state_kwargs,
             "metadata": trajectory_reporter.metadata,
-            "shape_warned": trajectory_reporter.shape_warned,
-            "filenames": trajectory_reporter.filenames,
+            "filenames": filenames,
         }
     else:
         return None
