@@ -28,7 +28,9 @@ except (ImportError, ValueError):
     )
 
 
-raw_mace_mp = mace_mp(model=MaceUrls.mace_mp_small, return_raw_model=True)
+@pytest.fixture
+def raw_mace_mp():
+    return mace_mp(model=MaceUrls.mace_mp_small, return_raw_model=True)
 
 
 @pytest.fixture
@@ -44,7 +46,7 @@ def fe_atoms() -> Atoms:
 
 
 @pytest.fixture
-def ts_mace_model() -> MaceModel:
+def ts_mace_model(raw_mace_mp) -> MaceModel:
     return MaceModel(
         model=raw_mace_mp,
         device=torch.device("cpu"),
@@ -143,7 +145,9 @@ def test_relax_job_comprehensive(
     assert result["init_kwargs"]["cell_filter"] == ts.CellFilter.unit
 
 
-def test_relax_job_mace(ar_atoms: Atoms, lj_model: LennardJonesModel, tmp_path) -> None:
+def test_relax_job_mace(
+    ar_atoms: Atoms, lj_model: LennardJonesModel, tmp_path, raw_mace_mp
+) -> None:
     """Test relax_job with all kwargs including trajectory reporter and autobatcher."""
     # Perturb the structure to make optimization meaningful
     ar_atoms.positions += 0.1
