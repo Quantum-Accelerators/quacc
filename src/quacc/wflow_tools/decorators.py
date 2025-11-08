@@ -189,6 +189,10 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
             return wrapper
         else:
             return task(_func, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "aiida":
+        from aiida_workgraph import task
+
+        return task(_func, **kwargs)
     else:
         return _func
 
@@ -352,6 +356,10 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "aiida":
+        from aiida_workgraph import task
+
+        return task.graph()(_func, **kwargs)
     else:
         return _func
 
@@ -585,6 +593,10 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "aiida":
+        from aiida_workgraph import task
+
+        return task.graph()(_func, **kwargs)
     else:
         return _func
 
