@@ -11,9 +11,6 @@ TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
 has_aiida = bool(find_spec("aiida_workgraph"))
 
 if has_aiida:
-    """
-    Call `verdi quicksetup --profile test_profile --test-profile`
-    """
     subprocess.run(
         ["verdi", "presto", "--profile-name", "test_profile"],
         capture_output=True,
