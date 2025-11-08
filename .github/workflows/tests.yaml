@@ -63,7 +63,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        wflow_engine: [covalent, dask, parsl, prefect, redun, jobflow]
+        wflow_engine: [aiida, covalent, dask, parsl, prefect, redun, jobflow]
 
     defaults:
       run:
