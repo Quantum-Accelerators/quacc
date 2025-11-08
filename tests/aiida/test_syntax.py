@@ -21,4 +21,4 @@ def test_aiida_decorators():
     def workflow(a, b, c):
         return mult(add(a, b), c)
 
-    assert workflow.run(1, 2, 3) == 9
+    assert workflow.run(1, 2, 3)["result"] == 9

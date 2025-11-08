@@ -192,7 +192,12 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     elif settings.WORKFLOW_ENGINE == "aiida":
         from aiida_workgraph import task
 
-        return task(_func, **kwargs)
+        @wraps(_func)
+        def wrapper(*f_args, **f_kwargs):
+            decorated = task(_func, **kwargs)
+            return decorated(*f_args, **f_kwargs).result
+
+        return wrapper
     else:
         return _func
 
