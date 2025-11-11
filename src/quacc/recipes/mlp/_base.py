@@ -89,8 +89,9 @@ def pick_calculator(
 
     if method.lower() in ("m3gnet", "chgnet", "tensornet"):
         import matgl
-        from matgl import BACKEND, __version__
-
+        from matgl import __version__
+        from matgl.config import BACKEND
+        
         if BACKEND == "DGL":
             from matgl.ext._ase_dgl import PESCalculator
         else:
