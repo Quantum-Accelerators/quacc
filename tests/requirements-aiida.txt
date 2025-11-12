@@ -1,0 +1,2 @@
+aiida-workgraph==0.7.6
+aiida-gui-workgraph==0.1.3
