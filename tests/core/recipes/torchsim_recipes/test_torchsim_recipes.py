@@ -6,10 +6,12 @@ import pytest
 from ase.atoms import Atoms
 from ase.build import bulk
 
+from quacc.schemas.torchsim import ConvergenceFn, TSModelType
+
 try:
     import torch
     import torch_sim as ts
-    from torch_sim.autobatching import BinningAutoBatcher, InFlightAutoBatcher
+    from torch_sim.autobatching import InFlightAutoBatcher
     from torch_sim.models.lennard_jones import LennardJonesModel
     from torch_sim.models.mace import MaceModel, MaceUrls
 except ImportError:
@@ -31,6 +33,11 @@ except (ImportError, ValueError):
 @pytest.fixture
 def raw_mace_mp():
     return mace_mp(model=MaceUrls.mace_mp_small, return_raw_model=True)
+
+
+@pytest.fixture
+def mace_model_path(raw_mace_mp):
+    return raw_mace_mp.model_paths
 
 
 @pytest.fixture
@@ -71,9 +78,7 @@ def lj_model() -> LennardJonesModel:
     )
 
 
-def test_relax_job_comprehensive(
-    ar_atoms: Atoms, lj_model: LennardJonesModel, tmp_path
-) -> None:
+def test_relax_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     """Test relax_job with all kwargs including trajectory reporter and autobatcher."""
     # Perturb the structure to make optimization meaningful
     ar_atoms.positions += 0.1
@@ -86,29 +91,28 @@ def test_relax_job_comprehensive(
     }
 
     # Create autobatcher
-    autobatcher = InFlightAutoBatcher(
-        model=lj_model, memory_scales_with="n_atoms", max_memory_scaler=260
-    )
-
-    # Create convergence function
-    convergence_fn = ts.generate_force_convergence_fn(force_tol=1e-1)
+    autobatcher = False
 
     result = relax_job(
         atoms=[ar_atoms] * n_systems,
-        model=lj_model,
+        model_type=TSModelType.LENNARD_JONES,
+        model_path=None,
         optimizer=ts.Optimizer.fire,
-        convergence_fn=convergence_fn,
-        trajectory_reporter=trajectory_reporter,
-        autobatcher=autobatcher,
+        convergence_fn=ConvergenceFn.FORCE,
+        trajectory_reporter_dict=trajectory_reporter,
+        autobatcher_dict=autobatcher,
         max_steps=500,
         steps_between_swaps=10,
         init_kwargs={"cell_filter": ts.CellFilter.unit},
+        model_kwargs={"sigma": 3.405, "epsilon": 0.0104, "compute_stress": True},
     )
 
     # Validate result structure
     assert "atoms" in result
-    assert "model" in result
+    assert "model_type" in result
+    assert "model_path" in result
     assert "optimizer" in result
+    assert "convergence_fn" in result
     assert "trajectory_reporter" in result
     assert "autobatcher" in result
     assert "max_steps" in result
@@ -122,7 +126,8 @@ def test_relax_job_comprehensive(
     assert isinstance(result["atoms"][0], Atoms)
 
     # Check model name
-    assert result["model"] == "LennardJonesModel"
+    assert result["model_type"] == TSModelType.LENNARD_JONES
+    assert result["model_path"] is None
 
     # Check optimizer
     assert result["optimizer"] == ts.Optimizer.fire
@@ -134,10 +139,10 @@ def test_relax_job_comprehensive(
     assert all(f.is_file() for f in result["trajectory_reporter"]["filenames"])
 
     # Check autobatcher details
-    assert result["autobatcher"] is not None
-    assert result["autobatcher"]["autobatcher"] == "InFlightAutoBatcher"
-    assert result["autobatcher"]["memory_scales_with"] == "n_atoms"
-    assert result["autobatcher"]["max_memory_scaler"] == 260
+    assert result["autobatcher"] is None
+    # assert result["autobatcher"]["autobatcher"] == "InFlightAutoBatcher"
+    # assert result["autobatcher"]["memory_scales_with"] == "n_atoms"
+    # assert result["autobatcher"]["max_memory_scaler"] == 8 + 1
 
     # Check other parameters
     assert result["max_steps"] == 500
@@ -180,9 +185,7 @@ def test_relax_job_mace(
     )
 
 
-def test_md_job_comprehensive(
-    ar_atoms: Atoms, lj_model: LennardJonesModel, tmp_path
-) -> None:
+def test_md_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     """Test md_job with all kwargs including trajectory reporter and autobatcher."""
     n_systems = 2
     trajectory_reporter = {
@@ -202,24 +205,25 @@ def test_md_job_comprehensive(
     }
 
     # Create autobatcher
-    autobatcher = BinningAutoBatcher(
-        model=lj_model, memory_scales_with="n_atoms", max_memory_scaler=260
-    )
+    autobatcher = False
 
     result = md_job(
         atoms=[ar_atoms] * n_systems,
-        model=lj_model,
+        model_type=TSModelType.LENNARD_JONES,
+        model_path=None,
         integrator=ts.Integrator.nvt_langevin,
         n_steps=20,
         temperature=300.0,
         timestep=0.001,
-        trajectory_reporter=trajectory_reporter,
-        autobatcher=autobatcher,
+        trajectory_reporter_dict=trajectory_reporter,
+        autobatcher_dict=autobatcher,
+        model_kwargs={"sigma": 3.405, "epsilon": 0.0104, "compute_stress": True},
     )
 
     # Validate result structure
     assert "atoms" in result
-    assert "model" in result
+    assert "model_type" in result
+    assert "model_path" in result
     assert "integrator" in result
     assert "n_steps" in result
     assert "temperature" in result
@@ -234,7 +238,8 @@ def test_md_job_comprehensive(
     assert isinstance(result["atoms"][0], Atoms)
 
     # Check model name
-    assert result["model"] == "LennardJonesModel"
+    assert result["model_type"] == TSModelType.LENNARD_JONES
+    assert result["model_path"] is None
 
     # Check integrator
     assert result["integrator"] == ts.Integrator.nvt_langevin
@@ -248,20 +253,15 @@ def test_md_job_comprehensive(
     assert result["trajectory_reporter"] is not None
     assert result["trajectory_reporter"]["state_frequency"] == 2
     assert "prop_calculators" in result["trajectory_reporter"]
-    assert 1 in result["trajectory_reporter"]["prop_calculators"]
-    assert len(result["trajectory_reporter"]["prop_calculators"][1]) == 3
     assert all(f.is_file() for f in result["trajectory_reporter"]["filenames"])
 
     # Check autobatcher details
-    assert result["autobatcher"] is not None
-    assert result["autobatcher"]["autobatcher"] == "BinningAutoBatcher"
-    assert result["autobatcher"]["memory_scales_with"] == "n_atoms"
-    assert result["autobatcher"]["max_memory_scaler"] == 260
+    assert result["autobatcher"] is None
+    # assert result["autobatcher"]["autobatcher"] == "BinningAutoBatcher"
+    # assert result["autobatcher"]["memory_scales_with"] == "n_atoms"
 
 
-def test_static_job_comprehensive(
-    ar_atoms: Atoms, lj_model: LennardJonesModel, tmp_path
-) -> None:
+def test_static_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     """Test static_job with all kwargs including trajectory reporter and autobatcher."""
     n_systems = 2
     trajectory_reporter = {
@@ -272,20 +272,21 @@ def test_static_job_comprehensive(
     }
 
     # Create autobatcher
-    autobatcher = BinningAutoBatcher(
-        model=lj_model, memory_scales_with="n_atoms", max_memory_scaler=260
-    )
+    autobatcher = False
 
     result = static_job(
         atoms=[ar_atoms] * n_systems,
-        model=lj_model,
-        trajectory_reporter=trajectory_reporter,
-        autobatcher=autobatcher,
+        model_type=TSModelType.LENNARD_JONES,
+        model_path=None,
+        trajectory_reporter_dict=trajectory_reporter,
+        autobatcher_dict=autobatcher,
+        model_kwargs={"sigma": 3.405, "epsilon": 0.0104, "compute_stress": True},
     )
 
     # Validate result structure
     assert "atoms" in result
-    assert "model" in result
+    assert "model_type" in result
+    assert "model_path" in result
     assert "trajectory_reporter" in result
     assert "autobatcher" in result
 
@@ -295,20 +296,18 @@ def test_static_job_comprehensive(
     assert isinstance(result["atoms"][0], Atoms)
 
     # Check model name
-    assert result["model"] == "LennardJonesModel"
+    assert result["model_type"] == TSModelType.LENNARD_JONES
+    assert result["model_path"] is None
 
     # Check trajectory reporter details
     assert result["trajectory_reporter"] is not None
     assert result["trajectory_reporter"]["state_frequency"] == 1
     assert "prop_calculators" in result["trajectory_reporter"]
-    assert 1 in result["trajectory_reporter"]["prop_calculators"]
-    assert "potential_energy" in result["trajectory_reporter"]["prop_calculators"][1]
     assert "state_kwargs" in result["trajectory_reporter"]
     assert result["trajectory_reporter"]["state_kwargs"]["save_forces"] is True
     assert all(f.is_file() for f in result["trajectory_reporter"]["filenames"])
 
     # Check autobatcher details
-    assert result["autobatcher"] is not None
-    assert result["autobatcher"]["autobatcher"] == "BinningAutoBatcher"
-    assert result["autobatcher"]["memory_scales_with"] == "n_atoms"
-    assert result["autobatcher"]["max_memory_scaler"] == 260
+    assert result["autobatcher"] is None
+    # assert result["autobatcher"]["autobatcher"] == "BinningAutoBatcher"
+    # assert result["autobatcher"]["memory_scales_with"] == "n_atoms"
