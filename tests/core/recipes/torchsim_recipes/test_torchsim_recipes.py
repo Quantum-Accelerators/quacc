@@ -151,7 +151,7 @@ def test_relax_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
 
 
 def test_relax_job_mace(
-    ar_atoms: Atoms, lj_model: LennardJonesModel, tmp_path, raw_mace_mp
+    ar_atoms: Atoms, mace_model_path: str, tmp_path, raw_mace_mp
 ) -> None:
     """Test relax_job with all kwargs including trajectory reporter and autobatcher."""
     # Perturb the structure to make optimization meaningful
