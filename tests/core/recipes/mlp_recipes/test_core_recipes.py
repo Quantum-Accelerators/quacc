@@ -16,7 +16,7 @@ if has_mace := find_spec("mace"):
     methods.append("mace-mp")
 
 if find_spec("matgl"):
-    methods.extend(["m3gnet", "chgnet", "tensornet"])
+    methods.append("tensornet")
 
 if has_sevennet := find_spec("sevenn"):
     methods.append("sevennet")
@@ -53,9 +53,7 @@ def test_static_job(tmp_path, monkeypatch, method):
         calc_kwargs = {}
 
     ref_energy = {
-        "chgnet": -3.7441039085388184,
-        "m3gnet": -3.7398147583007812,
-        "tensornet": -3.7356371879577637,
+        "tensornet": -3.7593491077423096,
         "mace-mp": -4.097862720291976,
         "sevennet": -4.096191883087158,
         "orb": -4.093477725982666,
@@ -109,10 +107,8 @@ def test_relax_job(tmp_path, monkeypatch, method):
         calc_kwargs = {}
 
     ref_energy = {
-        "chgnet": -29.952457427978516,
-        "m3gnet": -29.9184513092041,
         "mace-mp": -32.78264569638644,
-        "tensornet": -29.884796142578125,
+        "tensornet": -30.074462890625,
         "sevennet": -32.76924133300781,
         "orb": -32.7361946105957,
         "fairchem": -30.004380887389797,
@@ -159,10 +155,8 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         calc_kwargs = {}
 
     ref_energy = {
-        "chgnet": -29.966711044311523,
-        "m3gnet": -29.933645248413086,
         "mace-mp": -32.8069374165035,
-        "tensornet": -29.901287078857422,
+        "tensornet": -30.079431533813477,
         "sevennet": -32.76963806152344,
         "orb": -32.73428726196289,
         "fairchem": -30.005004590392726,

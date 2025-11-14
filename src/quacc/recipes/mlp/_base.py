@@ -87,7 +87,9 @@ def pick_calculator(
     if not torch.cuda.is_available():
         LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
-    if method.lower() in ("m3gnet", "chgnet", "tensornet"):
+    method = method.lower()
+
+    if "m3gnet" in method or "chgnet" in method or "tensornet" in method:
         import matgl
         from matgl import __version__
         from matgl.ext.ase import PESCalculator
@@ -98,6 +100,8 @@ def pick_calculator(
             model = matgl.load_model("CHGNet-MatPES-PBE-2025.2.10-2.7M-PES")
         elif method == "tensornet":
             model = matgl.load_model("TensorNet-MatPES-PBE-v2025.1-PES")
+        else:
+            model = matgl.load_model(method)
 
         if "stress_weight" not in calc_kwargs:
             calc_kwargs["stress_weight"] = _GPa_to_eV_per_A3
