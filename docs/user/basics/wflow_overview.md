@@ -110,10 +110,6 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     [Jobflow](https://github.com/materialsproject/jobflow) is developed and maintained by the Materials Project team at Lawrence Berkeley National Laboratory and serves as a seamless interface to [FireWorks](https://github.com/materialsproject/fireworks) or [Jobflow Remote](https://github.com/Matgenix/jobflow-remote) for dispatching and monitoring compute jobs.
 
-    !!! Warning
-
-        Jobflow is not yet compatible with the `#!Python @flow` or `#!Python @subflow` decorators used in many quacc recipes and so should only be used if necessary. See [this issue](https://github.com/Quantum-Accelerators/quacc/issues/1061) to track the progress of this enhancement.
-
     Pros:
 
     - Native support for a variety of databases
