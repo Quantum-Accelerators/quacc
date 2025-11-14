@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+import inspect
 from collections.abc import Callable
 from functools import partial, wraps
 from typing import TYPE_CHECKING, Any
@@ -352,6 +354,8 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "jobflow":
+        return _get_jobflow_wrapped_flow(_func, settings)
     else:
         return _func
 
@@ -585,6 +589,8 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "jobflow":
+        return _get_jobflow_wrapped_flow(_func, settings)
     else:
         return _func
 
@@ -660,6 +666,34 @@ def _get_prefect_wrapped_flow(
             return prefect_flow(sync_wrapper, validate_parameters=False, **kwargs)
         else:
             return prefect_flow(_func, validate_parameters=False, **kwargs)
+
+
+def _get_jobflow_wrapped_flow(_func: Callable, settings: QuaccSettings) -> Callable:
+    from jobflow import flow as jf_flow
+    from jobflow.managers.local import run_locally
+
+    def is_async_fn(func):
+        """
+        Returns `True` if a function returns a coroutine.
+        An exact reproduction of `refect.utilities.asyncutils.is_async_fn`
+        """
+        func = inspect.unwrap(func)
+        return asyncio.iscoroutinefunction(func)
+
+    if is_async_fn(_func):
+        raise NotImplementedError
+    # If the Jobflow flow decorator is instantiated with return_dict=False,
+    # it resolves the references in its output dict.
+    return_dict = not settings.JOBFLOW_RESOLVE_FLOW_RESULTS
+    jobflow_flow = jf_flow(_func, return_dict=return_dict)
+
+    def wrapper(*args, **kwargs):
+        bound_jobflow_flow = jobflow_flow(*args, **kwargs)
+        if settings.JOBFLOW_AUTO_SUBMIT:
+            return run_locally(bound_jobflow_flow, ensure_success=True)
+        return bound_jobflow_flow
+
+    return wrapper
 
 
 class Delayed_:

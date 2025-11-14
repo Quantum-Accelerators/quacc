@@ -117,6 +117,19 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # Jobflow Settings
+    # ---------------------------
+    # TODO: How is the user expected to supply the task runner in jobflow?
+    #   For now, we assume `run_locally` is implied.
+    JOBFLOW_AUTO_SUBMIT: bool = Field(
+        False, description="Whether to auto-submit tasks to a local task runner."
+    )
+    JOBFLOW_RESOLVE_FLOW_RESULTS: bool = Field(
+        False,
+        description="Whether to resolve all output references in flow results to data and fail if not possible",
+    )
+
+    # ---------------------------
     # ORCA Settings
     # ---------------------------
     ORCA_CMD: str = Field(
