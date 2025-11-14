@@ -15,7 +15,7 @@ if has_mace := find_spec("mace"):
     methods.append("mace-mp")
 
 if has_matgl := find_spec("matgl"):
-    methods.append(["tensornet"])
+    methods.append("tensornet")
 
 if has_sevennet := find_spec("sevenn"):
     methods.append("sevennet")
