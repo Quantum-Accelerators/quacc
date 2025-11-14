@@ -1,2 +1,2 @@
-jobflow==0.2.1
+git+https://github.com/vineetbansal/jobflow.git@v0.2.1.post1
 jobflow-remote[gui]==0.1.8

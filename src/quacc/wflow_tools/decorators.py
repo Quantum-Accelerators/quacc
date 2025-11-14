@@ -352,6 +352,8 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "jobflow":
+        return _get_jobflow_wrapped_flow(_func)
     else:
         return _func
 
@@ -585,6 +587,8 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "jobflow":
+        return _get_jobflow_wrapped_flow(_func)
     else:
         return _func
 
@@ -660,6 +664,17 @@ def _get_prefect_wrapped_flow(
             return prefect_flow(sync_wrapper, validate_parameters=False, **kwargs)
         else:
             return prefect_flow(_func, validate_parameters=False, **kwargs)
+
+
+def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
+    from jobflow import flow as jf_flow
+
+    jobflow_flow = jf_flow(_func, return_dict=False)
+
+    def wrapper(*args, **kwargs):
+        return jobflow_flow(*args, **kwargs)
+
+    return wrapper
 
 
 class Delayed_:
