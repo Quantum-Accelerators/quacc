@@ -88,7 +88,7 @@ def pick_calculator(
         LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
     method = method.lower()
-    
+
     if "m3gnet" in method or "chgnet" in method or "tensornet" in method:
         import matgl
         from matgl import __version__
@@ -101,7 +101,7 @@ def pick_calculator(
         elif method == "tensornet":
             model = matgl.load_model("TensorNet-MatPES-PBE-v2025.1-PES")
         else:
-            model =  matgl.load_model(method)
+            model = matgl.load_model(method)
 
         if "stress_weight" not in calc_kwargs:
             calc_kwargs["stress_weight"] = _GPa_to_eV_per_A3
