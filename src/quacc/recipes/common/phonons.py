@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from quacc.types import PhononSchema
 
     if has_phonopy:
-        from phonopy import Phonopy
+        pass
 
 
 @subflow
