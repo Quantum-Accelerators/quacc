@@ -28,9 +28,6 @@ if TYPE_CHECKING:
     from quacc import Job
     from quacc.types import PhononSchema
 
-    if has_phonopy:
-        from phonopy import Phonopy
-
 
 @subflow
 @requires(has_phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
@@ -97,14 +94,14 @@ def phonon_subflow(
 
     displaced_atoms, non_displaced_atoms = atoms[~mask_to_fix], atoms[mask_to_fix]
 
-    phonopy = get_phonopy(
-        displaced_atoms,
-        min_lengths=min_lengths,
-        supercell_matrix=supercell_matrix,
-        symprec=symprec,
-        displacement=displacement,
-        phonopy_kwargs=phonopy_kwargs,
-    )
+    get_phonopy_kwargs = {
+        "min_lengths": min_lengths,
+        "supercell_matrix": supercell_matrix,
+        "symprec": symprec,
+        "displacement": displacement,
+        "phonopy_kwargs": phonopy_kwargs,
+    }
+    phonopy = get_phonopy(displaced_atoms, **get_phonopy_kwargs)
 
     if non_displaced_atoms:
         non_displaced_atoms_supercell = get_atoms_supercell_by_phonopy(
@@ -127,13 +124,16 @@ def phonon_subflow(
     @job
     def _thermo_job(
         atoms: Atoms,
-        phonopy: Phonopy,
+        displaced_atoms: Atoms,
+        non_displaced_atoms: Atoms,
+        get_phonopy_kwargs: dict[str, Any],
         force_job_results: list[dict],
         t_step: float,
         t_min: float,
         t_max: float,
         additional_fields: dict[str, Any] | None,
     ) -> PhononSchema:
+        phonopy = get_phonopy(displaced_atoms, **get_phonopy_kwargs)
         parameters = force_job_results[-1].get("parameters")
         forces = [
             output["results"]["forces"][: len(phonopy.supercell)]
@@ -167,5 +167,13 @@ def phonon_subflow(
 
     force_job_results = _get_forces_subflow(supercells)
     return _thermo_job(
-        atoms, phonopy, force_job_results, t_step, t_min, t_max, additional_fields
+        atoms,
+        displaced_atoms,
+        non_displaced_atoms,
+        get_phonopy_kwargs,
+        force_job_results,
+        t_step,
+        t_min,
+        t_max,
+        additional_fields,
     )
