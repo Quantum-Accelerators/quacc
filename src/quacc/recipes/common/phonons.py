@@ -131,7 +131,7 @@ def phonon_subflow(
         t_max: float,
         additional_fields: dict[str, Any] | None,
     ) -> PhononSchema:
-        phonopy = get_phonopy(**get_phonopy_kwargs)
+        phonopy = get_phonopy(atoms, **get_phonopy_kwargs)
         parameters = force_job_results[-1].get("parameters")
         forces = [
             output["results"]["forces"][: len(phonopy.supercell)]
