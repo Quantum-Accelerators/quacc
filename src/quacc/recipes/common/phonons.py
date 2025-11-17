@@ -29,7 +29,6 @@ if TYPE_CHECKING:
     from quacc.types import PhononSchema
 
 
-
 @subflow
 @requires(has_phonopy, "Phonopy must be installed. Run `pip install quacc[phonons]`")
 @requires(has_seekpath, "Seekpath must be installed. Run `pip install quacc[phonons]`")
