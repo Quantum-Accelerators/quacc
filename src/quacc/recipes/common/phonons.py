@@ -167,7 +167,9 @@ def phonon_subflow(
 
     force_job_results = _get_forces_subflow(supercells)
     return _thermo_job(
+        atoms,
         displaced_atoms,
+        non_displaced_atoms,
         get_phonopy_kwargs,
         force_job_results,
         t_step,
