@@ -28,8 +28,6 @@ if TYPE_CHECKING:
     from quacc import Job
     from quacc.types import PhononSchema
 
-    if has_phonopy:
-        pass
 
 
 @subflow
