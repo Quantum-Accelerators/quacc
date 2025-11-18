@@ -28,6 +28,7 @@ if TYPE_CHECKING:
 
     if has_atomate2:
         from atomate2.vasp.jobs.base import BaseVaspMaker
+        from atomate2.vasp.sets.base import VaspInputGenerator
 
 LOGGER = getLogger(__name__)
 
@@ -516,6 +517,37 @@ class MPtoASEConverter:
         return self._convert()
 
     @requires(has_atomate2, "atomate2 is not installed.")
+    def convert_input_generator(self, input_generator: VaspInputGenerator) -> dict:
+        """
+        Convert a VaspInputGenerator to a dictionary of ASE VASP parameters.
+
+        Parameters
+        ----------
+        input_generator
+            The instantiated VaspInputGenerator.
+
+        Returns
+        -------
+        dict
+            The ASE VASP parameters.
+        """
+        assert hasattr(input_generator, "sort_structure")
+        input_generator.sort_structure = False
+        input_set = input_generator.get_input_set(
+            structure=self.structure, potcar_spec=True, prev_dir=self.prev_dir
+        )
+        self.incar_dict = input_set.incar
+        self.pmg_kpts = input_set.kpoints
+        self.potcar_symbols = (
+            input_set.potcar.split("\n")
+            if isinstance(input_set.potcar, str)
+            else input_set.potcar
+        )
+        self.potcar_functional = input_generator.potcar_functional
+        self.poscar = input_set.poscar
+        return self._convert()
+
+    @requires(has_atomate2, "atomate2 is not installed.")
     def convert_vasp_maker(self, VaspMaker: BaseVaspMaker) -> dict:
         """
         Convert an atomate2 VaspMaker to a dictionary of ASE VASP parameters.
@@ -530,22 +562,7 @@ class MPtoASEConverter:
         dict
             The ASE VASP parameters.
         """
-        input_set_generator = VaspMaker.input_set_generator
-        assert hasattr(input_set_generator, "sort_structure")
-        input_set_generator.sort_structure = False
-        input_set = input_set_generator.get_input_set(
-            structure=self.structure, potcar_spec=True, prev_dir=self.prev_dir
-        )
-        self.incar_dict = input_set.incar
-        self.pmg_kpts = input_set.kpoints
-        self.potcar_symbols = (
-            input_set.potcar.split("\n")
-            if isinstance(input_set.potcar, str)
-            else input_set.potcar
-        )
-        self.potcar_functional = input_set_generator.potcar_functional
-        self.poscar = input_set.poscar
-        return self._convert()
+        return self.convert_input_generator(VaspMaker.input_set_generator)
 
     def _convert(self) -> dict:
         """
