@@ -669,7 +669,7 @@ def _get_prefect_wrapped_flow(
 def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
     from jobflow import flow as jf_flow
 
-    jobflow_flow = jf_flow(_func, return_dict=False)
+    jobflow_flow = jf_flow(_func)
 
     def wrapper(*args, **kwargs):
         return jobflow_flow(*args, **kwargs)

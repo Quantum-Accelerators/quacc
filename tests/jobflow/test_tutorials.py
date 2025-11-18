@@ -132,8 +132,9 @@ def test_comparison1_flow_decorator(tmp_path, monkeypatch):
         job2 = mult(job1.output, 3)
         return job2.output  # or `return job`
 
-    response = jf.run_locally(workflow(), ensure_success=True)
-    assert response == 9
+    f = workflow()
+    response = jf.run_locally(f, ensure_success=True)
+    assert response[f.output.uuid][1].output == 9
 
 
 def test_comparison2(tmp_path, monkeypatch):
