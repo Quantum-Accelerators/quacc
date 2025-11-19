@@ -21,7 +21,7 @@ Here, we describe how to set up quacc with a database of your choosing.
     )
     ```
 
-    Then, to store results in your database, you can use the [quacc.wflow_tools.db.results_to_db][] function, as shown in the example below.
+    Then, to store results in your database, you can use the following script:
 
     ```python
     from maggma.stores import MongoStore
