@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.atoms import Atoms
-    from pymatgen.io.vasp.sets import DictSet
+    from pymatgen.io.vasp.sets import VaspInputSet
 
     from quacc.types import PmgKpts, SourceDirectory
 
@@ -490,29 +490,29 @@ class MPtoASEConverter:
         else:
             self.structure = None
 
-    def convert_dict_set(self, dict_set: DictSet) -> dict:
+    def convert_input_set(self, input_set: VaspInputSet) -> dict:
         """
-        Convert a Pymatgen DictSet to a dictionary of ASE VASP parameters.
+        Convert a Pymatgen VaspInputSet to a dictionary of ASE VASP parameters.
 
         Parameters
         ----------
         dict_set
-            The instantiated Pymatgen DictSet.
+            The instantiated Pymatgen VaspInputSet.
 
         Returns
         -------
         dict
             The ASE VASP parameters.
         """
-        assert hasattr(dict_set, "sort_structure")
-        dict_set.sort_structure = False
-        vasp_input = dict_set.get_input_set(
+        assert hasattr(input_set, "sort_structure")
+        input_set.sort_structure = False
+        vasp_input = input_set.get_input_set(
             structure=self.structure, potcar_spec=True, prev_dir=self.prev_dir
         )
         self.incar_dict = vasp_input["INCAR"]
         self.pmg_kpts = vasp_input.get("KPOINTS")
         self.potcar_symbols = vasp_input["POTCAR.spec"].split("\n")
-        self.potcar_functional = dict_set.potcar_functional
+        self.potcar_functional = input_set.potcar_functional
         self.poscar = vasp_input["POSCAR"]
         return self._convert()
 
@@ -548,7 +548,7 @@ class MPtoASEConverter:
         return self._convert()
 
     @requires(has_atomate2, "atomate2 is not installed.")
-    def convert_vasp_maker(self, VaspMaker: BaseVaspMaker) -> dict:
+    def convert_maker(self, VaspMaker: BaseVaspMaker) -> dict:
         """
         Convert an atomate2 VaspMaker to a dictionary of ASE VASP parameters.
 

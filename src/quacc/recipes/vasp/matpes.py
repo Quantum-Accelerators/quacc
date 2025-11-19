@@ -76,7 +76,7 @@ def matpes_static_job(
 
     maker = MatPesGGAStaticMaker()
     maker.input_set_generator.auto_ispin = True
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         maker
     )
 
