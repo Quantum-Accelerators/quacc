@@ -70,7 +70,7 @@ def mp_prerelax_job(
     """
     from atomate2.vasp.jobs.mp import MP24PreRelaxMaker
 
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24PreRelaxMaker()
     )
     with change_settings(_MP_SETTINGS):
@@ -112,7 +112,7 @@ def mp_metagga_relax_job(
     """
     from atomate2.vasp.jobs.mp import MP24RelaxMaker
 
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24RelaxMaker()
     )
     with change_settings(_MP_SETTINGS):
@@ -154,7 +154,7 @@ def mp_metagga_static_job(
     """
     from atomate2.vasp.jobs.mp import MP24StaticMaker
 
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24StaticMaker()
     )
     with change_settings(_MP_SETTINGS):
