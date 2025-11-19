@@ -42,7 +42,7 @@ In the previous examples, we have been running calculations on the local machine
 
     === "Jobflow Remote"
 
-        **Setting Up Your Jobflow Remote Cnnfiguration**
+        **Setting Up Your Jobflow Remote Configuration**
 
         When you previously [set up Jobflow or FireWorks](../../install/wflow_engines.md), you created a YAML file with configuration details. It's now time to revisit that file and adjust the `pre_run` command with any modules or environment variables necessary for your calculations to run. Additionally, you will probably want to update the `nodes`, `walltime`, and related settings for your scheduler.
 
@@ -173,6 +173,12 @@ If you haven't done so already:
 
         ```bash
         pip install quacc[jobflow]
+        ```
+
+        When you are ready to run, make sure the daemon is live in the background with
+
+        ```bash
+        jf runner start
         ```
 
     === "Fireworks"
@@ -317,7 +323,7 @@ If you haven't done so already:
 
     account = "MyAccountName"
 
-    cores_per_node = 128
+    cores_per_node = 112
     slurm_jobs = 2
 
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
@@ -524,7 +530,7 @@ If you haven't done so already:
     account = "MyAccountName"
 
     slurm_jobs = 1
-    cores_per_node = 128
+    cores_per_node = 112
 
     env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
 
@@ -903,7 +909,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
 
     slurm_jobs = 2
     nodes_per_calc = 1
-    cores_per_node = 128
+    cores_per_node = 112
 
     vasp_parallel_cmd = (
         f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"

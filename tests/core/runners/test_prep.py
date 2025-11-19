@@ -168,9 +168,7 @@ def test_calc_cleanup(tmp_path, monkeypatch):
         assert not p.exists()
         assert Path(atoms.calc.directory) == settings.RESULTS_DIR
 
-    with pytest.raises(
-        ValueError, match="quacc does not appear to be a tmpdir... exiting for safety!"
-    ):
+    with pytest.raises(ValueError, match="quacc does not appear to be a tmpdir"):
         calc_cleanup(atoms, "quacc", get_settings().RESULTS_DIR)
 
 

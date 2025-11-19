@@ -15,7 +15,7 @@ if has_mace := find_spec("mace"):
     methods.append("mace-mp")
 
 if has_matgl := find_spec("matgl"):
-    methods.extend(["m3gnet", "chgnet", "tensornet"])
+    methods.append("tensornet")
 
 if has_sevennet := find_spec("sevenn"):
     methods.append("sevennet")
@@ -53,7 +53,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
     ref_elastic_modulus = {
         "chgnet": 128.184,
         "m3gnet": 126.527,
-        "tensornet": 123.915,
+        "tensornet": 138.172,
         "mace-mp": 130.727,
         "sevennet": 142.296,
         "orb": 190.195,

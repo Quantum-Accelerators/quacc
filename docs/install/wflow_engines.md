@@ -121,56 +121,56 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         ```yaml title="~/.jfremote/cms.yaml"
         name: cms
         workers:
-        basic_vasp:
+          basic_python:
             type: local
             scheduler_type: slurm
-            work_dir: /path/to/my/jobflow/vasp
+            work_dir: /path/to/my/workdir/jobflow/python
             pre_run: |
-                source ~/.bashrc
-                module load anaconda3/2024.10
-                conda activate cms
-                module load vasp/6.5.1
-                export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node 112"
-                export QUACC_WORKFLOW_ENGINE=jobflow
-                export QUACC_CREATE_UNIQUE_DIR=False
+              source ~/.bashrc
+              module load anaconda3/2025.6
+              conda activate cms
+              export QUACC_WORKFLOW_ENGINE=jobflow
+              export QUACC_CREATE_UNIQUE_DIR=False
             timeout_execute: 60
             resources:
-                nodes: 1
-                ntasks_per_node: 112
-                cpus_per_task: 1
-                mem: 900G
-                time: 04:00:00
-                account: rosengroup
-        basic_python:
+              nodes: 1
+              ntasks_per_node: 1
+              cpus_per_task: 1
+              mem: 8G
+              time: 04:00:00
+              account: rosengroup
+          basic_vasp:
             type: local
             scheduler_type: slurm
-            work_dir: /path/to/my/jobflow/python
+            work_dir: /path/to/my/workdir/jobflow/python
             pre_run: |
-                source ~/.bashrc
-                module load anaconda3/2024.10
-                conda activate cms
-                export QUACC_WORKFLOW_ENGINE=jobflow
-                export QUACC_CREATE_UNIQUE_DIR=False
-                timeout_execute: 60
+              source ~/.bashrc
+              module load anaconda3/2025.6
+              conda activate cms
+              module load vasp/6.5.1
+              export QUACC_VASP_PARALLEL_CMD="srun --nodes 1 --ntasks-per-node 112"
+              export QUACC_WORKFLOW_ENGINE=jobflow
+              export QUACC_CREATE_UNIQUE_DIR=False
+            timeout_execute: 60
             resources:
-                nodes: 1
-                ntasks_per_node: 1
-                cpus_per_task: 1
-                mem: 8G
-                time: 04:00:00
-                account: rosengroup
+              nodes: 1
+              ntasks_per_node: 112
+              cpus_per_task: 1
+              mem: 900G
+              time: 04:00:00
+              account: rosengroup
         queue:
-        store:
+          store:
             type: MongoStore
             host: localhost
             database: <MongoDB Database Name>
             username: <MongoDB UserName>
             password: <MongoDB PW>
             collection_name: jf_jobs
-        flows_collection: jf_flows
-        auxiliary_collection: jf_aux
+          flows_collection: jf_flows
+          auxiliary_collection: jf_aux
         exec_config: {}
-        JOB_STORE:
+        jobstore:
           docs_store:
             type: MongoStore
             database: <MongoDB Database Name>

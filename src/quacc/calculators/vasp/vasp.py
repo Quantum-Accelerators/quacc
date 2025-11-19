@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING
 import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
-from ase.constraints import FixAtoms
 
 from quacc import QuaccDefault, get_settings
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
@@ -209,15 +208,6 @@ class Vasp(Vasp_):
         None
         """
 
-        # Check constraints
-        if (
-            self.use_custodian
-            and self.input_atoms.constraints
-            and not all(isinstance(c, FixAtoms) for c in self.input_atoms.constraints)
-        ):
-            msg = "Atoms object has a constraint that is not compatible with Custodian."
-            raise ValueError(msg)
-
         # Get user-defined preset parameters for the calculator
         if self.preset:
             preset_path = (
@@ -289,7 +279,10 @@ class Vasp(Vasp_):
 
         # Handle INCAR swaps
         self.user_calc_params = get_param_swaps(
-            self.user_calc_params, self.pmg_kpts, self.input_atoms, self.incar_copilot
+            self.user_calc_params,
+            self.input_atoms,
+            incar_copilot_mode=self.incar_copilot,
+            pmg_kpts=self.pmg_kpts,
         )
 
         # Clean up the user calc parameters
