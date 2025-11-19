@@ -1087,7 +1087,6 @@ def test_fairchem_omc(patch_metallic_taskdoc):
         "ediff": 1e-06,
         "enaug": 1360,
         "encut": 520.0,
-        "ibrion": -1,
         "isif": 0,
         "ismear": 0,
         "ispin": 1,
