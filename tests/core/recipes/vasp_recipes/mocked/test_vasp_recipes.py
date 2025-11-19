@@ -1083,7 +1083,7 @@ def test_fairchem_omc(patch_metallic_taskdoc):
     output = omc_static_job(atoms)
     output["parameters"].pop("ncore")
     assert output["parameters"] == {
-        "algo": "Normal",
+        "algo": "normal",
         "ediff": 1e-06,
         "enaug": 1360,
         "encut": 520.0,
@@ -1102,14 +1102,14 @@ def test_fairchem_omc(patch_metallic_taskdoc):
         "lwave": False,
         "nelm": 200,
         "nsw": 0,
-        "prec": "Normal",
+        "prec": "normal",
         "sigma": 0.1,
-        "gga": "Pe",
+        "gga": "pe",
         "addgrid": True,
         "ivdw": 11,
         "nelmdl": -10,
         "setups": {"Si": ""},
-        "pp": "PBE",
+        "pp": "pbe",
         "kpts": (7, 7, 7),
         "gamma": True,
     }
