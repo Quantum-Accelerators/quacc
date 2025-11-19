@@ -94,20 +94,16 @@ A `#!Python @subflow` in quacc is any workflow that returns a list of job output
 
 === "Jobflow"
 
-    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the `Job` and `Flow` definitions, which describe individual compute tasks and workflows, respectively.
+    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the concept of a `#!Python @job` and a `#!Python @flow` `Job`, which describe individual compute tasks and workflows, respectively.
 
     <center>
 
-    | Quacc               | Jobflow         |
-    | ------------------- | --------------- |
-    | `#!Python @job`     | `#!Python @job` |
-    | `#!Python @flow`    | N/A             |
-    | `#!Python @subflow` | N/A             |
+    | Quacc               | Jobflow          |
+    | ------------------- | ---------------- |
+    | `#!Python @job`     | `#!Python @job`  |
+    | `#!Python @flow`    | `#!Python @flow` |
+    | `#!Python @subflow` | `#!Python @flow` |
 
     </center>
-
-    !!! Warning
-
-        Due to the difference in how Jobflow handles workflows compared to other supported workflow engines, any quacc recipes that have been pre-defined with a `#!Python @flow` or `#!Python @subflow` decorator (i.e. have `_flow` in the name) cannot be run directly with Jobflow.
 
 The quacc descriptors are drop-in replacements for the specified workflow engine analogue, which we will use for the remainder of the tutorials. Based on the value for the `WORKFLOW_ENGINE` global variable in your [quacc settings](../settings/settings.md), the appropriate decorator will be automatically selected. If the `WORKFLOW_ENGINE` setting is set to `None` (i.e. `quacc set WORKFLOW_ENGINE None`), the decorators will have no effect on the underlying function.

@@ -33,7 +33,7 @@ def test_tutorial2a(tmp_path, monkeypatch):
     job1 = relax_job(atoms)  # (1)!
 
     # Define Job 2, which takes the output of Job 1 as input
-    job2 = static_job(job1.output["atoms"])  # (2)!
+    job2 = static_job(job1["atoms"])  # (2)!
 
     # Define the workflow
     workflow = jf.Flow([job1, job2])
@@ -54,7 +54,7 @@ def test_tutorial2a_flow_decorator(tmp_path, monkeypatch):
         # Define Job 1
         job1 = relax_job(atoms)
         # Define Job 2, which takes the output of Job 1 as input
-        static_job(job1.output["atoms"])
+        static_job(job1["atoms"])
 
     # Run the workflow locally
     jf.run_locally(workflow(atoms), create_folders=True, ensure_success=True)
@@ -94,6 +94,26 @@ def test_tutorial2b_flow_decorator(tmp_path, monkeypatch):
 
     # Run the workflow locally
     jf.run_locally(workflow(atoms1, atoms2), create_folders=True, ensure_success=True)
+
+
+def test_job_getitem():
+    @job
+    def greetings(s):
+        return {"hello": f"Hello {s}", "bye": f"Goodbye {s}"}
+
+    @job
+    def upper(s):
+        return s.upper()
+
+    @flow
+    def greet(s):
+        job1 = greetings(s)
+        job2 = upper(job1["hello"])  # No need for `job1.output["hello"]`
+        return job2.output
+
+    workflow = greet("World")
+    response = jf.run_locally(workflow)
+    assert response[workflow.output.uuid][1].output == "HELLO WORLD"
 
 
 def test_comparison1(tmp_path, monkeypatch):
