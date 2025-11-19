@@ -56,7 +56,7 @@ def omat_static_job(
     """
     from fairchem.data.omat.vasp.sets import OMat24StaticSet
 
-    calc_defaults = MPtoASEConverter(atoms=atoms).convert_dict_set(OMat24StaticSet())
+    calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(OMat24StaticSet())
 
     return run_and_summarize(
         atoms,
