@@ -496,7 +496,7 @@ class MPtoASEConverter:
 
         Parameters
         ----------
-        dict_set
+        input_set
             The instantiated Pymatgen VaspInputSet.
 
         Returns
