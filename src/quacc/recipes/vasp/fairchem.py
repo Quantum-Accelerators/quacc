@@ -9,7 +9,8 @@ from quacc import job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 
-has_fairchem_omat = bool(find_spec("fairchem.data.omat"))
+has_fairchem = bool(find_spec("fairchem"))
+has_fairchem_omat = has_fairchem and bool(find_spec("fairchem.data.omat"))
 
 if TYPE_CHECKING:
     from typing import Any
