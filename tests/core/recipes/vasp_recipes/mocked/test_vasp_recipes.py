@@ -35,6 +35,8 @@ from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 has_atomate2 = util.find_spec("atomate2") is not None
+has_fairchem = util.find_spec("fairchem") is not None
+has_fairchem_omat = has_fairchem and util.find_spec("fairchem.data.omat") is not None
 
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
@@ -1043,3 +1045,31 @@ def test_matpes(patch_metallic_taskdoc):
 
     with pytest.raises(ValueError, match="Unsupported value for m06"):
         matpes_static_job(bulk("Al"), level="m06")
+
+
+@pytest.mark.skipif(not has_fairchem_omat, reason="fairchem not installed")
+def test_fairchem_omat(patch_metallic_taskdoc):
+    from quacc.recipes.vasp.fairchem import omat_static_job
+
+    atoms = bulk("Si")
+    output = omat_static_job(atoms)
+    output["parameters"].pop("ncore")
+    assert output["parameters"] == {
+        "algo": "normal",
+        "ediff": 0.0001,
+        "encut": 520.0,
+        "gamma": True,
+        "ismear": -5,
+        "ispin": 2,
+        "kpts": (7, 7, 7),
+        "lasph": True,
+        "lorbit": 11,
+        "lreal": "auto",
+        "lwave": False,
+        "magmom": [0.6, 0.6],
+        "nelm": 100,
+        "pp": "pbe",
+        "prec": "accurate",
+        "setups": {"Si": ""},
+        "sigma": 0.05,
+    }
