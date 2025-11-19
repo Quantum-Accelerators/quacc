@@ -67,7 +67,7 @@ def mp_gga_relax_job(
     """
     from atomate2.vasp.jobs.mp import MPGGARelaxMaker
 
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MPGGARelaxMaker()
     )
     with change_settings(_MP_SETTINGS):
@@ -108,7 +108,7 @@ def mp_gga_static_job(
     """
     from atomate2.vasp.jobs.mp import MPGGAStaticMaker
 
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_vasp_maker(
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MPGGAStaticMaker()
     )
     with change_settings(_MP_SETTINGS):
