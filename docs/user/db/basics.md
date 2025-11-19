@@ -21,13 +21,13 @@ Here, we describe how to set up quacc with a database of your choosing.
     )
     ```
 
-    Then, to store results in your database, you can use the [quacc.wflow_tools.db.results_to_db][] function, as shown in the example below.
+    Then, to store results in your database, you can use the following script:
 
     ```python
     from maggma.stores import MongoStore
-    from quacc.wflow_tools.db import results_to_db
+    from monty.json import jsanitize
 
-    # Let `results` be an output (or list of outputs) from quacc recipes
+    # Let `results` be of type `list[dict]` containing outputs from quacc recipes
 
     # Define your database details
     store = MongoStore(
@@ -40,7 +40,15 @@ Here, we describe how to set up quacc with a database of your choosing.
     )
 
     # Store the results
-    results_to_db(store, results)
+    sanitized_results = [
+        jsanitize(result, enum_values=True, recursive_msonable=True) for result in results
+    ]
+
+    for result in sanitized_results:
+        result["uuid"] = str(uuid.uuid4())
+
+    with store:
+        store.update(sanitized_results, key="uuid")
     ```
 
 === "Covalent"
