@@ -14,7 +14,7 @@ has_fairchem_omat = has_fairchem and bool(find_spec("fairchem.data.omat"))
 has_atomate2 = bool(find_spec("atomate2"))
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Any
 
     from ase.atoms import Atoms
 
@@ -100,7 +100,7 @@ def omc_static_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = _make_fairchem_inputs(atoms, dataset="omc")
+    calc_defaults = _make_omc_inputs(atoms)
 
     return run_and_summarize(
         atoms,
@@ -111,7 +111,7 @@ def omc_static_job(
     )
 
 
-def _make_fairchem_inputs(atoms: Atoms, *, dataset: Literal["omc"]) -> dict:
+def _make_omc_inputs(atoms: Atoms) -> dict:
     """
     Helper function to make a fairchem input set.
 
@@ -127,38 +127,34 @@ def _make_fairchem_inputs(atoms: Atoms, *, dataset: Literal["omc"]) -> dict:
     dict
         Dictionary of ASE VASP calculator parameters.
     """
-    if dataset == "omc":
-        from atomate2.vasp.sets.core import StaticSetGenerator
+    from atomate2.vasp.sets.core import StaticSetGenerator
 
-        input_generator = StaticSetGenerator(
-            user_incar_settings={
-                "ADDGRID": True,
-                "ALGO": "Normal",
-                "EDIFF": 1e-06,
-                "ENCUT": 520,
-                "GGA": "PE",
-                "IBRION": -1,
-                "ISIF": 0,
-                "ISMEAR": 0,
-                "ISPIN": 1,
-                "IVDW": 11,
-                "LREAL": False,
-                "LMIXTAU": True,
-                "LASPH": True,
-                "LORBIT": 11,
-                "LWAVE": False,
-                "LAECHG": False,
-                "LVTOT": False,
-                "NCORE": 100,
-                "NELM": 200,
-                "NELMDL": -10,
-                "NSW": 0,
-                "PREC": "Normal",
-                "SIGMA": 0.1,
-            },
-            user_potcar_functional="PBE_54_W_HASH",
-            auto_kspacing=True,
-        )
-        return MPtoASEConverter(atoms=atoms).convert_input_generator(input_generator)
-    else:
-        raise ValueError(f"Dataset '{dataset}' not recognized.")
+    input_generator = StaticSetGenerator(
+        user_incar_settings={
+            'ADDGRID': True,
+            'ALGO': 'Normal',
+            'EDIFF': 1e-06,
+            'ENCUT': 520,
+            'GGA': 'PE',
+            'IBRION': -1,
+            'ISIF': 0,
+            'ISMEAR': 0,
+            'ISPIN': 1,
+            'IVDW': 11,
+            'LREAL': False,
+            'LMIXTAU': True,
+            'LASPH': True,
+            'LORBIT': 11,
+            'LWAVE': False,
+            'LAECHG': False,
+            'LVTOT': False,
+            'NCORE': 100,
+            'NELM': 200,
+            'NELMDL': -10,
+            'NSW': 0,
+            'PREC': 'Normal',
+            'SIGMA': 0.1},
+        user_potcar_functional="PBE_54_W_HASH",
+        auto_kspacing=True,
+    )
+    return MPtoASEConverter(atoms=atoms).convert_input_generator(input_generator)
