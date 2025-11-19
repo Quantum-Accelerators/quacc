@@ -41,8 +41,7 @@ Here, we describe how to set up quacc with a database of your choosing.
 
     # Store the results
     sanitized_results = [
-        jsanitize(result, enum_values=True, recursive_msonable=True)
-        for result in results
+        jsanitize(result, enum_values=True, recursive_msonable=True) for result in results
     ]
 
     for result in sanitized_results:
