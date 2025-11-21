@@ -94,7 +94,7 @@ A `#!Python @subflow` in quacc is any workflow that returns a list of job output
 
 === "Jobflow"
 
-    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the concept of a `#!Python @job` and a `#!Python @flow` `Job`, which describe individual compute tasks and workflows, respectively.
+    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the concept of a `#!Python @job` and a `#!Python @flow`, which describe individual compute tasks and workflows, respectively.
 
     <center>
 
@@ -102,7 +102,7 @@ A `#!Python @subflow` in quacc is any workflow that returns a list of job output
     | ------------------- | ---------------- |
     | `#!Python @job`     | `#!Python @job`  |
     | `#!Python @flow`    | `#!Python @flow` |
-    | `#!Python @subflow` | `#!Python @flow` |
+    | `#!Python @subflow` | `#!Python @job`  |
 
     </center>
 

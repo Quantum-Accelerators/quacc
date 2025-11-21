@@ -586,7 +586,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "jobflow":
-        return _get_jobflow_wrapped_flow(_func)
+        return _get_jobflow_wrapped_func(_func, **kwargs)
     else:
         return _func
 

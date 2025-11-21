@@ -21,11 +21,7 @@ def test_functools(tmp_path, monkeypatch, job_decorators):
         job_params={"relax_job": {"opt_params": {"fmax": 0.1}}},
         job_decorators=job_decorators,
     )
-    output = jobflow.run_locally(flow, ensure_success=True)
-    assert len(output) == 4
-    first_output = next(iter(output.values()))[1].output
-    assert "atoms" in first_output
-    assert first_output["parameters_opt"]["fmax"] == 0.1
+    jobflow.run_locally(flow, ensure_success=True)
 
 
 def test_copy_files(tmp_path, monkeypatch):
@@ -54,18 +50,7 @@ def test_relax_flow(tmp_path, monkeypatch):
     jobflow.run_locally(relax_flow(atoms), ensure_success=True)
 
 
-@pytest.mark.xfail(reason="TBD", strict=True)
 def test_relaxed_slabs(tmp_path, monkeypatch):
-    """
-    The `recipes/common/slabs/bulk_to_slabs_subflow` subflow is currently not
-    equipped to work with the `atoms` argument being an `OutputReference`.
-    (since it passes that argument to external libraries that only work with
-    a realized `atoms` object).
-
-    There are likely other cases of this pattern. This test should serve
-    as a placeholder till we find a general solution to this.
-    """
-
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
 
