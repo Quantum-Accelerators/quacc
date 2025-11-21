@@ -1073,3 +1073,42 @@ def test_fairchem_omat(patch_metallic_taskdoc):
         "setups": {"Si": ""},
         "sigma": 0.05,
     }
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+def test_fairchem_omc(patch_metallic_taskdoc):
+    from quacc.recipes.vasp.fairchem import omc_static_job
+
+    atoms = bulk("Si")
+    output = omc_static_job(atoms)
+    output["parameters"].pop("ncore")
+    assert output["parameters"] == {
+        "algo": "normal",
+        "ediff": 1e-06,
+        "enaug": 1360,
+        "encut": 520.0,
+        "isif": 0,
+        "ismear": 0,
+        "ispin": 1,
+        "laechg": False,
+        "lasph": True,
+        "lcharg": True,
+        "lelf": False,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": False,
+        "lvtot": False,
+        "lwave": False,
+        "nelm": 200,
+        "nsw": 0,
+        "prec": "normal",
+        "sigma": 0.1,
+        "gga": "pe",
+        "addgrid": True,
+        "ivdw": 11,
+        "nelmdl": -10,
+        "setups": {"Si": ""},
+        "pp": "pbe",
+        "kpts": (7, 7, 7),
+        "gamma": True,
+    }
