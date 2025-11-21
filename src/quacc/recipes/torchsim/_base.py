@@ -185,3 +185,70 @@ def process_trajectory_reporter_dict(
         "filenames": trajectory_reporter.filenames,
     }
     return trajectory_reporter, reporter_details
+
+
+def pick_model(
+    model_type: TSModelType, model_path: str | Path, **model_kwargs: Any
+) -> ModelInterface:
+    """Pick and instantiate a model based on the model type.
+
+    Parameters
+    ----------
+    model_type : TSModelType
+        The type of model to instantiate.
+    model : str | Path
+        Path to the model file or checkpoint.
+    **model_kwargs : Any
+        Additional keyword arguments to pass to the model constructor.
+
+    Returns
+    -------
+    ModelInterface
+        The instantiated model.
+
+    Raises
+    ------
+    ValueError
+        If an invalid model type is provided.
+    """
+    if model_type == TSModelType.FAIRCHEMV1:
+        from torch_sim.models.fairchem_legacy import FairChemV1Model
+
+        return FairChemV1Model(model=model_path, **model_kwargs)
+    if model_type == TSModelType.FAIRCHEM:
+        from torch_sim.models.fairchem import FairChemModel
+
+        return FairChemModel(model=model_path, **model_kwargs)
+    if model_type == TSModelType.GRAPHPESWRAPPER:
+        from torch_sim.models.graphpes import GraphPESWrapper
+
+        return GraphPESWrapper(model=model_path, **model_kwargs)
+    if model_type == TSModelType.MACE:
+        from torch_sim.models.mace import MaceModel
+
+        return MaceModel(model=model_path, **model_kwargs)
+    if model_type == TSModelType.MATTERSIM:
+        from torch_sim.models.mattersim import MatterSimModel
+
+        return MatterSimModel(model=model_path, **model_kwargs)
+    if model_type == TSModelType.METATOMIC:
+        from torch_sim.models.metatomic import MetatomicModel
+
+        return MetatomicModel(model=model_path, **model_kwargs)
+    if model_type == TSModelType.NEQUIPFRAMEWORK:
+        from torch_sim.models.nequip_framework import NequIPFrameworkModel
+
+        return NequIPFrameworkModel(model=model_path, **model_kwargs)
+    if model_type == TSModelType.ORB:
+        from torch_sim.models.orb import OrbModel
+
+        return OrbModel(model=model_path, **model_kwargs)
+    if model_type == TSModelType.SEVENNET:
+        from torch_sim.models.sevennet import SevenNetModel
+
+        return SevenNetModel(model=model_path, **model_kwargs)
+    if model_type == TSModelType.LENNARD_JONES:
+        from torch_sim.models.lennard_jones import LennardJonesModel
+
+        return LennardJonesModel(**model_kwargs)
+    raise ValueError(f"Invalid model type: {model_type}")
