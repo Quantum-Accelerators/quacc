@@ -1,3 +1,5 @@
+"""Core recipes for TorchSim."""
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -269,6 +271,53 @@ def relax_job(
     convergence_fn_kwargs: dict[str, Any] | None = None,
     **optimizer_kwargs: Any,
 ) -> TorchSimOptSchema:
+    """
+    Carry out a geometry optimization on a set of atoms.
+
+    Parameters
+    ----------
+    atoms : list[Atoms]
+        The list of atoms objects.
+    model_type : TSModelType
+        The type of model to use, limited to the types supported by TorchSim.
+    model_path : str | Path
+        The path to the model file or checkpoint.
+    optimizer : Optimizer
+        The TorchSim optimizer to use.
+    convergence_fn : ConvergenceFn
+        The convergence function, either "energy" or "force". This will use either the
+        ts.generate_energy_convergence_fn or ts.generate_force_convergence_fn function
+        to interally generate the convergence function. Arguments can be supplied via
+        the convergence_fn_kwargs argument.
+    trajectory_reporter_dict : TrajectoryReporterDict | None
+        This dictionary defines the trajectory reporting behavior. This is a
+        quacc-specific dictionary that allows for the configuration of the
+        TrajectoryReporter. For a list of available keys, refer to the TorchSim
+        TrajectoryReporter documentation or the TrajectoryReporterDict type-hint.
+    autobatcher_dict : AutobatcherDict | bool
+        This dictionary defines the autobatcher behavior. This is a quacc-specific
+        dictionary that allows for the configuration of the autobatcher. For a list of
+        available keys, refer to the TorchSim Autobatcher's documentation or the
+        AutobatcherDict type-hint.
+    max_steps : int
+        The maximum number of steps to run for each optimization.
+    steps_between_swaps : int
+        Number of steps to take before checking convergence and swapping out states.
+    init_kwargs : dict[str, Any] | None
+        Keyword arguments passed to the optimizer initialization function.
+    model_kwargs : dict[str, Any] | None
+        Keyword arguments passed to the model.
+    convergence_fn_kwargs : dict[str, Any] | None
+        Keyword arguments passed to the convergence function generator.
+    **optimizer_kwargs : Any
+        Keyword arguments to pass to the optimizer step function.
+
+    Returns
+    -------
+    TorchSimOptSchema
+        A dictionary representing the final atoms configuration and metadata geometry
+        optimization schema. See the type-hint for the data structure.
+    """
     model = pick_model(model_type, model_path, **model_kwargs or {})
 
     convergence_fn_obj = CONVERGENCE_FN_REGISTRY[convergence_fn](
@@ -333,6 +382,46 @@ def md_job(
     model_kwargs: dict[str, Any] | None = None,
     **integrator_kwargs: Any,
 ) -> TorchSimIntegrateSchema:
+    """
+    Carry out a molecular dynamics calculation on a set of atoms.
+
+    Parameters
+    ----------
+    atoms : list[Atoms]
+        The list of atoms objects.
+    model_type : TSModelType
+        The type of model to use, limited to the types supported by TorchSim.
+    model_path : str | Path
+        The path to the model file or checkpoint.
+    integrator : Integrator
+        The TorchSim integrator to use.
+    n_steps : int
+        The maximum number of steps to run for each integration.
+    temperature : float | list
+        The temperature to use.
+    timestep : float
+        The timestep to use.
+    trajectory_reporter_dict : TrajectoryReporterDict | None
+        This dictionary defines the trajectory reporting behavior. This is a
+        quacc-specific dictionary that allows for the configuration of the
+        TrajectoryReporter. For a list of available keys, refer to the TorchSim
+        TrajectoryReporter documentation or the TrajectoryReporterDict type-hint.
+    autobatcher_dict : AutobatcherDict | bool
+        This dictionary defines the autobatcher behavior. This is a quacc-specific
+        dictionary that allows for the configuration of the autobatcher. For a list of
+        available keys, refer to the TorchSim Autobatcher's documentation or the
+        AutobatcherDict type-hint.
+    model_kwargs : dict[str, Any] | None
+        Keyword arguments passed to the model.
+    **integrator_kwargs : Any
+        Keyword arguments to pass to the integrator step function.
+
+    Returns
+    -------
+    TorchSimIntegrateSchema
+        A dictionary representing the final atoms configuration and metadata for the
+        molecular dynamics schema. See the type-hint for the data structure.
+    """
     model = pick_model(model_type, model_path, **model_kwargs or {})
 
     state = ts.initialize_state(atoms, model.device, model.dtype)
@@ -384,6 +473,36 @@ def static_job(
     autobatcher_dict: AutobatcherDict | bool = False,
     model_kwargs: dict[str, Any] | None = None,
 ) -> TorchSimStaticSchema:
+    """
+    Carry out a static calculation on a set of atoms.
+
+    Parameters
+    ----------
+    atoms : list[Atoms]
+        The list of atoms objects.
+    model_type : TSModelType
+        The type of model to use, limited to the types supported by TorchSim.
+    model_path : str | Path
+        The path to the model file or checkpoint.
+    trajectory_reporter_dict : TrajectoryReporterDict | None
+        This dictionary defines the trajectory reporting behavior. This is a
+        quacc-specific dictionary that allows for the configuration of the
+        TrajectoryReporter. For a list of available keys, refer to the TorchSim
+        TrajectoryReporter documentation or the TrajectoryReporterDict type-hint.
+    autobatcher_dict : AutobatcherDict | bool
+        This dictionary defines the autobatcher behavior. This is a quacc-specific
+        dictionary that allows for the configuration of the autobatcher. For a list of
+        available keys, refer to the TorchSim Autobatcher's documentation or the
+        AutobatcherDict type-hint.
+    model_kwargs : dict[str, Any] | None
+        Keyword arguments passed to the model.
+
+    Returns
+    -------
+    TorchSimStaticSchema
+        A dictionary representing the final atoms configuration and metadata for the
+        static calculation schema. See the type-hint for the data structure.
+    """
     model = pick_model(model_type, model_path, **model_kwargs or {})
 
     state = ts.initialize_state(atoms, model.device, model.dtype)
