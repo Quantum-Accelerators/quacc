@@ -42,7 +42,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-db.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
@@ -306,7 +306,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-mlp:
+  tests-sevenn-orb-newtonnet:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -329,7 +329,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-sevenn.txt -r tests/requirements-orb.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
@@ -345,7 +345,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-mlp-mace-matgl:
+  tests-mace-matgl:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -368,7 +368,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp-mace-matgl.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mace.txt -r tests/requirements-matgl.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
@@ -384,7 +384,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-mlp-fairchem:
+  tests-fairchem:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -407,7 +407,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlp-fairchem.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-fairchem.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
@@ -424,7 +424,7 @@ jobs:
           fi
 
       - name: Run tests with pytest
-        run: pytest -k 'mlp' --durations=10 --cov=quacc --cov-report=xml
+        run: pytest -k 'mlp or fairchem' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v5
@@ -508,9 +508,9 @@ jobs:
       - tests-defects-phonons-espresso
       - tests-tblite-dftbplus
       - tests-qchem-sella
-      - tests-mlp
-      - tests-mlp-mace-matgl
-      - tests-mlp-fairchem
+      - tests-sevenn-orb-newtonnet
+      - tests-mace-matgl
+      - tests-fairchem
       - tests-mp
       - tests-torchsim
     runs-on: ubuntu-latest
