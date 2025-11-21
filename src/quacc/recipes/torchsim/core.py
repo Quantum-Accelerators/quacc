@@ -1,23 +1,32 @@
 from __future__ import annotations
 
+from copy import deepcopy
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 import torch_sim as ts
 from torch_sim.autobatching import BinningAutoBatcher, InFlightAutoBatcher
 
 from quacc import job
-from quacc.schemas.torchsim import CONVERGENCE_FN_REGISTRY, ConvergenceFn, TSModelType
+from quacc.schemas.torchsim import (
+    CONVERGENCE_FN_REGISTRY,
+    PROPERTY_FN_REGISTRY,
+    ConvergenceFn,
+    TSModelType,
+)
 
 if TYPE_CHECKING:
     import pathlib
-    from pathlib import Path
 
     import numpy as np
     from ase.atoms import Atoms
     from torch_sim.integrators import Integrator
     from torch_sim.models.interface import ModelInterface
     from torch_sim.optimizers import Optimizer
+    from torch_sim.state import SimState
     from torch_sim.trajectory import TrajectoryReporter
+
+    from quacc.schemas.torchsim import PropertyFn
 
     class TorchSimSchema(TypedDict):
         atoms: list[Atoms]
@@ -27,10 +36,26 @@ if TYPE_CHECKING:
         trajectory_reporter: TrajectoryReporterDetails | None
         autobatcher: AutobatcherDetails | None
 
+    class TrajectoryReporterDict(TypedDict, total=False):
+        filenames: str | pathlib.Path | list[str | pathlib.Path]
+        state_frequency: int | None
+        prop_calculators: dict[int, list[PropertyFn]] | None
+        state_kwargs: dict[str, Any] | None
+        metadata: dict[str, str] | None
+        trajectory_kwargs: dict[str, Any] | None
+
+    class AutobatcherDict(TypedDict, total=False):
+        memory_scales_with: Literal["n_atoms", "n_atoms_x_density"] | None
+        max_memory_scaler: float | None
+        max_atoms_to_try: int | None
+        memory_scaling_factor: float | None
+        max_iterations: int | None
+        max_memory_padding: float | None
+
     class TrajectoryReporterDetails(TypedDict):
         state_frequency: int
         trajectory_kwargs: dict[str, Any]
-        prop_calculators: dict[int, list[str]]
+        prop_calculators: dict[int, list[PropertyFn]]
         state_kwargs: dict[str, Any]
         metadata: dict[str, str] | None
         filenames: list[str | pathlib.Path] | None
@@ -64,21 +89,53 @@ if TYPE_CHECKING:
         all_properties: list[dict[str, np.ndarray]]
 
 
+def _process_in_flight_autobatcher_dict(
+    state: SimState,
+    model: ModelInterface,
+    autobatcher_dict: AutobatcherDict | bool,
+    max_iterations: int,
+) -> tuple[InFlightAutoBatcher | bool, AutobatcherDetails | None]:
+    """Process a autobatcher dictionary."""
+    if isinstance(autobatcher_dict, bool):
+        # False means no autobatcher
+        if not autobatcher_dict:
+            return False, None
+        # otherwise, configure the autobatcher, with the private runners method
+        autobatcher = ts.runners._configure_in_flight_autobatcher(
+            state, model, autobatcher=autobatcher_dict, max_iterations=max_iterations
+        )
+    else:
+        autobatcher = InFlightAutoBatcher(model=model, **autobatcher_dict)
+
+    autobatcher_details = _get_autobatcher_details(autobatcher)
+    return autobatcher, autobatcher_details
+
+
+def _process_binning_autobatcher_dict(
+    state: SimState, model: ModelInterface, autobatcher_dict: AutobatcherDict | bool
+) -> tuple[BinningAutoBatcher | bool, AutobatcherDetails | None]:
+    """Process a binning autobatcher dictionary."""
+    if isinstance(autobatcher_dict, bool):
+        # otherwise, configure the autobatcher, with the private runners method
+        autobatcher = ts.runners._configure_batches_iterator(
+            state, model, autobatcher=autobatcher_dict
+        )
+        # list means no autobatcher
+        if isinstance(autobatcher, list):
+            return False, None
+    else:
+        # pop max_iterations if present
+        autobatcher_dict.pop("max_iterations", None)
+        autobatcher = BinningAutoBatcher(model=model, **autobatcher_dict)
+
+    autobatcher_details = _get_autobatcher_details(autobatcher)
+    return autobatcher, autobatcher_details
+
+
 def _get_autobatcher_details(
     autobatcher: InFlightAutoBatcher | BinningAutoBatcher,
 ) -> AutobatcherDetails:
-    """Convert an autobatcher to a dictionary for serialization.
-
-    Parameters
-    ----------
-    autobatcher : InFlightAutoBatcher | BinningAutoBatcher
-        The autobatcher to convert.
-
-    Returns
-    -------
-    AutobatcherDetails
-        Dictionary representation of the autobatcher.
-    """
+    """Get the details of an autobatcher."""
     return {
         "autobatcher": type(autobatcher).__name__,  # type: ignore
         "memory_scales_with": autobatcher.memory_scales_with,  # type: ignore
@@ -94,40 +151,38 @@ def _get_autobatcher_details(
     }
 
 
-def _get_reporter_details(
-    trajectory_reporter: TrajectoryReporter | None,
-) -> TrajectoryReporterDetails | None:
-    """Convert a TrajectoryReporter to a dictionary for serialization.
+def _process_trajectory_reporter_dict(
+    trajectory_reporter_dict: TrajectoryReporterDict | None,
+) -> tuple[TrajectoryReporter, TrajectoryReporterDetails]:
+    """Process a trajectory reporter dictionary."""
+    if trajectory_reporter_dict is None:
+        return None, None
+    trajectory_reporter_dict = deepcopy(trajectory_reporter_dict)
 
-    Parameters
-    ----------
-    trajectory_reporter : TrajectoryReporter | None
-        The trajectory reporter to convert.
+    prop_calculators = trajectory_reporter_dict.pop("prop_calculators", {})
+    prop_calculators_functions = {
+        i: {prop: PROPERTY_FN_REGISTRY[prop] for prop in props}
+        for i, props in prop_calculators.items()
+    }
 
-    Returns
-    -------
-    TrajectoryReporterDetails | None
-        Dictionary representation of the trajectory reporter.
-    """
-    if trajectory_reporter is None:
-        return None
+    # TODO: put in optional dependencies
+    trajectory_reporter = ts.TrajectoryReporter(
+        **trajectory_reporter_dict, prop_calculators=prop_calculators_functions
+    )
 
-    if trajectory_reporter.filenames is not None:
-        filenames = [p.resolve() for p in trajectory_reporter.filenames]
-    else:
-        filenames = None
+    trajectory_reporter.filenames = [
+        Path(p).resolve() for p in trajectory_reporter_dict["filenames"]
+    ]
 
-    return {
+    reporter_details = {
         "state_frequency": trajectory_reporter.state_frequency,
         "trajectory_kwargs": trajectory_reporter.trajectory_kwargs,
-        "prop_calculators": {
-            i: list(calcs.keys())
-            for i, calcs in trajectory_reporter.prop_calculators.items()
-        },
+        "prop_calculators": prop_calculators,
         "state_kwargs": trajectory_reporter.state_kwargs,
         "metadata": trajectory_reporter.metadata,
-        "filenames": filenames,
+        "filenames": trajectory_reporter.filenames,
     }
+    return trajectory_reporter, reporter_details
 
 
 def pick_model(
@@ -205,8 +260,8 @@ def relax_job(
     optimizer: Optimizer,
     *,
     convergence_fn: ConvergenceFn = ConvergenceFn.FORCE,
-    trajectory_reporter_dict: dict | None = None,
-    autobatcher_dict: dict | bool = False,
+    trajectory_reporter_dict: TrajectoryReporterDict | None = None,
+    autobatcher_dict: AutobatcherDict | bool = False,
     max_steps: int = 10_000,
     steps_between_swaps: int = 5,
     init_kwargs: dict[str, Any] | None = None,
@@ -223,18 +278,15 @@ def relax_job(
     state = ts.initialize_state(atoms, model.device, model.dtype)
 
     # Configure trajectory reporter
-    trajectory_reporter = ts.runners._configure_reporter(
-        trajectory_reporter_dict, properties=["potential_energy"]
+    trajectory_reporter, trajectory_reporter_details = (
+        _process_trajectory_reporter_dict(trajectory_reporter_dict)
     )
 
     # Configure autobatcher
     max_iterations = max_steps // steps_between_swaps
-    if autobatcher_dict:
-        autobatcher = ts.runners._configure_in_flight_autobatcher(
-            state, model, autobatcher=autobatcher_dict, max_iterations=max_iterations
-        )
-    else:
-        autobatcher = False
+    autobatcher, autobatcher_details = _process_in_flight_autobatcher_dict(
+        state, model, autobatcher_dict=autobatcher_dict, max_iterations=max_iterations
+    )
 
     state = ts.optimize(
         system=state,
@@ -255,8 +307,8 @@ def relax_job(
         "model_path": model_path,
         "optimizer": optimizer,
         "convergence_fn": convergence_fn,
-        "trajectory_reporter": _get_reporter_details(trajectory_reporter),
-        "autobatcher": _get_autobatcher_details(autobatcher) if autobatcher else None,
+        "trajectory_reporter": trajectory_reporter_details,
+        "autobatcher": autobatcher_details,
         "max_steps": max_steps,
         "steps_between_swaps": steps_between_swaps,
         "init_kwargs": init_kwargs,
@@ -276,8 +328,8 @@ def md_job(
     n_steps: int,
     temperature: float | list,
     timestep: float,
-    trajectory_reporter_dict: dict | None = None,
-    autobatcher_dict: dict | bool = False,
+    trajectory_reporter_dict: TrajectoryReporterDict | None = None,
+    autobatcher_dict: AutobatcherDict | bool = False,
     model_kwargs: dict[str, Any] | None = None,
     **integrator_kwargs: Any,
 ) -> TorchSimIntegrateSchema:
@@ -286,18 +338,14 @@ def md_job(
     state = ts.initialize_state(atoms, model.device, model.dtype)
 
     # Configure trajectory reporter
-    trajectory_reporter = ts.runners._configure_reporter(
-        trajectory_reporter_dict,
-        properties=["potential_energy", "kinetic_energy", "temperature"],
+    trajectory_reporter, trajectory_reporter_details = (
+        _process_trajectory_reporter_dict(trajectory_reporter_dict)
     )
 
     # Configure autobatcher
-    if autobatcher_dict:
-        autobatcher = ts.runners._configure_batches_iterator(
-            state, model, autobatcher=autobatcher_dict
-        )
-    else:
-        autobatcher = False
+    autobatcher, autobatcher_details = _process_binning_autobatcher_dict(
+        state, model, autobatcher_dict=autobatcher_dict
+    )
 
     state = ts.integrate(
         system=atoms,
@@ -319,8 +367,8 @@ def md_job(
         "n_steps": n_steps,
         "temperature": temperature,
         "timestep": timestep,
-        "trajectory_reporter": _get_reporter_details(trajectory_reporter),
-        "autobatcher": _get_autobatcher_details(autobatcher) if autobatcher else None,
+        "trajectory_reporter": trajectory_reporter_details,
+        "autobatcher": autobatcher_details,
         "model_kwargs": model_kwargs,
         "integrator_kwargs": integrator_kwargs,
     }
@@ -332,8 +380,8 @@ def static_job(
     model_type: TSModelType,
     model_path: str | Path,
     *,
-    trajectory_reporter_dict: dict | None = None,
-    autobatcher_dict: dict | bool = False,
+    trajectory_reporter_dict: TrajectoryReporterDict | None = None,
+    autobatcher_dict: AutobatcherDict | bool = False,
     model_kwargs: dict[str, Any] | None = None,
 ) -> TorchSimStaticSchema:
     model = pick_model(model_type, model_path, **model_kwargs or {})
@@ -341,17 +389,14 @@ def static_job(
     state = ts.initialize_state(atoms, model.device, model.dtype)
 
     # Configure trajectory reporter
-    trajectory_reporter = ts.runners._configure_reporter(
-        trajectory_reporter_dict, properties=["potential_energy"]
+    trajectory_reporter, trajectory_reporter_details = (
+        _process_trajectory_reporter_dict(trajectory_reporter_dict)
     )
 
     # Configure autobatcher
-    if autobatcher_dict:
-        autobatcher = ts.runners._configure_batches_iterator(
-            state, model, autobatcher=autobatcher_dict
-        )
-    else:
-        autobatcher = False
+    autobatcher, autobatcher_details = _process_binning_autobatcher_dict(
+        state, model, autobatcher_dict=autobatcher_dict
+    )
 
     all_properties = ts.static(
         system=atoms,
@@ -370,7 +415,7 @@ def static_job(
         "all_properties": all_properties_numpy,
         "model_type": model_type,
         "model_path": model_path,
-        "trajectory_reporter": _get_reporter_details(trajectory_reporter),
-        "autobatcher": _get_autobatcher_details(autobatcher) if autobatcher else None,
+        "trajectory_reporter": trajectory_reporter_details,
+        "autobatcher": autobatcher_details,
         "model_kwargs": model_kwargs,
     }

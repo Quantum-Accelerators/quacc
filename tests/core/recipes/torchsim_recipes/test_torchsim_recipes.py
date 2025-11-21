@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import traceback
+from pathlib import Path
 
 import pytest
 from ase.atoms import Atoms
@@ -11,9 +12,7 @@ from quacc.schemas.torchsim import ConvergenceFn, TSModelType
 try:
     import torch
     import torch_sim as ts
-    from torch_sim.autobatching import InFlightAutoBatcher
     from torch_sim.models.lennard_jones import LennardJonesModel
-    from torch_sim.models.mace import MaceModel, MaceUrls
 except ImportError:
     pytest.skip(
         f"Torch-Sim not installed: {traceback.format_exc()}", allow_module_level=True
@@ -22,8 +21,7 @@ except ImportError:
 from quacc.recipes.torchsim.core import md_job, relax_job, static_job
 
 try:
-    from mace.calculators.foundations_models import mace_mp
-    from torch_sim.models.mace import MaceModel
+    from mace.calculators.foundations_models import download_mace_mp_checkpoint
 except (ImportError, ValueError):
     pytest.skip(
         f"MACE not installed: {traceback.format_exc()}", allow_module_level=True
@@ -31,13 +29,8 @@ except (ImportError, ValueError):
 
 
 @pytest.fixture
-def raw_mace_mp():
-    return mace_mp(model=MaceUrls.mace_mp_small, return_raw_model=True)
-
-
-@pytest.fixture
-def mace_model_path(raw_mace_mp):
-    return raw_mace_mp.model_paths
+def mace_model_path():
+    return Path(download_mace_mp_checkpoint("small"))
 
 
 @pytest.fixture
@@ -50,17 +43,6 @@ def ar_atoms() -> Atoms:
 def fe_atoms() -> Atoms:
     """Create crystalline iron using ASE."""
     return bulk("Fe", "fcc", a=5.26, cubic=True)
-
-
-@pytest.fixture
-def ts_mace_model(raw_mace_mp) -> MaceModel:
-    return MaceModel(
-        model=raw_mace_mp,
-        device=torch.device("cpu"),
-        dtype=torch.float32,
-        compute_forces=True,
-        compute_stress=True,
-    )
 
 
 @pytest.fixture
@@ -87,7 +69,7 @@ def test_relax_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     trajectory_reporter = {
         "filenames": [tmp_path / f"relax_{i}.h5md" for i in range(n_systems)],
         "state_frequency": 5,
-        "prop_calculators": {1: {"potential_energy": lambda state: state.energy}},
+        "prop_calculators": {1: ["potential_energy"]},
     }
 
     # Create autobatcher
@@ -150,35 +132,28 @@ def test_relax_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     assert result["init_kwargs"]["cell_filter"] == ts.CellFilter.unit
 
 
-def test_relax_job_mace(
-    ar_atoms: Atoms, mace_model_path: str, tmp_path, raw_mace_mp
-) -> None:
+def test_relax_job_mace(ar_atoms: Atoms, mace_model_path: str, tmp_path) -> None:
     """Test relax_job with all kwargs including trajectory reporter and autobatcher."""
     # Perturb the structure to make optimization meaningful
     ar_atoms.positions += 0.1
 
     n_systems = 2
-    trajectory_reporter = {
+    trajectory_reporter_dict = {
         "filenames": [tmp_path / f"relax_{i}.h5md" for i in range(n_systems)],
         "state_frequency": 5,
-        "prop_calculators": {1: {"potential_energy": lambda state: state.energy}},
+        "prop_calculators": {1: ["potential_energy"]},
     }
 
-    # Create autobatcher
-    autobatcher = InFlightAutoBatcher(
-        model=lj_model, memory_scales_with="n_atoms", max_memory_scaler=260
-    )
-
-    # Create convergence function
-    convergence_fn = ts.generate_force_convergence_fn(force_tol=1e-1)
+    autobatcher_dict = {"memory_scales_with": "n_atoms", "max_memory_scaler": 260}
 
     relax_job(
         atoms=[ar_atoms] * n_systems,
-        model=("MaceModel", raw_mace_mp),
+        model_type=TSModelType.MACE,
+        model_path=mace_model_path,
         optimizer=ts.Optimizer.fire,
-        convergence_fn=convergence_fn,
-        trajectory_reporter=trajectory_reporter,
-        autobatcher=autobatcher,
+        convergence_fn=ConvergenceFn.FORCE,
+        trajectory_reporter_dict=trajectory_reporter_dict,
+        autobatcher_dict=autobatcher_dict,
         max_steps=500,
         steps_between_swaps=10,
         init_kwargs={"cell_filter": ts.CellFilter.unit},
@@ -191,17 +166,7 @@ def test_md_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     trajectory_reporter = {
         "filenames": [tmp_path / f"md_{i}.h5md" for i in range(n_systems)],
         "state_frequency": 2,
-        "prop_calculators": {
-            1: {
-                "potential_energy": lambda state: state.energy,
-                "kinetic_energy": lambda state: ts.calc_kinetic_energy(
-                    momenta=state.momenta, masses=state.masses
-                ),
-                "temperature": lambda state: ts.calc_temperature(
-                    momenta=state.momenta, masses=state.masses
-                ),
-            }
-        },
+        "prop_calculators": {1: ["potential_energy", "kinetic_energy", "temperature"]},
     }
 
     # Create autobatcher
@@ -267,7 +232,7 @@ def test_static_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     trajectory_reporter = {
         "filenames": [tmp_path / f"static_{i}.h5md" for i in range(n_systems)],
         "state_frequency": 1,
-        "prop_calculators": {1: {"potential_energy": lambda state: state.energy}},
+        "prop_calculators": {1: ["potential_energy"]},
         "state_kwargs": {"save_forces": True},
     }
 
