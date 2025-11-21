@@ -198,7 +198,7 @@ def pick_model(
     ----------
     model_type : TSModelType
         The type of model to instantiate.
-    model : str | Path
+    model_path : str | Path
         Path to the model file or checkpoint.
     **model_kwargs : Any
         Additional keyword arguments to pass to the model constructor.
