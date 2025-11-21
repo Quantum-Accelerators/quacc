@@ -1,2 +1,2 @@
-torch-sim-atomistic @ git+https://github.com/TorchSim/torch-sim.git # TODO: remove this once version bumped
+torch-sim-atomistic @ git+https://github.com/TorchSim/torch-sim.git@mace_from_path # TODO: remove this once version bumped
 mace-torch==0.3.14
