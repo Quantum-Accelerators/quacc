@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import traceback
 from pathlib import Path
 
 import pytest
@@ -9,23 +8,13 @@ from ase.build import bulk
 
 from quacc.schemas.torchsim import ConvergenceFn, TSModelType
 
-try:
-    import torch
-    import torch_sim as ts
-    from torch_sim.models.lennard_jones import LennardJonesModel
-except ImportError:
-    pytest.skip(
-        f"Torch-Sim not installed: {traceback.format_exc()}", allow_module_level=True
-    )
+torch = pytest.importorskip("torch")
+ts = pytest.importorskip("torch_sim")
 
 from quacc.recipes.torchsim.core import md_job, relax_job, static_job
 
-try:
-    from mace.calculators.foundations_models import download_mace_mp_checkpoint
-except (ImportError, ValueError):
-    pytest.skip(
-        f"MACE not installed: {traceback.format_exc()}", allow_module_level=True
-    )
+mace = pytest.importorskip("mace")
+from mace.calculators.foundations_models import download_mace_mp_checkpoint
 
 
 @pytest.fixture
@@ -46,9 +35,9 @@ def fe_atoms() -> Atoms:
 
 
 @pytest.fixture
-def lj_model() -> LennardJonesModel:
+def lj_model() -> ts.LennardJonesModel:
     """Create a Lennard-Jones model with reasonable parameters for Ar."""
-    return LennardJonesModel(
+    return ts.LennardJonesModel(
         use_neighbor_list=True,
         sigma=3.405,
         epsilon=0.0104,
