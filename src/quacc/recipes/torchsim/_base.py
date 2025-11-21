@@ -1,3 +1,5 @@
+"""Utility functions for TorchSim recipes."""
+
 from __future__ import annotations
 
 from copy import deepcopy
@@ -97,7 +99,7 @@ def process_in_flight_autobatcher_dict(
     autobatcher_dict: AutobatcherDict | bool,
     max_iterations: int,
 ) -> tuple[InFlightAutoBatcher | bool, AutobatcherDetails | None]:
-    """Process a autobatcher dictionary."""
+    """Process the input dict into a InFlightAutoBatcher and details dictionary."""
     if isinstance(autobatcher_dict, bool):
         # False means no autobatcher
         if not autobatcher_dict:
@@ -116,7 +118,7 @@ def process_in_flight_autobatcher_dict(
 def process_binning_autobatcher_dict(
     state: SimState, model: ModelInterface, autobatcher_dict: AutobatcherDict | bool
 ) -> tuple[BinningAutoBatcher | bool, AutobatcherDetails | None]:
-    """Process a binning autobatcher dictionary."""
+    """Process the input dict into a BinningAutoBatcher and details dictionary."""
     if isinstance(autobatcher_dict, bool):
         # otherwise, configure the autobatcher, with the private runners method
         autobatcher = ts.runners._configure_batches_iterator(
@@ -137,7 +139,7 @@ def process_binning_autobatcher_dict(
 def _get_autobatcher_details(
     autobatcher: InFlightAutoBatcher | BinningAutoBatcher,
 ) -> AutobatcherDetails:
-    """Get the details of an autobatcher."""
+    """Extract the metadata of an autobatcher."""
     return {
         "autobatcher": type(autobatcher).__name__,  # type: ignore
         "memory_scales_with": autobatcher.memory_scales_with,  # type: ignore
@@ -156,7 +158,7 @@ def _get_autobatcher_details(
 def process_trajectory_reporter_dict(
     trajectory_reporter_dict: TrajectoryReporterDict | None,
 ) -> tuple[TrajectoryReporter, TrajectoryReporterDetails]:
-    """Process a trajectory reporter dictionary."""
+    """Process the input dict into a TrajectoryReporter and details dictionary."""
     if trajectory_reporter_dict is None:
         return None, None
     trajectory_reporter_dict = deepcopy(trajectory_reporter_dict)
