@@ -120,7 +120,7 @@ plugins:
       default_handler: python
       handlers:
         python:
-          import:
+          inventories:
             - https://docs.python.org/3/objects.inv
             - https://ase-lib.org/objects.inv
             - https://pymatgen.org/objects.inv
