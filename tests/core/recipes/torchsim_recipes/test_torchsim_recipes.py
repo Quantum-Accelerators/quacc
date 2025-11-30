@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import pytest
 from ase.atoms import Atoms
@@ -13,7 +14,12 @@ from quacc.recipes.torchsim.core import md_job, relax_job, static_job
 from quacc.schemas.torchsim import ConvergenceFn, TSModelType
 
 mace = pytest.importorskip("mace")
+
 from mace.calculators.foundations_models import download_mace_mp_checkpoint
+
+if TYPE_CHECKING:
+    if ts:
+        from torchsim.core.models.lennard_jones_model import LennardJonesModel
 
 
 @pytest.fixture
@@ -34,7 +40,7 @@ def fe_atoms() -> Atoms:
 
 
 @pytest.fixture
-def lj_model() -> ts.LennardJonesModel:
+def lj_model() -> LennardJonesModel:
     """Create a Lennard-Jones model with reasonable parameters for Ar."""
     return ts.LennardJonesModel(
         use_neighbor_list=True,
