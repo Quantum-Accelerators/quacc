@@ -64,7 +64,7 @@ docs = [
     "blacken-docs>=1.16.0",
     "mkdocs-material>=9.5.16",
     "mkdocstrings>=0.22.0",
-    "mkdocstrings-python<2.0.0"
+    "mkdocstrings-python<2.0.0",
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.0",
     "pillow>=10.0.0",
