@@ -59,7 +59,8 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     WORKFLOW_ENGINE: (
-        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"] | None
+        Literal["aiida", "covalent", "dask", "parsl", "prefect", "redun", "jobflow"]
+        | None
     ) = Field(None, description=("The workflow manager to use, if any."))
 
     # ---------------------------
