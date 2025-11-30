@@ -9,13 +9,12 @@ from ase.build import bulk
 
 torch = pytest.importorskip("torch")
 ts = pytest.importorskip("torch_sim")
-
-from quacc.recipes.torchsim.core import md_job, relax_job, static_job
-from quacc.schemas.torchsim import ConvergenceFn, TSModelType
-
 mace = pytest.importorskip("mace")
 
 from mace.calculators.foundations_models import download_mace_mp_checkpoint
+
+from quacc.recipes.torchsim.core import md_job, relax_job, static_job
+from quacc.schemas.torchsim import ConvergenceFn, TSModelType
 
 if TYPE_CHECKING:
     if ts:
