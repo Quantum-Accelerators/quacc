@@ -36,6 +36,7 @@ if TYPE_CHECKING:
 
 class TorchSimSchema(TypedDict):
     atoms: list[Atoms]
+    dir_name: str
     model_type: TSModelType
     model_path: str | Path
     model_kwargs: dict[str, Any] | None
@@ -185,10 +186,6 @@ def process_trajectory_reporter_dict(
     trajectory_reporter = ts.TrajectoryReporter(
         **trajectory_reporter_dict, prop_calculators=prop_calculators_functions
     )
-
-    trajectory_reporter.filenames = [
-        Path(p).resolve() for p in trajectory_reporter_dict["filenames"]
-    ]
 
     reporter_details = {
         "state_frequency": trajectory_reporter.state_frequency,

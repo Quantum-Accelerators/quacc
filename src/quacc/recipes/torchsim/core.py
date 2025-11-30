@@ -14,6 +14,7 @@ from quacc.recipes.torchsim._base import (
     process_in_flight_autobatcher_dict,
     process_trajectory_reporter_dict,
 )
+from quacc.runners._base import BaseRunner
 from quacc.schemas.torchsim import CONVERGENCE_FN_REGISTRY, ConvergenceFn, TSModelType
 
 has_torchsim = bool(find_spec("torch_sim"))
@@ -103,6 +104,9 @@ def relax_job(
         A dictionary representing the final atoms configuration and metadata geometry
         optimization schema. See the type-hint for the data structure.
     """
+    runner = BaseRunner()
+    runner.setup()
+
     model = pick_model(model_type, model_path, **model_kwargs or {})
 
     convergence_fn_obj = CONVERGENCE_FN_REGISTRY[convergence_fn](
@@ -112,6 +116,10 @@ def relax_job(
     state = ts.initialize_state(atoms, model.device, model.dtype)
 
     # Configure trajectory reporter
+    trajectory_reporter_dict = trajectory_reporter_dict or {}
+    trajectory_reporter_dict["filenames"] = [
+        runner.tmpdir / f"trajectory_{i}.h5md" for i in range(len(atoms))
+    ]
     trajectory_reporter, trajectory_reporter_details = process_trajectory_reporter_dict(
         trajectory_reporter_dict
     )
@@ -134,9 +142,14 @@ def relax_job(
         init_kwargs=init_kwargs,
         **optimizer_kwargs,
     )
+    runner.cleanup()
+    trajectory_reporter_details["filenames"] = [
+        runner.job_results_dir / f"trajectory_{i}.h5md" for i in range(len(atoms))
+    ]
 
     return {
         "atoms": state.to_atoms(),
+        "dir_name": str(runner.job_results_dir),
         "model_type": model_type,
         "model_path": model_path,
         "optimizer": optimizer,
@@ -208,11 +221,18 @@ def md_job(
         A dictionary representing the final atoms configuration and metadata for the
         molecular dynamics schema. See the type-hint for the data structure.
     """
+    runner = BaseRunner()
+    runner.setup()
+
     model = pick_model(model_type, model_path, **model_kwargs or {})
 
     state = ts.initialize_state(atoms, model.device, model.dtype)
 
     # Configure trajectory reporter
+    trajectory_reporter_dict = trajectory_reporter_dict or {}
+    trajectory_reporter_dict["filenames"] = [
+        runner.tmpdir / f"trajectory_{i}.h5md" for i in range(len(atoms))
+    ]
     trajectory_reporter, trajectory_reporter_details = process_trajectory_reporter_dict(
         trajectory_reporter_dict
     )
@@ -233,9 +253,14 @@ def md_job(
         autobatcher=autobatcher,
         **integrator_kwargs,
     )
+    runner.cleanup()
+    trajectory_reporter_details["filenames"] = [
+        runner.job_results_dir / f"trajectory_{i}.h5md" for i in range(len(atoms))
+    ]
 
     return {
         "atoms": state.to_atoms(),
+        "dir_name": str(runner.job_results_dir),
         "model_type": model_type,
         "model_path": model_path,
         "integrator": integrator,
@@ -290,11 +315,18 @@ def static_job(
         A dictionary representing the final atoms configuration and metadata for the
         static calculation schema. See the type-hint for the data structure.
     """
+    runner = BaseRunner()
+    runner.setup()
+
     model = pick_model(model_type, model_path, **model_kwargs or {})
 
     state = ts.initialize_state(atoms, model.device, model.dtype)
 
     # Configure trajectory reporter
+    trajectory_reporter_dict = trajectory_reporter_dict or {}
+    trajectory_reporter_dict["filenames"] = [
+        runner.tmpdir / f"trajectory_{i}.h5md" for i in range(len(atoms))
+    ]
     trajectory_reporter, trajectory_reporter_details = process_trajectory_reporter_dict(
         trajectory_reporter_dict
     )
@@ -315,9 +347,14 @@ def static_job(
         {name: t.cpu().numpy() for name, t in prop_dict.items()}
         for prop_dict in all_properties
     ]
+    runner.cleanup()
+    trajectory_reporter_details["filenames"] = [
+        runner.job_results_dir / f"trajectory_{i}.h5md" for i in range(len(atoms))
+    ]
 
     return {
         "atoms": atoms,
+        "dir_name": str(runner.job_results_dir),
         "all_properties": all_properties_numpy,
         "model_type": model_type,
         "model_path": model_path,

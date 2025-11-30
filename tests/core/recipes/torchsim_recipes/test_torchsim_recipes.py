@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -53,14 +54,13 @@ def lj_model() -> LennardJonesModel:
     )
 
 
-def test_relax_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
+def test_relax_job_comprehensive(ar_atoms: Atoms) -> None:
     """Test relax_job with all kwargs including trajectory reporter and autobatcher."""
     # Perturb the structure to make optimization meaningful
     ar_atoms.positions += 0.1
 
     n_systems = 2
     trajectory_reporter = {
-        "filenames": [tmp_path / f"relax_{i}.h5md" for i in range(n_systems)],
         "state_frequency": 5,
         "prop_calculators": {1: ["potential_energy"]},
     }
@@ -111,7 +111,9 @@ def test_relax_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     assert result["trajectory_reporter"] is not None
     assert result["trajectory_reporter"]["state_frequency"] == 5
     assert "prop_calculators" in result["trajectory_reporter"]
-    assert all(f.is_file() for f in result["trajectory_reporter"]["filenames"])
+
+    for i in range(n_systems):
+        assert f"trajectory_{i}.h5md.gz" in os.listdir(result["dir_name"])
 
     # Check autobatcher details
     assert result["autobatcher"] is None
@@ -153,11 +155,10 @@ def test_relax_job_mace(ar_atoms: Atoms, mace_model_path: str, tmp_path) -> None
     )
 
 
-def test_md_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
+def test_md_job_comprehensive(ar_atoms: Atoms) -> None:
     """Test md_job with all kwargs including trajectory reporter and autobatcher."""
     n_systems = 2
     trajectory_reporter = {
-        "filenames": [tmp_path / f"md_{i}.h5md" for i in range(n_systems)],
         "state_frequency": 2,
         "prop_calculators": {1: ["potential_energy", "kinetic_energy", "temperature"]},
     }
@@ -211,7 +212,8 @@ def test_md_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     assert result["trajectory_reporter"] is not None
     assert result["trajectory_reporter"]["state_frequency"] == 2
     assert "prop_calculators" in result["trajectory_reporter"]
-    assert all(f.is_file() for f in result["trajectory_reporter"]["filenames"])
+    for i in range(n_systems):
+        assert f"trajectory_{i}.h5md.gz" in os.listdir(result["dir_name"])
 
     # Check autobatcher details
     assert result["autobatcher"] is None
@@ -219,11 +221,10 @@ def test_md_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     # assert result["autobatcher"]["memory_scales_with"] == "n_atoms"
 
 
-def test_static_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
+def test_static_job_comprehensive(ar_atoms: Atoms) -> None:
     """Test static_job with all kwargs including trajectory reporter and autobatcher."""
     n_systems = 2
     trajectory_reporter = {
-        "filenames": [tmp_path / f"static_{i}.h5md" for i in range(n_systems)],
         "state_frequency": 1,
         "prop_calculators": {1: ["potential_energy"]},
         "state_kwargs": {"save_forces": True},
@@ -263,7 +264,8 @@ def test_static_job_comprehensive(ar_atoms: Atoms, tmp_path) -> None:
     assert "prop_calculators" in result["trajectory_reporter"]
     assert "state_kwargs" in result["trajectory_reporter"]
     assert result["trajectory_reporter"]["state_kwargs"]["save_forces"] is True
-    assert all(f.is_file() for f in result["trajectory_reporter"]["filenames"])
+    for i in range(n_systems):
+        assert f"trajectory_{i}.h5md.gz" in os.listdir(result["dir_name"])
 
     # Check autobatcher details
     assert result["autobatcher"] is None
