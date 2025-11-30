@@ -409,7 +409,7 @@ class Runner(BaseRunner):
         traj_filename = "opt.traj"
 
         # Create a parent temporary directory for the NEB run
-        neb_tmpdir, neb_results_dir = calc_setup(None)
+        neb_tmpdir, neb_results_dir = calc_setup()
 
         # Adjust optimizer_kwargs to use the parent directory
         optimizer_kwargs = recursive_dict_merge(
