@@ -104,7 +104,7 @@ If you haven't done so already:
 
     ```bash
     pip install quacc[covalent]
-    quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR false  # (1)!
+    quacc set WORKFLOW_ENGINE covalent  # (1)!
     ```
 
     1. Many of the Covalent executors have their own mechanism for task isolation, which we will use instead.
@@ -1014,7 +1014,6 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
                     export OMP_PROC_BIND=spread
                     export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
                     export QUACC_WORKFLOW_ENGINE=jobflow
-                    export QUACC_CREATE_UNIQUE_DIR=False
         post_rocket: null
         ```
 
