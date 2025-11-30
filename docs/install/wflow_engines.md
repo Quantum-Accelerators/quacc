@@ -18,13 +18,14 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     pip install quacc[covalent]
     ```
 
-    Then modify the Covalent [configuration file](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/customizing-the-config/) as follows:
+    Then modify the Covalent [configuration file](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/customizing-the-config/) to have the following fields:
 
-    ```python
-    import covalent as ct
+    ```conf
+    [executors.local]
+    create_unique_workdir = true
 
-    ct.set_config("executors.local.create_unique_workdir", "true")
-    ct.set_config("executors.dask.create_unique_workdir", "true")
+    [executors.dask]
+    create_unique_workdir = true
     ```
 
     **Starting the Server**
