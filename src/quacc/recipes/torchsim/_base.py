@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from copy import deepcopy
 from importlib.util import find_spec
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 from monty.dev import requires
@@ -20,6 +19,7 @@ if has_torchsim:
 
 if TYPE_CHECKING:
     import pathlib
+    from pathlib import Path
 
     import numpy as np
     from ase.atoms import Atoms
