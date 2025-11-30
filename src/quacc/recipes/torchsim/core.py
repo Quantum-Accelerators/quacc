@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+from importlib.util import find_spec
 from typing import TYPE_CHECKING, Any
 
-import torch_sim as ts
+from monty.dev import requires
 
 from quacc import job
 from quacc.recipes.torchsim._base import (
@@ -15,12 +16,18 @@ from quacc.recipes.torchsim._base import (
 )
 from quacc.schemas.torchsim import CONVERGENCE_FN_REGISTRY, ConvergenceFn, TSModelType
 
+has_torchsim = bool(find_spec("torch_sim"))
+if has_torchsim:
+    import torch_sim as ts
+
 if TYPE_CHECKING:
     from pathlib import Path
 
     from ase.atoms import Atoms
-    from torch_sim.integrators import Integrator
-    from torch_sim.optimizers import Optimizer
+
+    if has_torchsim:
+        from torch_sim.integrators import Integrator
+        from torch_sim.optimizers import Optimizer
 
     from quacc.recipes.torchsim._base import (
         AutobatcherDict,
@@ -32,6 +39,7 @@ if TYPE_CHECKING:
 
 
 @job
+@requires(has_torchsim, "torch_sim is required for this function")
 def relax_job(
     atoms: list[Atoms],
     model_type: TSModelType,
@@ -145,6 +153,7 @@ def relax_job(
 
 
 @job
+@requires(has_torchsim, "torch_sim is required for this function")
 def md_job(
     atoms: list[Atoms],
     model_type: TSModelType,
@@ -241,6 +250,7 @@ def md_job(
 
 
 @job
+@requires(has_torchsim, "torch_sim is required for this function")
 def static_job(
     atoms: list[Atoms],
     model_type: TSModelType,

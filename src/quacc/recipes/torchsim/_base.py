@@ -3,24 +3,33 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from importlib.util import find_spec
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
-import torch_sim as ts
-from torch_sim.autobatching import BinningAutoBatcher, InFlightAutoBatcher
+from monty.dev import requires
 
 from quacc.schemas.torchsim import PROPERTY_FN_REGISTRY, ConvergenceFn, TSModelType
+
+has_torchsim = bool(find_spec("torch_sim"))
+
+if has_torchsim:
+    import torch_sim as ts
+    from torch_sim.autobatching import BinningAutoBatcher, InFlightAutoBatcher
+
 
 if TYPE_CHECKING:
     import pathlib
 
     import numpy as np
     from ase.atoms import Atoms
-    from torch_sim.integrators import Integrator
-    from torch_sim.models.interface import ModelInterface
-    from torch_sim.optimizers import Optimizer
-    from torch_sim.state import SimState
-    from torch_sim.trajectory import TrajectoryReporter
+
+    if has_torchsim:
+        from torch_sim.integrators import Integrator
+        from torch_sim.models.interface import ModelInterface
+        from torch_sim.optimizers import Optimizer
+        from torch_sim.state import SimState
+        from torch_sim.trajectory import TrajectoryReporter
 
     from quacc.schemas.torchsim import PropertyFn
 
@@ -93,6 +102,7 @@ class TorchSimStaticSchema(TorchSimSchema):
     all_properties: list[dict[str, np.ndarray]]
 
 
+@requires(has_torchsim, "torch_sim is required for this function")
 def process_in_flight_autobatcher_dict(
     state: SimState,
     model: ModelInterface,
@@ -115,6 +125,7 @@ def process_in_flight_autobatcher_dict(
     return autobatcher, autobatcher_details
 
 
+@requires(has_torchsim, "torch_sim is required for this function")
 def process_binning_autobatcher_dict(
     state: SimState, model: ModelInterface, autobatcher_dict: AutobatcherDict | bool
 ) -> tuple[BinningAutoBatcher | bool, AutobatcherDetails | None]:
@@ -155,6 +166,7 @@ def _get_autobatcher_details(
     }
 
 
+@requires(has_torchsim, "torch_sim is required for this function")
 def process_trajectory_reporter_dict(
     trajectory_reporter_dict: TrajectoryReporterDict | None,
 ) -> tuple[TrajectoryReporter, TrajectoryReporterDetails]:
@@ -189,6 +201,7 @@ def process_trajectory_reporter_dict(
     return trajectory_reporter, reporter_details
 
 
+@requires(has_torchsim, "torch_sim is required for this function")
 def pick_model(
     model_type: TSModelType, model_path: str | Path, **model_kwargs: Any
 ) -> ModelInterface:
