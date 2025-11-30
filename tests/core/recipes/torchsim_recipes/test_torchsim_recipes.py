@@ -127,14 +127,13 @@ def test_relax_job_comprehensive(ar_atoms: Atoms) -> None:
     assert result["init_kwargs"]["cell_filter"] == ts.CellFilter.unit
 
 
-def test_relax_job_mace(ar_atoms: Atoms, mace_model_path: str, tmp_path) -> None:
+def test_relax_job_mace(ar_atoms: Atoms, mace_model_path: str) -> None:
     """Test relax_job with all kwargs including trajectory reporter and autobatcher."""
     # Perturb the structure to make optimization meaningful
     ar_atoms.positions += 0.1
 
     n_systems = 2
     trajectory_reporter_dict = {
-        "filenames": [tmp_path / f"relax_{i}.h5md" for i in range(n_systems)],
         "state_frequency": 5,
         "prop_calculators": {1: ["potential_energy"]},
     }
