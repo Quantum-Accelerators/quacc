@@ -104,7 +104,7 @@ If you haven't done so already:
 
     ```bash
     pip install quacc[covalent]
-    quacc set WORKFLOW_ENGINE covalent && quacc set CREATE_UNIQUE_DIR false  # (1)!
+    quacc set WORKFLOW_ENGINE covalent # (1)!
     ```
 
     1. Many of the Covalent executors have their own mechanism for task isolation, which we will use instead.

@@ -18,6 +18,16 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     pip install quacc[covalent]
     ```
 
+    Then modify the Covalent [configuration file](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/customizing-the-config/) to have the following fields:
+
+    ```conf
+    [executors.local]
+    create_unique_workdir = true
+
+    [executors.dask]
+    create_unique_workdir = true
+    ```
+
     **Starting the Server**
 
     Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (usually http://localhost:48008) that you can use to access the Covalent dashboard, which is shown below.
