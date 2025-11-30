@@ -335,6 +335,20 @@ graph LR
 
 === "Jobflow"
 
-    !!! Warning
+    ```python
+    import jobflow as jf
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-        Due to the difference in how Jobflow handles workflows (particularly dynamic ones) compared to other supported workflow engines, any quacc recipes that have been pre-defined with a `#!Python @flow` decorator (i.e. have `_flow` in the name) cannot be run directly with Jobflow. Rather, a Jobflow-specific `Flow` needs to be constructed by the user.
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Create the workflow with arguments
+    workflow = bulk_to_slabs_flow(atoms)
+
+    # Dispatch the workflow and get results
+    results = jf.run_locally(workflow)
+
+    # Print the results
+    print(results)
+    ```
