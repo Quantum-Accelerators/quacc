@@ -1,0 +1,2 @@
+torch-sim-atomistic==0.4.1
+mace-torch==0.3.14
