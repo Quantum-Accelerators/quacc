@@ -117,9 +117,6 @@ def test_relax_job_comprehensive(ar_atoms: Atoms) -> None:
 
     # Check autobatcher details
     assert result["autobatcher"] is None
-    # assert result["autobatcher"]["autobatcher"] == "InFlightAutoBatcher"
-    # assert result["autobatcher"]["memory_scales_with"] == "n_atoms"
-    # assert result["autobatcher"]["max_memory_scaler"] == 8 + 1
 
     # Check other parameters
     assert result["max_steps"] == 500
@@ -216,8 +213,6 @@ def test_md_job_comprehensive(ar_atoms: Atoms) -> None:
 
     # Check autobatcher details
     assert result["autobatcher"] is None
-    # assert result["autobatcher"]["autobatcher"] == "BinningAutoBatcher"
-    # assert result["autobatcher"]["memory_scales_with"] == "n_atoms"
 
 
 def test_static_job_comprehensive(ar_atoms: Atoms) -> None:
@@ -268,5 +263,3 @@ def test_static_job_comprehensive(ar_atoms: Atoms) -> None:
 
     # Check autobatcher details
     assert result["autobatcher"] is None
-    # assert result["autobatcher"]["autobatcher"] == "BinningAutoBatcher"
-    # assert result["autobatcher"]["memory_scales_with"] == "n_atoms"

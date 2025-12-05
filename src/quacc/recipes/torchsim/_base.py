@@ -43,6 +43,7 @@ class TorchSimSchema(TypedDict):
     model_kwargs: dict[str, Any] | None
     trajectory_reporter: TrajectoryReporterDetails | None
     autobatcher: AutobatcherDetails | None
+    quacc_version: str
 
 
 class TrajectoryReporterDict(TypedDict, total=False):

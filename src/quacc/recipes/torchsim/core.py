@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 from monty.dev import requires
 
-from quacc import job
+from quacc import __version__, job
 from quacc.recipes.torchsim._base import (
     pick_model,
     process_binning_autobatcher_dict,
@@ -151,6 +151,7 @@ def relax_job(
         "model_kwargs": model_kwargs,
         "convergence_fn_kwargs": convergence_fn_kwargs,
         "optimizer_kwargs": optimizer_kwargs,
+        "quacc_version": __version__,
     }
 
 
@@ -251,6 +252,7 @@ def md_job(
         "autobatcher": autobatcher_details,
         "model_kwargs": model_kwargs,
         "integrator_kwargs": integrator_kwargs,
+        "quacc_version": __version__,
     }
 
 
@@ -330,4 +332,5 @@ def static_job(
         "trajectory_reporter": trajectory_reporter_details,
         "autobatcher": autobatcher_details,
         "model_kwargs": model_kwargs,
+        "quacc_version": __version__,
     }
