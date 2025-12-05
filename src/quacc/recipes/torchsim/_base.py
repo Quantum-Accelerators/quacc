@@ -31,6 +31,7 @@ if TYPE_CHECKING:
         from torch_sim.state import SimState
         from torch_sim.trajectory import TrajectoryReporter
 
+    from quacc.runners._base import BaseRunner
     from quacc.schemas.torchsim import PropertyFn
 
 
@@ -68,7 +69,7 @@ class TrajectoryReporterDetails(TypedDict):
     prop_calculators: dict[int, list[PropertyFn]]
     state_kwargs: dict[str, Any]
     metadata: dict[str, str] | None
-    filenames: list[str | pathlib.Path] | None
+    filenames: list[str | pathlib.Path] | None  # should be relative paths
 
 
 class AutobatcherDetails(TypedDict):
@@ -128,11 +129,12 @@ def process_in_flight_autobatcher_dict(
 
 @requires(has_torchsim, "torch_sim is required for this function")
 def process_binning_autobatcher_dict(
-    state: SimState, model: ModelInterface, autobatcher_dict: AutobatcherDict | bool
+    atoms: list[Atoms], model: ModelInterface, autobatcher_dict: AutobatcherDict | bool
 ) -> tuple[BinningAutoBatcher | bool, AutobatcherDetails | None]:
     """Process the input dict into a BinningAutoBatcher and details dictionary."""
     if isinstance(autobatcher_dict, bool):
         # otherwise, configure the autobatcher, with the private runners method
+        state = ts.initialize_state(atoms, model.device, model.dtype)
         autobatcher = ts.runners._configure_batches_iterator(
             state, model, autobatcher=autobatcher_dict
         )
@@ -170,12 +172,21 @@ def _get_autobatcher_details(
 @requires(has_torchsim, "torch_sim is required for this function")
 def process_trajectory_reporter_dict(
     trajectory_reporter_dict: TrajectoryReporterDict | None,
+    runner: BaseRunner,
+    n_systems: int,
 ) -> tuple[TrajectoryReporter, TrajectoryReporterDetails]:
     """Process the input dict into a TrajectoryReporter and details dictionary."""
-    if trajectory_reporter_dict is None:
-        return None, None
+    trajectory_reporter_dict = trajectory_reporter_dict or {}
     trajectory_reporter_dict = deepcopy(trajectory_reporter_dict)
-
+    if "filenames" not in trajectory_reporter_dict:
+        trajectory_reporter_dict["filenames"] = [
+            runner.tmpdir / f"trajectory_{i}.h5md" for i in range(n_systems)
+        ]
+    else:
+        trajectory_reporter_dict["filenames"] = [
+            runner.tmpdir / filename
+            for filename in trajectory_reporter_dict["filenames"]
+        ]
     prop_calculators = trajectory_reporter_dict.pop("prop_calculators", {})
     prop_calculators_functions = {
         i: {prop: PROPERTY_FN_REGISTRY[prop] for prop in props}

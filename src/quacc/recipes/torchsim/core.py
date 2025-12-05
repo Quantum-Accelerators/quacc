@@ -109,29 +109,21 @@ def relax_job(
 
     model = pick_model(model_type, model_path, **model_kwargs or {})
 
+    trajectory_reporter, trajectory_reporter_details = process_trajectory_reporter_dict(
+        trajectory_reporter_dict, runner, n_systems=len(atoms)
+    )
+
+    max_iterations = max_steps // steps_between_swaps
+    autobatcher, autobatcher_details = process_in_flight_autobatcher_dict(
+        atoms, model, autobatcher_dict=autobatcher_dict, max_iterations=max_iterations
+    )
+
     convergence_fn_obj = CONVERGENCE_FN_REGISTRY[convergence_fn](
         **convergence_fn_kwargs or {}
     )
 
-    state = ts.initialize_state(atoms, model.device, model.dtype)
-
-    # Configure trajectory reporter
-    trajectory_reporter_dict = trajectory_reporter_dict or {}
-    trajectory_reporter_dict["filenames"] = [
-        runner.tmpdir / f"trajectory_{i}.h5md" for i in range(len(atoms))
-    ]
-    trajectory_reporter, trajectory_reporter_details = process_trajectory_reporter_dict(
-        trajectory_reporter_dict
-    )
-
-    # Configure autobatcher
-    max_iterations = max_steps // steps_between_swaps
-    autobatcher, autobatcher_details = process_in_flight_autobatcher_dict(
-        state, model, autobatcher_dict=autobatcher_dict, max_iterations=max_iterations
-    )
-
     state = ts.optimize(
-        system=state,
+        system=atoms,
         model=model,
         optimizer=optimizer,
         convergence_fn=convergence_fn_obj,
@@ -143,9 +135,6 @@ def relax_job(
         **optimizer_kwargs,
     )
     runner.cleanup()
-    trajectory_reporter_details["filenames"] = [
-        runner.job_results_dir / f"trajectory_{i}.h5md" for i in range(len(atoms))
-    ]
 
     return {
         "atoms": state.to_atoms(),
@@ -226,20 +215,14 @@ def md_job(
 
     model = pick_model(model_type, model_path, **model_kwargs or {})
 
-    state = ts.initialize_state(atoms, model.device, model.dtype)
-
     # Configure trajectory reporter
-    trajectory_reporter_dict = trajectory_reporter_dict or {}
-    trajectory_reporter_dict["filenames"] = [
-        runner.tmpdir / f"trajectory_{i}.h5md" for i in range(len(atoms))
-    ]
     trajectory_reporter, trajectory_reporter_details = process_trajectory_reporter_dict(
-        trajectory_reporter_dict
+        trajectory_reporter_dict, runner, n_systems=len(atoms)
     )
 
     # Configure autobatcher
     autobatcher, autobatcher_details = process_binning_autobatcher_dict(
-        state, model, autobatcher_dict=autobatcher_dict
+        atoms, model, autobatcher_dict=autobatcher_dict
     )
 
     state = ts.integrate(
@@ -254,9 +237,6 @@ def md_job(
         **integrator_kwargs,
     )
     runner.cleanup()
-    trajectory_reporter_details["filenames"] = [
-        runner.job_results_dir / f"trajectory_{i}.h5md" for i in range(len(atoms))
-    ]
 
     return {
         "atoms": state.to_atoms(),
@@ -320,20 +300,12 @@ def static_job(
 
     model = pick_model(model_type, model_path, **model_kwargs or {})
 
-    state = ts.initialize_state(atoms, model.device, model.dtype)
-
-    # Configure trajectory reporter
-    trajectory_reporter_dict = trajectory_reporter_dict or {}
-    trajectory_reporter_dict["filenames"] = [
-        runner.tmpdir / f"trajectory_{i}.h5md" for i in range(len(atoms))
-    ]
     trajectory_reporter, trajectory_reporter_details = process_trajectory_reporter_dict(
-        trajectory_reporter_dict
+        trajectory_reporter_dict, runner, n_systems=len(atoms)
     )
 
-    # Configure autobatcher
     autobatcher, autobatcher_details = process_binning_autobatcher_dict(
-        state, model, autobatcher_dict=autobatcher_dict
+        atoms, model, autobatcher_dict=autobatcher_dict
     )
 
     all_properties = ts.static(
@@ -348,9 +320,6 @@ def static_job(
         for prop_dict in all_properties
     ]
     runner.cleanup()
-    trajectory_reporter_details["filenames"] = [
-        runner.job_results_dir / f"trajectory_{i}.h5md" for i in range(len(atoms))
-    ]
 
     return {
         "atoms": atoms,
