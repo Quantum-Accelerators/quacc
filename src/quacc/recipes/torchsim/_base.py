@@ -28,7 +28,6 @@ if TYPE_CHECKING:
         from torch_sim.integrators import Integrator
         from torch_sim.models.interface import ModelInterface
         from torch_sim.optimizers import Optimizer
-        from torch_sim.state import SimState
         from torch_sim.trajectory import TrajectoryReporter
 
     from quacc.runners._base import BaseRunner
@@ -107,13 +106,14 @@ class TorchSimStaticSchema(TorchSimSchema):
 
 @requires(has_torchsim, "torch_sim is required for this function")
 def process_in_flight_autobatcher_dict(
-    state: SimState,
+    atoms: list[Atoms],
     model: ModelInterface,
     autobatcher_dict: AutobatcherDict | bool,
     max_iterations: int,
 ) -> tuple[InFlightAutoBatcher | bool, AutobatcherDetails | None]:
     """Process the input dict into a InFlightAutoBatcher and details dictionary."""
     if isinstance(autobatcher_dict, bool):
+        state = ts.initialize_state(atoms, model.device, model.dtype)
         # False means no autobatcher
         if not autobatcher_dict:
             return False, None
