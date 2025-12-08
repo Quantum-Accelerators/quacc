@@ -491,6 +491,15 @@ class QuaccSettings(BaseSettings):
         """
         return _type_handler(cls._use_custom_config_settings(settings))
 
+    @model_validator(mode="after")
+    def enforce_unique_dir_rule(self):
+        """
+        If WORKFLOW_ENGINE is covalent, force CREATE_UNIQUE_DIR = False.
+        """
+        if self.WORKFLOW_ENGINE == "covalent":
+            object.__setattr__(self, "CREATE_UNIQUE_DIR", False)
+        return self
+
 
 def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
     """

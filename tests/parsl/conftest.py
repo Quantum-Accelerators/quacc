@@ -18,7 +18,7 @@ if has_parsl:
 def pytest_sessionstart():
     import os
 
-    if parsl:
+    if has_parsl:
         parsl.load(
             Config(
                 dependency_resolver=DEEP_DEPENDENCY_RESOLVER,
@@ -33,7 +33,7 @@ def pytest_sessionstart():
 
 
 def pytest_sessionfinish(exitstatus):
-    if parsl:
+    if has_parsl:
         parsl.clear()
     rmtree(TEST_RESULTS_DIR, ignore_errors=True)
     if exitstatus == 0:

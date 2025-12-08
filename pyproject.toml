@@ -63,7 +63,7 @@ dev = ["pytest>=7.4.0", "pytest-cov>=7.0.0", "ruff>=0.0.285", "pytest-asyncio>=0
 docs = [
     "blacken-docs>=1.16.0",
     "mkdocs-material>=9.5.16",
-    "mkdocstrings[python]>=0.22.0",
+    "mkdocstrings-python>=2.0.0",
     "mkdocs-gen-files>=0.5.0",
     "mkdocs-literate-nav>=0.6.0",
     "pillow>=10.0.0",
