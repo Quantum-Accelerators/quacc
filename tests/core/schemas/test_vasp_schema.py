@@ -202,7 +202,7 @@ def test_summarize_mp(monkeypatch, mp_run1, tmp_path):
     copytree(mp_run1, p)
     atoms = read(p / "OUTCAR.gz")
     results = VaspSummarize(directory=p, report_mp_corrections=True).run(atoms)
-    assert results["entry"].correction == pytest.approx(-3.2279999999999998)
+    assert results["entry"]["correction"] == pytest.approx(-3.2279999999999998)
 
 
 def test_summarize_mp_bad(monkeypatch, run1, tmp_path, caplog):
