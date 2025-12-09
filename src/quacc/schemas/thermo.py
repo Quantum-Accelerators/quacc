@@ -207,6 +207,7 @@ class ThermoSummarize:
         # Get symmetry for later use
         mol = AseAtomsAdaptor().get_molecule(self.atoms, charge_spin_check=False)
         point_group_data = PointGroupData().from_molecule(mol)
+        sigma = point_group_data.rotation_number or 1
 
         # Get the geometry
         natoms = len(self.atoms)
@@ -222,7 +223,7 @@ class ThermoSummarize:
             geometry,
             potentialenergy=self.energy,
             atoms=self.atoms,
-            symmetrynumber=point_group_data.rotation_number,
+            symmetrynumber=sigma,
             spin=spin,
             ignore_imag_modes=True,
         )
