@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import datetime
     from pathlib import Path
-    from typing import Any, Literal
+    from typing import Any, Literal, NotRequired
 
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
@@ -40,7 +40,7 @@ if TYPE_CHECKING:
     from pymatgen.core.structure import Structure
     from pymatgen.entries.computed_entries import ComputedEntry
     from pymatgen.io.vasp.inputs import Incar, Kpoints, Poscar, Potcar
-    from typing_extensions import NotRequired, TypedDict
+    from typing_extensions import TypedDict
 
     # ----------- File handling -----------
 
