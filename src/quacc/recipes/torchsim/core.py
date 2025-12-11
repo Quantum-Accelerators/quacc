@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from importlib.util import find_spec
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from monty.dev import requires
 
@@ -15,7 +15,7 @@ from quacc.recipes.torchsim._base import (
     process_trajectory_reporter_dict,
 )
 from quacc.runners._base import BaseRunner
-from quacc.schemas.torchsim import CONVERGENCE_FN_REGISTRY, ConvergenceFn, TSModelType
+from quacc.schemas.torchsim import CONVERGENCE_FN_REGISTRY, TSModelType
 
 has_torchsim = bool(find_spec("torch_sim"))
 if has_torchsim:
@@ -47,7 +47,7 @@ def relax_job(
     model_path: str | Path,
     optimizer: Optimizer,
     *,
-    convergence_fn: ConvergenceFn = ConvergenceFn.FORCE,
+    convergence_fn: Literal["energy", "force"] = "force",
     trajectory_reporter_dict: TrajectoryReporterDict | None = None,
     autobatcher_dict: AutobatcherDict | bool = False,
     max_steps: int = 10_000,
@@ -70,11 +70,12 @@ def relax_job(
         The path to the model file or checkpoint.
     optimizer : Optimizer
         The TorchSim optimizer to use.
-    convergence_fn : ConvergenceFn
+    convergence_fn : Literal["energy", "force"]
         The convergence function, either "energy" or "force". This will use either the
         ts.generate_energy_convergence_fn or ts.generate_force_convergence_fn function
         to interally generate the convergence function. Arguments can be supplied via
-        the convergence_fn_kwargs argument.
+        the convergence_fn_kwargs argument. Used to select convergence function
+        generators from quacc.schemas.torchsim.CONVERGENCE_FN_REGISTRY.
     trajectory_reporter_dict : TrajectoryReporterDict | None
         This dictionary defines the trajectory reporting behavior. This is a
         quacc-specific dictionary that allows for the configuration of the

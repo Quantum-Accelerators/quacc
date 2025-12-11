@@ -24,13 +24,6 @@ class TSModelType(StrEnum):
     LENNARD_JONES = "LennardJonesModel"
 
 
-class ConvergenceFn(StrEnum):
-    """Enum for convergence function types."""
-
-    ENERGY = "energy"
-    FORCE = "force"
-
-
 CONVERGENCE_FN_REGISTRY: dict[str, Callable] = {
     "energy": ts.generate_energy_convergence_fn,
     "force": ts.generate_force_convergence_fn,

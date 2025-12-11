@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Literal, TypedDict
 
 from monty.dev import requires
 
-from quacc.schemas.torchsim import PROPERTY_FN_REGISTRY, ConvergenceFn, TSModelType
+from quacc.schemas.torchsim import PROPERTY_FN_REGISTRY, TSModelType
 
 has_torchsim = bool(find_spec("torch_sim"))
 
@@ -84,7 +84,7 @@ class AutobatcherDetails(TypedDict):
 
 class TorchSimOptSchema(TorchSimSchema):
     optimizer: Optimizer
-    convergence_fn: ConvergenceFn
+    convergence_fn: Literal["energy", "force"]
     max_steps: int
     steps_between_swaps: int
     init_kwargs: dict[str, Any] | None

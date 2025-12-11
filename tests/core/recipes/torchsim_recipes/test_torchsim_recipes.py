@@ -15,7 +15,7 @@ mace = pytest.importorskip("mace")
 from mace.calculators.foundations_models import download_mace_mp_checkpoint
 
 from quacc.recipes.torchsim.core import md_job, relax_job, static_job
-from quacc.schemas.torchsim import ConvergenceFn, TSModelType
+from quacc.schemas.torchsim import TSModelType
 
 if TYPE_CHECKING:
     if ts:
@@ -73,7 +73,7 @@ def test_relax_job_comprehensive(ar_atoms: Atoms) -> None:
         model_type=TSModelType.LENNARD_JONES,
         model_path=None,
         optimizer=ts.Optimizer.fire,
-        convergence_fn=ConvergenceFn.FORCE,
+        convergence_fn="force",
         trajectory_reporter_dict=trajectory_reporter,
         autobatcher_dict=autobatcher,
         max_steps=500,
@@ -142,7 +142,7 @@ def test_relax_job_mace(ar_atoms: Atoms, mace_model_path: str) -> None:
         model_type=TSModelType.MACE,
         model_path=mace_model_path,
         optimizer=ts.Optimizer.fire,
-        convergence_fn=ConvergenceFn.FORCE,
+        convergence_fn="force",
         trajectory_reporter_dict=trajectory_reporter_dict,
         autobatcher_dict=autobatcher_dict,
         max_steps=500,
