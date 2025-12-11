@@ -1,6 +1,6 @@
 ase==3.26.0
 custodian==2025.10.11
-emmet-core==0.86.1
+emmet-core==0.86.2
 frozendict==2.4.7
 monty==2025.3.3
 psutil==7.1.3
