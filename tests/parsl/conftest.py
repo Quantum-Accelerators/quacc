@@ -13,7 +13,7 @@ if has_parsl:
     import parsl
     from parsl.config import Config
     from parsl.dataflow.dependency_resolvers import DEEP_DEPENDENCY_RESOLVER
-
+    from parsl.dataflow.memoization import BasicMemoizer
 
 def pytest_sessionstart():
     import os
@@ -23,7 +23,7 @@ def pytest_sessionstart():
             Config(
                 dependency_resolver=DEEP_DEPENDENCY_RESOLVER,
                 run_dir=str(TEST_RUNINFO),
-                checkpoint_mode="task_exit",
+                memoizer=BasicMemoizer(checkpoint_mode="task_exit"),
             )
         )
     file_dir = Path(__file__).parent
