@@ -15,6 +15,7 @@ if has_parsl:
     from parsl.dataflow.dependency_resolvers import DEEP_DEPENDENCY_RESOLVER
     from parsl.dataflow.memoization import BasicMemoizer
 
+
 def pytest_sessionstart():
     import os
 
