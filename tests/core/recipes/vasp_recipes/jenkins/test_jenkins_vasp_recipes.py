@@ -13,7 +13,7 @@ pytestmark = pytest.mark.skipif(
 import numpy as np
 from ase.build import bulk
 from numpy.testing import assert_equal
-from pymatgen.core import Structure
+
 from quacc.recipes.vasp.core import static_job
 
 
