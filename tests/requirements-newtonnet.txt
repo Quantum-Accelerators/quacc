@@ -1,5 +1,4 @@
-torch
-newtonnet==2.0.1
 geodesic-interpolate @ git+https://github.com/virtualzx-nad/geodesic-interpolate.git
+newtonnet==2.0.1
 sella==2.3.5
 numpy==1.26.4
