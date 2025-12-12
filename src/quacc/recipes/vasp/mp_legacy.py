@@ -89,6 +89,8 @@ def mp_gga_static_job(
     """
     Function to run a static calculation on a structure with the original Materials Project GGA(+U) settings.
 
+    This is also the settings compatible with the MPtrj dataset.
+
     Parameters
     ----------
     atoms
