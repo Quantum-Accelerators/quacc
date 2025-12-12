@@ -329,7 +329,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-sevenn.txt -r tests/requirements-orb.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+          uv pip install --system --no-build-isolation -r tests/requirements.txt -r tests/requirements-sevenn.txt -r tests/requirements-orb.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
