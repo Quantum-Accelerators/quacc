@@ -1,3 +1,12 @@
+"""
+Meta FAIR recipes
+
+!!! Important
+
+    Make sure that you use the appropriate version pseudpotentials:
+    - OMat: v.54
+    - OMC: v.54
+"""
 from __future__ import annotations
 
 from importlib.util import find_spec
