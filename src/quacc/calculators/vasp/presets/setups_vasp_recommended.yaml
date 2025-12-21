@@ -1,7 +1,7 @@
 # VASP-recommended PAW PBE potentials
 # Last modified: 08-01-2023
-inputs
-  pp_version: 64
+inputs:
+  pp_version: "64"
   setups:
     Ac: Ac
     Ag: Ag
