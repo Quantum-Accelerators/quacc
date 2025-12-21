@@ -1076,6 +1076,7 @@ def test_fairchem_omat(patch_metallic_taskdoc):
         "magmom": [0.6, 0.6],
         "nelm": 100,
         "pp": "pbe",
+        "pp_version": "54",
         "prec": "accurate",
         "setups": {"Si": ""},
         "sigma": 0.05,
@@ -1116,6 +1117,7 @@ def test_fairchem_omc(patch_metallic_taskdoc):
         "nelmdl": -10,
         "setups": {"Si": ""},
         "pp": "pbe",
+        "pp_version": "54",
         "kpts": (7, 7, 7),
         "gamma": True,
     }
