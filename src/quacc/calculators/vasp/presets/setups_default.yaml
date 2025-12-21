@@ -2,6 +2,7 @@
 # Same as VASP-recommended except for Eu_3 and Yb_3
 # Last modified: 07-28-2025
 inputs:
+  pp_version: 64
   setups:
     Ac: Ac
     Ag: Ag
