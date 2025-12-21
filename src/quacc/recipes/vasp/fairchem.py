@@ -68,6 +68,7 @@ def omat_static_job(
     from fairchem.data.omat.vasp.sets import OMat24StaticSet
 
     calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(OMat24StaticSet())
+    calc_defaults["pp_version"] = "54"
 
     return run_and_summarize(
         atoms,
@@ -111,6 +112,7 @@ def omc_static_job(
     """
 
     calc_defaults = _make_omc_inputs(atoms)
+    calc_defaults["pp_version"] = "54"
 
     return run_and_summarize(
         atoms,
