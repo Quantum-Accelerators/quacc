@@ -487,6 +487,7 @@ def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
         "setups": {"Al": ""},
         "sigma": 0.05,
         "pp": "pbe",
+        "pp_version": "64",
     }
 
     output = mp_prerelax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
@@ -548,6 +549,7 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
         "prec": "accurate",
         "sigma": 0.05,
         "pp": "pbe",
+        "pp_version": "64",
         "setups": {"Al": ""},
     }
     ref_parameters2 = ref_parameters.copy()
@@ -615,6 +617,7 @@ def test_mp_metagga_static_job(patch_metallic_taskdoc):
         "prec": "accurate",
         "sigma": 0.05,
         "pp": "pbe",
+        "pp_version": "64",
         "setups": {"Al": ""},
     }
 
@@ -723,6 +726,7 @@ def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
         "prec": "accurate",
         "sigma": 0.05,
         "pp": "pbe",
+        "pp_version": "",
         "setups": {"O": "", "Ni": "_pv"},
     }
     assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
@@ -761,6 +765,7 @@ def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
         "prec": "accurate",
         "sigma": 0.05,
         "pp": "pbe",
+        "pp_version": "",
         "setups": {"Ni": "_pv", "O": ""},
     }
 
@@ -801,6 +806,7 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "prec": "accurate",
             "sigma": 0.05,
             "pp": "pbe",
+            "pp_version": "",
             "setups": {"O": "", "Ni": "_pv"},
         }
         relax2_params = relax_params.copy()
@@ -901,6 +907,7 @@ def test_matpes(patch_metallic_taskdoc):
         "nelm": 200,
         "nsw": 0,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {"Al": ""},
         "sigma": 0.05,
