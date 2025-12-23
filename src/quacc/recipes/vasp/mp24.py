@@ -38,7 +38,7 @@ if TYPE_CHECKING:
         static: VaspSchema
 
 
-_MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
+_MP_SETTINGS = {"VASP_INCAR_COPILOT": "off"}
 
 
 @job
