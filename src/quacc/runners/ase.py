@@ -452,6 +452,7 @@ class Runner(BaseRunner):
         dyn = optimizer(neb, **optimizer_kwargs)
         dyn.attach(traj.write)
         dyn.run(fmax, max_steps)
+        traj.close()
 
         calc_cleanup(None, neb_tmpdir, neb_results_dir)
         traj.filename = zpath(str(neb_results_dir / traj_filename))
