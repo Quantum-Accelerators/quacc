@@ -207,7 +207,10 @@ class Runner(BaseRunner):
         """
         # Set defaults
         merged_optimizer_kwargs = recursive_dict_merge(
-            {"logfile": str(self.tmpdir / "opt.log"), "restart": str(self.tmpdir / "opt.json")},
+            {
+                "logfile": str(self.tmpdir / "opt.log"),
+                "restart": str(self.tmpdir / "opt.json"),
+            },
             optimizer_kwargs,
         )
         run_kwargs = run_kwargs or {}
