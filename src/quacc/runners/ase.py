@@ -208,7 +208,7 @@ class Runner(BaseRunner):
         # Set defaults
         merged_optimizer_kwargs = recursive_dict_merge(
             {
-                "logfile": str(self.tmpdir / "opt.log"),
+                "logfile": self.tmpdir / "opt.log",
                 "restart": str(self.tmpdir / "opt.json"),
             },
             optimizer_kwargs,
@@ -452,8 +452,6 @@ class Runner(BaseRunner):
         dyn = optimizer(neb, **optimizer_kwargs)
         dyn.attach(traj.write)
         dyn.run(fmax, max_steps)
-        traj.close()
-        dyn.logfile.close()
 
         calc_cleanup(None, neb_tmpdir, neb_results_dir)
         traj.filename = zpath(str(neb_results_dir / traj_filename))
