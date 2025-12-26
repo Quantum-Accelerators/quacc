@@ -58,9 +58,9 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
 
-    WORKFLOW_ENGINE: (
-        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"] | None
-    ) = Field(None, description=("The workflow manager to use, if any."))
+    WORKFLOW_ENGINE: Literal["dask", "parsl", "prefect", "redun", "jobflow"] | None = (
+        Field(None, description=("The workflow manager to use, if any."))
+    )
 
     # ---------------------------
     # General Settings
@@ -490,15 +490,6 @@ class QuaccSettings(BaseSettings):
             Loaded settings.
         """
         return _type_handler(cls._use_custom_config_settings(settings))
-
-    @model_validator(mode="after")
-    def enforce_unique_dir_rule(self):
-        """
-        If WORKFLOW_ENGINE is covalent, force CREATE_UNIQUE_DIR = False.
-        """
-        if self.WORKFLOW_ENGINE == "covalent":
-            object.__setattr__(self, "CREATE_UNIQUE_DIR", False)
-        return self
 
 
 def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
