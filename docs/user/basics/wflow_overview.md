@@ -2,15 +2,11 @@
 
 Everyone's computing needs are different, so we ensured that quacc is interoperable with a variety of modern workflow management tools. There are [300+ workflow management tools](https://workflows.community/systems) out there, so we can't possibly support them all. Instead, we have focused on a select few that adopt a similar decorator-based approach to defining workflows with substantial support for HPC systems.
 
-!!! Tip "Note"
-
-    We are planning to further enhance the support for Prefect and Jobflow starting in fall 2025.
-
 ## Summary
 
 !!! Tip "Recommendations"
 
-    Not sure which to choose? If you simply want to launch lots of calculations, we recommend starting with **Parsl**. For a more feature-rich workflow orchestration platform, we recommend using **Prefect** or **Jobflow** depending on your needs. Some additional opinions on the matter.
+    Not sure which to choose? Generally, we recommend Jobflow for users of academic HPC systems with job schedulers. Otherwise, we recommend Prefect. Some additional opinions on the matter.
 
 === "Dask"
 
