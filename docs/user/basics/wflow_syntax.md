@@ -14,52 +14,6 @@ graph LR
   A[Input] --> B(add) --> C(mult) --> D[Output];
 ```
 
-=== "Covalent"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and start the Covalent server:
-
-        ```bash
-        quacc set WORKFLOW_ENGINE covalent
-        covalent start
-        ```
-
-    ```python
-    import covalent as ct
-    from quacc import flow, job
-
-
-    @job  #  (1)!
-    def add(a, b):
-        return a + b
-
-
-    @job
-    def mult(a, b):
-        return a * b
-
-
-    @flow  #  (2)!
-    def workflow(a, b, c):
-        output1 = add(a, b)
-        output2 = mult(output1, c)
-        return output2
-
-
-    dispatch_id = ct.dispatch(workflow)(1, 2, 3)  #  (3)!
-    result = ct.get_result(dispatch_id, wait=True)  #  (4)!
-    print(result)  # 9
-    ```
-
-    1. The `#!Python @job` decorator will be transformed into a Covalent `#!Python @ct.electron`.
-
-    2. The `#!Python @flow` decorator will be transformed into a Covalent `#!Python @ct.lattice`.
-
-    3. This command will dispatch the workflow to the Covalent server, and a unique dispatch ID will be returned in place of the result.
-
-    4. This command will fetch the result from the Covalent server. The `wait=True` argument will block until the workflow is complete.
-
 === "Dask"
 
     !!! Important
