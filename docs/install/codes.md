@@ -140,6 +140,7 @@ To use quacc with VASP, you will need to define several environment variables, a
 ```bash
 export QUACC_VASP_PARALLEL_CMD="srun -N 2 --ntasks-per-node 24"
 export QUACC_VASP_PP_PATH="/path/to/POTCARs"
+export QUACC_VASP_PP_VERSION="64"
 ```
 
 The `VASP_PARALLEL_CMD` setting tells Custodian and/or ASE how to parallelize VASP. Note that it does not include the executable.
