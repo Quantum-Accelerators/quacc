@@ -14,56 +14,6 @@ graph LR
   A[Input] --> B(Relax) --> C[Output];
 ```
 
-=== "Covalent"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and start the Covalent server:
-
-        ```bash
-        quacc set WORKFLOW_ENGINE covalent
-        covalent start
-        ```
-
-        Covalent also has its own [configuration variables](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) you may wish to consider modifying.
-
-    ```python
-    import covalent as ct
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-
-    # Define the workflow
-    @flow  # (1)!
-    def workflow(atoms):
-        return relax_job(atoms)  # (2)!
-
-
-    # Dispatch the workflow to the Covalent server
-    # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
-
-    # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True)  # (4)!
-    print(result)
-    ```
-
-    1. This can be written more compactly as:
-
-        ```python
-        workflow = flow(relax_job)
-        ```
-
-    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
-
-    3. This will dispatch the workflow to the Covalent server.
-
-    4. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
-
 === "Dask"
 
     !!! Important
