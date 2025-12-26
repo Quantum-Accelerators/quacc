@@ -63,7 +63,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        wflow_engine: [covalent, dask, parsl, prefect, redun, jobflow]
+        wflow_engine: [dask, parsl, prefect, redun, jobflow]
 
     defaults:
       run:
@@ -99,10 +99,6 @@ jobs:
       - name: Set coverage core
         run: |
           echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
-
-      - name: Start Covalent server
-        if: matrix.wflow_engine == 'covalent'
-        run: covalent start
 
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
