@@ -243,7 +243,7 @@ class QuaccSettings(BaseSettings):
     )
     VASP_PP_VERSION: str | None = field(
         os.environ.get("VASP_PP_VERSION"),
-        description="Version of VASP pseudopotentials to use"
+        description="Version of VASP pseudopotentials to use",
     )
     VASP_VDW: Path | None = Field(
         os.environ.get("ASE_VASP_VDW"),
