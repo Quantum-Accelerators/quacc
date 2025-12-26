@@ -8,10 +8,6 @@ In the previous examples, we have been running calculations on the local machine
 
 ## Background Information
 
-=== "Covalent"
-
-    Refer to the [executor plugin documentation](https://docs.covalent.xyz/docs/plugin) for instructions on how to install and use the relevant plugins that allow Covalent to submit jobs on your desired machines. Most users of quacc will probably want to use the [`SlurmExecutor`](https://github.com/AgnostiqHQ/covalent-slurm-plugin), which is a plugin for Covalent that supports Slurm job scheduling system. If you are using a job scheduler environment but find the `covalent-slurm-plugin` does not suit your needs, you may wish to consider the [`covalent-hpc-plugin`](https://github.com/Quantum-Accelerators/covalent-hpc-plugin).
-
 === "Dask"
 
     A Dask cluster can be set up to be used with a queueing system like that found on most HPC machines. This is most easily done via [Dask Jobqueue](https://jobqueue.dask.org/en/latest/index.html). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the Dask Jobqueue documentation.
