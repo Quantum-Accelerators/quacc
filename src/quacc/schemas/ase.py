@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -19,7 +20,6 @@ from quacc.utils.dicts import clean_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any, Literal
 
     from ase.atoms import Atoms
@@ -139,8 +139,7 @@ class Summarize:
         dyn
             ASE Optimizer object.
         trajectory
-            ASE Trajectory object or list[Atoms] from reading a trajectory file. If
-            None, the trajectory must be found in `dyn.trajectory.filename`.
+            ASE Trajectory object or list[Atoms] from reading a trajectory file.
         check_convergence
             Whether to check the convergence of the calculation. Defaults to True in
             settings.
@@ -159,7 +158,11 @@ class Summarize:
         )
 
         # Get trajectory
-        atoms_trajectory = trajectory or read(dyn.trajectory.filename, index=":")
+        atoms_trajectory = (
+            trajectory or read(dyn.trajectory, index=":")
+            if isinstance(dyn.trajectory, (str, Path))
+            else read(dyn.trajectory.filename, index=":")
+        )
         trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
 
         initial_atoms = atoms_trajectory[0]
@@ -206,8 +209,7 @@ class Summarize:
         dyn
             ASE MolecularDynamics object.
         trajectory
-            ASE Trajectory object or list[Atoms] from reading a trajectory file. If
-            None, the trajectory must be found in `dyn.trajectory.filename`.
+            ASE Trajectory object or list[Atoms] from reading a trajectory file.
 
         Returns
         -------
@@ -267,7 +269,11 @@ class Summarize:
         """
 
         # Get trajectory
-        atoms_trajectory = trajectory or read(dyn.trajectory.filename, index=":")
+        atoms_trajectory = (
+            trajectory or read(dyn.trajectory, index=":")
+            if isinstance(dyn.trajectory, (str, Path))
+            else read(dyn.trajectory.filename, index=":")
+        )
 
         if n_iter_return == -1:
             atoms_trajectory = atoms_trajectory[-(n_images):]
