@@ -267,10 +267,6 @@ graph LR
 
 ## Learn More
 
-=== "Covalent"
-
-    If you want to learn more about Covalent, you can read the [Covalent Documentation](https://docs.covalent.xyz/docs/). Please refer to the Covalent [Slack channel](https://join.slack.com/t/covalentworkflows/shared_invite/zt-1ew7f2rfk-dKSXVQmRniu5mQW4Z_eQuw) or [Discussion Board](https://github.com/AgnostiqHQ/covalent/discussions) for any Covalent-specific questions.
-
 === "Dask"
 
     If you want to learn more about Dask, you can read the [Dask Delayed documentation](https://docs.dask.org/en/stable/delayed.html) to read more about the decorators and the [Dask Distributed documentation](https://distributed.dask.org/en/stable/) to read more about the distributed Dask cluster. Please refer to the [Dask Discourse page](https://discourse.dask.org/) for Dask-specific questions.

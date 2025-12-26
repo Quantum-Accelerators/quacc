@@ -311,36 +311,6 @@ graph LR
   A[Input] --> C(Relax) --> D[Output];
 ```
 
-=== "Covalent"
-
-    ```python
-    from ase.build import bulk, molecule
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-
-
-    # Define workflow
-    @flow
-    def workflow(atoms1, atoms2):
-        # Define two independent relaxation jobs
-        result1 = relax_job(atoms1)
-        result2 = relax_job(atoms2)
-
-        return {"result1": result1, "result2": result2}
-
-
-    # Define two Atoms objects
-    atoms1 = bulk("Cu")
-    atoms2 = molecule("N2")
-
-    # Dispatch the workflow to the Covalent server
-    dispatch_id = ct.dispatch(workflow)(atoms1, atoms2)
-
-    # Fetch the results from the server
-    result = ct.get_result(dispatch_id, wait=True)
-    print(result)
-    ```
-
 === "Dask"
 
     ```python
@@ -498,66 +468,6 @@ graph LR
   C(Make Slabs) --> F(Slab Relax) --> H[Output]
   C(Make Slabs) --> G(Slab Relax) --> H[Output];
 ```
-
-=== "Covalent"
-
-    ```python
-    import covalent as ct
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-
-    # Define the workflow
-    @flow
-    def workflow(atoms):
-        relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
-
-        return relaxed_slabs
-
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow and retrieve result
-    dispatch_id = ct.dispatch(workflow)(atoms)
-    result = ct.get_result(dispatch_id, wait=True)
-    print(result)
-    ```
-
-    !!! Tip "Selectively Modifying Job Decorators in a Pre-Made Flow"
-
-        If you want to modify the decorators of select jobs in a pre-made workflow, such as to modify the executor of a given function, you can use the `job_decorators` keyword argument:
-
-        ```python
-        ct.dispatch(bulk_to_slabs_flow)(
-            atoms, job_decorators={"static_job": job(executor="local")}
-        )
-        ```
-
-        As a shorthand, all of the decorators can be modified at once using the "all" key:
-
-        ```python
-        ct.dispatch(bulk_to_slabs_flow)(
-            atoms, job_decorators={"all": job(executor="local")}
-        )  # (1)!
-        ```
-
-        1. Alternatively, you can simply modify the `#!Python @flow` decorator itself:
-
-            ```python
-            from quacc import flow
-
-
-            @flow(executor="local")
-            def bulk_to_slabs_flow_(*args, **kwargs):
-                return bulk_to_slabs_flow(*args, **kwargs)
-
-
-            ct.dispatch(bulk_to_slabs_flow_)(atoms)
-            ```
 
 === "Dask"
 

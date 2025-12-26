@@ -192,26 +192,6 @@ graph LR
   B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
 ```
 
-=== "Covalent"
-
-    ```python
-    import covalent as ct
-    from ase.build import bulk
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow
-    dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)  # (1)!
-
-    # Print the results
-    result = ct.get_result(dispatch_id, wait=True)
-    print(result)
-    ```
-
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
-
 === "Dask"
 
     ```python
