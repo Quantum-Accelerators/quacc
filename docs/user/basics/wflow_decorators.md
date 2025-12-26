@@ -20,20 +20,6 @@ A `#!Python @flow` in quacc is a collection of one or more jobs. It defines the 
 
 A `#!Python @subflow` in quacc is any workflow that returns a list of job outputs and where the number of jobs to be called is not necessarily known until runtime.
 
-=== "Covalent"
-
-    Take a moment to learn about the main [Covalent Concepts](https://docs.covalent.xyz/docs/user-documentation/concepts/concepts-index), namely the [`#!Python @ct.electron`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#electron) and [`#!Python @ct.lattice`](https://docs.covalent.xyz/docs/user-documentation/concepts/covalent-basics#lattice) decorators, which describe individual compute tasks and workflows, respectively.
-
-    <center>
-
-    | Quacc               | Covalent                                               |
-    | ------------------- | ------------------------------------------------------ |
-    | `#!Python @job`     | `#!Python @ct.electron`                                |
-    | `#!Python @flow`    | `#!Python @ct.lattice`                                 |
-    | `#!Python @subflow` | `#!Python @ct.electron`<br>`#!Python @ct.lattice`</br> |
-
-    </center>
-
 === "Dask"
 
     Take a moment to read the Dask Delayed documentation [overview page](https://docs.dask.org/en/stable/delayed.html) to get a sense of how the Dask decorators works and the Dask Distributed [quickstart page](https://distributed.dask.org/en/stable/quickstart.html) to understand how to submit tasks to a Dask cluster. Namely, you should understand the `#!Python @delayed` decorator and how to interface with the `Client`.
