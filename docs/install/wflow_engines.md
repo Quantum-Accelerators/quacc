@@ -8,44 +8,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
-=== "Covalent"
-
-    **Installation**
-
-    To install Covalent, run
-
-    ```bash
-    pip install quacc[covalent]
-    ```
-
-    Then modify the Covalent [configuration file](https://docs.covalent.xyz/docs/user-documentation/api-reference/executors/customizing-the-config/) to have the following fields:
-
-    ```conf
-    [executors.local]
-    create_unique_workdir = true
-
-    [executors.dask]
-    create_unique_workdir = true
-    ```
-
-    **Starting the Server**
-
-    Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (usually http://localhost:48008) that you can use to access the Covalent dashboard, which is shown below.
-
-    ![Covalent UI](../images/install/ui_blank.jpg)
-
-    !!! Tip
-
-        Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
-
-    ??? Note "For NERSC Users"
-
-        If you are using Perlmutter at NERSC, you will need to adjust the Covalent configuration directory because the home directory does not support file locking:
-
-        ```bash title="~/.bashrc"
-        export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"
-        ```
-
 === "Dask"
 
     **Installation**
