@@ -2,34 +2,11 @@
 
 Everyone's computing needs are different, so we ensured that quacc is interoperable with a variety of modern workflow management tools. There are [300+ workflow management tools](https://workflows.community/systems) out there, so we can't possibly support them all. Instead, we have focused on a select few that adopt a similar decorator-based approach to defining workflows with substantial support for HPC systems.
 
-!!! Tip "Note"
-
-    We are planning to further enhance the support for Prefect and Jobflow starting in fall 2025.
-
 ## Summary
 
 !!! Tip "Recommendations"
 
-    Not sure which to choose? If you simply want to launch lots of calculations, we recommend starting with **Parsl**. For a more feature-rich workflow orchestration platform, we recommend using **Prefect** or **Jobflow** depending on your needs. Some additional opinions on the matter.
-
-=== "Covalent"
-
-    [Covalent](https://github.com/AgnostiqHQ/covalent/) is a user-friendly workflow management solution from the company [Agnostiq](https://agnostiq.ai/).
-
-    Pros:
-
-    - Excellent visual dashboard for job monitoring
-    - Easy to use in distributed, heterogeneous compute environments
-    - Excellent documentation
-    - Automatic and simple database integration
-    - The compute nodes do not need to be able to connect to the internet
-
-    Cons:
-
-    - It requires a centralized server to be running continuously in order to manage the workflows unless using [Covalent Cloud](https://www.covalent.xyz/cloud/)
-    - Support for job scheduler HPC environments is available but not as robust or performant as other solutions
-    - High-security HPC environments may be difficult to access via SSH with the centralized server approach
-    - Not as widely used as other workflow management solutions
+    Not sure which to choose? Generally, we recommend Jobflow for users of academic HPC systems with job schedulers. Otherwise, we recommend Prefect. Some additional opinions on the matter.
 
 === "Dask"
 

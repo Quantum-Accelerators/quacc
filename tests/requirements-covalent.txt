@@ -1,3 +1,0 @@
-covalent==0.240.0
-covalent-cloud==1.4.2
-covalent-slurm-plugin==0.18.0
