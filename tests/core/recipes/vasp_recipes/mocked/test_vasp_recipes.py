@@ -52,6 +52,8 @@ def test_static_job(patch_metallic_taskdoc):
     assert output["parameters"]["lwave"] is True
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["efermi"] == "midgap"
+    assert output["parameters"]["pp_version"] == "64"
+    assert output["parameters"]["pp"] == "PBE"
 
     output = static_job(atoms, ncore=2, kpar=4)
     assert output["parameters"]["encut"] == 520
@@ -62,6 +64,8 @@ def test_static_job(patch_metallic_taskdoc):
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.01
+    assert output["parameters"]["pp_version"] == "54"
+    assert output["parameters"]["pp"] == "PBE"
 
     output = static_job(atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None)
     assert output["parameters"]["ivdw"] == 11
