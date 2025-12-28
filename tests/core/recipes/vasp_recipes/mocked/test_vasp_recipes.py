@@ -640,6 +640,7 @@ def test_mp_metagga_relax_flow_metallic(tmp_path, patch_metallic_taskdoc):
         assert output["prerelax"]["parameters"]["gga"] == "ps"
         assert output["prerelax"]["parameters"]["ismear"] == 0
         assert output["prerelax"]["parameters"]["pp"] == "pbe"
+        assert output["prerelax"]["parameters"]["pp_version"] == "64"
         assert output["prerelax"]["parameters"]["magmom"] == [0.6]
         assert output["relax1"]["parameters"]["magmom"] == [0.0]
         assert output["relax2"]["parameters"]["magmom"] == [0.0]
@@ -650,7 +651,7 @@ def test_mp_metagga_relax_flow_metallic(tmp_path, patch_metallic_taskdoc):
         assert output["relax2"]["parameters"]["sigma"] == 0.05
         assert output["relax2"]["parameters"]["kspacing"] == 0.22
         assert output["relax2"]["parameters"]["pp"] == "pbe"
-        assert output["parameters"]["pp_version"] == "64"
+        assert output["relax2"]["parameters"]["pp_version"] == "64"
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
