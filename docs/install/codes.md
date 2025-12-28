@@ -145,6 +145,6 @@ export QUACC_VASP_PP_VERSION="64"
 
 The `VASP_PARALLEL_CMD` setting tells Custodian and/or ASE how to parallelize VASP. Note that it does not include the executable.
 
-The `VASP_PP_PATH` setting should be defined as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials) such that it is a directory containing your VASP pseudopotentials. Similarly, the `VASP_PP_VERSION` setting defines the version of the pseudopotentials to use.
+The `VASP_PP_PATH` setting should be defined as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials) such that it is a directory containing each VASP pseudopotential folder. Similarly, the `VASP_PP_VERSION` setting defines the version of the pseudopotentials to use.
 
 Additional settings can be specified as well, such as the name of the VASP executables if they differ from the default values (i.e. `vasp_std`, `vasp_gam`).
