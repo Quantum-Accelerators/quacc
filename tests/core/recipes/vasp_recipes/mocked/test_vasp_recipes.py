@@ -735,7 +735,7 @@ def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
         "prec": "accurate",
         "sigma": 0.05,
         "pp": "pbe",
-        "pp_version": "",
+        "pp_version": "original",
         "setups": {"O": "", "Ni": "_pv"},
     }
     assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
@@ -774,7 +774,7 @@ def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
         "prec": "accurate",
         "sigma": 0.05,
         "pp": "pbe",
-        "pp_version": "",
+        "pp_version": "original",
         "setups": {"Ni": "_pv", "O": ""},
     }
 
@@ -815,7 +815,7 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "prec": "accurate",
             "sigma": 0.05,
             "pp": "pbe",
-            "pp_version": "",
+            "pp_version": "original",
             "setups": {"O": "", "Ni": "_pv"},
         }
         relax2_params = relax_params.copy()
@@ -849,7 +849,7 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "prec": "accurate",
             "sigma": 0.05,
             "pp": "pbe",
-            "pp_version": "",
+            "pp_version": "original",
             "setups": {"Ni": "_pv", "O": ""},
         }
 
