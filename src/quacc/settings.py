@@ -241,7 +241,7 @@ class QuaccSettings(BaseSettings):
         os.environ.get("VASP_PP_PATH"),
         description="Path to the VASP pseudopotential folders.",
     )
-    VASP_PP_VERSION: str | None = field(
+    VASP_PP_VERSION: str | None = Field(
         os.environ.get("VASP_PP_VERSION"),
         description="Version of VASP pseudopotentials to use",
     )
