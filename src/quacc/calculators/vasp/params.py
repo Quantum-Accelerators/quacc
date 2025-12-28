@@ -574,14 +574,20 @@ class MPtoASEConverter:
             The ASE VASP parameters.
         """
         self.incar_dict = {k.lower(): v for k, v in self.incar_dict.items()}
-        pp = self.potcar_functional.split("_")[0]
-        assert pp.lower() in ["lda", "pw91", "pbe"]
+        parts = self.potcar_functional.split("_")
+        pp = parts[0]
+        pp_version = parts[1] if len(parts) > 1 else ""
+        assert pp.lower() in ["lda", "pbe"]
         potcar_setups = {symbol.split("_")[0]: symbol for symbol in self.potcar_symbols}
         for k, v in potcar_setups.items():
             if k in v:
                 potcar_setups[k] = v.split(k)[-1]
 
-        full_input_params = self.incar_dict | {"setups": potcar_setups, "pp": pp}
+        full_input_params = self.incar_dict | {
+            "setups": potcar_setups,
+            "pp": pp,
+            "pp_version": pp_version,
+        }
 
         if self.pmg_kpts:
             kpts_dict = self.pmg_kpts.as_dict()

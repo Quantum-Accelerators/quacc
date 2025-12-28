@@ -134,6 +134,7 @@ def test_gga_preset():
         "nelmin": 3,
         "nsw": 100,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {
             "Ac": "",
@@ -270,6 +271,7 @@ def test_metagga_preset():
         "nelmin": 3,
         "nsw": 100,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {
             "Ac": "",
@@ -411,6 +413,7 @@ def test_hybrid_preset():
         "nelmin": 3,
         "nsw": 100,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {
             "Ac": "",
@@ -1431,6 +1434,7 @@ def test_pmg_input_set():
         "nelm": 100,
         "nsw": 99,
         "pp": "pbe",
+        "pp_version": "",
         "prec": "accurate",
         "sigma": 0.05,
         "magmom": [0.6],
@@ -1467,6 +1471,7 @@ def test_pmg_input_set2():
         "nelm": 100,
         "nsw": 99,
         "pp": "pbe",
+        "pp_version": "",
         "prec": "accurate",
         "sigma": 0.05,
         "magmom": [2.3, 2.3],

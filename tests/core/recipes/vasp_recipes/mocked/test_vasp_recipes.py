@@ -52,6 +52,8 @@ def test_static_job(patch_metallic_taskdoc):
     assert output["parameters"]["lwave"] is True
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["efermi"] == "midgap"
+    assert output["parameters"]["pp_version"] == "64"
+    assert output["parameters"]["pp"] == "PBE"
 
     output = static_job(atoms, ncore=2, kpar=4)
     assert output["parameters"]["encut"] == 520
@@ -62,6 +64,8 @@ def test_static_job(patch_metallic_taskdoc):
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.01
+    assert output["parameters"]["pp_version"] == "54"
+    assert output["parameters"]["pp"] == "PBE"
 
     output = static_job(atoms, ivdw=11, lasph=False, prec=None, lwave=None, efermi=None)
     assert output["parameters"]["ivdw"] == 11
@@ -487,6 +491,7 @@ def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
         "setups": {"Al": ""},
         "sigma": 0.05,
         "pp": "pbe",
+        "pp_version": "64",
     }
 
     output = mp_prerelax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
@@ -548,6 +553,7 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
         "prec": "accurate",
         "sigma": 0.05,
         "pp": "pbe",
+        "pp_version": "64",
         "setups": {"Al": ""},
     }
     ref_parameters2 = ref_parameters.copy()
@@ -615,6 +621,7 @@ def test_mp_metagga_static_job(patch_metallic_taskdoc):
         "prec": "accurate",
         "sigma": 0.05,
         "pp": "pbe",
+        "pp_version": "64",
         "setups": {"Al": ""},
     }
 
@@ -723,6 +730,7 @@ def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
         "prec": "accurate",
         "sigma": 0.05,
         "pp": "pbe",
+        "pp_version": "",
         "setups": {"O": "", "Ni": "_pv"},
     }
     assert output["atoms"].get_chemical_symbols() == ["O", "Ni"]
@@ -761,6 +769,7 @@ def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
         "prec": "accurate",
         "sigma": 0.05,
         "pp": "pbe",
+        "pp_version": "",
         "setups": {"Ni": "_pv", "O": ""},
     }
 
@@ -801,6 +810,7 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "prec": "accurate",
             "sigma": 0.05,
             "pp": "pbe",
+            "pp_version": "",
             "setups": {"O": "", "Ni": "_pv"},
         }
         relax2_params = relax_params.copy()
@@ -834,6 +844,7 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
             "prec": "accurate",
             "sigma": 0.05,
             "pp": "pbe",
+            "pp_version": "",
             "setups": {"Ni": "_pv", "O": ""},
         }
 
@@ -901,6 +912,7 @@ def test_matpes(patch_metallic_taskdoc):
         "nelm": 200,
         "nsw": 0,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {"Al": ""},
         "sigma": 0.05,
@@ -935,6 +947,7 @@ def test_matpes(patch_metallic_taskdoc):
         "nelm": 200,
         "nsw": 0,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {"Ba": "_sv_GW"},
         "sigma": 0.05,
@@ -970,6 +983,7 @@ def test_matpes(patch_metallic_taskdoc):
         "nelm": 200,
         "nsw": 0,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {"Al": ""},
         "sigma": 0.05,
@@ -1002,6 +1016,7 @@ def test_matpes(patch_metallic_taskdoc):
         "nelm": 200,
         "nsw": 0,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {"Al": ""},
         "sigma": 0.05,
@@ -1037,6 +1052,7 @@ def test_matpes(patch_metallic_taskdoc):
         "nelm": 200,
         "nsw": 0,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {"Al": ""},
         "sigma": 0.05,
@@ -1069,6 +1085,7 @@ def test_fairchem_omat(patch_metallic_taskdoc):
         "magmom": [0.6, 0.6],
         "nelm": 100,
         "pp": "pbe",
+        "pp_version": "54",
         "prec": "accurate",
         "setups": {"Si": ""},
         "sigma": 0.05,
@@ -1109,6 +1126,7 @@ def test_fairchem_omc(patch_metallic_taskdoc):
         "nelmdl": -10,
         "setups": {"Si": ""},
         "pp": "pbe",
+        "pp_version": "54",
         "kpts": (7, 7, 7),
         "gamma": True,
     }

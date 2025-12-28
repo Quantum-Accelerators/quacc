@@ -239,11 +239,15 @@ class QuaccSettings(BaseSettings):
     )
     VASP_PP_PATH: Path | None = Field(
         os.environ.get("VASP_PP_PATH"),
-        description="Path to the VASP pseudopotential library. Must contain the directories `potpaw_PBE` and `potpaw` for PBE and LDA pseudopotentials, respectively. If ASE's VASP_PP_PATH is set, you do not need to set this.",
+        description="Path to the VASP pseudopotential folders.",
+    )
+    VASP_PP_VERSION: str | None = Field(
+        os.environ.get("VASP_PP_VERSION"),
+        description="Version of VASP pseudopotentials to use",
     )
     VASP_VDW: Path | None = Field(
         os.environ.get("ASE_VASP_VDW"),
-        description="Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals. If ASE's ASE_VASP_VDW is set, you do not need to set this.",
+        description="Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals.",
     )
 
     # VASP Settings: General
