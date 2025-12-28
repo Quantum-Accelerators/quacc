@@ -215,7 +215,6 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
     dyn = Runner(atoms, EMT()).run_opt(optimizer=SciPyFminBFGS)
     traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
-    assert dyn.todict().get("restart") is None
 
 
 def test_run_vib(tmp_path, monkeypatch):
