@@ -503,7 +503,7 @@ def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
-    assert output["parameters"]["pp_version"] == "original"
+    assert output["parameters"]["pp_version"] == "64"
     assert "metagga" not in output["parameters"]
 
 
@@ -519,7 +519,7 @@ def test_mp_prerelax_job_nonmetallic(patch_nonmetallic_taskdoc):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
-    assert output["parameters"]["pp_version"] == "original"
+    assert output["parameters"]["pp_version"] == "64"
     assert "metagga" not in output["parameters"]
 
 
@@ -574,7 +574,7 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
-    assert output["parameters"]["pp_version"] == "original"
+    assert output["parameters"]["pp_version"] == "64"
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
@@ -589,7 +589,7 @@ def test_mp_metagga_relax_job_nonmetallic(patch_nonmetallic_taskdoc):
     assert output["parameters"]["ismear"] == 0
     assert output["parameters"]["sigma"] == 0.05
     assert output["parameters"]["pp"] == "pbe"
-    assert output["parameters"]["pp_version"] == "original"
+    assert output["parameters"]["pp_version"] == "64"
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
@@ -650,7 +650,7 @@ def test_mp_metagga_relax_flow_metallic(tmp_path, patch_metallic_taskdoc):
         assert output["relax2"]["parameters"]["sigma"] == 0.05
         assert output["relax2"]["parameters"]["kspacing"] == 0.22
         assert output["relax2"]["parameters"]["pp"] == "pbe"
-        assert output["parameters"]["pp_version"] == "original"
+        assert output["parameters"]["pp_version"] == "64"
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
