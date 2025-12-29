@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -31,6 +32,8 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import DefaultSetting
+
+LOGGER = getLogger(__name__)
 
 
 class Vasp(Vasp_):
@@ -179,6 +182,9 @@ class Vasp(Vasp_):
         # Set the VASP pseudopotential directory
         if self._settings.VASP_PP_PATH:
             os.environ["VASP_PP_PATH"] = str(self._settings.VASP_PP_PATH)
+            LOGGER.info(
+                f"Using pp_version='{self.user_calc_params.get('pp_version', '')}' pseudopotentials in VASP_PP_PATH={self._settings.VASP_PP_PATH.resolve()}"
+            )
 
         # Set the ASE_VASP_VDW environment variable
         if self._settings.VASP_VDW:
@@ -196,8 +202,10 @@ class Vasp(Vasp_):
         vasp_cmd = (
             self._settings.VASP_GAMMA_CMD if use_gamma else self._settings.VASP_CMD
         )
+        full_vasp_cmd = f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"
+        LOGGER.info(f"Using VASP command: {full_vasp_cmd.strip()}")
 
-        return f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"
+        return full_vasp_cmd
 
     def _cleanup_params(self) -> None:
         """
