@@ -1509,38 +1509,47 @@ def test_logger(caplog):
         with caplog.at_level(INFO):
             Vasp(atoms)
         assert "/path/to/pseudos/potpaw_PBE" in caplog.text
+        caplog.clear()
 
         with caplog.at_level(INFO):
             Vasp(atoms, xc="lda")
         assert "/path/to/pseudos/potpaw_LDA" in caplog.text
+        caplog.clear()
 
         with caplog.at_level(INFO):
             Vasp(atoms, xc="lda", pp_version="64")
         assert "/path/to/pseudos/potpaw_LDA.64" in caplog.text
+        caplog.clear()
 
         with caplog.at_level(INFO):
             Vasp(atoms, xc="PBE", pp_version=None)
         assert "/path/to/pseudos/potpaw_PBE" in caplog.text
+        caplog.clear()
 
         with caplog.at_level(INFO):
             Vasp(atoms, xc="PBE", pp_version="")
         assert "/path/to/pseudos/potpaw_PBE" in caplog.text
+        caplog.clear()
 
         with caplog.at_level(INFO):
             Vasp(atoms, preset="QMOFSet")
         assert "/path/to/pseudos/potpaw_PBE.54" in caplog.text
+        caplog.clear()
 
         with caplog.at_level(INFO):
             Vasp(atoms, preset="DefaultSetGGA")
         assert "/path/to/pseudos/potpaw_PBE.64" in caplog.text
+        caplog.clear()
 
         with caplog.at_level(INFO):
             Vasp(atoms, xc="pbe", pp_version="54")
         assert "/path/to/pseudos/potpaw_PBE.54" in caplog.text
+        caplog.clear()
 
         with caplog.at_level(INFO):
             Vasp(atoms, xc="pbe", pp_version="original")
         assert "/path/to/pseudos/potpaw_PBE.original" in caplog.text
+        caplog.clear()
 
 
 @pytest.mark.skipif(which(get_settings().VASP_CMD), reason="VASP is installed")

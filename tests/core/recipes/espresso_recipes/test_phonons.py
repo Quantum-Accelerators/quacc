@@ -419,6 +419,7 @@ def test_phonon_calculation_si_spin_orbit(tmp_path, monkeypatch, caplog):
             si_relax_results = relax_job(si_atoms, **si_relax_params)
 
             assert "The occupations are set to 'fixed'" in caplog.text
+            caplog.clear()
 
         si_phonon_params = {
             "input_data": {
@@ -502,6 +503,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
         with caplog.at_level(WARNING):
             c_ph_results = phonon_job(c_scf_results["dir_name"], **c_ph_params)
             assert "Overwriting key 'fildyn'" in caplog.text
+            caplog.clear()
 
         q2r_params = {
             "input_data": {
@@ -534,6 +536,7 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
             assert "Overwriting key 'fildyn'" in caplog.text
             assert "Overwriting key 'wpot_dir'" in caplog.text
             assert "Overwriting key 'prefix'" in caplog.text
+            caplog.clear()
 
         assert (
             dvscf_q2r_results["parameters"]["input_data"]["input"]["fildyn"] == "matdyn"
