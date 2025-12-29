@@ -576,7 +576,7 @@ class MPtoASEConverter:
         self.incar_dict = {k.lower(): v for k, v in self.incar_dict.items()}
         parts = self.potcar_functional.split("_")
         pp = parts[0]
-        pp_version = parts[1] if len(parts) > 1 else ""
+        pp_version = parts[1] if len(parts) > 1 else "original"
         assert pp.lower() in ["lda", "pbe"]
         potcar_setups = {symbol.split("_")[0]: symbol for symbol in self.potcar_symbols}
         for k, v in potcar_setups.items():
