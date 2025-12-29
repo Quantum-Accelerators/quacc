@@ -197,7 +197,7 @@ class Vasp(Vasp_):
             potpaw_path = (
                 self._settings.VASP_PP_PATH / f"{potpaw_prefix}{potpaw_suffix}"
             ).resolve()
-            LOGGER.info(f"Using {potpaw_path} pseudopotentials")
+            LOGGER.info(f"Using PAW pseudopotentials: {potpaw_path}")
 
         # Set the ASE_VASP_VDW environment variable
         if self._settings.VASP_VDW:
