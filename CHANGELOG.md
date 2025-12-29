@@ -14,8 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- Made ASE 2.37.0 the minimum allowed version
-- Ensured the default pseudopotentials for the VASP presets are set appropriately
+- Made ASE 3.27.0 the minimum allowed version
+- Ensured the default pseudopotentials for the VASP presets are set in accordance with the instructions in ASE 3.27.0
 
 ## [1.0.8]
 
