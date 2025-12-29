@@ -1503,6 +1503,7 @@ def test_command():
     assert Vasp(atoms, kspacing=0.1).command.strip() == "vasp_std"
 
 
+@pytest.mark.skipif(os.name == "nt", reason="Path handling is meant for Linux")
 def test_logger(caplog):
     atoms = bulk("Cu")
     with change_settings({"VASP_PP_PATH": "/path/to/pseudos"}):
