@@ -1519,6 +1519,14 @@ def test_logger(caplog):
         assert "/path/to/pseudos/potpaw_LDA.64" in caplog.text
 
         with caplog.at_level(INFO):
+            Vasp(atoms, xc="PBE", pp_version=None)
+        assert "/path/to/pseudos/potpaw_PBE" in caplog.text
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="PBE", pp_version="")
+        assert "/path/to/pseudos/potpaw_PBE" in caplog.text
+
+        with caplog.at_level(INFO):
             Vasp(atoms, preset="QMOFSet")
         assert "/path/to/pseudos/potpaw_PBE.54" in caplog.text
 

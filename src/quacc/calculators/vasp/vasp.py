@@ -190,11 +190,10 @@ class Vasp(Vasp_):
                 )
                 else "potpaw_PBE"
             )
-            potpaw_suffix = (
-                f".{self.user_calc_params.get('pp_version', '')}"
-                if self.user_calc_params.get("pp_version") is not None
-                else ""
-            )
+            if self.user_calc_params.get("pp_version", None):
+                potpaw_suffix = f".{self.user_calc_params['pp_version']}"
+            else:
+                potpaw_suffix = ""
             potpaw_path = (
                 self._settings.VASP_PP_PATH / f"{potpaw_prefix}{potpaw_suffix}"
             ).resolve()
