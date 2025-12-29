@@ -1503,6 +1503,38 @@ def test_command():
     assert Vasp(atoms, kspacing=0.1).command.strip() == "vasp_std"
 
 
+def test_logger(caplog):
+    atoms = bulk("Cu")
+    with change_settings({"VASP_PP_PATH": "/path/to/pseudos"}):
+        with caplog.at_level(INFO):
+            Vasp(atoms)
+        assert "/path/to/pseudos/potpaw_PBE" in caplog.text
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="lda")
+        assert "/path/to/pseudos/potpaw_LDA" in caplog.text
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="lda", pp_version="64")
+        assert "/path/to/pseudos/potpaw_LDA.64" in caplog.text
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, preset="QMOFSet")
+        assert "/path/to/pseudos/potpaw_PBE.54" in caplog.text
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, preset="DefaultSetGGA")
+        assert "/path/to/pseudos/potpaw_PBE.64" in caplog.text
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="pbe", pp_version="54")
+        assert "/path/to/pseudos/potpaw_PBE.54" in caplog.text
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="pbe", pp_version="original")
+        assert "/path/to/pseudos/potpaw_PBE.original" in caplog.text
+
+
 @pytest.mark.skipif(which(get_settings().VASP_CMD), reason="VASP is installed")
 def test_run(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)

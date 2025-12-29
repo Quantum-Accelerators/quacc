@@ -182,9 +182,23 @@ class Vasp(Vasp_):
         # Set the VASP pseudopotential directory
         if self._settings.VASP_PP_PATH:
             os.environ["VASP_PP_PATH"] = str(self._settings.VASP_PP_PATH)
-            LOGGER.info(
-                f"Using pp_version='{self.user_calc_params.get('pp_version', '')}' pseudopotentials in VASP_PP_PATH={self._settings.VASP_PP_PATH.resolve()}"
+            potpaw_prefix = (
+                "potpaw_LDA"
+                if (
+                    self.user_calc_params.get("xc", "PW91").lower() == "lda"
+                    or self.user_calc_params.get("pp", "PBE").lower() == "lda"
+                )
+                else "potpaw_PBE"
             )
+            potpaw_suffix = (
+                f".{self.user_calc_params.get('pp_version', '')}"
+                if self.user_calc_params.get("pp_version") is not None
+                else ""
+            )
+            potpaw_path = (
+                self._settings.VASP_PP_PATH / f"{potpaw_prefix}{potpaw_suffix}"
+            ).resolve()
+            LOGGER.info(f"Using {potpaw_path} pseudopotentials")
 
         # Set the ASE_VASP_VDW environment variable
         if self._settings.VASP_VDW:
