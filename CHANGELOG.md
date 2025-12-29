@@ -4,18 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1]
+
+### Added
+
+- Added logging to the `Vasp` calculator to report which pseudopotentials are used as well as the VASP command
+
 ## [1.1.0]
 
-### Fixed
+### Changed
 
-- Fixed handling of VASP pseudopotentials for the original no suffix version
+- Using `.original` as the `potpaw_PBE` suffix for the original pseudopotential set provided by VASP
 
 ## [1.0.9]
 
 ### Changed
 
 - Made ASE 3.27.0 the minimum allowed version
-- Ensured the default pseudopotentials for the VASP presets are set in accordance with the instructions in ASE 3.27.0
+- Explicitly set `pp_version="64"` for the default VASP presets as well as `pp_version="54"` for the `QMOFSet` and the OMC/OMat recipes. When going from Atomate2 to ASE input sets, the `pp_version` is now set
 
 ## [1.0.8]
 
@@ -47,6 +53,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.0.5]
 
 ### Fixed
+
 - Fixed bug when trying to use Custodian to run a single-point VASP calculation on an Atoms object with constraints
 - Fixed various type hints
 
@@ -110,7 +117,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- The default `BulkSet.yaml` will be removed and replaced with `DefaultSetPBE.yaml`. The two are extremely similar. Updates include: ALGO = Fast --> ALGO = Normal, GGA_COMPAT = False, and changing the default Yb and Eu pseudopotentials from _2 to _3.
+- The default `BulkSet.yaml` will be removed and replaced with `DefaultSetPBE.yaml`. The two are extremely similar. Updates include: ALGO = Fast --> ALGO = Normal, GGA_COMPAT = False, and changing the default Yb and Eu pseudopotentials from \_2 to \_3.
 - The `SlabSet.yaml` will be removed and replaced with `SlabSetPBE.yaml` to ensure internal consistency with the base `DefaultSetPBE.yaml`.
 - The `VASP_PRESET_MAG_DEFAULT` setting has been changed from a default of 1.0 to 0.5 to prevent accidental convergence to erroneous radical states, particularly in molecular systems.
 - The Materials Project recipes were updated to match the newer MP24 settings

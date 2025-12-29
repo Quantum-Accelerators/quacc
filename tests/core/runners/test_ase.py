@@ -241,11 +241,13 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
     with caplog.at_level(WARNING):
         Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
     assert "Cannot find file" in caplog.text
+    caplog.clear()
 
     # No file again
     with caplog.at_level(WARNING):
         Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt()
     assert "Cannot find file" in caplog.text
+    caplog.clear()
 
     # No trajectory kwarg
     with pytest.raises(
