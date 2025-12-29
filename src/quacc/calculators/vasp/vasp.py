@@ -183,7 +183,7 @@ class Vasp(Vasp_):
         if self._settings.VASP_PP_PATH:
             os.environ["VASP_PP_PATH"] = str(self._settings.VASP_PP_PATH)
             LOGGER.info(
-                f"VASP_PP_PATH is set to {self._settings.VASP_PP_PATH.resolve()}"
+                f"Using pp_version='{self.user_calc_params.get('pp_version', '')}' pseudopotentials in VASP_PP_PATH={self._settings.VASP_PP_PATH.resolve()}"
             )
 
         # Set the ASE_VASP_VDW environment variable
