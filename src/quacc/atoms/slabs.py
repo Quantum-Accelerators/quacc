@@ -356,6 +356,7 @@ def make_adsorbate_structures(
                 atoms_with_adsorbate.info["adsorbates"].extend([ads_stats])
 
             # Add slab+adsorbate to list
+            atoms_with_adsorbate.wrap()
             new_atoms.append(atoms_with_adsorbate)
 
     return new_atoms
