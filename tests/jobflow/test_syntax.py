@@ -32,8 +32,8 @@ def test_jobflow_decorators(tmp_path, monkeypatch):
     assert hasattr(mult, "original")
     assert isinstance(add(1, 2), jf.Job)
     assert isinstance(mult(1, 2), jf.Job)
-    assert isinstance(workflow(1, 2, 3), jf.Job)
-    assert isinstance(add_distributed([1, 2, 3], 4)[0], jf.Job)
+    assert isinstance(workflow(1, 2, 3), jf.Flow)
+    assert isinstance(add_distributed([1, 2, 3], 4), jf.Job)
 
 
 def test_jobflow_decorators_args(tmp_path, monkeypatch):
@@ -61,5 +61,5 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch):
     assert hasattr(mult, "original")
     assert isinstance(add(1, 2), jf.Job)
     assert isinstance(mult(1, 2), jf.Job)
-    assert isinstance(workflow(1, 2, 3), jf.Job)
-    assert isinstance(add_distributed([1, 2, 3], 4)[0], jf.Job)
+    assert isinstance(workflow(1, 2, 3), jf.Flow)
+    assert isinstance(add_distributed([1, 2, 3], 4), jf.Job)
