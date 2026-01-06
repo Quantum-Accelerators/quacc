@@ -25,10 +25,8 @@ def make_files():
 
 def teardown_function():
     for file in ["file1.txt", "file2.txt"]:
-        try:
+        with contextlib.suppress(FileNotFoundError):
             os.remove(CURRENT_DIR / file)
-        except FileNotFoundError:
-            pass
 
 
 @pytest.mark.parametrize(
