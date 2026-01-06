@@ -79,6 +79,29 @@ def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
 
 
 @pytest.mark.parametrize(
+    "copy_files", [{Path(): ["file1.txt"]}, {Path(): "file1.txt"}, {Path(): "file1*"}]
+)
+def test_calc_setup_v2_2(tmp_path, monkeypatch, copy_files):
+    monkeypatch.chdir(tmp_path)
+    make_files()
+
+    with change_settings({"CREATE_UNIQUE_DIR": False}):
+        atoms = bulk("Cu")
+        atoms.calc = EMT()
+        settings = get_settings()
+
+        tmpdir, results_dir = calc_setup(atoms, copy_files=copy_files)
+
+        assert tmpdir.is_dir()
+        assert "tmp" in str(tmpdir)
+        assert results_dir.name == tmpdir.name.split("tmp-")[-1]
+        assert str(settings.RESULTS_DIR) in str(results_dir)
+        assert not Path(settings.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
+        assert "file1.txt" in os.listdir(tmpdir)
+        assert "file2.txt" not in os.listdir(tmpdir)
+
+
+@pytest.mark.parametrize(
     "copy_files",
     [
         {Path("saved"): "file1.txt"},
