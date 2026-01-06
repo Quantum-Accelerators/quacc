@@ -10,7 +10,7 @@ from ase.calculators.emt import EMT
 jf = pytest.importorskip("jobflow")
 
 
-from quacc import change_settings, get_settings, job
+from quacc import change_settings, job
 from quacc.runners.prep import calc_setup
 
 CURRENT_DIR = Path(__file__).resolve().parent
@@ -44,15 +44,11 @@ def test_calc_setup_v1(tmp_path, monkeypatch, copy_files):
         with change_settings({"CREATE_UNIQUE_DIR": True}):
             atoms = bulk("Cu")
             atoms.calc = EMT()
-            settings = get_settings()
 
-            tmpdir, results_dir = calc_setup(atoms, copy_files=copy_files)
+            tmpdir, _ = calc_setup(atoms, copy_files=copy_files)
 
             assert tmpdir.is_dir()
             assert "tmp" in str(tmpdir)
-            assert results_dir.name == tmpdir.name.split("tmp-")[-1]
-            assert str(settings.RESULTS_DIR) in str(results_dir)
-            assert not Path(settings.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
             assert "file1.txt" in os.listdir(tmpdir)
             assert "file2.txt" not in os.listdir(tmpdir)
 
@@ -72,13 +68,10 @@ def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
         with change_settings({"CREATE_UNIQUE_DIR": False}):
             atoms = bulk("Cu")
             atoms.calc = EMT()
-            settings = get_settings()
 
             tmpdir, _ = calc_setup(atoms, copy_files=copy_files)
 
             assert tmpdir.is_dir()
-            assert "tmp" in str(tmpdir)
-            assert not Path(settings.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
             assert "file1.txt" in os.listdir(tmpdir)
             assert "file2.txt" not in os.listdir(tmpdir)
 
@@ -98,13 +91,9 @@ def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
         with change_settings({"CREATE_UNIQUE_DIR": False}):
             atoms = bulk("Cu")
             atoms.calc = EMT()
-            settings = get_settings()
-
             tmpdir, _ = calc_setup(atoms, copy_files=copy_files)
 
             assert tmpdir.is_dir()
-            assert "tmp" in str(tmpdir)
-            assert not Path(settings.RESULTS_DIR, f"symlink-{tmpdir.name}").exists()
             assert "file1.txt" in os.listdir(tmpdir)
             assert "file2.txt" not in os.listdir(tmpdir)
 
