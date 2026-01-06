@@ -10,6 +10,8 @@ from ase.calculators.emt import EMT
 jf = pytest.importorskip("jobflow")
 
 
+import contextlib
+
 from quacc import change_settings, get_settings, job
 from quacc.runners.prep import calc_setup
 
@@ -25,10 +27,8 @@ def make_files():
 
 def teardown_function():
     for file in ["file1.txt", "file2.txt"]:
-        try:
+        with contextlib.suppress(FileNotFoundError):
             os.remove(CURRENT_DIR / file)
-        except FileNotFoundError:
-            pass
 
 
 @pytest.mark.parametrize(
