@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from logging import getLogger
 from pathlib import Path
-from shutil import move, rmtree
+from shutil import move
 from typing import TYPE_CHECKING
 
 from monty.shutil import gzip_dir
