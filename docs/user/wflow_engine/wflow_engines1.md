@@ -168,7 +168,7 @@ graph LR
     job = relax_job(atoms)  # (1)!
 
     # Run the job locally
-    responses = jf.run_locally(job)  # (2)!
+    responses = jf.run_locally(job, ensure_success=True, create_folders=True)  # (2)!
 
     # Get the result
     result = responses[job.uuid][1].output

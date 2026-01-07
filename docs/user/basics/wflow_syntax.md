@@ -235,7 +235,7 @@ graph LR
     job2 = mult(job1.output, 3)
     flow = jf.Flow([job1, job2])  #  (2)!
 
-    responses = jf.run_locally(flow)  #  (3)!
+    responses = jf.run_locally(flow, ensure_success=True)  #  (3)!
     result = responses[job2.uuid][1].output  #  (4)!
     print(result)  # 9
     ```
