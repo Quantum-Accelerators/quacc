@@ -19,13 +19,13 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import OptParams, OptSchema, RunSchema
+    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
 
 
 @job
 def static_job(
     atoms: Atoms,
-    copy_files: dict | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -64,7 +64,7 @@ def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
-    copy_files: dict | None = None,
+    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
