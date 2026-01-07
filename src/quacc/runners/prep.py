@@ -69,7 +69,7 @@ def calc_setup(
 
     # Create a symlink to the tmpdir
     if os.name != "nt" and settings.SCRATCH_DIR:
-        symlink_path = job_results_dir / f"symlink-{tmpdir.name}"
+        symlink_path = settings.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink_path.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
@@ -133,7 +133,7 @@ def calc_cleanup(
 
     # Remove symlink to tmpdir
     if os.name != "nt" and settings.SCRATCH_DIR:
-        symlink_path = job_results_dir / f"symlink-{tmpdir.name}"
+        symlink_path = settings.RESULTS_DIR / f"symlink-{tmpdir.name}"
         symlink_path.unlink(missing_ok=True)
 
 
