@@ -67,7 +67,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
 
     RESULTS_DIR: Path = Field(
-        Path.cwd(),
+        Path(),
         description=(
             """
             Directory to permanently store I/O-based calculation results in.
@@ -404,7 +404,7 @@ class QuaccSettings(BaseSettings):
     # Logger Settings
     # ---------------------------
     LOG_FILENAME: Path | None = Field(None, description="Path to store the log file.")
-    LOG_LEVEL: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] | None = Field(
+    LOG_LEVEL: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] = Field(
         "INFO", description=("Logger level.")
     )
 
@@ -494,6 +494,16 @@ class QuaccSettings(BaseSettings):
             Loaded settings.
         """
         return _type_handler(cls._use_custom_config_settings(settings))
+
+    @model_validator(mode="after")
+    def set_jobflow_settings(self):
+        """
+        If WORKFLOW_ENGINE is jobflow, ensure that CREATE_UNIQUE_DIR
+        is set to False since Jobflow already handles this for us.
+        """
+        if self.WORKFLOW_ENGINE == "jobflow":
+            object.__setattr__(self, "CREATE_UNIQUE_DIR", False)
+        return self
 
 
 def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:

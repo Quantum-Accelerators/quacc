@@ -266,10 +266,11 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md). It also helps to have `RESULTS_DIR` set to the default value so Jobflow can handle the directory management.
 
         ```bash
         quacc set WORKFLOW_ENGINE jobflow
+        quacc unset RESULTS_DIR
         ```
 
     ```python
@@ -290,7 +291,7 @@ graph LR
     workflow = jf.Flow([job1, job2])  # (2)!
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow)
+    responses = jf.run_locally(workflow, ensure_success=True, create_folders=True)
 
     # Get the result
     result = responses[job2.uuid][1].output
@@ -449,7 +450,7 @@ graph LR
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow)
+    responses = jf.run_locally(workflow, ensure_success=True, create_folders=True)
 
     # Get the result
     result = responses[job2.uuid][1].output
