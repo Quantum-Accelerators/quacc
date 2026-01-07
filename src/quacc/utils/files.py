@@ -137,8 +137,8 @@ def copy_decompress_files(
         filenames = [filenames]
 
     for f in filenames:
-        # Don't copy the Custodian error files automatically
-        if f.startswith("error."):
+        # Don't copy the Custodian error folders automatically
+        if str(f).startswith("error."):
             continue
         globs_found = list(source_directory.glob(str(f)))
         if not globs_found:
