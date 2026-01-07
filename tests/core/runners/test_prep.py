@@ -19,7 +19,7 @@ def make_files():
 
 
 def make_files2():
-    p = Path("quacc-tmp-1234")
+    p = Path("tmp-quacc-1234")
     os.makedirs(p)
 
 
@@ -162,7 +162,7 @@ def test_calc_cleanup(tmp_path, monkeypatch):
 
     with change_settings({"SCRATCH_DIR": tmp_path}):
         settings = get_settings()
-        p = Path(tmp_path, "quacc-tmp-1234").resolve()
+        p = Path(tmp_path, "tmp-quacc-1234").resolve()
         assert p.is_dir()
         calc_cleanup(atoms, p, settings.RESULTS_DIR)
         assert not p.exists()
