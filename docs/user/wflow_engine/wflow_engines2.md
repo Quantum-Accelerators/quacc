@@ -266,10 +266,11 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md). It also helps to have `RESULTS_DIR` set to the default value so Jobflow can handle the directory management.
 
         ```bash
         quacc set WORKFLOW_ENGINE jobflow
+        quacc unset RESULTS_DIR
         ```
 
     ```python
