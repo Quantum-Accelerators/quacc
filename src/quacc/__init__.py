@@ -93,9 +93,6 @@ _settings = get_settings()
 # Dummy value for when a default setting will be applied
 QuaccDefault = DefaultSetting()
 
-# Set logging info
-basicConfig(filename=_settings.LOG_FILENAME, level=getLevelName(_settings.LOG_LEVEL))
-
 
 # Custom exceptions
 class JobFailure(Exception):

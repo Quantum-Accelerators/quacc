@@ -132,6 +132,8 @@ def copy_decompress_files(
     """
     source_directory = Path(source_directory).expanduser()
     destination_directory = Path(destination_directory).expanduser()
+    if source_directory == destination_directory:
+        return
 
     if not isinstance(filenames, list):
         filenames = [filenames]

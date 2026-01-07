@@ -54,7 +54,7 @@ def calc_setup(
     """
     # Create a tmpdir for the calculation
     settings = get_settings()
-    tmpdir_base = settings.SCRATCH_DIR or settings.RESULTS_DIR
+    tmpdir_base = (settings.SCRATCH_DIR or settings.RESULTS_DIR).resolve()
     tmpdir = make_unique_dir(base_path=tmpdir_base, prefix="tmp-quacc-")
     LOGGER.info(f"Calculation will run at {tmpdir}")
 
@@ -63,7 +63,7 @@ def calc_setup(
         atoms.calc.directory = tmpdir
 
     # Define the results directory
-    job_results_dir = settings.RESULTS_DIR
+    job_results_dir = settings.RESULTS_DIR.resolve()
     if settings.CREATE_UNIQUE_DIR:
         job_results_dir /= f"{tmpdir.name.split('tmp-')[-1]}"
 

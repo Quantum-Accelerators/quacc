@@ -5,6 +5,7 @@ from __future__ import annotations
 import os
 from contextlib import contextmanager
 from functools import wraps
+from logging import basicConfig, getLevelName, getLogger
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Union
@@ -19,6 +20,8 @@ if TYPE_CHECKING:
     from typing import Any
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
+
+LOGGER = getLogger(__name__)
 
 
 class QuaccSettings(BaseSettings):
@@ -404,7 +407,7 @@ class QuaccSettings(BaseSettings):
     # Logger Settings
     # ---------------------------
     LOG_FILENAME: Path | None = Field(None, description="Path to store the log file.")
-    LOG_LEVEL: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] | None = Field(
+    LOG_LEVEL: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] = Field(
         "INFO", description=("Logger level.")
     )
 
@@ -494,6 +497,26 @@ class QuaccSettings(BaseSettings):
             Loaded settings.
         """
         return _type_handler(cls._use_custom_config_settings(settings))
+
+    @model_validator(mode="after")
+    def set_logging(self):
+        """
+        Set logging info after initialization.
+        """
+
+        basicConfig(filename=self.LOG_FILENAME, level=self.LOG_LEVEL)
+        return self
+
+    @model_validator(mode="after")
+    def set_jobflow_settings(self):
+        """
+        If WORKFLOW_ENGINE is jobflow or covalent, force CREATE_UNIQUE_DIR = False.
+        """
+        if self.WORKFLOW_ENGINE == "jobflow":
+            object.__setattr__(self, "RESULTS_DIR", Path())
+
+            object.__setattr__(self, "CREATE_UNIQUE_DIR", False)
+        return self
 
 
 def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
