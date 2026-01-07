@@ -18,4 +18,5 @@ def test_folders(tmp_path, monkeypatch):
     jf.run_locally(job, ensure_success=True, create_folders=True)
     files = os.listdir(tmp_path)
     assert len(files) == 1
+    assert files[0].startswith("job")
     assert "opt.log.gz" in os.listdir(tmp_path / files[0])
