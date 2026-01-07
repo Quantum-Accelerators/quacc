@@ -510,11 +510,13 @@ class QuaccSettings(BaseSettings):
     @model_validator(mode="after")
     def set_jobflow_settings(self):
         """
-        If WORKFLOW_ENGINE is jobflow or covalent, force CREATE_UNIQUE_DIR = False.
+        If WORKFLOW_ENGINE is jobflow, ensure that the RESULTS_DIR is the
+        current working directory (relative path) so that it plays nicely
+        with Jobflow's file management. We also disable CREATE_UNIQUE_DIR
+        since Jobflow already does this for us.
         """
         if self.WORKFLOW_ENGINE == "jobflow":
             object.__setattr__(self, "RESULTS_DIR", Path())
-
             object.__setattr__(self, "CREATE_UNIQUE_DIR", False)
         return self
 
