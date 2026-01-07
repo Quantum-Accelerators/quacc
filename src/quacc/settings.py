@@ -5,7 +5,6 @@ from __future__ import annotations
 import os
 from contextlib import contextmanager
 from functools import wraps
-from logging import basicConfig, getLogger
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Union
@@ -20,8 +19,6 @@ if TYPE_CHECKING:
     from typing import Any
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
-
-LOGGER = getLogger(__name__)
 
 
 class QuaccSettings(BaseSettings):
@@ -497,15 +494,6 @@ class QuaccSettings(BaseSettings):
             Loaded settings.
         """
         return _type_handler(cls._use_custom_config_settings(settings))
-
-    @model_validator(mode="after")
-    def set_logging(self):
-        """
-        Set logging info after initialization.
-        """
-
-        basicConfig(filename=self.LOG_FILENAME, level=self.LOG_LEVEL)
-        return self
 
     @model_validator(mode="after")
     def set_jobflow_settings(self):
