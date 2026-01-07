@@ -85,18 +85,17 @@ def test_calc_setup_v2_2(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
     make_files()
 
-    with change_settings({"CREATE_UNIQUE_DIR": False}):
+    with change_settings({"CREATE_UNIQUE_DIR": False, "SCRATCH_DIR": None}):
         atoms = bulk("Cu")
         atoms.calc = EMT()
         settings = get_settings()
 
-        tmpdir, results_dir = calc_setup(atoms, copy_files=copy_files)
+        rundir, _ = calc_setup(atoms, copy_files=copy_files)
 
-        assert tmpdir.is_dir()
-        assert "tmp" in str(tmpdir)
-        assert str(settings.RESULTS_DIR) == str(results_dir)
-        assert "file1.txt" in os.listdir(tmpdir)
-        assert "file2.txt" not in os.listdir(tmpdir)
+        assert rundir.is_dir()
+        assert rundir == settings.RESULTS_DIR
+        assert "file1.txt" in os.listdir(rundir)
+        assert "file2.txt" not in os.listdir(rundir)
 
 
 @pytest.mark.parametrize(

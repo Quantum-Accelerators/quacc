@@ -44,12 +44,12 @@ def test_calc_setup_v1(tmp_path, monkeypatch, copy_files):
             atoms = bulk("Cu")
             atoms.calc = EMT()
 
-            tmpdir, _ = calc_setup(atoms, copy_files=copy_files)
+            rundir, _ = calc_setup(atoms, copy_files=copy_files)
 
-            assert tmpdir.is_dir()
-            assert "tmp" in str(tmpdir)
-            assert "file1.txt" in os.listdir(tmpdir)
-            assert "file2.txt" not in os.listdir(tmpdir)
+            assert rundir.is_dir()
+            assert "tmp" in str(rundir)
+            assert "file1.txt" in os.listdir(rundir)
+            assert "file2.txt" not in os.listdir(rundir)
 
     jf.run_locally(test_job(), ensure_success=True, create_folders=False)
 
@@ -68,11 +68,10 @@ def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
             atoms = bulk("Cu")
             atoms.calc = EMT()
 
-            tmpdir, _ = calc_setup(atoms, copy_files=copy_files)
-
-            assert tmpdir.is_dir()
-            assert "file1.txt" in os.listdir(tmpdir)
-            assert "file2.txt" not in os.listdir(tmpdir)
+            rundir, _ = calc_setup(atoms, copy_files=copy_files)
+            assert rundir.is_dir()
+            assert "file1.txt" in os.listdir(rundir)
+            assert "file2.txt" not in os.listdir(rundir)
 
     jf.run_locally(test_job(), ensure_success=True, create_folders=False)
 
@@ -90,10 +89,10 @@ def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
         with change_settings({"CREATE_UNIQUE_DIR": False}):
             atoms = bulk("Cu")
             atoms.calc = EMT()
-            tmpdir, _ = calc_setup(atoms, copy_files=copy_files)
+            rundir, _ = calc_setup(atoms, copy_files=copy_files)
 
-            assert tmpdir.is_dir()
-            assert "file1.txt" in os.listdir(tmpdir)
-            assert "file2.txt" not in os.listdir(tmpdir)
+            assert rundir.is_dir()
+            assert "file1.txt" in os.listdir(rundir)
+            assert "file2.txt" not in os.listdir(rundir)
 
     jf.run_locally(test_job(), ensure_success=True, create_folders=True)

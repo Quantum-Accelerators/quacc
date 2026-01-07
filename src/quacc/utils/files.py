@@ -132,6 +132,8 @@ def copy_decompress_files(
     """
     source_directory = Path(source_directory).expanduser()
     destination_directory = Path(destination_directory).expanduser()
+    if source_directory == destination_directory:
+        return  # No need to copy files to the same directory
 
     if not isinstance(filenames, list):
         filenames = [filenames]
@@ -308,9 +310,13 @@ def safe_decompress_dir(path: str | Path) -> None:
     Recursively decompresses all files in a directory.
     This is a wrapper around the `decompress_file` function.
 
+    Parameters
+    ----------
+    path (str | Path): Path to parent directory.
 
-    Args:
-        path (str | Path): Path to parent directory.
+    Returns
+    -------
+    None
     """
     path = Path(path)
     for parent, _, files in os.walk(path):
