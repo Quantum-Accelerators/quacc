@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from contextlib import contextmanager
 from functools import wraps
-from logging import basicConfig, getLevelName, getLogger
+from logging import basicConfig, getLogger
 from pathlib import Path
 from shutil import which
 from typing import TYPE_CHECKING, Literal, Union
