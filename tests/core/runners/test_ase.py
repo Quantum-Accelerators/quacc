@@ -28,6 +28,7 @@ from ase.optimize.sciopt import SciPyFminBFGS
 from quacc import JobFailure, change_settings, get_settings
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner
+from quacc.wflow_tools.job_argument import Copy
 
 has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 test_files_path = Path(__file__).parent / "test_files"
@@ -135,7 +136,7 @@ def test_run_calc(tmp_path, monkeypatch):
         atoms[0].position += 0.1
 
         new_atoms = Runner(
-            atoms, EMT(), copy_files={Path(): "test_file.txt"}
+            atoms, EMT(), copy_files=Copy(src_dir=Path(), files="test_file.txt")
         ).run_calc()
         results_dir = _find_results_dir()
 
@@ -156,7 +157,7 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch):
         atoms[0].position += 0.1
 
         new_atoms = Runner(
-            atoms, EMT(), copy_files={Path(): "test_file.txt"}
+            atoms, EMT(), copy_files=Copy(src_dir=Path(), files="test_file.txt")
         ).run_calc()
         results_dir = _find_results_dir()
 
@@ -176,7 +177,9 @@ def test_run_opt1(tmp_path, monkeypatch):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.1
 
-        dyn = Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt()
+        dyn = Runner(
+            atoms, EMT(), copy_files=Copy(src_dir=Path(), files="test_file.txt")
+        ).run_opt()
         traj = read(dyn.trajectory.filename, index=":")
         results_dir = _find_results_dir()
 
@@ -194,15 +197,15 @@ def test_run_opt2(tmp_path, monkeypatch):
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
 
-    dyn = Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt(
-        optimizer=BFGS, optimizer_kwargs={"restart": None}
-    )
+    dyn = Runner(
+        atoms, EMT(), copy_files=Copy(src_dir=Path(), files="test_file.txt")
+    ).run_opt(optimizer=BFGS, optimizer_kwargs={"restart": None})
     traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
 
-    dyn = Runner(traj[-1], EMT(), copy_files={Path(): "test_file.txt"}).run_opt(
-        optimizer=BFGSLineSearch, optimizer_kwargs={"restart": None}
-    )
+    dyn = Runner(
+        traj[-1], EMT(), copy_files=Copy(src_dir=Path(), files="test_file.txt")
+    ).run_opt(optimizer=BFGSLineSearch, optimizer_kwargs={"restart": None})
     traj = read(dyn.trajectory.filename, index=":")
     assert traj[-1].calc.results is not None
 
@@ -222,7 +225,9 @@ def test_run_vib(tmp_path, monkeypatch):
     prep_files()
 
     atoms = molecule("O2")
-    vib = Runner(atoms, LennardJones(), copy_files={Path(): "test_file.txt"}).run_vib()
+    vib = Runner(
+        atoms, LennardJones(), copy_files=Copy(src_dir=Path(), files="test_file.txt")
+    ).run_vib()
     results_dir = _find_results_dir()
 
     assert atoms.calc is None
@@ -239,13 +244,17 @@ def test_bad_runs(tmp_path, monkeypatch, caplog):
 
     # No file
     with caplog.at_level(WARNING):
-        Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
+        Runner(
+            atoms, EMT(), copy_files=Copy(src_dir=Path(), files="test_file.txt")
+        ).run_calc()
     assert "Cannot find file" in caplog.text
     caplog.clear()
 
     # No file again
     with caplog.at_level(WARNING):
-        Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_opt()
+        Runner(
+            atoms, EMT(), copy_files=Copy(src_dir=Path(), files="test_file.txt")
+        ).run_opt()
     assert "Cannot find file" in caplog.text
     caplog.clear()
 
@@ -267,7 +276,9 @@ def test_unique_workdir(tmp_path, monkeypatch):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.1
 
-        Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
+        Runner(
+            atoms, EMT(), copy_files=Copy(src_dir=Path(), files="test_file.txt")
+        ).run_calc()
         results_dir = _find_results_dir()
         assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
         assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
@@ -276,7 +287,9 @@ def test_unique_workdir(tmp_path, monkeypatch):
         atoms = bulk("Cu") * (2, 1, 1)
         atoms[0].position += 0.1
 
-        Runner(atoms, EMT(), copy_files={Path(): "test_file.txt"}).run_calc()
+        Runner(
+            atoms, EMT(), copy_files=Copy(src_dir=Path(), files="test_file.txt")
+        ).run_calc()
         results_dir = _find_results_dir()
         assert not os.path.exists(os.path.join(results_dir, "test_file.txt"))
         assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))

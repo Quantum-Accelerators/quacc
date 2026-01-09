@@ -17,13 +17,14 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import Filenames, SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
 
 LOGGER = getLogger(__name__)
 
 
 def calc_setup(
     atoms: Atoms | None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
 ) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
@@ -77,8 +78,12 @@ def calc_setup(
         if isinstance(copy_files, str | Path):
             copy_files = {copy_files: "*"}
 
-        for source_directory, filenames in copy_files.items():
-            copy_decompress_files(source_directory, filenames, tmpdir)
+        if isinstance(copy_files, dict):
+            copy_decompress_files(
+                copy_files["src_dir"], copy_files.get("files", "*"), tmpdir
+            )
+        else:
+            copy_files.do_copy(tmpdir)
 
     return tmpdir, job_results_dir
 

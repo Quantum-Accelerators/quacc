@@ -17,6 +17,7 @@ from monty.dev import requires
 from quacc import job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
+from quacc.wflow_tools.job_argument import Copy
 
 has_atomate2 = bool(find_spec("atomate2"))
 
@@ -114,5 +115,5 @@ def matpes_static_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": f"MatPES {level} Static"},
-        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
+        copy_files=Copy(src_files=prev_dir, files=["WAVECAR*"]) if prev_dir else None,
     )

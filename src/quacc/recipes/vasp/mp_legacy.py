@@ -18,6 +18,7 @@ from quacc import change_settings, flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.job_argument import Copy
 
 has_atomate2 = bool(find_spec("atomate2"))
 
@@ -77,7 +78,7 @@ def mp_gga_relax_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP GGA Relax"},
-            copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
+            copy_files=Copy(src_dir=prev_dir, files=["WAVECAR*"]) if prev_dir else None,
         )
 
 
@@ -120,7 +121,7 @@ def mp_gga_static_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP GGA Static"},
-            copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
+            copy_files=Copy(src_dir=prev_dir, files="WAVECAR*") if prev_dir else None,
         )
 
 
