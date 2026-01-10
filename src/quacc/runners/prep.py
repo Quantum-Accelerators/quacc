@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from monty.shutil import gzip_dir
 
 from quacc import JobFailure, get_settings
-from quacc.utils.files import copy_decompress_files, make_unique_dir
+from quacc.utils.files import make_unique_dir
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -78,12 +78,7 @@ def calc_setup(
         if isinstance(copy_files, str | Path):
             copy_files = {copy_files: "*"}
 
-        if isinstance(copy_files, dict):
-            copy_decompress_files(
-                copy_files["src_dir"], copy_files.get("files", "*"), tmpdir
-            )
-        else:
-            copy_files.do_copy(tmpdir)
+        copy_files.do_copy(tmpdir)
 
     return tmpdir, job_results_dir
 

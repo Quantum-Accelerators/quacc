@@ -46,11 +46,11 @@ class PrefectCopy(dict):
 
 class ParslCopy:
     def __init__(self, src_dir, files: str = "*"):
-        self.src_dir = src_dir.result()
+        self.src_dir = src_dir
         self.files = files
 
     def do_copy(self, tgt_dir):
-        copy_decompress_files(self.src_dir, self.files, tgt_dir)
+        copy_decompress_files(self.src_dir.result(), self.files, tgt_dir)
 
 
 class RedunCopy(dict):
