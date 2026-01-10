@@ -53,6 +53,7 @@ if TYPE_CHECKING:
         SourceDirectory,
         VibKwargs,
     )
+    from quacc.wflow_tools.job_argument import Copy
 
 
 class Runner(BaseRunner):
@@ -65,7 +66,10 @@ class Runner(BaseRunner):
         self,
         atoms: Atoms | list[Atoms],
         calculator: BaseCalculator,
-        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+        copy_files: Copy
+        | SourceDirectory
+        | dict[SourceDirectory, Filenames]
+        | None = None,
     ) -> None:
         """
         Initialize the Runner object.

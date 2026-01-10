@@ -13,13 +13,14 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import Filenames, RunSchema, SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
     kpts: tuple | list[tuple] | dict | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
