@@ -21,6 +21,8 @@ class JobArgument:
                 target_cls = cls._redun_cls
             case "dask":
                 target_cls = cls._dask_cls
+            case _:
+                target_cls = cls._default_cls
 
         obj = target_cls.__new__(target_cls)
         obj.__init__(**kwargs)
@@ -39,7 +41,7 @@ class JobflowCopy(MSONable):
         copy_decompress_files(self.src_dir, self.files, tgt_dir)
 
 
-class PrefectCopy(dict):
+class DictCopy(dict):
     def do_copy(self, tgt_dir):
         copy_decompress_files(self["src_dir"], self.get("files", "*"), tgt_dir)
 
@@ -82,7 +84,8 @@ class DaskCopy(dict):
 
 class Copy(JobArgument):
     _jobflow_cls = JobflowCopy
-    _prefect_cls = PrefectCopy
+    _prefect_cls = DictCopy
     _parsl_cls = ParslCopy
     _redun_cls = RedunCopy
     _dask_cls = DaskCopy
+    _default_cls = DictCopy
