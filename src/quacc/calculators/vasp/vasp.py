@@ -47,7 +47,7 @@ class Vasp(Vasp_):
         input_atoms: Atoms,
         preset: None | str | Path = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
-        incar_copilot: Literal["off", "on", "aggressive"]
+        incar_copilot: Literal["off", "on", "aggressive", "ncore"]
         | DefaultSetting = QuaccDefault,
         copy_magmoms: bool | DefaultSetting = QuaccDefault,
         preset_mag_default: float | DefaultSetting = QuaccDefault,
@@ -86,6 +86,7 @@ class Vasp(Vasp_):
                     by the user.
                 aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR
                     flags even if they are already set by the user.
+                ncore: Only automatically set NCORE based on the number of available cores.
         copy_magmoms
             If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
             `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
