@@ -160,7 +160,6 @@ def _make_omc_inputs(atoms: Atoms) -> dict:
             "LWAVE": False,
             "LAECHG": False,
             "LVTOT": False,
-            "NCORE": 100,
             "NELM": 200,
             "NELMDL": -10,
             "NSW": 0,
