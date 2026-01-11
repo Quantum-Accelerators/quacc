@@ -460,7 +460,7 @@ def test_qmof(patch_nonmetallic_taskdoc):
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
-    output = mp_prerelax_job(atoms)
+    output = mp_prerelax_job(atoms, ncore=None)
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "normal",
@@ -562,7 +562,7 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
     ref_parameters2 = ref_parameters.copy()
     ref_parameters2["magmom"] = [0.0]
 
-    output = mp_metagga_relax_job(atoms)
+    output = mp_metagga_relax_job(atoms, ncore=None)
     assert output["parameters"] == ref_parameters
     assert output["structure_metadata"]["nsites"] == len(atoms)
 
@@ -597,7 +597,7 @@ def test_mp_metagga_relax_job_nonmetallic(patch_nonmetallic_taskdoc):
 def test_mp_metagga_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
-    output = mp_metagga_static_job(atoms)
+    output = mp_metagga_static_job(atoms, ncore=None)
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "normal",
@@ -707,7 +707,7 @@ def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
-    output = mp_gga_relax_job(atoms)
+    output = mp_gga_relax_job(atoms, ncore=None)
 
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
@@ -748,7 +748,7 @@ def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
-    output = mp_gga_static_job(atoms)
+    output = mp_gga_static_job(atoms, ncore=None)
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "fast",
@@ -789,7 +789,7 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
         atoms = bulk("Ni") * (2, 1, 1)
         atoms[0].symbol = "O"
         del atoms.arrays["initial_magmoms"]
-        output = mp_gga_relax_flow(atoms)
+        output = mp_gga_relax_flow(atoms, job_params={"all": {"ncore": None}})
         relax_params = {
             "algo": "fast",
             "ediff": 0.0001,
