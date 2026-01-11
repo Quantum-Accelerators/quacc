@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import change_settings, flow, job
+from quacc import flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
