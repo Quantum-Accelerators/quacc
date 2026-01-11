@@ -33,10 +33,10 @@ if TYPE_CHECKING:
 def matpes_static_job(
     atoms: Atoms,
     *,
-    level: Literal["PBE", "r2SCAN", "HSE06"],
+    level: Literal["PBE", "r2SCAN"],
     kspacing: float | None = 0.22,
-    use_improvements: bool = True,
-    write_extra_files: bool = True,
+    use_improvements: bool = False,
+    write_extra_files: bool = False,
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -48,7 +48,7 @@ def matpes_static_job(
     atoms
         Atoms object
     level
-        The level of theory: "PBE", "r2SCAN", "HSE06"
+        The level of theory: "PBE", "r2SCAN"
     kspacing
         The KSPACING parameter to use. Default: 0.22 as in the MatPES
         paper. This is likely too expensive in many cases.
@@ -103,9 +103,6 @@ def matpes_static_job(
         calc_defaults |= {"xc": "pbe", "lwave": True}
     elif level.lower() == "r2scan":
         calc_defaults |= {"xc": "r2scan"}
-    elif level.lower() == "hse06":
-        calc_defaults |= {"algo": "normal", "xc": "hse06"}
-        calc_defaults.pop("isearch", None)
     else:
         raise ValueError(f"Unsupported value for {level}")
 
