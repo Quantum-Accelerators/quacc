@@ -1008,7 +1008,6 @@ def test_matpes(patch_metallic_taskdoc):
         "ediff": 1e-05,
         "enaug": 1360,
         "encut": 680.0,
-        "isearch": 1,
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.22,
