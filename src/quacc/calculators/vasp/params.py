@@ -70,7 +70,7 @@ def get_param_swaps(
             )
             calc.set(ncore=ncore, npar=None)
             break
-    
+
     if calc.parameters.get("lmaxmix", 2) < 6 and max_Z > 56:
         LOGGER.info("Recommending LMAXMIX = 6 because you have f electrons.")
         calc.set(lmaxmix=6)
