@@ -18,6 +18,7 @@ from quacc.recipes.vasp.core import (
     static_job,
 )
 from quacc.recipes.vasp.matpes import matpes_static_job
+from quacc.recipes.vasp.mof_off import mof_off_static_job
 from quacc.recipes.vasp.mp24 import (
     mp_metagga_relax_flow,
     mp_metagga_relax_job,
@@ -1001,6 +1002,36 @@ def test_matpes(patch_metallic_taskdoc):
         "xc": "pbe",
     }
 
+    output = matpes_static_job(bulk("Al"), level="r2scan", ncore=None)
+    assert output["parameters"] == {
+        "algo": "normal",
+        "ediff": 1e-05,
+        "enaug": 1360,
+        "encut": 680.0,
+        "isearch": 1,
+        "ismear": 0,
+        "ispin": 2,
+        "kspacing": 0.22,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lmaxmix": 6,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": False,
+        "lwave": False,
+        "magmom": [0.6],
+        "metagga": "R2SCAN",
+        "nelm": 200,
+        "nsw": 0,
+        "pp": "PBE",
+        "pp_version": "64",
+        "prec": "accurate",
+        "setups": {"Al": ""},
+        "sigma": 0.05,
+        "xc": "r2scan",
+    }
+
     output = matpes_static_job(
         bulk("Al"),
         level="r2scan",
@@ -1042,6 +1073,75 @@ def test_matpes(patch_metallic_taskdoc):
 
     with pytest.raises(ValueError, match="Unsupported value for m06"):
         matpes_static_job(bulk("Al"), level="m06")
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+def test_mof_off(patch_metallic_taskdoc):
+    output = mof_off_static_job(bulk("Al"), level="pbe", ncore=None)
+    assert output["parameters"] == {
+        "algo": "all",
+        "ediff": 1e-05,
+        "efermi": "midgap",
+        "encut": 680.0,
+        "gga": "PE",
+        "gga_compat": False,
+        "isearch": 1,
+        "ismear": 0,
+        "ispin": 2,
+        "kspacing": 0.4,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lelf": True,
+        "lmaxmix": 6,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": False,
+        "lwave": True,
+        "magmom": [0.6],
+        "nedos": 3001,
+        "nelm": 200,
+        "nsw": 0,
+        "pp": "PBE",
+        "pp_version": "64",
+        "prec": "accurate",
+        "setups": {"Al": ""},
+        "sigma": 0.05,
+        "xc": "pbe",
+    }
+
+    output = mof_off_static_job(bulk("Al"), level="r2scan", ncore=None)
+    assert output["parameters"] == {
+        "algo": "all",
+        "ediff": 1e-05,
+        "efermi": "midgap",
+        "encut": 680.0,
+        "gga_compat": False,
+        "isearch": 1,
+        "ismear": 0,
+        "ispin": 2,
+        "kspacing": 0.4,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lelf": True,
+        "lmaxmix": 6,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": False,
+        "lwave": False,
+        "magmom": [0.6],
+        "metagga": "R2SCAN",
+        "nedos": 3001,
+        "nelm": 200,
+        "nsw": 0,
+        "pp": "PBE",
+        "pp_version": "64",
+        "prec": "accurate",
+        "setups": {"Al": ""},
+        "sigma": 0.05,
+        "xc": "r2scan",
+    }
 
 
 @pytest.mark.skipif(not has_fairchem_omat, reason="fairchem not installed")
