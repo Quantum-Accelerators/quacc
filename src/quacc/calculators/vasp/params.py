@@ -288,9 +288,8 @@ def get_param_swaps(
         )
         calc.set(vdw_s6=1.0, vdw_s8=2.310, vdw_a1=0.383, vdw_a2=5.685)
 
-    if (
-        input_atoms.get_chemical_formula() == "O2"
-        and input_atoms.get_initial_magnetic_moments().sum() == 0
+    if input_atoms.get_chemical_formula() == "O2" and all(
+        input_atoms.get_initial_magnetic_moments() == 0
     ):
         LOGGER.warning(
             "You are running O2 without magnetic moments, but its ground state should have 2 unpaired electrons!"
