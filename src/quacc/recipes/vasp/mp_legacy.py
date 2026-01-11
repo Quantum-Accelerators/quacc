@@ -37,9 +37,6 @@ if TYPE_CHECKING:
         static: VaspSchema
 
 
-_MP_SETTINGS = {"VASP_INCAR_COPILOT": "off"}
-
-
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_gga_relax_job(
@@ -70,15 +67,15 @@ def mp_gga_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MPGGARelaxMaker()
     )
-    with change_settings(_MP_SETTINGS):
-        return run_and_summarize(
-            atoms,
-            calc_defaults=calc_defaults,
-            calc_swaps=calc_kwargs,
-            report_mp_corrections=True,
-            additional_fields={"name": "MP GGA Relax"},
-            copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
-        )
+    calc_defaults["incar_copilot"] = False
+    return run_and_summarize(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        report_mp_corrections=True,
+        additional_fields={"name": "MP GGA Relax"},
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
+    )
 
 
 @job
@@ -113,15 +110,15 @@ def mp_gga_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MPGGAStaticMaker()
     )
-    with change_settings(_MP_SETTINGS):
-        return run_and_summarize(
-            atoms,
-            calc_defaults=calc_defaults,
-            calc_swaps=calc_kwargs,
-            report_mp_corrections=True,
-            additional_fields={"name": "MP GGA Static"},
-            copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
-        )
+    calc_defaults["incar_copilot"] = False
+    return run_and_summarize(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        report_mp_corrections=True,
+        additional_fields={"name": "MP GGA Static"},
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
+    )
 
 
 @flow
