@@ -1075,7 +1075,6 @@ def test_fairchem_omat(patch_metallic_taskdoc):
 
     atoms = bulk("Si")
     output = omat_static_job(atoms)
-    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 0.0001,
@@ -1104,7 +1103,6 @@ def test_fairchem_omc(patch_metallic_taskdoc):
 
     atoms = bulk("Si")
     output = omc_static_job(atoms)
-    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-06,
