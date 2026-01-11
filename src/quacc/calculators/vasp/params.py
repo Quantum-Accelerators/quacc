@@ -62,6 +62,15 @@ def get_param_swaps(
     calc = Vasp_(**remove_unused_flags(user_calc_params))
     max_Z = input_atoms.get_atomic_numbers().max()
 
+    ncores = psutil.cpu_count(logical=False) or 1
+    for ncore in range(int(np.sqrt(ncores)), ncores):
+        if ncores % ncore == 0:
+            LOGGER.info(
+                f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
+            )
+            calc.set(ncore=ncore, npar=None)
+            break
+    
     if calc.parameters.get("lmaxmix", 2) < 6 and max_Z > 56:
         LOGGER.info("Recommending LMAXMIX = 6 because you have f electrons.")
         calc.set(lmaxmix=6)
@@ -177,16 +186,6 @@ def get_param_swaps(
             "Recommending LORBIT = 11 because you have a spin-polarized calculation."
         )
         calc.set(lorbit=11)
-
-    if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
-        ncores = psutil.cpu_count(logical=False) or 1
-        for ncore in range(int(np.sqrt(ncores)), ncores):
-            if ncores % ncore == 0:
-                LOGGER.info(
-                    f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
-                )
-                calc.set(ncore=ncore, npar=None)
-                break
 
     if (
         calc.parameters.get("ncore", 1) > 1
