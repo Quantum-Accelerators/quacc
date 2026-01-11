@@ -1,10 +1,5 @@
 """
-MatPES-compatible recipes
-
-!!! Important
-
-    Make sure that you use the MatPES-compatible pseudpotential
-    versions (i.e. v.64)
+MOF-off-compatible VASP static calculation recipe.
 """
 
 from __future__ import annotations
