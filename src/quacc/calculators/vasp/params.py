@@ -303,7 +303,7 @@ def get_param_swaps(
     else:
         new_parameters = user_calc_params
 
-    if incar_copilot_mode == "ncore" and user_calc_params.get("ncore"):
+    if incar_copilot_mode == "ncore" and user_calc_params.get("ncore") is None:
         new_parameters |= {
             "ncore": calc.parameters.get("ncore"),
             "npar": calc.parameters.get("npar"),
