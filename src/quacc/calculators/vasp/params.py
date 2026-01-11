@@ -62,15 +62,6 @@ def get_param_swaps(
     calc = Vasp_(**remove_unused_flags(user_calc_params))
     max_Z = input_atoms.get_atomic_numbers().max()
 
-    ncores = psutil.cpu_count(logical=False) or 1
-    for ncore in range(int(np.sqrt(ncores)), ncores):
-        if ncores % ncore == 0:
-            LOGGER.info(
-                f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
-            )
-            calc.set(ncore=ncore, npar=None)
-            break
-    
     if calc.parameters.get("lmaxmix", 2) < 6 and max_Z > 56:
         LOGGER.info("Recommending LMAXMIX = 6 because you have f electrons.")
         calc.set(lmaxmix=6)
@@ -187,6 +178,16 @@ def get_param_swaps(
         )
         calc.set(lorbit=11)
 
+    if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
+        ncores = psutil.cpu_count(logical=False) or 1
+        for ncore in range(int(np.sqrt(ncores)), ncores):
+            if ncores % ncore == 0:
+                LOGGER.info(
+                    f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
+                )
+                calc.set(ncore=ncore, npar=None)
+                break
+
     if (
         calc.parameters.get("ncore", 1) > 1
         or (calc.parameters.get("npar") and calc.parameters.get("npar", 1) > 1)
@@ -299,14 +300,13 @@ def get_param_swaps(
         new_parameters = calc.parameters
     elif incar_copilot_mode == "on":
         new_parameters = calc.parameters | user_calc_params
-    else:
-        new_parameters = user_calc_params
-
-    if incar_copilot_mode == "ncore" and user_calc_params.get("ncore") is None:
-        new_parameters |= {
+    elif incar_copilot_mode == "ncore":
+        new_parameters = {
             "ncore": calc.parameters.get("ncore"),
             "npar": calc.parameters.get("npar"),
-        }
+        } | user_calc_params
+    else:
+        new_parameters = user_calc_params
 
     if changed_parameters := {
         k: new_parameters[k] for k in set(new_parameters) - set(user_calc_params)

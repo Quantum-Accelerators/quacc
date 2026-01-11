@@ -67,7 +67,7 @@ def mp_gga_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MPGGARelaxMaker()
     )
-    calc_defaults["incar_copilot"] = False
+    calc_defaults["incar_copilot"] = "ncore"
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
@@ -110,7 +110,7 @@ def mp_gga_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MPGGAStaticMaker()
     )
-    calc_defaults["incar_copilot"] = False
+    calc_defaults["incar_copilot"] = "ncore"
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,

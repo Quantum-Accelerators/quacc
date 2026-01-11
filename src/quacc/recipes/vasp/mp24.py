@@ -70,7 +70,7 @@ def mp_prerelax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24PreRelaxMaker()
     )
-    calc_defaults["incar_copilot"] = False
+    calc_defaults["incar_copilot"] = "ncore"
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
@@ -112,7 +112,7 @@ def mp_metagga_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24RelaxMaker()
     )
-    calc_defaults["incar_copilot"] = False
+    calc_defaults["incar_copilot"] = "ncore"
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
