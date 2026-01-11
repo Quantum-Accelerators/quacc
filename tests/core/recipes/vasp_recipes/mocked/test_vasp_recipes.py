@@ -1072,7 +1072,13 @@ def test_matpes(patch_metallic_taskdoc):
 
     atoms_no_mag = bulk("Al")
     atoms_no_mag.set_initial_magnetic_moments([0.0] * len(atoms_no_mag))
-    output = matpes_static_job(atoms_no_mag, level="hse06", ncore=None)
+    output = matpes_static_job(
+        atoms_no_mag,
+        level="hse06",
+        ncore=None,
+        use_improvements=True,
+        write_extra_files=True,
+    )
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
@@ -1096,6 +1102,37 @@ def test_matpes(patch_metallic_taskdoc):
         "lwave": False,
         "magmom": [0.0],
         "nedos": 3001,
+        "nelm": 200,
+        "nsw": 0,
+        "pp": "PBE",
+        "pp_version": "64",
+        "prec": "accurate",
+        "setups": {"Al": ""},
+        "sigma": 0.05,
+        "xc": "hse06",
+    }
+
+    output = matpes_static_job(atoms_no_mag, level="hse06", ncore=None)
+    assert output["parameters"] == {
+        "algo": "normal",
+        "ediff": 1e-05,
+        "enaug": 1360,
+        "encut": 680.0,
+        "gga": "PE",
+        "hfscreen": 0.2,
+        "ismear": 0,
+        "ispin": 2,
+        "kspacing": 0.22,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lhfcalc": True,
+        "lmaxmix": 6,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": False,
+        "lwave": False,
+        "magmom": [0.0],
         "nelm": 200,
         "nsw": 0,
         "pp": "PBE",
