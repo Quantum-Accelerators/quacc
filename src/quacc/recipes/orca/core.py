@@ -69,7 +69,7 @@ def static_job(
     """
     additional_fields = {"name": "ORCA Static"} | (additional_fields or {})
     nprocs = (psutil.cpu_count(logical=False) if nprocs == "max" else nprocs) or 1
-    default_inputs = [xc, basis, "engrad", "normalprint"]
+    default_inputs = [xc, basis, "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return run_and_summarize(
@@ -279,7 +279,7 @@ def ase_relax_job(
         Dictionary of results
     """
     nprocs = (psutil.cpu_count(logical=False) if nprocs == "max" else nprocs) or 1
-    default_inputs = [xc, basis, "engrad", "normalprint"]
+    default_inputs = [xc, basis, "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
     return run_and_summarize_opt(
@@ -361,7 +361,7 @@ def ase_quasi_irc_job(
         Dictionary of results
     """
     nprocs = (psutil.cpu_count(logical=False) if nprocs == "max" else nprocs) or 1
-    default_inputs = [xc, basis, "engrad", "normalprint"]
+    default_inputs = [xc, basis, "normalprint"]
     default_blocks = [f"%pal nprocs {nprocs} end"]
 
     scale = perturb_magnitude if direction == "forward" else perturb_magnitude * -1
