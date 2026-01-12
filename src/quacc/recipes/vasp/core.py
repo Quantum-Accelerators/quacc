@@ -181,6 +181,8 @@ def double_relax_flow(
     """
     relax1_kwargs = relax1_kwargs or {}
     relax2_kwargs = relax2_kwargs or {}
+    if "lwave" not in relax1_kwargs:
+        relax1_kwargs["lwave"] = True
 
     # Run first relaxation
     summary1 = relax_job(atoms, preset=preset, relax_cell=relax_cell, **relax1_kwargs)
