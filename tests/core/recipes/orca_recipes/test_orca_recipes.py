@@ -26,7 +26,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-tzvp engrad normalprint wb97x-d3bj xyzfile"
+        == "def2-tzvp normalprint wb97x-d3bj xyzfile"
     )
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
@@ -51,7 +51,7 @@ def test_static_job_parallel(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 3
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-svp engrad normalprint wb97x-d3bj xyzfile"
+        == "def2-svp normalprint wb97x-d3bj xyzfile"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
@@ -122,7 +122,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-tzvp engrad normalprint wb97x-d3bj xyzfile"
+        == "def2-tzvp normalprint wb97x-d3bj xyzfile"
     )
     assert output["parameters_opt"]["fmax"] == 0.1
     assert output.get("trajectory")
@@ -188,4 +188,4 @@ def test_ase_quasi_irc_job(tmp_path, monkeypatch):
     assert output["atoms"] != atoms
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
-    assert output["parameters"]["orcasimpleinput"] == "def2-svp engrad hf xyzfile"
+    assert output["parameters"]["orcasimpleinput"] == "def2-svp hf xyzfile"
