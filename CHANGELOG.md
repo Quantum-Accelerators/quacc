@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4]
+
+### Changed
+
+- Disables the use of the VASP INCAR copilot for recipes that mimic databaset settings (e.g. MatPES, OMat) to ensure full consistency.
+- Changed the default keyword arguments in `matpes_static_job` to `use_improvements=False` and `write_extra_files=False` instead of `True` for both to ensure full consistency with MatPES settings by default.
+
 ## [1.1.3]
 
 ### Fixed

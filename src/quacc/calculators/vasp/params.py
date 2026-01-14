@@ -37,7 +37,7 @@ def get_param_swaps(
     user_calc_params: dict[str, Any],
     input_atoms: Atoms,
     pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float] | None = None,
-    incar_copilot_mode: Literal["off", "on", "aggressive"] = "on",
+    incar_copilot_mode: Literal["off", "on", "aggressive", "ncore"] = "on",
 ) -> dict[str, Any]:
     """
     Swaps out bad INCAR flags.
@@ -288,23 +288,25 @@ def get_param_swaps(
         )
         calc.set(vdw_s6=1.0, vdw_s8=2.310, vdw_a1=0.383, vdw_a2=5.685)
 
-    if (
-        input_atoms.get_chemical_formula() == "O2"
-        and input_atoms.get_initial_magnetic_moments().sum() == 0
+    if input_atoms.get_chemical_formula() == "O2" and all(
+        input_atoms.get_initial_magnetic_moments() == 0
     ):
         LOGGER.warning(
             "You are running O2 without magnetic moments, but its ground state should have 2 unpaired electrons!"
         )
 
-    new_parameters = (
-        calc.parameters
-        if incar_copilot_mode == "aggressive"
-        else (
-            calc.parameters | user_calc_params
-            if incar_copilot_mode == "on"
-            else user_calc_params
-        )
-    )
+    if incar_copilot_mode == "aggressive":
+        new_parameters = calc.parameters
+    elif incar_copilot_mode == "on":
+        new_parameters = calc.parameters | user_calc_params
+    elif incar_copilot_mode == "ncore":
+        new_parameters = {
+            "ncore": calc.parameters.get("ncore"),
+            "npar": calc.parameters.get("npar"),
+        } | user_calc_params
+    else:
+        new_parameters = user_calc_params
+
     if changed_parameters := {
         k: new_parameters[k] for k in set(new_parameters) - set(user_calc_params)
     }:
