@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     import pathlib
     from pathlib import Path
 
-    import numpy as np
     from ase.atoms import Atoms
 
     if has_torchsim:
@@ -34,9 +33,18 @@ if TYPE_CHECKING:
     from quacc.schemas.torchsim import PropertyFn
 
 
+class CalculationOutput(TypedDict):
+    """Schema for the output of a TorchSim calculation."""
+
+    energy: list[float]
+    forces: list[list[list[float]]] | None
+    stress: list[list[list[float]]] | None
+
+
 class TorchSimSchema(TypedDict):
     atoms: list[Atoms]
     dir_name: str
+    output: CalculationOutput
     model_type: TSModelType
     model_path: str | Path
     model_kwargs: dict[str, Any] | None
@@ -101,7 +109,7 @@ class TorchSimIntegrateSchema(TorchSimSchema):
 
 
 class TorchSimStaticSchema(TorchSimSchema):
-    all_properties: list[dict[str, np.ndarray]]
+    all_properties: list[dict[str, list]]
 
 
 @requires(has_torchsim, "torch_sim is required for this function")
@@ -277,3 +285,71 @@ def pick_model(
 
         return LennardJonesModel(**model_kwargs)
     raise ValueError(f"Invalid model type: {model_type}")
+
+
+def properties_to_calculation_output(
+    all_properties_lists: list[dict[str, list]],
+) -> CalculationOutput:
+    """Convert properties from ts.static to a CalculationOutput.
+
+    Parameters
+    ----------
+    all_properties_lists : list[dict[str, list]]
+        List of property dictionaries from ts.static, with tensors converted to lists.
+
+    Returns
+    -------
+    CalculationOutput
+        The calculation output containing energy, forces, and stress.
+    """
+    energy = [prop_dict["potential_energy"][0] for prop_dict in all_properties_lists]
+    forces = (
+        [prop_dict["forces"] for prop_dict in all_properties_lists]
+        if "forces" in all_properties_lists[-1]
+        else None
+    )
+    stress = (
+        [prop_dict["stress"][0] for prop_dict in all_properties_lists]
+        if "stress" in all_properties_lists[-1]
+        else None
+    )
+    return {"energy": energy, "forces": forces, "stress": stress}
+
+
+@requires(has_torchsim, "torch_sim is required for this function")
+def get_calculation_output(
+    state: ts.SimState,
+    model: ModelInterface,
+    autobatcher: BinningAutoBatcher | InFlightAutoBatcher | bool = False,
+) -> CalculationOutput:
+    """Run a static calculation and return the output.
+
+    Parameters
+    ----------
+    state : ts.SimState
+        The simulation state to calculate properties for.
+    model : ModelInterface
+        The model to use for the calculation.
+    autobatcher : BinningAutoBatcher | InFlightAutoBatcher | bool
+        Optional autobatcher for batching calculations. If an InFlightAutoBatcher
+        is passed, it will be converted to a BinningAutoBatcher.
+
+    Returns
+    -------
+    CalculationOutput
+        The calculation output containing energy, forces, and stress.
+    """
+    # Convert InFlightAutoBatcher to BinningAutoBatcher for ts.static
+    if isinstance(autobatcher, InFlightAutoBatcher):
+        autobatcher = BinningAutoBatcher(
+            model=model,
+            memory_scales_with=autobatcher.memory_scales_with,
+            max_memory_scaler=autobatcher.max_memory_scaler,
+        )
+
+    properties = ts.static(system=state, model=model, autobatcher=autobatcher)
+
+    all_properties_lists = [
+        {name: t.tolist() for name, t in prop_dict.items()} for prop_dict in properties
+    ]
+    return properties_to_calculation_output(all_properties_lists)
