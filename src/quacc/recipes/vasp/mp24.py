@@ -165,7 +165,7 @@ def mp_metagga_static_job(
             calc_swaps=calc_kwargs,
             report_mp_corrections=True,
             additional_fields={"name": "MP r2SCAN Static"},
-            copy_files=Copy(prev_dir, files=["WAVECAR*"]) if prev_dir else None,
+            copy_files=Copy(src_dir=prev_dir, files=["WAVECAR*"]) if prev_dir else None,
         )
 
 

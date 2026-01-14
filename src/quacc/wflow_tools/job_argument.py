@@ -74,12 +74,11 @@ class RedunCopy(dict):
 
 class DaskCopy(dict):
     def __init__(self, src_dir, files: str = "*"):
-        self._src_dir = src_dir
-        self._files = files
-        self[src_dir] = files
+        self["_src_dir"] = src_dir
+        self["_files"] = files
 
     def do_copy(self, tgt_dir):
-        copy_decompress_files(self._src_dir.compute(), self._files, tgt_dir)
+        copy_decompress_files(self["_src_dir"].compute(), self["_files"], tgt_dir)
 
 
 class Copy(JobArgument):
