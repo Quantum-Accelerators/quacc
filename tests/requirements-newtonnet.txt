@@ -1,4 +1,4 @@
 newtonnet==1.1.1
-geodesic-interpolate @ git+https://github.com/virtualzx-nad/geodesic-interpolate.git
+geodesic-interpolate @ git+https://github.com/virtualzx-nad/geodesic-interpolate.git@a48c88bfbcabd1e2f883c368f49f2c81a5bc1173
 sella==2.3.5
 numpy==1.26.4
