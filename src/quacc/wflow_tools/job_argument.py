@@ -55,11 +55,10 @@ class ParslCopy:
         copy_decompress_files(self.src_dir.result(), self.files, tgt_dir)
 
 
-class RedunCopy(dict):
+class RedunCopy:
     def __init__(self, src_dir, files: str = "*"):
         self._src_dir = src_dir
         self._files = files
-        self[src_dir] = files
 
     def do_copy(self, tgt_dir):
         from redun import task
