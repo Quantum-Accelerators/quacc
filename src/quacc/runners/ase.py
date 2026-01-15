@@ -48,7 +48,6 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Dynamics, Optimizer
 
     from quacc.types import (
-        Filenames,
         MaxwellBoltzmanDistributionKwargs,
         SourceDirectory,
         VibKwargs,
@@ -66,10 +65,7 @@ class Runner(BaseRunner):
         self,
         atoms: Atoms | list[Atoms],
         calculator: BaseCalculator,
-        copy_files: Copy
-        | SourceDirectory
-        | dict[SourceDirectory, Filenames]
-        | None = None,
+        copy_files: Copy | SourceDirectory | None = None,
     ) -> None:
         """
         Initialize the Runner object.

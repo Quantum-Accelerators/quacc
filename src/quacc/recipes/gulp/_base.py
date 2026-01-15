@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, RunSchema, SourceDirectory
+    from quacc.types import RunSchema, SourceDirectory
     from quacc.wflow_tools.job_argument import Copy
 
 LOGGER = getLogger(__name__)
@@ -35,7 +35,7 @@ def run_and_summarize(
     keyword_swaps: list[str] | None = None,
     option_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: Copy | SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """

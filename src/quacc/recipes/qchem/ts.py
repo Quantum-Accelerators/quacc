@@ -21,7 +21,8 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.types import Filenames, OptParams, OptSchema, SourceDirectory
+    from quacc.types import OptParams, OptSchema, SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
@@ -33,7 +34,7 @@ def ts_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -102,7 +103,7 @@ def irc_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -179,7 +180,7 @@ def quasi_irc_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:

@@ -16,15 +16,14 @@ from quacc.utils.files import copy_decompress_files, make_unique_dir
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, SourceDirectory
+    from quacc.types import SourceDirectory
     from quacc.wflow_tools.job_argument import Copy
 
 LOGGER = getLogger(__name__)
 
 
 def calc_setup(
-    atoms: Atoms | None,
-    copy_files: Copy | SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    atoms: Atoms | None, copy_files: Copy | SourceDirectory | None = None
 ) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch

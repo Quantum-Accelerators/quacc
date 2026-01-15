@@ -21,11 +21,12 @@ from quacc.calculators.espresso.utils import (
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
+from quacc.wflow_tools.job_argument import Copy
 
 if TYPE_CHECKING:
     from typing import Any
 
-    from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
+    from quacc.types import OptParams, RunSchema, SourceDirectory
 
 
 def run_and_summarize(
@@ -36,12 +37,7 @@ def run_and_summarize(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -109,12 +105,7 @@ def run_and_summarize_opt(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes with ASE optimizers.
@@ -232,15 +223,10 @@ def prepare_calc(
 
 
 def prepare_copy(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
     calc_params: dict[str, Any] | None = None,
     binary: str = "pw",
-) -> dict[SourceDirectory, Filenames] | None:
+) -> Copy | None:
     """
     Function that will prepare the files to copy.
 
@@ -258,11 +244,21 @@ def prepare_copy(
     dict
         Dictionary of files to copy.
     """
+    if isinstance(copy_files, Copy):
+        return copy_files
+
     if isinstance(copy_files, str | Path):
         copy_files = [copy_files]
 
     if isinstance(copy_files, list):
         exact_files_to_copy = prepare_copy_files(calc_params, binary=binary)
-        return dict.fromkeys(copy_files, exact_files_to_copy)
+        to_return = dict.fromkeys(copy_files, exact_files_to_copy)
+        # TODO:
+        k = next(iter(to_return.keys()))
+        v = list(to_return.values()[0])
+        return Copy(src_dir=k, files=v)  # type: ignore
 
-    return copy_files
+    elif isinstance(copy_files, dict):
+        return Copy(copy_files)
+
+    return None

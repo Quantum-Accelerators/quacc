@@ -14,7 +14,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
+    from quacc.types import OptParams, OptSchema, RunSchema, SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
 
 
 def run_and_summarize(
@@ -24,7 +25,7 @@ def run_and_summarize(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
 ) -> RunSchema:
     """
     Base job function used for Q-Chem recipes that don't rely on ASE optimizers or other
@@ -72,7 +73,7 @@ def run_and_summarize_opt(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
 ) -> OptSchema:
     """
     Base function for Q-Chem recipes that involve ASE optimizers.
