@@ -9,10 +9,12 @@ from monty.dev import requires
 
 from quacc import __version__, job
 from quacc.recipes.torchsim._base import (
+    get_calculation_output,
     pick_model,
     process_binning_autobatcher_dict,
     process_in_flight_autobatcher_dict,
     process_trajectory_reporter_dict,
+    properties_to_calculation_output,
 )
 from quacc.runners._base import BaseRunner
 from quacc.schemas.torchsim import CONVERGENCE_FN_REGISTRY, TSModelType
@@ -135,11 +137,16 @@ def relax_job(
         init_kwargs=init_kwargs,
         **optimizer_kwargs,
     )
+
+    # Get final calculation output
+    calculation_output = get_calculation_output(state, model, autobatcher)
+
     runner.cleanup()
 
     return {
         "atoms": state.to_atoms(),
         "dir_name": str(runner.job_results_dir),
+        "output": calculation_output,
         "model_type": model_type,
         "model_path": model_path,
         "optimizer": optimizer,
@@ -238,11 +245,16 @@ def md_job(
         autobatcher=autobatcher,
         **integrator_kwargs,
     )
+
+    # Get final calculation output
+    calculation_output = get_calculation_output(state, model, autobatcher)
+
     runner.cleanup()
 
     return {
         "atoms": state.to_atoms(),
         "dir_name": str(runner.job_results_dir),
+        "output": calculation_output,
         "model_type": model_type,
         "model_path": model_path,
         "integrator": integrator,
@@ -318,16 +330,21 @@ def static_job(
         autobatcher=autobatcher,
     )
 
-    all_properties_numpy = [
-        {name: t.cpu().numpy() for name, t in prop_dict.items()}
+    all_properties_lists = [
+        {name: t.tolist() for name, t in prop_dict.items()}
         for prop_dict in all_properties
     ]
+
+    # Extract calculation output from properties
+    calculation_output = properties_to_calculation_output(all_properties_lists)
+
     runner.cleanup()
 
     return {
         "atoms": atoms,
         "dir_name": str(runner.job_results_dir),
-        "all_properties": all_properties_numpy,
+        "output": calculation_output,
+        "all_properties": all_properties_lists,
         "model_type": model_type,
         "model_path": model_path,
         "trajectory_reporter": trajectory_reporter_details,

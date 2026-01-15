@@ -123,6 +123,16 @@ def test_relax_job_comprehensive(ar_atoms: Atoms) -> None:
     assert result["steps_between_swaps"] == 10
     assert result["init_kwargs"]["cell_filter"] == ts.CellFilter.unit
 
+    # Check calculation output
+    assert "output" in result
+    assert "energy" in result["output"]
+    assert "forces" in result["output"]
+    assert isinstance(result["output"]["energy"], list)
+    assert len(result["output"]["energy"]) == n_systems
+    assert isinstance(result["output"]["energy"][0], float)
+    assert isinstance(result["output"]["forces"], list)
+    assert len(result["output"]["forces"]) == n_systems
+
 
 def test_relax_job_mace(ar_atoms: Atoms, mace_model_path: str) -> None:
     """Test relax_job with all kwargs including trajectory reporter and autobatcher."""
@@ -214,14 +224,24 @@ def test_md_job_comprehensive(ar_atoms: Atoms) -> None:
     # Check autobatcher details
     assert result["autobatcher"] is None
 
+    # Check calculation output
+    assert "output" in result
+    assert "energy" in result["output"]
+    assert "forces" in result["output"]
+    assert isinstance(result["output"]["energy"], list)
+    assert len(result["output"]["energy"]) == n_systems
+    assert isinstance(result["output"]["energy"][0], float)
+    assert isinstance(result["output"]["forces"], list)
+    assert len(result["output"]["forces"]) == n_systems
+
 
 def test_static_job_comprehensive(ar_atoms: Atoms) -> None:
     """Test static_job with all kwargs including trajectory reporter and autobatcher."""
     n_systems = 2
     trajectory_reporter = {
         "state_frequency": 1,
-        "prop_calculators": {1: ["potential_energy"]},
-        "state_kwargs": {"save_forces": True},
+        "prop_calculators": {1: ["potential_energy", "forces"]},
+        "state_kwargs": {"save_forces": False},
     }
 
     # Create autobatcher
@@ -257,9 +277,19 @@ def test_static_job_comprehensive(ar_atoms: Atoms) -> None:
     assert result["trajectory_reporter"]["state_frequency"] == 1
     assert "prop_calculators" in result["trajectory_reporter"]
     assert "state_kwargs" in result["trajectory_reporter"]
-    assert result["trajectory_reporter"]["state_kwargs"]["save_forces"] is True
+    assert result["trajectory_reporter"]["state_kwargs"]["save_forces"] is False
     for i in range(n_systems):
         assert f"trajectory_{i}.h5md.gz" in os.listdir(result["dir_name"])
 
     # Check autobatcher details
     assert result["autobatcher"] is None
+
+    # Check calculation output
+    assert "output" in result
+    assert "energy" in result["output"]
+    assert "forces" in result["output"]
+    assert isinstance(result["output"]["energy"], list)
+    assert len(result["output"]["energy"]) == n_systems
+    assert isinstance(result["output"]["energy"][0], float)
+    assert isinstance(result["output"]["forces"], list)
+    assert len(result["output"]["forces"]) == n_systems
