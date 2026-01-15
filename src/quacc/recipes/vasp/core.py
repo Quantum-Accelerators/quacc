@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     preset: str | None = "DefaultSetGGA",
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    prev_dir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -50,8 +50,8 @@ def static_job(
         Atoms object
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        Source directory copy the WAVECAR from, if present.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -81,7 +81,7 @@ def static_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Static"} | (additional_fields or {}),
-        copy_files=copy_files,
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
     )
 
 
@@ -90,7 +90,7 @@ def relax_job(
     atoms: Atoms,
     preset: str | None = "DefaultSetGGA",
     relax_cell: bool = False,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    prev_dir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -106,8 +106,8 @@ def relax_job(
     relax_cell
         True if a volume relaxation (ISIF = 3) should be performed. False if
         only the positions (ISIF = 2) should be updated.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        Source directory copy the WAVECAR from, if present.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -137,7 +137,7 @@ def relax_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Relax"} | (additional_fields or {}),
-        copy_files=copy_files,
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
     )
 
 
@@ -190,7 +190,7 @@ def double_relax_flow(
         summary1["atoms"],
         preset=preset,
         relax_cell=relax_cell,
-        copy_files={summary1["dir_name"]: ["WAVECAR*"]},
+        prev_dir=summary1["dir_name"],
         **relax2_kwargs,
     )
 
@@ -203,7 +203,7 @@ def ase_relax_job(
     preset: str | None = "DefaultSetGGA",
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    prev_dir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspASEOptSchema:
@@ -222,8 +222,8 @@ def ase_relax_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        Source directory copy the WAVECAR from, if present.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -246,7 +246,7 @@ def ase_relax_job(
         opt_defaults=opt_defaults,
         opt_params=opt_params,
         additional_fields={"name": "VASP ASE Relax"} | (additional_fields or {}),
-        copy_files=copy_files,
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
     )
 
 
@@ -375,8 +375,8 @@ def freq_job(
         Method to use for thermochemistry. Options are "harmonic" or "ideal_gas".
     vib_kwargs
         Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        Source directory copy the WAVECAR from, if present.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -401,6 +401,6 @@ def freq_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         vib_kwargs=vib_kwargs,
-        copy_files=copy_files,
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
         additional_fields={"name": "VASP Frequency and Thermo"},
     )
