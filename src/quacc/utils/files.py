@@ -137,13 +137,13 @@ def copy_decompress_files(
         filenames = [filenames]
 
     for f in filenames:
-        # Don't copy the Custodian error folders automatically
-        if str(f).startswith("error."):
-            continue
         globs_found = list(source_directory.glob(str(f)))
         if not globs_found:
             LOGGER.warning(f"Cannot find file {f} in {source_directory}")
         for source_filepath in globs_found:
+            # Don't copy the Custodian error folders automatically
+            if source_filepath.name.startswith("error."):
+                continue
             destination_filepath = destination_directory / source_filepath.relative_to(
                 source_directory
             )
