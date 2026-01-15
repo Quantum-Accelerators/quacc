@@ -39,7 +39,7 @@ def test_copy_decompress_files(tmp_path, files_to_copy):
 
     err = tmp_path / "src" / "error.1"
     err.mkdir()
-    
+
     dst = tmp_path / "dst"
     dst.mkdir()
 
