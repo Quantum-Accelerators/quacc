@@ -137,7 +137,7 @@ class EspressoTemplate(EspressoTemplate_):
             )
         elif self.binary in ["ph", "phcg"]:
             with Path(directory, self.inputname).open(mode="w") as fd:
-                write_espresso_ph(fd=fd, properties=properties, **parameters)
+                write_espresso_ph(file=fd, properties=properties, **parameters)
         else:
             with Path(directory, self.inputname).open(mode="w") as fd:
                 write_fortran_namelist(
