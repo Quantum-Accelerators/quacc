@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, SourceDirectory, VaspSchema
+    from quacc.types import SourceDirectory, VaspSchema
 
 
 @job

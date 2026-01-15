@@ -23,7 +23,6 @@ if TYPE_CHECKING:
 
     from quacc.types import (
         DoubleRelaxSchema,
-        Filenames,
         OptParams,
         SourceDirectory,
         VaspASEOptSchema,
