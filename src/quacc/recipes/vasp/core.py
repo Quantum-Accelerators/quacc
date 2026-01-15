@@ -353,7 +353,7 @@ def freq_job(
     pressure: float = 1.0,
     thermo_method: Literal["harmonic", "ideal_gas"] = "harmonic",
     vib_kwargs: VibKwargs | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VibThermoSchema:
     """

@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     preset: str | None = "SlabSetPBE",
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    prev_dir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -35,8 +35,8 @@ def static_job(
         Atoms object
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        Source directory copy the WAVECAR from, if present.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -68,7 +68,7 @@ def static_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Slab Static"} | (additional_fields or {}),
-        copy_files=copy_files,
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
     )
 
 
@@ -76,7 +76,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     preset: str | None = "SlabSetPBE",
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    prev_dir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -89,8 +89,8 @@ def relax_job(
         Atoms object
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        Source directory copy the WAVECAR from, if present.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -122,7 +122,7 @@ def relax_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Slab Relax"} | (additional_fields or {}),
-        copy_files=copy_files,
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
     )
 
 

@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, SourceDirectory, VaspSchema
+    from quacc.types import SourceDirectory, VaspSchema
 
 
 @job
@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 )
 def omat_static_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    prev_dir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -49,8 +49,8 @@ def omat_static_job(
     ----------
     atoms
         Atoms object
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        Source directory copy the WAVECAR from, if present.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -75,7 +75,7 @@ def omat_static_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "OMat Static"} | (additional_fields or {}),
-        copy_files=copy_files,
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
     )
 
 
@@ -83,7 +83,7 @@ def omat_static_job(
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[fairchem]`")
 def omc_static_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    prev_dir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -94,8 +94,8 @@ def omc_static_job(
     ----------
     atoms
         Atoms object
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
+    prev_dir
+        Source directory copy the WAVECAR from, if present.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -119,7 +119,7 @@ def omc_static_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "OMC Static"} | (additional_fields or {}),
-        copy_files=copy_files,
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
     )
 
 
