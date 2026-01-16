@@ -142,8 +142,6 @@ def copy_decompress_files(
             LOGGER.warning(f"Cannot find file {f} in {source_directory}")
         for source_filepath in globs_found:
             # Don't copy the Custodian error folders automatically
-            if source_filepath.name.startswith("error."):
-                continue
             destination_filepath = destination_directory / source_filepath.relative_to(
                 source_directory
             )
@@ -160,6 +158,7 @@ def copy_decompress_files(
                     destination_filepath,
                     symlinks=True,
                     dirs_exist_ok=True,
+                    ignore=shutil.ignore_patterns("error.*")
                 )
                 decompress_dir(destination_filepath)
 
