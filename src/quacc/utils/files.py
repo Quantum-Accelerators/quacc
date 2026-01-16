@@ -5,13 +5,12 @@ from __future__ import annotations
 import contextlib
 import os
 import socket
-from shutil import ignore_patterns
 from copy import deepcopy
 from datetime import UTC, datetime
 from logging import getLogger
 from pathlib import Path
 from random import randint
-from shutil import copy, copytree
+from shutil import copy, copytree, ignore_patterns
 from typing import TYPE_CHECKING
 
 from monty.io import zopen
