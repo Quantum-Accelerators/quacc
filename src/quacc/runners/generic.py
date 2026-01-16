@@ -12,7 +12,8 @@ from typing import TYPE_CHECKING, ClassVar, Final
 from quacc.runners._base import BaseRunner
 
 if TYPE_CHECKING:
-    from quacc.types import Filenames, SourceDirectory
+    from quacc.types import SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
 
 
 class GenericRunner(BaseRunner):
@@ -28,7 +29,7 @@ class GenericRunner(BaseRunner):
     def __init__(
         self,
         command: str,
-        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+        copy_files: Copy | SourceDirectory | None = None,
         environment: dict[str, str] | None = None,
     ) -> None:
         """

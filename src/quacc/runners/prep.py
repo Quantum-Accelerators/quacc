@@ -16,14 +16,14 @@ from quacc.utils.files import copy_decompress_files, make_unique_dir
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, SourceDirectory
+    from quacc.types import SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
 
 LOGGER = getLogger(__name__)
 
 
 def calc_setup(
-    atoms: Atoms | None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    atoms: Atoms | None, copy_files: Copy | SourceDirectory | None = None
 ) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch
@@ -73,12 +73,17 @@ def calc_setup(
         symlink_path.symlink_to(tmpdir, target_is_directory=True)
 
     # Copy files to tmpdir and decompress them if needed
-    if copy_files:
-        if isinstance(copy_files, str | Path):
-            copy_files = {copy_files: "*"}
-
-        for source_directory, filenames in copy_files.items():
-            copy_decompress_files(source_directory, filenames, tmpdir)
+    if copy_files is not None:
+        if isinstance(copy_files, dict):
+            if "src_dir" in copy_files:
+                copy_decompress_files(
+                    copy_files["src_dir"], copy_files.get("files", "*"), tmpdir
+                )
+            else:
+                for k, v in copy_files.items():
+                    copy_decompress_files(k, v, tmpdir)
+        else:
+            copy_files.do_copy(tmpdir)
 
     return tmpdir, job_results_dir
 

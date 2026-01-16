@@ -19,7 +19,9 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, OptParams, OptSchema, RunSchema, SourceDirectory
+    from quacc.types import OptParams, OptSchema, RunSchema, SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
+
 
 _BASE_SET = {
     "rem": {
@@ -42,7 +44,7 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str | None = "wb97mv",
     basis: str | None = "def2-tzvpd",
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -100,7 +102,7 @@ def relax_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -163,7 +165,7 @@ def freq_job(
     spin_multiplicity: int = 1,
     method: str = "wb97mv",
     basis: str = "def2-svpd",
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:

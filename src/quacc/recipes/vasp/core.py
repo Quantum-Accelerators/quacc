@@ -15,6 +15,7 @@ from quacc.recipes.vasp._base import (
     run_and_summarize_opt,
     run_and_summarize_vib_and_thermo,
 )
+from quacc.wflow_tools.job_argument import Copy
 
 if TYPE_CHECKING:
     from typing import Any
@@ -37,7 +38,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     preset: str | None = "DefaultSetGGA",
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -90,7 +91,7 @@ def relax_job(
     atoms: Atoms,
     preset: str | None = "DefaultSetGGA",
     relax_cell: bool = False,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: Copy | SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -190,7 +191,7 @@ def double_relax_flow(
         summary1["atoms"],
         preset=preset,
         relax_cell=relax_cell,
-        copy_files={summary1["dir_name"]: ["WAVECAR*"]},
+        copy_files=Copy(src_dir=summary1["dir_name"], files=["WAVECAR*"]),
         **relax2_kwargs,
     )
 
@@ -340,7 +341,9 @@ def non_scf_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Non-SCF"} | (additional_fields or {}),
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]} if prev_dir else None,
+        copy_files=Copy(src_dir=prev_dir, files=["CHGCAR*", "WAVECAR*"])
+        if prev_dir
+        else None,
     )
 
 

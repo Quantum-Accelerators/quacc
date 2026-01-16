@@ -24,17 +24,13 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import EspressoBandsSchema, Filenames, RunSchema, SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
 def bands_pw_job(
     atoms: Atoms,
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
     prev_outdir: SourceDirectory | None = None,
     make_bandpath: bool = True,
     line_density: float = 20,
@@ -119,12 +115,7 @@ def bands_pw_job(
 
 @job
 def bands_pp_job(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -178,12 +169,7 @@ def bands_pp_job(
 
 @job
 def fermi_surface_job(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
