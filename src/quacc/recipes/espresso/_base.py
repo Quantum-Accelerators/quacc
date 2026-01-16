@@ -251,14 +251,8 @@ def prepare_copy(
         copy_files = [copy_files]
 
     if isinstance(copy_files, list):
+        assert len(copy_files) == 1, "Only single SourceDirectory supported"
         exact_files_to_copy = prepare_copy_files(calc_params, binary=binary)
-        to_return = dict.fromkeys(copy_files, exact_files_to_copy)
-        # TODO:
-        k = next(iter(to_return.keys()))
-        v = next(iter(to_return.values()))
-        return Copy(src_dir=k, files=v)  # type: ignore
-
-    elif isinstance(copy_files, dict):
-        return Copy(copy_files)
+        return Copy(src_dir=copy_files[0], files=exact_files_to_copy)
 
     return None
