@@ -5,6 +5,7 @@ from __future__ import annotations
 import contextlib
 import os
 import socket
+from shutil import ignore_patterns
 from copy import deepcopy
 from datetime import UTC, datetime
 from logging import getLogger
@@ -141,7 +142,6 @@ def copy_decompress_files(
         if not globs_found:
             LOGGER.warning(f"Cannot find file {f} in {source_directory}")
         for source_filepath in globs_found:
-            # Don't copy the Custodian error folders automatically
             destination_filepath = destination_directory / source_filepath.relative_to(
                 source_directory
             )
@@ -158,7 +158,7 @@ def copy_decompress_files(
                     destination_filepath,
                     symlinks=True,
                     dirs_exist_ok=True,
-                    ignore=shutil.ignore_patterns("error.*"),
+                    ignore=ignore_patterns("error.*"),
                 )
                 decompress_dir(destination_filepath)
 
