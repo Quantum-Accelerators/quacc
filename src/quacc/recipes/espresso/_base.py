@@ -255,7 +255,7 @@ def prepare_copy(
         to_return = dict.fromkeys(copy_files, exact_files_to_copy)
         # TODO:
         k = next(iter(to_return.keys()))
-        v = list(to_return.values()[0])
+        v = next(iter(to_return.values()))
         return Copy(src_dir=k, files=v)  # type: ignore
 
     elif isinstance(copy_files, dict):

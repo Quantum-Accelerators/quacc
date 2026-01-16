@@ -34,9 +34,6 @@ class JobflowCopy(MSONable):
         self.src_dir = src_dir
         self.files = files
 
-    def todict(self):
-        return self.__dict__
-
     def do_copy(self, tgt_dir):
         copy_decompress_files(self.src_dir, self.files, tgt_dir)
 
