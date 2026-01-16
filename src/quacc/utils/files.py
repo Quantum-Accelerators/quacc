@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 from logging import getLogger
 from pathlib import Path
 from random import randint
-from shutil import copy, copytree
+from shutil import copy, copytree, ignore_patterns
 from typing import TYPE_CHECKING
 
 from monty.io import zopen
@@ -157,6 +157,7 @@ def copy_decompress_files(
                     destination_filepath,
                     symlinks=True,
                     dirs_exist_ok=True,
+                    ignore=ignore_patterns("error.*"),
                 )
                 decompress_dir(destination_filepath)
 
