@@ -158,7 +158,7 @@ def copy_decompress_files(
                     destination_filepath,
                     symlinks=True,
                     dirs_exist_ok=True,
-                    ignore=shutil.ignore_patterns("error.*")
+                    ignore=shutil.ignore_patterns("error.*"),
                 )
                 decompress_dir(destination_filepath)
 
