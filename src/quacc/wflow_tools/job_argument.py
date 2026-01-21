@@ -254,11 +254,6 @@ class Copy(JobArgument):
     This is the main class that users should instantiate. It acts as a factory
     that automatically returns the appropriate engine-specific implementation
     based on the current WORKFLOW_ENGINE setting.
-
-    Parameters
-    ----------
-    src_dir_to_files
-        A mapping from a (previous) job output to lists of filenames to copy.
     """
 
     # Maps workflow engine names to their implementation classes.
