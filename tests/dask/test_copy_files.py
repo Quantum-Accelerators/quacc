@@ -32,7 +32,7 @@ def test_copy_files(tmp_path, monkeypatch):
     @flow
     def create_files():
         job1 = create_file("job1")
-        return create_file("job2", copy=Copy(src_dir=job1["dir_name"], files="job1*"))
+        return create_file("job2", copy=Copy({job1["dir_name"]: "job1*"}))
 
     client.compute(create_files()).result()
 

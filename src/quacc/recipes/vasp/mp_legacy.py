@@ -75,7 +75,7 @@ def mp_gga_relax_job(
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP GGA Relax"},
-        copy_files=Copy(src_dir=prev_dir, files=["WAVECAR*"]) if prev_dir else None,
+        copy_files=Copy({prev_dir: ["WAVECAR*"]}) if prev_dir else None,
     )
 
 
@@ -118,7 +118,7 @@ def mp_gga_static_job(
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP GGA Static"},
-        copy_files=Copy(src_dir=prev_dir, files=["WAVECAR*"]) if prev_dir else None,
+        copy_files=Copy({prev_dir: ["WAVECAR*"]}) if prev_dir else None,
     )
 
 

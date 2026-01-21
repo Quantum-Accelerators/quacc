@@ -30,7 +30,7 @@ def test_copy_files(tmp_path, monkeypatch):
     job1 = relax_job(atoms)
     job2 = relax_job(
         job1.output["atoms"],
-        copy_files=Copy(src_dir=job1.output["dir_name"], files="opt.*"),
+        copy_files=Copy({job1.output["dir_name"]: "opt.*"}),
     )
     flow = jf.Flow([job1, job2])
     jf.run_locally(flow, ensure_success=True, create_folders=True)

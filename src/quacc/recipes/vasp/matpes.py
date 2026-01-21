@@ -115,5 +115,5 @@ def matpes_static_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": f"MatPES {level} Static"},
-        copy_files=Copy(src_files=prev_dir, files=["WAVECAR*"]) if prev_dir else None,
+        copy_files=Copy({prev_dir: ["WAVECAR*"]}) if prev_dir else None,
     )

@@ -103,7 +103,7 @@ def test_static_job_v2(tmp_path, monkeypatch):
     assert "kpts" not in results["parameters"]
     assert results["parameters"]["kspacing"] == 0.5
 
-    pp_results = post_processing_job(copy_files=Copy(src_dir=results["dir_name"]))
+    pp_results = post_processing_job(copy_files=Copy({results["dir_name"]: "*"}))
     assert Path(pp_results["dir_name"], "pseudo_charge_density.cube.gz").is_file()
 
 
@@ -423,7 +423,7 @@ def test_pw_restart(tmp_path, monkeypatch):
         input_data=new_input_data,
         pseudopotentials=pseudopotentials,
         kpts=None,
-        copy_files=Copy(src_dir=results["dir_name"]),
+        copy_files=Copy({results["dir_name"]: "*"}),
     )
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0

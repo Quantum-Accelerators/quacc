@@ -191,7 +191,7 @@ def double_relax_flow(
         summary1["atoms"],
         preset=preset,
         relax_cell=relax_cell,
-        copy_files=Copy(src_dir=summary1["dir_name"], files=["WAVECAR*"]),
+        copy_files=Copy({summary1["dir_name"]: ["WAVECAR*"]}),
         **relax2_kwargs,
     )
 
@@ -341,7 +341,7 @@ def non_scf_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Non-SCF"} | (additional_fields or {}),
-        copy_files=Copy(src_dir=prev_dir, files=["CHGCAR*", "WAVECAR*"])
+        copy_files=Copy({prev_dir: ["CHGCAR*", "WAVECAR*"]})
         if prev_dir
         else None,
     )

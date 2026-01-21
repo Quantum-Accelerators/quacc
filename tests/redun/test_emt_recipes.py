@@ -43,7 +43,7 @@ def test_copy_files(tmp_path, monkeypatch, scheduler):
         result1 = relax_job(atoms)
         return relax_job(
             result1["atoms"],
-            copy_files=Copy(src_dir=result1["dir_name"], files="opt.*"),
+            copy_files=Copy({result1["dir_name"]: "opt.*"}),
         )
 
     assert "atoms" in scheduler.run(myflow(atoms))

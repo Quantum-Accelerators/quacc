@@ -74,16 +74,21 @@ def calc_setup(
 
     # Copy files to tmpdir and decompress them if needed
     if copy_files is not None:
-        if isinstance(copy_files, dict):
-            if "src_dir" in copy_files:
-                copy_decompress_files(
-                    copy_files["src_dir"], copy_files.get("files", "*"), tmpdir
-                )
+        if hasattr(copy_files, "do_copy"):
+            copy_files.do_copy(tmpdir)
+        elif isinstance(copy_files, dict):
+            if "uuids_to_keys" in copy_files:
+                uuids_to_src_dirs = copy_files.get("uuids_to_keys", {})
+                uuids_to_files = copy_files.get("uuids_to_vals", {})
+                for src_dir_uuid, src_dir in uuids_to_src_dirs.items():
+                    copy_decompress_files(
+                        src_dir, uuids_to_files.get(src_dir_uuid, []), tmpdir
+                    )
             else:
                 for k, v in copy_files.items():
                     copy_decompress_files(k, v, tmpdir)
         else:
-            copy_files.do_copy(tmpdir)
+            raise RuntimeError("should never happen")
 
     return tmpdir, job_results_dir
 
