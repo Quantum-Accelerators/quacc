@@ -43,6 +43,7 @@ class PropertyFn(StrEnum):
     STRESS = "stress"
     KINETIC_ENERGY = "kinetic_energy"
     TEMPERATURE = "temperature"
+    MAX_FORCE = "max_force"
 
 
 PROPERTY_FN_REGISTRY: dict[str, Callable] = {
@@ -53,4 +54,5 @@ PROPERTY_FN_REGISTRY: dict[str, Callable] = {
         velocities=state.velocities, masses=state.masses
     ),
     "temperature": lambda state: state.calc_temperature(),
+    "max_force": lambda state: ts.system_wise_max_force(state),
 }
