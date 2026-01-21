@@ -14,12 +14,12 @@ from ase.optimize import BFGSLineSearch
 
 from quacc import change_settings, job
 from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
-from quacc.wflow_tools.job_argument import Copy
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import Filenames, OptSchema, SourceDirectory, VaspSchema
+    from quacc.wflow_tools.job_argument import Copy
 
     class QMOFRelaxSchema(VaspSchema):
         """Type hint associated with the QMOF relaxation jobs."""
@@ -86,18 +86,18 @@ def qmof_relax_job(
     if run_prerelax:
         summary1 = _prerelax(atoms, **calc_kwargs)
         atoms = summary1["atoms"]
-        copy_files = Copy({summary1["dir_name"]: ["WAVECAR*"]})
+        copy_files = {summary1["dir_name"]: ["WAVECAR*"]}
 
     # 2. Position relaxation (loose)
     summary2 = _loose_relax_positions(atoms, copy_files=copy_files, **calc_kwargs)
     atoms = summary2["atoms"]
-    copy_files = Copy({summary2["dir_name"]: ["WAVECAR*"]})
+    copy_files = {summary2["dir_name"]: ["WAVECAR*"]}
 
     # 3. Optional: Volume relaxation (loose)
     if relax_cell:
         summary3 = _loose_relax_cell(atoms, copy_files=copy_files, **calc_kwargs)
         atoms = summary3["atoms"]
-        copy_files = Copy({summary3["dir_name"]: ["WAVECAR*"]})
+        copy_files = {summary3["dir_name"]: ["WAVECAR*"]}
 
     # 4. Double Relaxation
     # This is done for two reasons: a) because it can
@@ -107,7 +107,7 @@ def qmof_relax_job(
         atoms, relax_cell=relax_cell, copy_files=copy_files, **calc_kwargs
     )
     atoms = summary4[-1]["atoms"]
-    copy_files = Copy({summary4[-1]["dir_name"]: ["WAVECAR*"]})
+    copy_files = {summary4[-1]["dir_name"]: ["WAVECAR*"]}
 
     # 5. Static Calculation
     summary5 = _static(atoms, copy_files=copy_files, **calc_kwargs)
@@ -320,7 +320,7 @@ def _double_relax(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF DoubleRelax 2"},
-        copy_files=Copy({summary1["dir_name"]: ["WAVECAR*"]}),
+        copy_files={summary1["dir_name"]: ["WAVECAR*"]},
     )
     return [summary1, summary2]
 

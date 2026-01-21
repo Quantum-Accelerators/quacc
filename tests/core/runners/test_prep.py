@@ -59,6 +59,9 @@ def test_calc_setup(tmp_path, monkeypatch):
 @pytest.mark.parametrize(
     "copy_files",
     [
+        {Path(): ["file1.txt"]},
+        {Path(): "file1.txt"},
+        {Path(): "file1*"},
         Copy({Path(): ["file1.txt"]}),
         Copy({Path(): "file1.txt"}),
         Copy({Path(): "file1*"}),
@@ -87,6 +90,10 @@ def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
 @pytest.mark.parametrize(
     "copy_files",
     [
+        {Path("saved"): "file1.txt"},
+        {"saved": "file1.txt"},
+        {"saved": "file1*"},
+        {"saved": ["file1.txt"]},
         Copy({Path("saved"): "file1.txt"}),
         Copy({"saved": "file1.txt"}),
         Copy({"saved": "file1*"}),
@@ -115,7 +122,13 @@ def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [Copy({"saved": "*"}), Copy({Path("saved"): "*"})]
+    "copy_files",
+    [
+        {"saved": "*"},
+        {Path("saved"): "*"},
+        Copy({"saved": "*"}),
+        Copy({Path("saved"): "*"}),
+    ],
 )
 def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -138,7 +151,7 @@ def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
         assert "file2.txt" in os.listdir(tmpdir)
 
 
-@pytest.mark.parametrize("copy_files", [Copy({"saved": "*"})])
+@pytest.mark.parametrize("copy_files", [{"saved": "*"}, Copy({"saved": "*"})])
 def test_calc_setup_v4(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
     make_files3()
