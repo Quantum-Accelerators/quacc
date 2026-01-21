@@ -1,26 +1,21 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, ClassVar
+
 from quacc import get_settings
 from quacc.utils.files import copy_decompress_files
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
 
 
 class JobArgument:
     def __new__(cls, *args, **kwargs):
         settings = get_settings()
 
-        match settings.WORKFLOW_ENGINE:
-            case "jobflow":
-                target_cls = cls._jobflow_cls
-            case "prefect":
-                target_cls = cls._prefect_cls
-            case "parsl":
-                target_cls = cls._parsl_cls
-            case "redun":
-                target_cls = cls._redun_cls
-            case "dask":
-                target_cls = cls._dask_cls
-            case _:
-                target_cls = cls._default_cls
+        target_cls = cls._class_mapping.get(
+            settings.WORKFLOW_ENGINE, cls._class_mapping[None]
+        )
 
         obj = target_cls.__new__(target_cls)
         obj.__init__(*args, **kwargs)
@@ -38,15 +33,6 @@ class JobflowCopy:
 
 
 class DictCopy(dict):
-    def do_copy(self, tgt_dir):
-        for src_dir, files in self.items():
-            copy_decompress_files(src_dir, files, tgt_dir)
-
-
-class PrefectCopy:
-    def __init__(self, src_dir_to_files):
-        self.src_dir_to_files = src_dir_to_files
-
     def do_copy(self, tgt_dir):
         for src_dir, files in self.items():
             copy_decompress_files(src_dir, files, tgt_dir)
@@ -89,9 +75,11 @@ class DaskCopy(dict):
 
 
 class Copy(JobArgument):
-    _jobflow_cls = JobflowCopy
-    _prefect_cls = PrefectOrParslCopy
-    _parsl_cls = PrefectOrParslCopy
-    _redun_cls = RedunCopy
-    _dask_cls = DaskCopy
-    _default_cls = DictCopy
+    _class_mapping: ClassVar[Mapping[str | None, type[JobArgument]]] = {
+        "jobflow": JobflowCopy,
+        "prefect": PrefectOrParslCopy,
+        "parsl": PrefectOrParslCopy,
+        "redun": RedunCopy,
+        "dask": DaskCopy,
+        None: DictCopy,
+    }
