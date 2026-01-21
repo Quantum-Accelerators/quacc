@@ -254,4 +254,4 @@ def prepare_copy(
         exact_files_to_copy = prepare_copy_files(calc_params, binary=binary)
         return Copy(dict.fromkeys(copy_files, exact_files_to_copy))
 
-    return None
+    return copy_files
