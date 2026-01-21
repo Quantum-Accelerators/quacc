@@ -41,8 +41,7 @@ def test_copy_files(tmp_path, monkeypatch):
     def myflow(atoms):
         result1 = relax_job(atoms)
         return relax_job(
-            result1["atoms"],
-            copy_files=Copy({result1["dir_name"]: "opt.*"}),
+            result1["atoms"], copy_files=Copy({result1["dir_name"]: "opt.*"})
         )
 
     assert "atoms" in myflow(atoms).result()

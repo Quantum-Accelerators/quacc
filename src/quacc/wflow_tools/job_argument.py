@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from monty.json import MSONable
-
 from quacc import get_settings
 from quacc.utils.files import copy_decompress_files
 
@@ -75,8 +73,10 @@ class RedunCopy:
             # At THIS boundary, redun evaluates src_dir
             copy_decompress_files(src_dir, files, tgt_dir)
 
-        tasks = [_do_copy_task(src_dir, files, tgt_dir) for src_dir, files in self.src_dir_to_files.items()]
-        return tasks
+        return [
+            _do_copy_task(src_dir, files, tgt_dir)
+            for src_dir, files in self.src_dir_to_files.items()
+        ]
 
 
 class DaskCopy(dict):
@@ -84,7 +84,7 @@ class DaskCopy(dict):
         self["_src_dir_to_files"] = src_dir_to_files
 
     def do_copy(self, tgt_dir):
-        for future, files in self['_src_dir_to_files'].items():
+        for future, files in self["_src_dir_to_files"].items():
             copy_decompress_files(future.compute(), files, tgt_dir)
 
 
