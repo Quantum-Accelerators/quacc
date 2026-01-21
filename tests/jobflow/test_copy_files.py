@@ -7,7 +7,6 @@ jf = pytest.importorskip("jobflow")
 from pathlib import Path
 
 from quacc import job
-from quacc.utils.files import copy_decompress_files
 from quacc.wflow_tools.job_argument import Copy
 
 
@@ -21,12 +20,7 @@ def test_copy_files(tmp_path, monkeypatch):
         Path(output_dir / name).touch()
 
         if copy is not None:
-            uuids_to_src_dirs = copy.get("uuids_to_keys", {})
-            uuids_to_files = copy.get("uuids_to_vals", {})
-            for src_dir_uuid, src_dir in uuids_to_src_dirs.items():
-                copy_decompress_files(
-                    src_dir, uuids_to_files.get(src_dir_uuid, []), output_dir
-                )
+            copy.do_copy(output_dir)
 
         return {"dir_name": output_dir}
 
