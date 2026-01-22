@@ -21,7 +21,7 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str = "pbe",
     basis: str = "def2-tzvp",
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """

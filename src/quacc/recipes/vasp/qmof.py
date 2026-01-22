@@ -38,7 +38,7 @@ def qmof_relax_job(
     atoms: Atoms,
     relax_cell: bool = True,
     run_prerelax: bool = True,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     **calc_kwargs,
 ) -> QMOFRelaxSchema:
     """
@@ -167,7 +167,7 @@ def _prerelax(
 
 
 def _loose_relax_positions(
-    atoms: Atoms, copy_files: Copy | SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: SourceDirectory | Copy | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
@@ -213,7 +213,7 @@ def _loose_relax_positions(
 
 
 def _loose_relax_cell(
-    atoms: Atoms, copy_files: Copy | SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: SourceDirectory | Copy | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
     Volume relaxation with coarse k-point grid.
@@ -258,7 +258,7 @@ def _loose_relax_cell(
 
 def _double_relax(
     atoms: Atoms,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     relax_cell: bool = True,
     **calc_kwargs,
 ) -> list[VaspSchema]:
@@ -326,7 +326,7 @@ def _double_relax(
 
 
 def _static(
-    atoms: Atoms, copy_files: Copy | SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: SourceDirectory | Copy | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
     Static calculation using production-quality settings.

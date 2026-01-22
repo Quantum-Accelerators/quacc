@@ -38,7 +38,7 @@ if TYPE_CHECKING:
 )
 def static_job(
     atoms: Atoms,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -88,7 +88,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     opt_params: OptParams | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -148,7 +148,7 @@ def freq_job(
     atoms: Atoms,
     temperature: float = 298.15,
     pressure: float = 1.0,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VibThermoSchema:

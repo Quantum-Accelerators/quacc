@@ -28,7 +28,7 @@ def run_and_summarize(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
 ) -> RunSchema:
     """
     Base job function for carrying out Gaussian recipes.

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     kpts: tuple | list[tuple] | dict | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,

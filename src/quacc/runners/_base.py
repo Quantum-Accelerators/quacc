@@ -29,7 +29,7 @@ class BaseRunner:
 
     atoms: Atoms | None = None
 
-    def setup(self, copy_files: Copy | SourceDirectory | None = None) -> None:
+    def setup(self, copy_files: SourceDirectory | Copy | None = None) -> None:
         """
         Perform setup operations on the runtime directory.
 

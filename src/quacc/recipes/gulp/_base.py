@@ -35,7 +35,7 @@ def run_and_summarize(
     keyword_swaps: list[str] | None = None,
     option_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """

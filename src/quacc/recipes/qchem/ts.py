@@ -34,7 +34,7 @@ def ts_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -103,7 +103,7 @@ def irc_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -180,7 +180,7 @@ def quasi_irc_job(
     method: str = "wb97mv",
     basis: str = "def2-svpd",
     opt_params: OptParams | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:

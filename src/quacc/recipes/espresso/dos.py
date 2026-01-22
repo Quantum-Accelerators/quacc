@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 
 @job
 def dos_job(
-    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -80,7 +80,7 @@ def dos_job(
 
 @job
 def projwfc_job(
-    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,

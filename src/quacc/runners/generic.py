@@ -29,7 +29,7 @@ class GenericRunner(BaseRunner):
     def __init__(
         self,
         command: str,
-        copy_files: Copy | SourceDirectory | None = None,
+        copy_files: SourceDirectory | Copy | None = None,
         environment: dict[str, str] | None = None,
     ) -> None:
         """

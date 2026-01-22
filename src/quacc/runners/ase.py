@@ -65,7 +65,7 @@ class Runner(BaseRunner):
         self,
         atoms: Atoms | list[Atoms],
         calculator: BaseCalculator,
-        copy_files: Copy | SourceDirectory | None = None,
+        copy_files: SourceDirectory | Copy | None = None,
     ) -> None:
         """
         Initialize the Runner object.

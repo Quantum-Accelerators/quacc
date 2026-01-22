@@ -23,7 +23,7 @@ LOGGER = getLogger(__name__)
 
 
 def calc_setup(
-    atoms: Atoms | None, copy_files: Copy | SourceDirectory | None = None
+    atoms: Atoms | None, copy_files: SourceDirectory | Copy | None = None
 ) -> tuple[Path, Path]:
     """
     Perform staging operations for a calculation, including copying files to the scratch

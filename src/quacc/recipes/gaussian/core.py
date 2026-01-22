@@ -25,7 +25,7 @@ def static_job(
     spin_multiplicity: int = 1,
     xc: str = "wb97xd",
     basis: str = "def2tzvp",
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:

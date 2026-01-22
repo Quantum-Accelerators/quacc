@@ -34,7 +34,7 @@ def md_job(
     temperature_K: float | None = None,
     pressure_bar: float | None = None,
     md_params: MDParams | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> DynSchema:

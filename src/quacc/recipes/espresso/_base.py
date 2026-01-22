@@ -37,7 +37,7 @@ def run_and_summarize(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -105,7 +105,7 @@ def run_and_summarize_opt(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes with ASE optimizers.
@@ -223,7 +223,7 @@ def prepare_calc(
 
 
 def prepare_copy(
-    copy_files: (Copy | SourceDirectory | list[SourceDirectory] | None) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     calc_params: dict[str, Any] | None = None,
     binary: str = "pw",
 ) -> Copy | None:

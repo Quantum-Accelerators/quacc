@@ -23,7 +23,7 @@ def static_job(
     keywords: list[str] | None = None,
     options: list[str] | None = None,
     library: str | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
@@ -79,7 +79,7 @@ def relax_job(
     keywords: list[str] | None = None,
     options: list[str] | None = None,
     library: str | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """

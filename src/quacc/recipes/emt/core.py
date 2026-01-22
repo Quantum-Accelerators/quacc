@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -65,7 +65,7 @@ def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:

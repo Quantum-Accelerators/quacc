@@ -33,7 +33,6 @@ from quacc.recipes.espresso.phonons import (
     q2r_job,
 )
 from quacc.utils.files import copy_decompress_files
-from quacc.wflow_tools.job_argument import Copy
 
 DATA_DIR = Path(__file__).parent / "data"
 
@@ -716,7 +715,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch):
 
         dvscf_q2r_results = dvscf_q2r_job(
             prev_outdir=c_scf_results["dir_name"],
-            copy_files=Copy({c_ph_results["dir_name"]: "*"}),
+            copy_files={c_ph_results["dir_name"]: "*"},
             **dvscf_q2r_params,
         )
 

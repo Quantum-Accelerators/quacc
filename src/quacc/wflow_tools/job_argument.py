@@ -17,7 +17,7 @@ Different workflow engines represent deferred/future values differently:
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from monty.json import MSONable
 
@@ -26,6 +26,13 @@ from quacc.utils.files import copy_decompress_files
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+    from pathlib import Path
+
+    from dask.delayed import Delayed
+    from jobflow import OutputReference
+    from parsl.dataflow.futures import AppFuture
+    from prefect.futures import PrefectFuture
+    from redun.value import Value
 
 
 class JobArgument:
@@ -65,11 +72,15 @@ class JobflowCopy(MSONable):
         Used when reconstructing the object after deserialization.
     """
 
-    def __init__(self, futures_to_vals=None, src_dir_to_files=None):
+    def __init__(
+        self,
+        futures_to_vals: dict[OutputReference, [str | list[str]]] | None = None,
+        src_dir_to_files: dict[str, [str | list[str]]] | None = None,
+    ):
         self.futures_to_vals = futures_to_vals
         self.src_dir_to_files = src_dir_to_files
 
-    def as_dict(self):
+    def as_dict(self) -> dict[str, Any]:
         """
         Serialization method required for `MSONable` objects.
 
@@ -86,7 +97,7 @@ class JobflowCopy(MSONable):
         }
 
     @classmethod
-    def from_dict(cls, d):
+    def from_dict(cls, d: str[str, Any]):
         """
         Reconstruct from serialized dict after OutputReferences are resolved.
         """
@@ -97,7 +108,7 @@ class JobflowCopy(MSONable):
         }
         return cls(src_dir_to_files=src_dir_to_files)
 
-    def do_copy(self, tgt_dir):
+    def do_copy(self, tgt_dir: str | Path):
         """
         Copy files from all source directories to the target directory.
 
@@ -118,7 +129,7 @@ class DictCopy(dict):
     source_dir -> files_to_copy.
     """
 
-    def do_copy(self, tgt_dir):
+    def do_copy(self, tgt_dir: str | Path):
         """
         Copy files from all source directories to the target directory.
 
@@ -146,10 +157,12 @@ class PrefectOrParslCopy:
         lists of files to copy from those directories.
     """
 
-    def __init__(self, src_dir_to_files):
+    def __init__(
+        self, src_dir_to_files: dict[PrefectFuture | AppFuture, str | list[str]]
+    ):
         self.src_dir_to_files = src_dir_to_files
 
-    def do_copy(self, tgt_dir):
+    def do_copy(self, tgt_dir: str | Path):
         """
         Resolve futures and copy files to the target directory.
 
@@ -178,10 +191,10 @@ class RedunCopy:
         to lists of files to copy from those directories.
     """
 
-    def __init__(self, src_dir_to_files):
+    def __init__(self, src_dir_to_files: dict[Value, str | list[str]]):
         self.src_dir_to_files = src_dir_to_files
 
-    def do_copy(self, tgt_dir):
+    def do_copy(self, tgt_dir: str | Path):
         """
         Create redun tasks to copy files to the target directory.
 
@@ -230,11 +243,11 @@ class DaskCopy(dict):
         to lists of files to copy from those directories.
     """
 
-    def __init__(self, src_dir_to_files):
+    def __init__(self, src_dir_to_files: dict[Delayed, str | list[str]]):
         # Store in the dict under a private key for serialization compatibility
         self["_src_dir_to_files"] = src_dir_to_files
 
-    def do_copy(self, tgt_dir):
+    def do_copy(self, tgt_dir: str | Path):
         """
         Compute delayed values and copy files to the target directory.
 

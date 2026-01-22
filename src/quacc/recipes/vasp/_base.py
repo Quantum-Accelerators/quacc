@@ -33,7 +33,7 @@ def run_and_summarize(
     calc_swaps: dict[str, Any] | None = None,
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: Copy | SourceDirectory | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
 ) -> VaspSchema:
     """
     Base job function for VASP recipes.
