@@ -187,7 +187,7 @@ def _pick_calculator_cached(
 
 
 # Global cache for InferenceBatcher instances (keyed by model config)
-_INFERENCE_BATCHER_CACHE: dict[tuple, "InferenceBatcher"] = {}
+_INFERENCE_BATCHER_CACHE: dict[tuple, InferenceBatcher] = {}
 
 
 @requires(has_fairchem, "fairchem must be installed. Run pip install fairchem-core.")
@@ -233,10 +233,11 @@ def get_inference_batcher(
     --------
     >>> batcher = get_inference_batcher("uma-s-1", task_name="omat")
     >>> # Use batcher.batch_predict_unit in pick_calculator
-    >>> calc = pick_calculator("fairchem", predict_unit=batcher.batch_predict_unit, task_name="omat")
+    >>> calc = pick_calculator(
+    ...     "fairchem", predict_unit=batcher.batch_predict_unit, task_name="omat"
+    ... )
     """
-    from fairchem.core.calculate import InferenceBatcher
-    from fairchem.core.calculate import pretrained_mlip
+    from fairchem.core.calculate import InferenceBatcher, pretrained_mlip
 
     # Build cache key from immutable config
     cache_key = (
@@ -251,15 +252,11 @@ def get_inference_batcher(
         # Load the predict unit
         if name_or_path in pretrained_mlip.available_models:
             predict_unit = pretrained_mlip.get_predict_unit(
-                name_or_path,
-                inference_settings=inference_settings,
-                device=device,
+                name_or_path, inference_settings=inference_settings, device=device
             )
         else:
             predict_unit = pretrained_mlip.load_predict_unit(
-                name_or_path,
-                inference_settings=inference_settings,
-                device=device,
+                name_or_path, inference_settings=inference_settings, device=device
             )
 
         # Get batcher settings with defaults
