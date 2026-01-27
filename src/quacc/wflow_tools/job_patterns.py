@@ -196,7 +196,7 @@ def unpartition(lists_to_combine: list[list[Any]]) -> list[Any]:
 def map_partitioned_lists_fairchembatch(
     func: Callable,
     num_partitions: int,
-    fairchem_model: str,
+    name_or_path: str,
     task_name: str | None = None,
     inference_settings: str = "default",
     device: str | None = None,
@@ -219,7 +219,7 @@ def map_partitioned_lists_fairchembatch(
         and `**calc_kwargs` with `method="fairchem"`.
     num_partitions
         The number of partitions (length of each list in mapped_kwargs).
-    fairchem_model
+    name_or_path
         A model name from fairchem.core.pretrained.available_models or a path
         to the checkpoint file (e.g., "uma-s-1", "uma-m-1").
     task_name
@@ -256,7 +256,7 @@ def map_partitioned_lists_fairchembatch(
     >>> results_partitioned = map_partitioned_lists_fairchembatch(
     ...     relax_job,
     ...     num_partitions,
-    ...     fairchem_model="uma-s-1",
+    ...     name_or_path="uma-s-1",
     ...     task_name="omat",
     ...     atoms_list=partitioned_atoms,
     ... )
@@ -266,7 +266,7 @@ def map_partitioned_lists_fairchembatch(
     return [
         map_partition_fairchembatch(
             strip_decorator(func),
-            fairchem_model=fairchem_model,
+            name_or_path=name_or_path,
             task_name=task_name,
             inference_settings=inference_settings,
             device=device,
@@ -282,7 +282,7 @@ def map_partitioned_lists_fairchembatch(
 def map_partition_fairchembatch(
     func: Callable,
     atoms_list: list[Atoms],
-    fairchem_model: str,
+    name_or_path: str,
     task_name: str | None = None,
     inference_settings: str = "default",
     device: str | None = None,
@@ -308,7 +308,7 @@ def map_partition_fairchembatch(
         `predict_unit` and `task_name` automatically injected into calc_kwargs.
     atoms_list
         List of ASE Atoms objects to process (a single partition).
-    fairchem_model
+    name_or_path
         A model name from fairchem.core.pretrained.available_models or a path
         to the checkpoint file (e.g., "uma-s-1", "uma-m-1").
     task_name
@@ -356,7 +356,7 @@ def map_partition_fairchembatch(
     # Get or create cached batcher
     batcher_kwargs = batcher_kwargs or {}
     batcher = get_inference_batcher(
-        name_or_path=fairchem_model,
+        name_or_path=name_or_path,
         task_name=task_name,
         inference_settings=inference_settings,
         device=device,

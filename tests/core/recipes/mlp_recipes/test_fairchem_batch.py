@@ -187,7 +187,7 @@ class TestMapPartitionFairchemBatch:
         results = map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
-            fairchem_model="uma-s-1",
+            name_or_path="uma-s-1",
             task_name="omat",
         )
 
@@ -211,7 +211,7 @@ class TestMapPartitionFairchemBatch:
         results = map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
-            fairchem_model="uma-s-1",
+            name_or_path="uma-s-1",
             task_name="omat",
             additional_fields=[{"tag": "cu_calc"}, {"tag": "ag_calc"}],
         )
@@ -234,7 +234,7 @@ class TestMapPartitionFairchemBatch:
         results = map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
-            fairchem_model="uma-s-1",
+            name_or_path="uma-s-1",
             task_name="omat",
             unmapped_kwargs={"additional_fields": {"shared_tag": "batch_run"}},
         )
@@ -258,7 +258,7 @@ class TestMapPartitionFairchemBatch:
             map_partition_fairchembatch(
                 static_job,
                 atoms_list=atoms_list,
-                fairchem_model="uma-s-1",
+                name_or_path="uma-s-1",
                 task_name="omat",
                 # This has 3 elements but atoms_list has 2
                 additional_fields=[{"a": 1}, {"a": 2}, {"a": 3}],
@@ -282,7 +282,7 @@ class TestMapPartitionFairchemBatch:
         map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
-            fairchem_model="uma-s-1",
+            name_or_path="uma-s-1",
             task_name="omat",
         )
 
@@ -292,7 +292,7 @@ class TestMapPartitionFairchemBatch:
         map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
-            fairchem_model="uma-s-1",
+            name_or_path="uma-s-1",
             task_name="omat",
         )
 
@@ -313,7 +313,7 @@ class TestMapPartitionFairchemBatch:
         results = map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
-            fairchem_model="uma-s-1",
+            name_or_path="uma-s-1",
             task_name="omat",
             batcher_kwargs={"max_batch_size": 256},
         )
@@ -351,7 +351,7 @@ class TestMapPartitionFairchemBatch:
         results = map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
-            fairchem_model="uma-s-1",
+            name_or_path="uma-s-1",
             task_name="omat",
         )
 
@@ -422,14 +422,14 @@ class TestMapPartitionFairchemBatch:
         _ = map_partition_fairchembatch(
             relax_job,
             atoms_list=[warmup_atoms],
-            fairchem_model="uma-s-1",
+            name_or_path="uma-s-1",
             task_name="omat",
         )
 
         # Time batched inference (after warmup)
         start_batched = time.perf_counter()
         results_batched = map_partition_fairchembatch(
-            relax_job, atoms_list=atoms_list, fairchem_model="uma-s-1", task_name="omat"
+            relax_job, atoms_list=atoms_list, name_or_path="uma-s-1", task_name="omat"
         )
         time_batched = time.perf_counter() - start_batched
 
@@ -504,7 +504,7 @@ class TestMapPartitionedListsFairchemBatch:
         results_partitioned = map_partitioned_lists_fairchembatch(
             static_job,
             num_partitions,
-            fairchem_model="uma-s-1",
+            name_or_path="uma-s-1",
             task_name="omat",
             atoms_list=partitioned_atoms,
         )
@@ -543,6 +543,6 @@ class TestMapPartitionFairchemBatchNoFairchem:
                 map_partition_fairchembatch(
                     lambda x: x,
                     atoms_list=[bulk("Cu")],
-                    fairchem_model="uma-s-1",
+                    name_or_path="uma-s-1",
                     task_name="omat",
                 )

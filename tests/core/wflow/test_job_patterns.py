@@ -121,6 +121,6 @@ def test_map_partition_fairchembatch_raises_without_fairchem():
         map_partition_fairchembatch(
             lambda x: x,
             atoms_list=[bulk("Cu")],
-            fairchem_model="uma-s-1",
+            name_or_path="uma-s-1",
             task_name="omat",
         )
