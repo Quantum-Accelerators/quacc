@@ -11,6 +11,7 @@ from ase.units import GPa as _GPa_to_eV_per_A3
 from monty.dev import requires
 
 has_frozen = bool(find_spec("frozendict"))
+has_fairchem = bool(find_spec("fairchem"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -51,8 +52,6 @@ def freezeargs(func: Callable) -> Callable:
     return wrapped
 
 
-@freezeargs
-@lru_cache
 def pick_calculator(
     method: Literal[
         "mace-mp", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"
@@ -79,6 +78,51 @@ def pick_calculator(
     -------
     BaseCalculator
         The instantiated calculator
+
+    Notes
+    -----
+    When `predict_unit` is provided for fairchem, caching is bypassed to ensure
+    thread-safety for concurrent calculations with InferenceBatcher.
+    """
+    # Handle fairchem with predict_unit separately (uncached for thread safety)
+    if method.lower() == "fairchem" and "predict_unit" in calc_kwargs:
+        return _create_fairchem_calculator_with_predict_unit(**calc_kwargs)
+
+    # Use cached version for all other cases
+    return _pick_calculator_cached(method, **calc_kwargs)
+
+
+def _create_fairchem_calculator_with_predict_unit(**calc_kwargs) -> BaseCalculator:
+    """
+    Create a FAIRChemCalculator with a provided predict_unit.
+
+    This is intentionally NOT cached because each concurrent calculation needs
+    its own calculator instance to avoid race conditions when using
+    InferenceBatcher for batched inference.
+    """
+    from fairchem.core import FAIRChemCalculator, __version__
+
+    predict_unit = calc_kwargs.pop("predict_unit")
+    task_name = calc_kwargs.pop("task_name", None)
+    calc = FAIRChemCalculator(
+        predict_unit=predict_unit, task_name=task_name, **calc_kwargs
+    )
+    calc.parameters["version"] = __version__
+    return calc
+
+
+@freezeargs
+@lru_cache
+def _pick_calculator_cached(
+    method: Literal[
+        "mace-mp", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"
+    ],
+    **calc_kwargs,
+) -> BaseCalculator:
+    """
+    Internal cached version of pick_calculator.
+
+    This function is cached to avoid reloading models for repeated calculations.
     """
     import torch
 
@@ -140,3 +184,118 @@ def pick_calculator(
     calc.parameters["version"] = __version__
 
     return calc
+
+
+# Global cache for InferenceBatcher instances (keyed by model config)
+_INFERENCE_BATCHER_CACHE: dict[tuple, "InferenceBatcher"] = {}
+
+
+@requires(has_fairchem, "fairchem must be installed. Run pip install fairchem-core.")
+def get_inference_batcher(
+    name_or_path: str,
+    task_name: str | None = None,
+    inference_settings: str = "default",
+    device: str | None = None,
+    **batcher_kwargs,
+):
+    """
+    Get or create a cached InferenceBatcher for FAIRChem batched inference.
+
+    The batcher is cached based on the model configuration, so repeated calls
+    with the same parameters will return the same batcher instance. This enables
+    efficient batched inference across multiple concurrent calculations.
+
+    Parameters
+    ----------
+    name_or_path
+        A model name from fairchem.core.pretrained.available_models or a path
+        to the checkpoint file.
+    task_name
+        Task name (e.g., 'omat', 'omol', 'oc20', 'odac', 'omc').
+    inference_settings
+        Settings for inference. Can be "default" (general purpose) or "turbo"
+        (optimized for speed but requires fixed atomic composition).
+    device
+        Optional torch device to load the model onto (e.g., 'cuda', 'cpu').
+    **batcher_kwargs
+        Additional kwargs to pass to InferenceBatcher. Available options:
+        - max_batch_size: Maximum number of atoms in a batch (default: 512)
+        - batch_wait_timeout_s: Max time to wait for batch (default: 0.1)
+        - num_replicas: Number of Ray Serve replicas (default: 1)
+        - concurrency_backend_options: Dict with options like {"max_workers": N}
+
+    Returns
+    -------
+    InferenceBatcher
+        A cached InferenceBatcher instance ready for batched inference.
+
+    Examples
+    --------
+    >>> batcher = get_inference_batcher("uma-s-1", task_name="omat")
+    >>> # Use batcher.batch_predict_unit in pick_calculator
+    >>> calc = pick_calculator("fairchem", predict_unit=batcher.batch_predict_unit, task_name="omat")
+    """
+    from fairchem.core.calculate import InferenceBatcher
+    from fairchem.core.calculate import pretrained_mlip
+
+    # Build cache key from immutable config
+    cache_key = (
+        name_or_path,
+        task_name,
+        inference_settings,
+        device,
+        frozenset(batcher_kwargs.items()) if batcher_kwargs else frozenset(),
+    )
+
+    if cache_key not in _INFERENCE_BATCHER_CACHE:
+        # Load the predict unit
+        if name_or_path in pretrained_mlip.available_models:
+            predict_unit = pretrained_mlip.get_predict_unit(
+                name_or_path,
+                inference_settings=inference_settings,
+                device=device,
+            )
+        else:
+            predict_unit = pretrained_mlip.load_predict_unit(
+                name_or_path,
+                inference_settings=inference_settings,
+                device=device,
+            )
+
+        # Get batcher settings with defaults
+        max_batch_size = batcher_kwargs.pop("max_batch_size", 512)
+        batch_wait_timeout_s = batcher_kwargs.pop("batch_wait_timeout_s", 0.1)
+        num_replicas = batcher_kwargs.pop("num_replicas", 1)
+        concurrency_backend_options = batcher_kwargs.pop(
+            "concurrency_backend_options", None
+        )
+
+        batcher = InferenceBatcher(
+            predict_unit=predict_unit,
+            max_batch_size=max_batch_size,
+            batch_wait_timeout_s=batch_wait_timeout_s,
+            num_replicas=num_replicas,
+            concurrency_backend_options=concurrency_backend_options,
+            **batcher_kwargs,
+        )
+
+        _INFERENCE_BATCHER_CACHE[cache_key] = batcher
+        LOGGER.info(
+            f"Created new InferenceBatcher for {name_or_path} "
+            f"(max_batch_size={max_batch_size}, num_replicas={num_replicas})"
+        )
+
+    return _INFERENCE_BATCHER_CACHE[cache_key]
+
+
+def shutdown_inference_batchers() -> None:
+    """
+    Shutdown all cached InferenceBatcher instances and clear the cache.
+
+    This should be called when you're done with batched inference to clean up
+    Ray Serve resources.
+    """
+    for batcher in _INFERENCE_BATCHER_CACHE.values():
+        batcher.shutdown()
+    _INFERENCE_BATCHER_CACHE.clear()
+    LOGGER.info("All InferenceBatcher instances shut down and cache cleared.")

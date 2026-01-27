@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from importlib.util import find_spec
+
 import numpy as np
 import pytest
 
@@ -8,6 +10,7 @@ from quacc.wflow_tools.job_patterns import (
     kwarg_map,
     map_partition,
     map_partitioned_lists,
+    map_partitioned_lists_fairchembatch,
     partition,
     unpartition,
 )
@@ -97,3 +100,25 @@ def test_map_partition():
     ]
     with pytest.raises(AssertionError):
         kwarg_map(test_fun, a=[1, 2, 3], b=[1, 2])
+
+
+def test_map_partitioned_lists_fairchembatch_import():
+    """Test that map_partitioned_lists_fairchembatch is importable and callable."""
+    # The function should always be importable
+    assert callable(map_partitioned_lists_fairchembatch)
+
+
+@pytest.mark.skipif(
+    find_spec("fairchem") is not None, reason="Test only runs when fairchem is absent"
+)
+def test_map_partitioned_lists_fairchembatch_raises_without_fairchem():
+    """Test that ImportError is raised when fairchem is not installed."""
+    from ase.build import bulk
+
+    with pytest.raises(ImportError, match="fairchem must be installed"):
+        map_partitioned_lists_fairchembatch(
+            lambda x: x,
+            atoms_list=[bulk("Cu")],
+            fairchem_model="uma-s-1",
+            task_name="omat",
+        )
