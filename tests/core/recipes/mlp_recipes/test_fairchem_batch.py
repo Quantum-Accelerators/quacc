@@ -428,16 +428,12 @@ class TestMapPartitionFairchemBatch:
 
         # Time batched inference (after warmup)
         start_batched = time.perf_counter()
-<<<<<<< HEAD
         results_batched = map_partition_fairchembatch(
             relax_job,
             atoms_list=atoms_list,
             fairchem_model="uma-s-1",
             task_name="omat",
-=======
-        results_batched = map_partitioned_lists_fairchembatch(
-            relax_job, atoms_list=atoms_list, fairchem_model="uma-s-1", task_name="omat"
->>>>>>> 246d481b47aaca2d0a66de9bf0eb43753a71ef62
+
         )
         time_batched = time.perf_counter() - start_batched
 
