@@ -408,10 +408,7 @@ class TestMapPartitionFairchemBatch:
         warmup_atoms = bulk("Cu") * (4, 4, 4)
         warmup_atoms.rattle(stdev=0.1, seed=999)
         _ = map_partition_fairchembatch(
-            relax_job,
-            atoms=[warmup_atoms],
-            name_or_path="uma-s-1",
-            task_name="omat",
+            relax_job, atoms=[warmup_atoms], name_or_path="uma-s-1", task_name="omat"
         )
 
         # Time batched inference (after warmup)
