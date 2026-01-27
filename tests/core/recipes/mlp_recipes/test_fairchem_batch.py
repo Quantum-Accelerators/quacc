@@ -186,7 +186,7 @@ class TestMapPartitionFairchemBatch:
 
         results = map_partition_fairchembatch(
             static_job,
-            atoms_list=atoms_list,
+            atoms=atoms_list,
             name_or_path="uma-s-1",
             task_name="omat",
         )
@@ -210,7 +210,7 @@ class TestMapPartitionFairchemBatch:
         # Test with additional_fields as mapped kwarg
         results = map_partition_fairchembatch(
             static_job,
-            atoms_list=atoms_list,
+            atoms=atoms_list,
             name_or_path="uma-s-1",
             task_name="omat",
             additional_fields=[{"tag": "cu_calc"}, {"tag": "ag_calc"}],
@@ -233,7 +233,7 @@ class TestMapPartitionFairchemBatch:
 
         results = map_partition_fairchembatch(
             static_job,
-            atoms_list=atoms_list,
+            atoms=atoms_list,
             name_or_path="uma-s-1",
             task_name="omat",
             unmapped_kwargs={"additional_fields": {"shared_tag": "batch_run"}},
@@ -257,7 +257,7 @@ class TestMapPartitionFairchemBatch:
         with pytest.raises(AssertionError, match="Inconsistent lengths"):
             map_partition_fairchembatch(
                 static_job,
-                atoms_list=atoms_list,
+                atoms=atoms_list,
                 name_or_path="uma-s-1",
                 task_name="omat",
                 # This has 3 elements but atoms_list has 2
@@ -281,7 +281,7 @@ class TestMapPartitionFairchemBatch:
         # First call
         map_partition_fairchembatch(
             static_job,
-            atoms_list=atoms_list,
+            atoms=atoms_list,
             name_or_path="uma-s-1",
             task_name="omat",
         )
@@ -291,7 +291,7 @@ class TestMapPartitionFairchemBatch:
         # Second call with same config
         map_partition_fairchembatch(
             static_job,
-            atoms_list=atoms_list,
+            atoms=atoms_list,
             name_or_path="uma-s-1",
             task_name="omat",
         )
@@ -312,7 +312,7 @@ class TestMapPartitionFairchemBatch:
 
         results = map_partition_fairchembatch(
             static_job,
-            atoms_list=atoms_list,
+            atoms=atoms_list,
             name_or_path="uma-s-1",
             task_name="omat",
             batcher_kwargs={"max_batch_size": 256},
@@ -350,7 +350,7 @@ class TestMapPartitionFairchemBatch:
         # Run batched inference
         results = map_partition_fairchembatch(
             static_job,
-            atoms_list=atoms_list,
+            atoms=atoms_list,
             name_or_path="uma-s-1",
             task_name="omat",
         )
@@ -421,7 +421,7 @@ class TestMapPartitionFairchemBatch:
         warmup_atoms.rattle(stdev=0.1, seed=999)
         _ = map_partition_fairchembatch(
             relax_job,
-            atoms_list=[warmup_atoms],
+            atoms=[warmup_atoms],
             name_or_path="uma-s-1",
             task_name="omat",
         )
@@ -429,7 +429,7 @@ class TestMapPartitionFairchemBatch:
         # Time batched inference (after warmup)
         start_batched = time.perf_counter()
         results_batched = map_partition_fairchembatch(
-            relax_job, atoms_list=atoms_list, name_or_path="uma-s-1", task_name="omat"
+            relax_job, atoms=atoms_list, name_or_path="uma-s-1", task_name="omat"
         )
         time_batched = time.perf_counter() - start_batched
 
@@ -506,7 +506,7 @@ class TestMapPartitionedListsFairchemBatch:
             num_partitions,
             name_or_path="uma-s-1",
             task_name="omat",
-            atoms_list=partitioned_atoms,
+            atoms=partitioned_atoms,
         )
 
         # Should get 2 lists of results (one per partition)
@@ -542,7 +542,7 @@ class TestMapPartitionFairchemBatchNoFairchem:
             with pytest.raises(ImportError, match="fairchem must be installed"):
                 map_partition_fairchembatch(
                     lambda x: x,
-                    atoms_list=[bulk("Cu")],
+                    atoms=[bulk("Cu")],
                     name_or_path="uma-s-1",
                     task_name="omat",
                 )

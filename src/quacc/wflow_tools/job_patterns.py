@@ -215,8 +215,8 @@ def map_partitioned_lists_fairchembatch(
     Parameters
     ----------
     func
-        The function to map over atoms. Should accept `atoms` as first argument
-        and `**calc_kwargs` with `method="fairchem"`.
+        The function to map. The function will receive `predict_unit` and `task_name`
+        automatically injected into its kwargs (along with `method="fairchem"`).
     num_partitions
         The number of partitions (length of each list in mapped_kwargs).
     name_or_path
@@ -234,7 +234,6 @@ def map_partitioned_lists_fairchembatch(
         Additional kwargs to pass to get_inference_batcher.
     **mapped_kwargs
         kwargs of the form key=list[list[...]] that should be mapped over.
-        Must include `atoms_list` as a partitioned list of Atoms objects.
 
     Returns
     -------
@@ -258,7 +257,7 @@ def map_partitioned_lists_fairchembatch(
     ...     num_partitions,
     ...     name_or_path="uma-s-1",
     ...     task_name="omat",
-    ...     atoms_list=partitioned_atoms,
+    ...     atoms=partitioned_atoms,
     ... )
     >>>
     >>> all_results = unpartition(results_partitioned)
@@ -281,7 +280,6 @@ def map_partitioned_lists_fairchembatch(
 @job
 def map_partition_fairchembatch(
     func: Callable,
-    atoms_list: list[Atoms],
     name_or_path: str,
     task_name: str | None = None,
     inference_settings: str = "default",
@@ -291,10 +289,10 @@ def map_partition_fairchembatch(
     **mapped_kwargs: list[Any],
 ) -> list[Any]:
     """
-    Job to apply a function to each atoms object in a partition using FAIRChem batched inference.
+    Job to apply a function to each set of kwargs using FAIRChem batched inference.
 
     This is the FAIRChem batched equivalent of `map_partition`. It processes a single
-    partition of atoms objects, submitting calculations concurrently via threads while
+    partition of inputs, submitting calculations concurrently via threads while
     the underlying Ray Serve batches requests to the GPU.
 
     The InferenceBatcher is cached based on the model configuration, so repeated
@@ -303,11 +301,8 @@ def map_partition_fairchembatch(
     Parameters
     ----------
     func
-        The function to map over atoms. Should accept `atoms` as first argument
-        and `**calc_kwargs` with `method="fairchem"`. The function will receive
-        `predict_unit` and `task_name` automatically injected into calc_kwargs.
-    atoms_list
-        List of ASE Atoms objects to process (a single partition).
+        The function to map. The function will receive `predict_unit` and `task_name`
+        automatically injected into its kwargs (along with `method="fairchem"`).
     name_or_path
         A model name from fairchem.core.pretrained.available_models or a path
         to the checkpoint file (e.g., "uma-s-1", "uma-m-1").
@@ -328,13 +323,13 @@ def map_partition_fairchembatch(
         - num_replicas: Number of Ray Serve replicas
         - concurrency_backend_options: Dict with options like {"max_workers": N}
     **mapped_kwargs
-        Additional kwargs of the form key=list[...] that should be mapped over
-        alongside atoms_list. Each list must have the same length as atoms_list.
+        kwargs of the form key=list[...] that should be mapped over.
+        All lists must have the same length.
 
     Returns
     -------
     list[Any]
-        List of results from calling func for each atoms in atoms_list.
+        List of results from calling func for each set of mapped kwargs.
     """
     if not has_fairchem:
         raise ImportError(
@@ -345,13 +340,13 @@ def map_partition_fairchembatch(
     from quacc.recipes.mlp._base import get_inference_batcher
 
     # Validate mapped_kwargs lengths
-    if mapped_kwargs:
-        all_lens = [len(v) for v in mapped_kwargs.values()]
-        if not all(len(atoms_list) == le for le in all_lens):
-            raise AssertionError(
-                f"Inconsistent lengths: atoms_list has {len(atoms_list)} elements, "
-                f"but mapped_kwargs have lengths {all_lens}"
-            )
+    if not mapped_kwargs:
+        raise ValueError("At least one mapped kwarg must be provided")
+
+    all_lens = [len(v) for v in mapped_kwargs.values()]
+    n_elements = all_lens[0]
+    if not all(n_elements == le for le in all_lens):
+        raise AssertionError(f"Inconsistent lengths: {all_lens}")
 
     # Get or create cached batcher
     batcher_kwargs = batcher_kwargs or {}
@@ -377,13 +372,13 @@ def map_partition_fairchembatch(
 
     # Submit all tasks concurrently using the batcher's thread pool
     futures = []
-    for i, atoms in enumerate(atoms_list):
+    for i in range(n_elements):
         # Build kwargs for this specific call
         call_kwargs = {**base_kwargs}
         for key, values in mapped_kwargs.items():
             call_kwargs[key] = values[i]
 
-        future = batcher.executor.submit(raw_func, atoms, **call_kwargs)
+        future = batcher.executor.submit(raw_func, **call_kwargs)
         futures.append(future)
 
     # Wait for all results
