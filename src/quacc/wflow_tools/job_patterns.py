@@ -193,8 +193,93 @@ def unpartition(lists_to_combine: list[list[Any]]) -> list[Any]:
     return list(itertools.chain(*lists_to_combine))
 
 
-@job
 def map_partitioned_lists_fairchembatch(
+    func: Callable,
+    num_partitions: int,
+    fairchem_model: str,
+    task_name: str | None = None,
+    inference_settings: str = "default",
+    device: str | None = None,
+    unmapped_kwargs: dict[str, Any] | None = None,
+    batcher_kwargs: dict[str, Any] | None = None,
+    **mapped_kwargs: list[list[Any]],
+) -> list[Any]:
+    """
+    Given list-of-lists parameters (partitioned data), apply func to each element
+    using FAIRChem batched inference.
+
+    This is the FAIRChem batched equivalent of `map_partitioned_lists`. Each partition
+    is dispatched as a separate job via `map_partition_fairchembatch`, which uses
+    Ray Serve for efficient GPU batching within each partition.
+
+    Parameters
+    ----------
+    func
+        The function to map over atoms. Should accept `atoms` as first argument
+        and `**calc_kwargs` with `method="fairchem"`.
+    num_partitions
+        The number of partitions (length of each list in mapped_kwargs).
+    fairchem_model
+        A model name from fairchem.core.pretrained.available_models or a path
+        to the checkpoint file (e.g., "uma-s-1", "uma-m-1").
+    task_name
+        Task name (e.g., 'omat', 'omol', 'oc20', 'odac', 'omc').
+    inference_settings
+        Settings for inference. Can be "default" or "turbo".
+    device
+        Optional torch device to load the model onto (e.g., 'cuda', 'cpu').
+    unmapped_kwargs
+        Dictionary of kwargs to pass to func that shouldn't be mapped.
+    batcher_kwargs
+        Additional kwargs to pass to get_inference_batcher.
+    **mapped_kwargs
+        kwargs of the form key=list[list[...]] that should be mapped over.
+        Must include `atoms_list` as a partitioned list of Atoms objects.
+
+    Returns
+    -------
+    list[Any]
+        List of results (one per partition), each containing results for that partition.
+
+    Examples
+    --------
+    >>> from quacc.recipes.mlp.core import relax_job
+    >>> from quacc.wflow_tools.job_patterns import (
+    ...     map_partitioned_lists_fairchembatch,
+    ...     partition,
+    ...     unpartition,
+    ... )
+    >>>
+    >>> num_partitions = 4
+    >>> partitioned_atoms = partition(my_atoms_list, num_partitions)
+    >>>
+    >>> results_partitioned = map_partitioned_lists_fairchembatch(
+    ...     relax_job,
+    ...     num_partitions,
+    ...     fairchem_model="uma-s-1",
+    ...     task_name="omat",
+    ...     atoms_list=partitioned_atoms,
+    ... )
+    >>>
+    >>> all_results = unpartition(results_partitioned)
+    """
+    return [
+        map_partition_fairchembatch(
+            strip_decorator(func),
+            fairchem_model=fairchem_model,
+            task_name=task_name,
+            inference_settings=inference_settings,
+            device=device,
+            unmapped_kwargs=unmapped_kwargs,
+            batcher_kwargs=batcher_kwargs,
+            **{k: mapped_kwargs[k][i] for k in mapped_kwargs},
+        )
+        for i in range(num_partitions)
+    ]
+
+
+@job
+def map_partition_fairchembatch(
     func: Callable,
     atoms_list: list[Atoms],
     fairchem_model: str,
@@ -206,12 +291,11 @@ def map_partitioned_lists_fairchembatch(
     **mapped_kwargs: list[Any],
 ) -> list[Any]:
     """
-    Apply a function to each atoms object using FAIRChem batched inference.
+    Job to apply a function to each atoms object in a partition using FAIRChem batched inference.
 
-    This function enables efficient batched inference by submitting calculations
-    concurrently via threads while the underlying Ray Serve batches requests
-    to the GPU. This significantly improves throughput when applying the same
-    calculation to many different structures.
+    This is the FAIRChem batched equivalent of `map_partition`. It processes a single
+    partition of atoms objects, submitting calculations concurrently via threads while
+    the underlying Ray Serve batches requests to the GPU.
 
     The InferenceBatcher is cached based on the model configuration, so repeated
     calls with the same model will reuse the same Ray Serve deployment.
@@ -223,7 +307,7 @@ def map_partitioned_lists_fairchembatch(
         and `**calc_kwargs` with `method="fairchem"`. The function will receive
         `predict_unit` and `task_name` automatically injected into calc_kwargs.
     atoms_list
-        List of ASE Atoms objects to process.
+        List of ASE Atoms objects to process (a single partition).
     fairchem_model
         A model name from fairchem.core.pretrained.available_models or a path
         to the checkpoint file (e.g., "uma-s-1", "uma-m-1").
@@ -251,36 +335,10 @@ def map_partitioned_lists_fairchembatch(
     -------
     list[Any]
         List of results from calling func for each atoms in atoms_list.
-
-    Examples
-    --------
-    Basic usage with static_job:
-
-    >>> from quacc.recipes.mlp.core import static_job
-    >>> from quacc.wflow_tools.job_patterns import map_partitioned_lists_fairchembatch
-    >>>
-    >>> # Run batched static calculations
-    >>> results = map_partitioned_lists_fairchembatch(
-    ...     static_job,
-    ...     atoms_list=my_atoms_list,
-    ...     fairchem_model="uma-s-1",
-    ...     task_name="omat",
-    ... )
-
-    With additional mapped kwargs:
-
-    >>> results = map_partitioned_lists_fairchembatch(
-    ...     my_custom_job,
-    ...     atoms_list=my_atoms_list,
-    ...     fairchem_model="uma-s-1",
-    ...     task_name="omat",
-    ...     custom_param=list_of_custom_values,  # mapped over
-    ...     unmapped_kwargs={"shared_setting": value},  # same for all
-    ... )
     """
     if not has_fairchem:
         raise ImportError(
-            "fairchem must be installed to use map_partitioned_lists_fairchembatch. "
+            "fairchem must be installed to use map_partition_fairchembatch. "
             "Run pip install fairchem-core."
         )
 

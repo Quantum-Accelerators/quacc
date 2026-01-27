@@ -200,19 +200,19 @@ class TestPickCalculatorWithPredictUnit:
 
 
 @pytest.mark.skipif(not HAS_HF_TOKEN, reason="HuggingFace token not available")
-class TestMapPartitionedListsFairchemBatch:
-    """Tests for map_partitioned_lists_fairchembatch function."""
+class TestMapPartitionFairchemBatch:
+    """Tests for map_partition_fairchembatch function."""
 
     def test_basic_batched_static(self, tmp_path, monkeypatch, cleanup_batchers):
         """Test basic batched static calculation."""
         monkeypatch.chdir(tmp_path)
 
         from quacc.recipes.mlp.core import static_job
-        from quacc.wflow_tools.job_patterns import map_partitioned_lists_fairchembatch
+        from quacc.wflow_tools.job_patterns import map_partition_fairchembatch
 
         atoms_list = [bulk("Cu"), bulk("Cu") * (2, 1, 1)]
 
-        results = map_partitioned_lists_fairchembatch(
+        results = map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
             fairchem_model="uma-s-1",
@@ -231,12 +231,12 @@ class TestMapPartitionedListsFairchemBatch:
         monkeypatch.chdir(tmp_path)
 
         from quacc.recipes.mlp.core import static_job
-        from quacc.wflow_tools.job_patterns import map_partitioned_lists_fairchembatch
+        from quacc.wflow_tools.job_patterns import map_partition_fairchembatch
 
         atoms_list = [bulk("Cu"), bulk("Ag")]
 
         # Test with additional_fields as mapped kwarg
-        results = map_partitioned_lists_fairchembatch(
+        results = map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
             fairchem_model="uma-s-1",
@@ -253,11 +253,11 @@ class TestMapPartitionedListsFairchemBatch:
         monkeypatch.chdir(tmp_path)
 
         from quacc.recipes.mlp.core import static_job
-        from quacc.wflow_tools.job_patterns import map_partitioned_lists_fairchembatch
+        from quacc.wflow_tools.job_patterns import map_partition_fairchembatch
 
         atoms_list = [bulk("Cu"), bulk("Cu") * (2, 1, 1)]
 
-        results = map_partitioned_lists_fairchembatch(
+        results = map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
             fairchem_model="uma-s-1",
@@ -276,12 +276,12 @@ class TestMapPartitionedListsFairchemBatch:
         monkeypatch.chdir(tmp_path)
 
         from quacc.recipes.mlp.core import static_job
-        from quacc.wflow_tools.job_patterns import map_partitioned_lists_fairchembatch
+        from quacc.wflow_tools.job_patterns import map_partition_fairchembatch
 
         atoms_list = [bulk("Cu"), bulk("Ag")]
 
         with pytest.raises(AssertionError, match="Inconsistent lengths"):
-            map_partitioned_lists_fairchembatch(
+            map_partition_fairchembatch(
                 static_job,
                 atoms_list=atoms_list,
                 fairchem_model="uma-s-1",
@@ -298,14 +298,14 @@ class TestMapPartitionedListsFairchemBatch:
 
         from quacc.recipes.mlp._base import _INFERENCE_BATCHER_CACHE
         from quacc.recipes.mlp.core import static_job
-        from quacc.wflow_tools.job_patterns import map_partitioned_lists_fairchembatch
+        from quacc.wflow_tools.job_patterns import map_partition_fairchembatch
 
         _INFERENCE_BATCHER_CACHE.clear()
 
         atoms_list = [bulk("Cu")]
 
         # First call
-        map_partitioned_lists_fairchembatch(
+        map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
             fairchem_model="uma-s-1",
@@ -315,7 +315,7 @@ class TestMapPartitionedListsFairchemBatch:
         cache_size_after_first = len(_INFERENCE_BATCHER_CACHE)
 
         # Second call with same config
-        map_partitioned_lists_fairchembatch(
+        map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
             fairchem_model="uma-s-1",
@@ -332,11 +332,11 @@ class TestMapPartitionedListsFairchemBatch:
         monkeypatch.chdir(tmp_path)
 
         from quacc.recipes.mlp.core import static_job
-        from quacc.wflow_tools.job_patterns import map_partitioned_lists_fairchembatch
+        from quacc.wflow_tools.job_patterns import map_partition_fairchembatch
 
         atoms_list = [bulk("Cu")]
 
-        results = map_partitioned_lists_fairchembatch(
+        results = map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
             fairchem_model="uma-s-1",
@@ -352,13 +352,13 @@ class TestMapPartitionedListsFairchemBatch:
     ):
         """
         End-to-end test: create 10 copper atoms objects with varying sizes,
-        run batched inference via map_partitioned_lists_fairchembatch,
+        run batched inference via map_partition_fairchembatch,
         and verify all results are returned correctly.
         """
         monkeypatch.chdir(tmp_path)
 
         from quacc.recipes.mlp.core import static_job
-        from quacc.wflow_tools.job_patterns import map_partitioned_lists_fairchembatch
+        from quacc.wflow_tools.job_patterns import map_partition_fairchembatch
 
         # Create 10 different copper structures with varying sizes
         atoms_list = []
@@ -376,7 +376,7 @@ class TestMapPartitionedListsFairchemBatch:
         assert len(atoms_list) == 10
 
         # Run batched inference
-        results = map_partitioned_lists_fairchembatch(
+        results = map_partition_fairchembatch(
             static_job,
             atoms_list=atoms_list,
             fairchem_model="uma-s-1",
@@ -429,13 +429,9 @@ class TestMapPartitionedListsFairchemBatch:
 
         monkeypatch.chdir(tmp_path)
 
-        from fairchem.core import FAIRChemCalculator
-
         from quacc.recipes.mlp._base import _INFERENCE_BATCHER_CACHE
         from quacc.recipes.mlp.core import relax_job
-        from quacc.runners.ase import Runner
-        from quacc.schemas.ase import Summarize
-        from quacc.wflow_tools.job_patterns import map_partitioned_lists_fairchembatch
+        from quacc.wflow_tools.job_patterns import map_partition_fairchembatch
 
         # Clear batcher cache to ensure fresh start
         _INFERENCE_BATCHER_CACHE.clear()
@@ -452,7 +448,7 @@ class TestMapPartitionedListsFairchemBatch:
         # Warmup run for batched (includes Ray Serve setup overhead)
         warmup_atoms = bulk("Cu") * (4, 4, 4)
         warmup_atoms.rattle(stdev=0.1, seed=999)
-        _ = map_partitioned_lists_fairchembatch(
+        _ = map_partition_fairchembatch(
             relax_job,
             atoms_list=[warmup_atoms],
             fairchem_model="uma-s-1",
@@ -461,7 +457,7 @@ class TestMapPartitionedListsFairchemBatch:
 
         # Time batched inference (after warmup)
         start_batched = time.perf_counter()
-        results_batched = map_partitioned_lists_fairchembatch(
+        results_batched = map_partition_fairchembatch(
             relax_job,
             atoms_list=atoms_list,
             fairchem_model="uma-s-1",
@@ -473,26 +469,16 @@ class TestMapPartitionedListsFairchemBatch:
         assert len(results_batched) == 10
         assert all("results" in r and "energy" in r["results"] for r in results_batched)
 
-        # Time sequential inference using simple loop with standard FAIRChem calculator
-        # Create a fresh calculator directly (bypass quacc caching)
-        calc = FAIRChemCalculator.from_model_checkpoint(
-            name_or_path="uma-s-1", task_name="omat"
-        )
-
-        # Warmup for sequential (first calculation initializes model)
+        # Warmup for sequential (first call loads model)
         warmup_atoms = bulk("Cu") * (4, 4, 4)
         warmup_atoms.rattle(stdev=0.1, seed=999)
-        warmup_atoms.calc = calc
-        _ = warmup_atoms.get_potential_energy()
+        _ = relax_job(warmup_atoms, method="fairchem", name_or_path="uma-s-1", task_name="omat")
 
+        # Time sequential inference - just call relax_job in a loop
         start_sequential = time.perf_counter()
         results_sequential = []
         for atoms in atoms_list:
-            # Run relaxation sequentially using direct calculator
-            atoms_copy = atoms.copy()
-            atoms_copy.calc = calc
-            dyn = Runner(atoms_copy, calc).run_opt(fmax=0.05)
-            result = Summarize(additional_fields={"name": "fairchem Relax"}).opt(dyn)
+            result = relax_job(atoms, method="fairchem", name_or_path="uma-s-1", task_name="omat")
             results_sequential.append(result)
         time_sequential = time.perf_counter() - start_sequential
 
@@ -518,7 +504,60 @@ class TestMapPartitionedListsFairchemBatch:
             ), f"Energy mismatch at index {i}"
 
 
-class TestMapPartitionedListsFairchemBatchNoFairchem:
+@pytest.mark.skipif(not HAS_HF_TOKEN, reason="HuggingFace token not available")
+class TestMapPartitionedListsFairchemBatch:
+    """Tests for the full partition/map_partitioned_lists_fairchembatch/unpartition pattern."""
+
+    def test_partitioned_workflow(self, tmp_path, monkeypatch, cleanup_batchers):
+        """Test the full partition -> map -> unpartition workflow."""
+        monkeypatch.chdir(tmp_path)
+
+        from quacc.recipes.mlp.core import static_job
+        from quacc.wflow_tools.job_patterns import (
+            map_partitioned_lists_fairchembatch,
+            partition,
+            unpartition,
+        )
+
+        # Create 6 atoms objects
+        atoms_list = [bulk("Cu") for _ in range(6)]
+
+        # Partition into 2 partitions
+        num_partitions = 2
+        partitioned_atoms = partition(atoms_list, num_partitions)
+
+        assert len(partitioned_atoms) == 2
+        assert len(partitioned_atoms[0]) == 3
+        assert len(partitioned_atoms[1]) == 3
+
+        # Run via map_partitioned_lists_fairchembatch
+        results_partitioned = map_partitioned_lists_fairchembatch(
+            static_job,
+            num_partitions,
+            fairchem_model="uma-s-1",
+            task_name="omat",
+            atoms_list=partitioned_atoms,
+        )
+
+        # Should get 2 lists of results (one per partition)
+        assert len(results_partitioned) == 2
+        assert len(results_partitioned[0]) == 3
+        assert len(results_partitioned[1]) == 3
+
+        # Unpartition to get flat list
+        all_results = unpartition(results_partitioned)
+
+        assert len(all_results) == 6
+
+        # All Cu atoms should have similar energies
+        for result in all_results:
+            assert "results" in result
+            assert result["results"]["energy"] == pytest.approx(
+                -3.7579006783217954, rel=1e-4
+            )
+
+
+class TestMapPartitionFairchemBatchNoFairchem:
     """Tests for error handling when fairchem is not available."""
 
     def test_import_error_without_fairchem(self, tmp_path, monkeypatch):
@@ -529,11 +568,11 @@ class TestMapPartitionedListsFairchemBatchNoFairchem:
         # if fairchem is not installed, otherwise it passes as fairchem is available
         if find_spec("fairchem") is None:
             from quacc.wflow_tools.job_patterns import (
-                map_partitioned_lists_fairchembatch,
+                map_partition_fairchembatch,
             )
 
             with pytest.raises(ImportError, match="fairchem must be installed"):
-                map_partitioned_lists_fairchembatch(
+                map_partition_fairchembatch(
                     lambda x: x,
                     atoms_list=[bulk("Cu")],
                     fairchem_model="uma-s-1",
