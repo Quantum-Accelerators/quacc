@@ -429,11 +429,7 @@ class TestMapPartitionFairchemBatch:
         # Time batched inference (after warmup)
         start_batched = time.perf_counter()
         results_batched = map_partition_fairchembatch(
-            relax_job,
-            atoms_list=atoms_list,
-            fairchem_model="uma-s-1",
-            task_name="omat",
-
+            relax_job, atoms_list=atoms_list, fairchem_model="uma-s-1", task_name="omat"
         )
         time_batched = time.perf_counter() - start_batched
 
@@ -444,13 +440,17 @@ class TestMapPartitionFairchemBatch:
         # Warmup for sequential (first call loads model)
         warmup_atoms = bulk("Cu") * (4, 4, 4)
         warmup_atoms.rattle(stdev=0.1, seed=999)
-        _ = relax_job(warmup_atoms, method="fairchem", name_or_path="uma-s-1", task_name="omat")
+        _ = relax_job(
+            warmup_atoms, method="fairchem", name_or_path="uma-s-1", task_name="omat"
+        )
 
         # Time sequential inference - just call relax_job in a loop
         start_sequential = time.perf_counter()
         results_sequential = []
         for atoms in atoms_list:
-            result = relax_job(atoms, method="fairchem", name_or_path="uma-s-1", task_name="omat")
+            result = relax_job(
+                atoms, method="fairchem", name_or_path="uma-s-1", task_name="omat"
+            )
             results_sequential.append(result)
         time_sequential = time.perf_counter() - start_sequential
 
@@ -537,9 +537,7 @@ class TestMapPartitionFairchemBatchNoFairchem:
         # This test verifies the error message - it will only actually raise
         # if fairchem is not installed, otherwise it passes as fairchem is available
         if find_spec("fairchem") is None:
-            from quacc.wflow_tools.job_patterns import (
-                map_partition_fairchembatch,
-            )
+            from quacc.wflow_tools.job_patterns import map_partition_fairchembatch
 
             with pytest.raises(ImportError, match="fairchem must be installed"):
                 map_partition_fairchembatch(
