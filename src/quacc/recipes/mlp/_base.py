@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from ase.calculators.calculator import BaseCalculator
 
     if has_fairchem:
-        from fairchem.core.calculate import InferenceBatcher  
+        from fairchem.core.calculate import InferenceBatcher
 
 LOGGER = getLogger(__name__)
 
