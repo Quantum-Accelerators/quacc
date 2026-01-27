@@ -44,10 +44,7 @@ class TestGetInferenceBatcher:
 
         from quacc.recipes.mlp._base import get_inference_batcher
 
-        batcher = get_inference_batcher(
-            name_or_path="uma-s-1",
-            task_name="omat",
-        )
+        batcher = get_inference_batcher(name_or_path="uma-s-1", task_name="omat")
 
         assert batcher is not None
         assert hasattr(batcher, "batch_predict_unit")
@@ -59,14 +56,8 @@ class TestGetInferenceBatcher:
 
         from quacc.recipes.mlp._base import get_inference_batcher
 
-        batcher1 = get_inference_batcher(
-            name_or_path="uma-s-1",
-            task_name="omat",
-        )
-        batcher2 = get_inference_batcher(
-            name_or_path="uma-s-1",
-            task_name="omat",
-        )
+        batcher1 = get_inference_batcher(name_or_path="uma-s-1", task_name="omat")
+        batcher2 = get_inference_batcher(name_or_path="uma-s-1", task_name="omat")
 
         # Same config should return same batcher instance
         assert batcher1 is batcher2
@@ -84,14 +75,10 @@ class TestGetInferenceBatcher:
         _INFERENCE_BATCHER_CACHE.clear()
 
         batcher1 = get_inference_batcher(
-            name_or_path="uma-s-1",
-            task_name="omat",
-            max_batch_size=256,
+            name_or_path="uma-s-1", task_name="omat", max_batch_size=256
         )
         batcher2 = get_inference_batcher(
-            name_or_path="uma-s-1",
-            task_name="omat",
-            max_batch_size=512,
+            name_or_path="uma-s-1", task_name="omat", max_batch_size=512
         )
 
         # Different configs should create different batchers
@@ -110,9 +97,7 @@ class TestGetInferenceBatcher:
         _INFERENCE_BATCHER_CACHE.clear()
 
         batcher = get_inference_batcher(
-            name_or_path="uma-s-1",
-            task_name="omat",
-            max_batch_size=256,
+            name_or_path="uma-s-1", task_name="omat", max_batch_size=256
         )
         assert batcher is not None
 
@@ -132,10 +117,7 @@ class TestShutdownInferenceBatchers:
         )
 
         # Create a batcher
-        get_inference_batcher(
-            name_or_path="uma-s-1",
-            task_name="omat",
-        )
+        get_inference_batcher(name_or_path="uma-s-1", task_name="omat")
 
         assert len(_INFERENCE_BATCHER_CACHE) > 0
 
@@ -157,16 +139,11 @@ class TestPickCalculatorWithPredictUnit:
 
         from quacc.recipes.mlp._base import get_inference_batcher, pick_calculator
 
-        batcher = get_inference_batcher(
-            name_or_path="uma-s-1",
-            task_name="omat",
-        )
+        batcher = get_inference_batcher(name_or_path="uma-s-1", task_name="omat")
 
         # Create calculator with predict_unit
         calc = pick_calculator(
-            "fairchem",
-            predict_unit=batcher.batch_predict_unit,
-            task_name="omat",
+            "fairchem", predict_unit=batcher.batch_predict_unit, task_name="omat"
         )
 
         assert calc is not None
@@ -180,15 +157,10 @@ class TestPickCalculatorWithPredictUnit:
 
         from quacc.recipes.mlp._base import get_inference_batcher, pick_calculator
 
-        batcher = get_inference_batcher(
-            name_or_path="uma-s-1",
-            task_name="omat",
-        )
+        batcher = get_inference_batcher(name_or_path="uma-s-1", task_name="omat")
 
         calc = pick_calculator(
-            "fairchem",
-            predict_unit=batcher.batch_predict_unit,
-            task_name="omat",
+            "fairchem", predict_unit=batcher.batch_predict_unit, task_name="omat"
         )
 
         atoms = bulk("Cu")
@@ -248,7 +220,9 @@ class TestMapPartitionFairchemBatch:
         assert results[0]["tag"] == "cu_calc"
         assert results[1]["tag"] == "ag_calc"
 
-    def test_batched_with_unmapped_kwargs(self, tmp_path, monkeypatch, cleanup_batchers):
+    def test_batched_with_unmapped_kwargs(
+        self, tmp_path, monkeypatch, cleanup_batchers
+    ):
         """Test batched calculation with unmapped kwargs."""
         monkeypatch.chdir(tmp_path)
 
@@ -347,9 +321,7 @@ class TestMapPartitionFairchemBatch:
         assert len(results) == 1
         assert "results" in results[0]
 
-    def test_end_to_end_ten_copper_atoms(
-        self, tmp_path, monkeypatch, cleanup_batchers
-    ):
+    def test_end_to_end_ten_copper_atoms(self, tmp_path, monkeypatch, cleanup_batchers):
         """
         End-to-end test: create 10 copper atoms objects with varying sizes,
         run batched inference via map_partition_fairchembatch,
@@ -401,10 +373,9 @@ class TestMapPartitionFairchemBatch:
             # Verify forces shape matches atoms count
             forces = result["results"]["forces"]
             expected_natoms = 1 if i < 5 else 2
-            assert forces.shape == (
-                expected_natoms,
-                3,
-            ), f"Result {i} forces shape mismatch"
+            assert forces.shape == (expected_natoms, 3), (
+                f"Result {i} forces shape mismatch"
+            )
 
         # Verify unit cell energies are similar (within perturbation tolerance)
         unit_cell_energies = [results[i]["results"]["energy"] for i in range(5)]
@@ -457,11 +428,16 @@ class TestMapPartitionFairchemBatch:
 
         # Time batched inference (after warmup)
         start_batched = time.perf_counter()
+<<<<<<< HEAD
         results_batched = map_partition_fairchembatch(
             relax_job,
             atoms_list=atoms_list,
             fairchem_model="uma-s-1",
             task_name="omat",
+=======
+        results_batched = map_partitioned_lists_fairchembatch(
+            relax_job, atoms_list=atoms_list, fairchem_model="uma-s-1", task_name="omat"
+>>>>>>> 246d481b47aaca2d0a66de9bf0eb43753a71ef62
         )
         time_batched = time.perf_counter() - start_batched
 
@@ -485,8 +461,6 @@ class TestMapPartitionFairchemBatch:
         assert len(results_sequential) == 10
 
         # Print timing info for debugging
-        print(f"\nBatched time: {time_batched:.3f}s, Sequential time: {time_sequential:.3f}s")
-        print(f"Speedup: {time_sequential / time_batched:.2f}x")
 
         # Batched should be faster due to concurrent execution and GPU batching
         # We use a generous margin to account for system variability
@@ -497,7 +471,7 @@ class TestMapPartitionFairchemBatch:
 
         # Verify both methods produce similar final energies (relaxed structures)
         for i, (batched, sequential) in enumerate(
-            zip(results_batched, results_sequential)
+            zip(results_batched, results_sequential, strict=False)
         ):
             assert batched["results"]["energy"] == pytest.approx(
                 sequential["results"]["energy"], rel=1e-3
