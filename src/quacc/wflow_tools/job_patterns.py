@@ -250,14 +250,14 @@ def map_partitioned_lists_fairchembatch(
     ... )
     >>>
     >>> num_partitions = 4
-    >>> partitioned_atoms = partition(my_atoms_list, num_partitions)
+    >>> partitioned_inputs = partition(my_input_list, num_partitions)
     >>>
     >>> results_partitioned = map_partitioned_lists_fairchembatch(
     ...     relax_job,
     ...     num_partitions,
     ...     name_or_path="uma-s-1",
     ...     task_name="omat",
-    ...     atoms=partitioned_atoms,
+    ...     atoms=partitioned_inputs,
     ... )
     >>>
     >>> all_results = unpartition(results_partitioned)
