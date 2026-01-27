@@ -185,14 +185,7 @@ class TestMapPartitionFairchemBatch:
         atoms_list = [bulk("Cu"), bulk("Cu") * (2, 1, 1)]
 
         results = map_partition_fairchembatch(
-<<<<<<< HEAD
-            static_job,
-            atoms=atoms_list,
-            name_or_path="uma-s-1",
-            task_name="omat",
-=======
             static_job, atoms_list=atoms_list, name_or_path="uma-s-1", task_name="omat"
->>>>>>> 83ee92340703b29107e9b4531cc5ddb7e10dfea6
         )
 
         assert len(results) == 2
@@ -284,28 +277,14 @@ class TestMapPartitionFairchemBatch:
 
         # First call
         map_partition_fairchembatch(
-<<<<<<< HEAD
-            static_job,
-            atoms=atoms_list,
-            name_or_path="uma-s-1",
-            task_name="omat",
-=======
             static_job, atoms_list=atoms_list, name_or_path="uma-s-1", task_name="omat"
->>>>>>> 83ee92340703b29107e9b4531cc5ddb7e10dfea6
         )
 
         cache_size_after_first = len(_INFERENCE_BATCHER_CACHE)
 
         # Second call with same config
         map_partition_fairchembatch(
-<<<<<<< HEAD
-            static_job,
-            atoms=atoms_list,
-            name_or_path="uma-s-1",
-            task_name="omat",
-=======
             static_job, atoms_list=atoms_list, name_or_path="uma-s-1", task_name="omat"
->>>>>>> 83ee92340703b29107e9b4531cc5ddb7e10dfea6
         )
 
         # Cache size should remain the same (batcher was reused)
@@ -361,14 +340,7 @@ class TestMapPartitionFairchemBatch:
 
         # Run batched inference
         results = map_partition_fairchembatch(
-<<<<<<< HEAD
-            static_job,
-            atoms=atoms_list,
-            name_or_path="uma-s-1",
-            task_name="omat",
-=======
             static_job, atoms_list=atoms_list, name_or_path="uma-s-1", task_name="omat"
->>>>>>> 83ee92340703b29107e9b4531cc5ddb7e10dfea6
         )
 
         # Verify we got 10 results back
