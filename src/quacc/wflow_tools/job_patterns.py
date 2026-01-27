@@ -13,8 +13,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import Any
 
-    from ase.atoms import Atoms
-
 
 @job
 def partition(list_to_partition: list, num_partitions: int) -> list[Any]:
