@@ -154,3 +154,189 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())
+
+@pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
+def test_static_job_formation_energy_fairchem(tmp_path, monkeypatch):
+    """Test formation energy calculation with FAIRChem UMA omat."""
+    monkeypatch.chdir(tmp_path)
+    _set_dtype(32)
+
+    from huggingface_hub.utils._auth import get_token
+
+    if not get_token():
+        pytest.skip("HuggingFace token not available for FAIRChem")
+
+    calc_kwargs = {"name_or_path": "uma-s-1", "task_name": "omat"}
+
+    # Test Cu (elemental system - formation energy should be ~0)
+    atoms_cu = bulk("Cu")
+    output_cu = static_job(
+        atoms_cu, method="fairchem", use_formation_energy=True, **calc_kwargs
+    )
+    # For pure elements, formation energy should be close to zero
+    assert abs(output_cu["results"]["energy"]) < 0.1
+    assert np.shape(output_cu["results"]["forces"]) == (1, 3)
+
+    # Test MgO (binary compound - formation energy should be negative)
+    atoms_mgo = bulk("MgO", crystalstructure="rocksalt", a=4.2)
+    output_mgo = static_job(
+        atoms_mgo, method="fairchem", use_formation_energy=True, **calc_kwargs
+    )
+    # MgO has a substantial negative formation energy
+    assert output_mgo["results"]["energy"] < -2.0  # per formula unit
+    assert np.shape(output_mgo["results"]["forces"]) == (2, 3)
+
+
+@pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
+def test_relax_job_formation_energy_fairchem(tmp_path, monkeypatch):
+    """Test formation energy calculation during relaxation with FAIRChem UMA omat."""
+    monkeypatch.chdir(tmp_path)
+    _set_dtype(32)
+
+    from huggingface_hub.utils._auth import get_token
+
+    if not get_token():
+        pytest.skip("HuggingFace token not available for FAIRChem")
+
+    calc_kwargs = {"name_or_path": "uma-s-1", "task_name": "omat"}
+
+    # Test Cu supercell
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].position += 0.1
+    output = relax_job(
+        atoms, method="fairchem", use_formation_energy=True, **calc_kwargs
+    )
+    # 8 Cu atoms, formation energy should be near zero
+    assert abs(output["results"]["energy"]) < 0.8  # 8 * 0.1 eV tolerance per atom
+    assert np.shape(output["results"]["forces"]) == (8, 3)
+    assert output["atoms"] != atoms
+
+
+@pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
+def test_formation_energy_multiple_compounds_fairchem(tmp_path, monkeypatch):
+    """Test formation energy for multiple compound types with FAIRChem UMA omat."""
+    monkeypatch.chdir(tmp_path)
+    _set_dtype(32)
+
+    from huggingface_hub.utils._auth import get_token
+
+    if not get_token():
+        pytest.skip("HuggingFace token not available for FAIRChem")
+
+    calc_kwargs = {"name_or_path": "uma-s-1", "task_name": "omat"}
+
+    # Test NaCl
+    atoms_nacl = bulk("NaCl", crystalstructure="rocksalt", a=5.64)
+    output_nacl = static_job(
+        atoms_nacl, method="fairchem", use_formation_energy=True, **calc_kwargs
+    )
+    # NaCl has negative formation energy
+    assert output_nacl["results"]["energy"] < -1.0
+
+    # Test Si
+    atoms_si = bulk("Si")
+    output_si = static_job(
+        atoms_si, method="fairchem", use_formation_energy=True, **calc_kwargs
+    )
+    # Pure Si should have near-zero formation energy
+    assert abs(output_si["results"]["energy"]) < 0.1
+
+    # Test Al
+    atoms_al = bulk("Al")
+    output_al = static_job(
+        atoms_al, method="fairchem", use_formation_energy=True, **calc_kwargs
+    )
+    # Pure Al should have near-zero formation energy
+    assert abs(output_al["results"]["energy"]) < 0.1
+
+
+@pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
+def test_relax_job_formation_energy_cell_fairchem(tmp_path, monkeypatch):
+    """Test formation energy calculation with cell relaxation using FAIRChem UMA omat."""
+    monkeypatch.chdir(tmp_path)
+    _set_dtype(32)
+
+    from huggingface_hub.utils._auth import get_token
+
+    if not get_token():
+        pytest.skip("HuggingFace token not available for FAIRChem")
+
+    calc_kwargs = {"name_or_path": "uma-s-1", "task_name": "omat"}
+
+    # Test MgO with cell relaxation
+    atoms_mgo = bulk("MgO", crystalstructure="rocksalt", a=4.2) * (2, 2, 2)
+    atoms_mgo[0].position += 0.05
+    output = relax_job(
+        atoms_mgo,
+        method="fairchem",
+        relax_cell=True,
+        use_formation_energy=True,
+        **calc_kwargs,
+    )
+    # Should have relaxed and computed formation energy
+    assert output["results"]["energy"] < -8.0  # 8 formula units * ~-1 eV per formula unit
+    assert output["atoms"] != atoms_mgo
+
+
+@pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
+def test_formation_energy_error_without_omat(tmp_path, monkeypatch):
+    """Test that formation energy raises error when not using omat task."""
+    monkeypatch.chdir(tmp_path)
+    _set_dtype(32)
+
+    from huggingface_hub.utils._auth import get_token
+
+    if not get_token():
+        pytest.skip("HuggingFace token not available for FAIRChem")
+
+    # Try to use formation energy without omat task - should raise
+    atoms = bulk("Cu")
+    with pytest.raises(ValueError, match="task_name='omat'"):
+        static_job(
+            atoms,
+            method="fairchem",
+            name_or_path="uma-s-1",
+            task_name="omol",  # Wrong task
+            use_formation_energy=True,
+        )
+
+
+@pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
+def test_formation_energy_error_without_fairchem(tmp_path, monkeypatch):
+    """Test that formation energy raises error when not using fairchem."""
+    monkeypatch.chdir(tmp_path)
+
+    if "mace-mp" not in methods:
+        pytest.skip("mace-mp not available")
+
+    _set_dtype(64)
+
+    # Try to use formation energy with non-FAIRChem method - should raise
+    atoms = bulk("Cu")
+    with pytest.raises(ValueError, match="FAIRChem UMA"):
+        static_job(atoms, method="mace-mp", use_formation_energy=True)
+
+
+@pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
+def test_static_job_formation_energy_with_kwargs(tmp_path, monkeypatch):
+    """Test that formation_energy_kwargs are properly passed through."""
+    monkeypatch.chdir(tmp_path)
+    _set_dtype(32)
+
+    from huggingface_hub.utils._auth import get_token
+
+    if not get_token():
+        pytest.skip("HuggingFace token not available for FAIRChem")
+
+    atoms = bulk("Cu")
+    output = static_job(
+        atoms,
+        method="fairchem",
+        name_or_path="uma-s-1",
+        task_name="omat",
+        use_formation_energy=True,
+        formation_energy_kwargs={},  # Pass empty dict as formation_energy_kwargs
+    )
+    # Should succeed and compute formation energy
+    assert abs(output["results"]["energy"]) < 0.1
+    assert np.shape(output["results"]["forces"]) == (1, 3)

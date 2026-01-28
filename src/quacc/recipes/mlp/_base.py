@@ -5,7 +5,7 @@ from __future__ import annotations
 from functools import lru_cache, wraps
 from importlib.util import find_spec
 from logging import getLogger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from ase.units import GPa as _GPa_to_eV_per_A3
 from monty.dev import requires
@@ -57,6 +57,8 @@ def pick_calculator(
     method: Literal[
         "mace-mp", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"
     ],
+    use_formation_energy: bool = False,
+    formation_energy_kwargs: Any = None,
     **calc_kwargs,
 ) -> BaseCalculator:
     """
@@ -71,6 +73,13 @@ def pick_calculator(
     ----------
     method
         Name of the calculator to use.
+    use_formation_energy
+        If True, wrap the calculator with FormationEnergyCalculator to compute
+        formation energies. Currently only supported for FAIRChem UMA with
+        task_name='omat'. Default is False.
+    formation_energy_kwargs
+        Custom kwargs for the FormationEnergyCalculator wrapper. Only used if
+        use_formation_energy=True. Default is None.
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely.
@@ -78,7 +87,7 @@ def pick_calculator(
     Returns
     -------
     BaseCalculator
-        The instantiated calculator
+        The instantiated calculator (optionally wrapped with FormationEnergyCalculator)
     """
     import torch
 
@@ -138,5 +147,36 @@ def pick_calculator(
         raise ValueError(f"Unrecognized {method=}.")
 
     calc.parameters["version"] = __version__
+
+    # Wrap with FormationEnergyCalculator if requested
+    if use_formation_energy:
+        from fairchem.core import FAIRChemCalculator
+        from fairchem.core.calculate.ase_calculator import FormationEnergyCalculator
+
+        if method.lower() != "fairchem":
+            raise ValueError(
+                "Formation energy calculations are currently only supported for "
+                "FAIRChem UMA with task_name='omat'. Please use method='fairchem' "
+                "with use_formation_energy=True."
+            )
+
+        if not isinstance(calc, FAIRChemCalculator):
+            raise ValueError(
+                "Expected FAIRChemCalculator but got a different calculator type."
+            )
+
+        # Check that omat task is being used
+        if not hasattr(calc, "task_name") or calc.task_name != "omat":
+            raise ValueError(
+                "Formation energy calculations are only supported for FAIRChem UMA "
+                "with task_name='omat'. Please ensure you are using "
+                "FAIRChemCalculator.from_model_checkpoint(..., task_name='omat')."
+            )
+
+        # Use provided kwargs or empty dict if None
+        fe_kwargs = formation_energy_kwargs or {}
+
+        # Wrap with FormationEnergyCalculator using provided kwargs
+        calc = FormationEnergyCalculator(calculator=calc, **fe_kwargs)
 
     return calc
