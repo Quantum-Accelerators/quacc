@@ -24,7 +24,7 @@ def static_job(
     method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
     additional_fields: dict[str, Any] | None = None,
     use_formation_energy: bool = False,
-    formation_energy_kwargs: Any = None,
+    references: Literal["MP20", "OMAT24"] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -40,12 +40,16 @@ def static_job(
         Additional fields to add to the results dictionary.
     use_formation_energy
         If True, wrap the calculator with FormationEnergyCalculator to compute
-        formation energies. Currently only supported for FAIRChem with
-        method='fairchem' and task_name='omat'. Default is False. The formation
-        energy is returned in eV per formula unit (not eV/atom).
-    formation_energy_kwargs
-        Custom kwargs for the FormationEnergyCalculator wrapper. Only used if
-        use_formation_energy=True. Default is None.
+        formation energies. Requires fairchem-core package to be installed.
+        Supported for all methods. Default is False. The formation energy is
+        returned in eV per formula unit (not eV/atom).
+    references
+        Formation energy references to use. Only used if use_formation_energy=True.
+        Options:
+        - None: Use built-in references from FormationEnergyCalculator (FAIRChem models only)
+        - "OMAT24": Use OMAT24 references from https://huggingface.co/facebook/UMA
+        - "MP20": Use MP-20 references from matbench-discovery
+        Default is None.
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of
@@ -64,7 +68,7 @@ def static_job(
     calc = pick_calculator(
         method,
         use_formation_energy=use_formation_energy,
-        formation_energy_kwargs=formation_energy_kwargs,
+        references=references,
         **calc_kwargs,
     )
     final_atoms = Runner(atoms, calc).run_calc()
@@ -81,7 +85,7 @@ def relax_job(
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
     use_formation_energy: bool = False,
-    formation_energy_kwargs: Any = None,
+    references: Literal["MP20", "OMAT24"] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -102,12 +106,16 @@ def relax_job(
         Additional fields to add to the results dictionary.
     use_formation_energy
         If True, wrap the calculator with FormationEnergyCalculator to compute
-        formation energies. Currently only supported for FAIRChem with
-        method='fairchem' and task_name='omat'. Default is False. The formation
-        energy is returned in eV per formula unit (not eV/atom).
-    formation_energy_kwargs
-        Custom kwargs for the FormationEnergyCalculator wrapper. Only used if
-        use_formation_energy=True. Default is None.
+        formation energies. Requires fairchem-core package to be installed.
+        Supported for all methods. Default is False. The formation energy is
+        returned in eV per formula unit (not eV/atom).
+    references
+        Formation energy references to use. Only used if use_formation_energy=True.
+        Options:
+        - None: Use built-in references from FormationEnergyCalculator (FAIRChem models only)
+        - "OMAT24": Use OMAT24 references from https://huggingface.co/facebook/UMA
+        - "MP20": Use MP-20 references from matbench-discovery
+        Default is None.
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely. For a list of
@@ -129,7 +137,7 @@ def relax_job(
     calc = pick_calculator(
         method,
         use_formation_energy=use_formation_energy,
-        formation_energy_kwargs=formation_energy_kwargs,
+        references=references,
         **calc_kwargs,
     )
 

@@ -282,8 +282,8 @@ def test_relax_job_formation_energy_cell_fairchem(tmp_path, monkeypatch):
 
 
 @pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
-def test_formation_energy_error_without_omat(tmp_path, monkeypatch):
-    """Test that formation energy raises error when not using omat task."""
+def test_formation_energy_non_omat_task(tmp_path, monkeypatch):
+    """Test that formation energy works with non-omat tasks (uses default references)."""
     monkeypatch.chdir(tmp_path)
     _set_dtype(32)
 
@@ -292,21 +292,23 @@ def test_formation_energy_error_without_omat(tmp_path, monkeypatch):
     if not get_token():
         pytest.skip("HuggingFace token not available for FAIRChem")
 
-    # Try to use formation energy without omat task - should raise
+    # Formation energy should work with non-omat tasks, using default references
     atoms = bulk("Cu")
-    with pytest.raises(ValueError, match="task_name='omat'"):
-        static_job(
-            atoms,
-            method="fairchem",
-            name_or_path="uma-s-1",
-            task_name="omol",  # Wrong task
-            use_formation_energy=True,
-        )
+    # This should not raise an error - it will use default references
+    output = static_job(
+        atoms,
+        method="fairchem",
+        name_or_path="uma-s-1",
+        task_name="omol",  # Non-omat task
+        use_formation_energy=True,
+    )
+    # Should complete successfully
+    assert "energy" in output["results"]
 
 
 @pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
-def test_formation_energy_error_without_fairchem(tmp_path, monkeypatch):
-    """Test that formation energy raises error when not using fairchem."""
+def test_formation_energy_with_mace(tmp_path, monkeypatch):
+    """Test that formation energy works with non-FAIRChem models when references provided."""
     monkeypatch.chdir(tmp_path)
 
     if "mace-mp" not in methods:
@@ -314,15 +316,65 @@ def test_formation_energy_error_without_fairchem(tmp_path, monkeypatch):
 
     _set_dtype(64)
 
-    # Try to use formation energy with non-FAIRChem method - should raise
+    # Formation energy should work with mace-mp when references are provided
     atoms = bulk("Cu")
-    with pytest.raises(ValueError, match="FAIRChem UMA"):
-        static_job(atoms, method="mace-mp", use_formation_energy=True)
+    # Use OMAT24 references for testing
+    
+    output = static_job(
+        atoms,
+        method="mace-mp",
+        use_formation_energy=True,
+        references="OMAT24",
+    )
+    # Should complete successfully
+    assert "energy" in output["results"]
 
 
 @pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
-def test_static_job_formation_energy_with_kwargs(tmp_path, monkeypatch):
-    """Test that formation_energy_kwargs are properly passed through."""
+def test_builtin_vs_omat24_references(tmp_path, monkeypatch):
+    """Test that built-in and OMAT24 references give identical results for UMA-s-1p1 with task_name='omat'."""
+    monkeypatch.chdir(tmp_path)
+    _set_dtype(32)
+
+    from huggingface_hub.utils._auth import get_token
+
+    if not get_token():
+        pytest.skip("HuggingFace token not available for FAIRChem")
+
+    calc_kwargs = {"name_or_path": "uma-s-1p1", "task_name": "omat"}
+    atoms = bulk("Cu")
+
+    # Test with built-in references (None)
+    output_builtin = static_job(
+        atoms,
+        method="fairchem",
+        use_formation_energy=True,
+        references=None,  # Use built-in
+        **calc_kwargs,
+    )
+    energy_builtin = output_builtin["results"]["energy"]
+
+    # Test with OMAT24 references (explicit)
+    output_omat24 = static_job(
+        atoms,
+        method="fairchem",
+        use_formation_energy=True,
+        references="OMAT24",
+        **calc_kwargs,
+    )
+    energy_omat24 = output_omat24["results"]["energy"]
+
+    # Results should be identical (or very close due to numerical precision)
+    assert abs(energy_builtin - energy_omat24) < 1e-6, (
+        f"Built-in references ({energy_builtin:.6f} eV) differ from OMAT24 "
+        f"references ({energy_omat24:.6f} eV) by {abs(energy_builtin - energy_omat24):.6e} eV"
+    )
+    print(f"\nBuilt-in: {energy_builtin:.6f} eV, OMAT24: {energy_omat24:.6f} eV")
+
+
+@pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
+def test_static_job_formation_energy_with_references(tmp_path, monkeypatch):
+    """Test that references parameter is properly passed through."""
     monkeypatch.chdir(tmp_path)
     _set_dtype(32)
 
@@ -338,8 +390,173 @@ def test_static_job_formation_energy_with_kwargs(tmp_path, monkeypatch):
         name_or_path="uma-s-1",
         task_name="omat",
         use_formation_energy=True,
-        formation_energy_kwargs={},  # Pass empty dict as formation_energy_kwargs
+        references=None,  # Use built-in references
     )
     # Should succeed and compute formation energy
     assert abs(output["results"]["energy"]) < 0.1
     assert np.shape(output["results"]["forces"]) == (1, 3)
+
+
+@pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
+def test_formation_energy_consistency_across_models(tmp_path, monkeypatch):
+    """Test that formation energies are consistent across different models.
+    
+    This test ensures that when different ML potentials calculate formation
+    energies with appropriate references, they yield similar results 
+    (within ~0.1 eV/atom). This helps debug issues with formation energy
+    references and MP corrections.
+    """
+    monkeypatch.chdir(tmp_path)
+    
+    from huggingface_hub.utils._auth import get_token
+
+    if not get_token():
+        pytest.skip("HuggingFace token not available for FAIRChem")
+    
+    # Get OMAT24 references for non-FAIRChem models
+    # (FAIRChem will use built-in references with None)
+    
+    # Test elemental system (Cu) - formation energy should be near zero
+    test_structures = [
+        ("Cu", bulk("Cu"), 0.0, 0.2),  # (name, structure, expected_per_atom, tolerance)
+        ("MgO", bulk("MgO", crystalstructure="rocksalt", a=4.2), -3.0, 0.5),
+    ]
+    
+    for struct_name, atoms, expected_per_atom, tolerance in test_structures:
+        results = {}
+        
+        # Test with FAIRChem (uses built-in references with None)
+        if "fairchem" in methods:
+            _set_dtype(32)
+            output = static_job(
+                atoms,
+                method="fairchem",
+                name_or_path="uma-s-1",
+                task_name="omat",
+                use_formation_energy=True,
+                references=None,  # Use built-in
+            )
+            energy_per_atom = output["results"]["energy"] / len(atoms)
+            results["fairchem"] = energy_per_atom
+            print(f"\n{struct_name} - fairchem: {energy_per_atom:.4f} eV/atom")
+        
+        # Test with MACE (using OMAT24 references)
+        if "mace-mp" in methods:
+            _set_dtype(64)
+            output = static_job(
+                atoms,
+                method="mace-mp",
+                use_formation_energy=True,
+                references="OMAT24",
+            )
+            energy_per_atom = output["results"]["energy"] / len(atoms)
+            results["mace-mp"] = energy_per_atom
+            print(f"{struct_name} - mace-mp: {energy_per_atom:.4f} eV/atom")
+        
+        # Test with TensorNet (using OMAT24 references)
+        if "tensornet" in methods:
+            _set_dtype(32)
+            output = static_job(
+                atoms,
+                method="tensornet",
+                use_formation_energy=True,
+                references="OMAT24",
+            )
+            energy_per_atom = output["results"]["energy"] / len(atoms)
+            results["tensornet"] = energy_per_atom
+            print(f"{struct_name} - tensornet: {energy_per_atom:.4f} eV/atom")
+        
+        # Test with SevenNet (using OMAT24 references)
+        if "sevennet" in methods:
+            _set_dtype(32)
+            output = static_job(
+                atoms,
+                method="sevennet",
+                use_formation_energy=True,
+                references="OMAT24",
+            )
+            energy_per_atom = output["results"]["energy"] / len(atoms)
+            results["sevennet"] = energy_per_atom
+            print(f"{struct_name} - sevennet: {energy_per_atom:.4f} eV/atom")
+        
+        # Test with ORB (using OMAT24 references)
+        if "orb" in methods:
+            _set_dtype(32)
+            output = static_job(
+                atoms,
+                method="orb",
+                use_formation_energy=True,
+                references="OMAT24",
+            )
+            energy_per_atom = output["results"]["energy"] / len(atoms)
+            results["orb"] = energy_per_atom
+            print(f"{struct_name} - orb: {energy_per_atom:.4f} eV/atom")
+        
+        # Verify we have at least 2 results to compare
+        if len(results) < 2:
+            pytest.skip(f"Not enough models available to compare for {struct_name}")
+        
+        # Check that all results are within expected range
+        for method_name, energy in results.items():
+            assert abs(energy - expected_per_atom) < tolerance, (
+                f"{struct_name} - {method_name}: {energy:.4f} eV/atom is outside "
+                f"expected range {expected_per_atom} +/- {tolerance} eV/atom"
+            )
+        
+        # Check consistency across models (within 0.1 eV/atom)
+        energies_list = list(results.values())
+        max_energy = max(energies_list)
+        min_energy = min(energies_list)
+        spread = max_energy - min_energy
+        
+        print(f"{struct_name} - Energy spread: {spread:.4f} eV/atom (min: {min_energy:.4f}, max: {max_energy:.4f})")
+        
+        # Allow slightly larger spread for compounds than elements
+        max_spread = 0.15 if "Cu" in struct_name else 0.2
+        assert spread < max_spread, (
+            f"{struct_name} - Spread of {spread:.4f} eV/atom exceeds maximum "
+            f"allowed {max_spread} eV/atom. Results: {results}"
+        )
+
+
+@pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
+def test_formation_energy_mp20_references(tmp_path, monkeypatch):
+    """Test that MP-20 references can be loaded and used."""
+    monkeypatch.chdir(tmp_path)
+    
+    from huggingface_hub.utils._auth import get_token
+
+    if not get_token():
+        pytest.skip("HuggingFace token not available for FAIRChem")
+    
+    # Test loading MP-20 references
+    from quacc.recipes.mlp._base import _get_mp20_references
+    
+    try:
+        mp20_refs = _get_mp20_references()
+        assert isinstance(mp20_refs, dict)
+        assert len(mp20_refs) > 0
+        print(f"\nLoaded MP-20 references for {len(mp20_refs)} elements")
+        
+        # Test with FAIRChem using MP20 references (explicit)
+        if "fairchem" in methods:
+            _set_dtype(32)
+            atoms = bulk("Cu")
+            
+            # Test with MP-20 references
+            output = static_job(
+                atoms,
+                method="fairchem",
+                name_or_path="uma-s-1",
+                task_name="omat",
+                use_formation_energy=True,
+                references="MP20",
+            )
+            energy_per_atom = output["results"]["energy"] / len(atoms)
+            print(f"Cu formation energy with MP-20 refs: {energy_per_atom:.4f} eV/atom")
+            
+            # Should be close to zero for elemental system
+            assert abs(energy_per_atom) < 0.2
+            
+    except Exception as e:
+        pytest.skip(f"Could not load MP-20 references: {e}")

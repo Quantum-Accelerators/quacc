@@ -51,6 +51,86 @@ def freezeargs(func: Callable) -> Callable:
     return wrapped
 
 
+@lru_cache
+def _get_omat24_references() -> dict[str, float]:
+    """
+    Fetch formation energy references for OMAT24-trained models from HuggingFace.
+    
+    These references come from https://huggingface.co/facebook/UMA/blob/main/references/form_elem_refs.yaml
+    
+    Returns
+    -------
+    dict[str, float]
+        Dictionary mapping element symbols to reference energies (eV/atom).
+    """
+    from huggingface_hub import hf_hub_download
+    import yaml
+
+    LOGGER.info("Downloading OMAT24 formation energy references from HuggingFace...")
+    
+    # Download the form_elem_refs.yaml file from HuggingFace
+    refs_file = hf_hub_download(
+        repo_id="facebook/UMA",
+        filename="references/form_elem_refs.yaml",
+        repo_type="model"
+    )
+    
+    # Load and extract the omat references
+    with open(refs_file) as f:
+        refs_data = yaml.safe_load(f)
+    
+    omat_refs = refs_data.get("refs", {}).get("omat", {})
+    
+    if not omat_refs:
+        raise ValueError("Could not find 'refs.omat' in the downloaded reference file.")
+    
+    LOGGER.info(f"Loaded OMAT24 references for {len(omat_refs)} elements.")
+    return omat_refs
+
+
+@lru_cache
+def _get_mp20_references() -> dict[str, float]:
+    """
+    Load formation energy references for MP-20 compatible models.
+    
+    These references come from matbench-discovery repository:
+    https://github.com/janosh/matbench-discovery
+    
+    Returns
+    -------
+    dict[str, float]
+        Dictionary mapping element symbols to reference energies (eV/atom).
+    """
+    import gzip
+    import json
+    from pathlib import Path
+
+    LOGGER.info("Loading MP-20 formation energy references from local file...")
+    
+    # Load from local gzipped JSON file
+    refs_file = Path(__file__).parent / "references" / "2023-02-07-mp-elemental-reference-entries.json.gz"
+    
+    if not refs_file.exists():
+        raise FileNotFoundError(
+            f"MP-20 reference file not found at {refs_file}. "
+            "Please ensure the file is in src/quacc/recipes/mlp/references/"
+        )
+    
+    # Load the gzipped JSON file
+    with gzip.open(refs_file, "rt") as f:
+        refs_data = json.load(f)
+    
+    # Extract element references based on the expected structure
+    # The file should contain element references
+    if isinstance(refs_data, dict):
+        mp20_refs = refs_data
+    else:
+        raise ValueError(f"Unexpected format in MP-20 reference file: {type(refs_data)}")
+    
+    LOGGER.info(f"Loaded MP-20 references for {len(mp20_refs)} elements.")
+    return mp20_refs
+
+
 @freezeargs
 @lru_cache
 def pick_calculator(
@@ -58,7 +138,7 @@ def pick_calculator(
         "mace-mp", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"
     ],
     use_formation_energy: bool = False,
-    formation_energy_kwargs: Any = None,
+    references: Literal["MP20", "OMAT24"] | None = None,
     **calc_kwargs,
 ) -> BaseCalculator:
     """
@@ -75,11 +155,15 @@ def pick_calculator(
         Name of the calculator to use.
     use_formation_energy
         If True, wrap the calculator with FormationEnergyCalculator to compute
-        formation energies. Currently only supported for FAIRChem UMA with
-        task_name='omat'. Default is False.
-    formation_energy_kwargs
-        Custom kwargs for the FormationEnergyCalculator wrapper. Only used if
-        use_formation_energy=True. Default is None.
+        formation energies. Requires fairchem-core package to be installed.
+        Supported for all calculator types. Default is False.
+    references
+        Formation energy references to use. Only used if use_formation_energy=True.
+        Options:
+        - None: Use built-in references from FormationEnergyCalculator (FAIRChem models only)
+        - "OMAT24": Use OMAT24 references from https://huggingface.co/facebook/UMA
+        - "MP20": Use MP-20 references from matbench-discovery
+        Default is None.
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
         `quacc.Remove` to remove a pre-existing key entirely.
@@ -134,7 +218,7 @@ def pick_calculator(
         from orb_models.forcefield import pretrained
         from orb_models.forcefield.calculator import ORBCalculator
 
-        orb_model = calc_kwargs.get("model", "orb_v2")
+        orb_model = calc_kwargs.get("model", "orb_v3_conservative_inf_omat")
         orbff = getattr(pretrained, orb_model)()
         calc = ORBCalculator(model=orbff, **calc_kwargs)
 
@@ -150,31 +234,19 @@ def pick_calculator(
 
     # Wrap with FormationEnergyCalculator if requested
     if use_formation_energy:
-        from fairchem.core import FAIRChemCalculator
         from fairchem.core.calculate.ase_calculator import FormationEnergyCalculator
 
-        if method.lower() != "fairchem":
-            raise ValueError(
-                "Formation energy calculations are currently only supported for "
-                "FAIRChem UMA with task_name='omat'. Please use method='fairchem' "
-                "with use_formation_energy=True."
-            )
-
-        if not isinstance(calc, FAIRChemCalculator):
-            raise ValueError(
-                "Expected FAIRChemCalculator but got a different calculator type."
-            )
-
-        # Check that omat task is being used
-        if not hasattr(calc, "task_name") or calc.task_name != "omat":
-            raise ValueError(
-                "Formation energy calculations are only supported for FAIRChem UMA "
-                "with task_name='omat'. Please ensure you are using "
-                "FAIRChemCalculator.from_model_checkpoint(..., task_name='omat')."
-            )
-
-        # Use provided kwargs or empty dict if None
-        fe_kwargs = formation_energy_kwargs or {}
+        # Determine which reference energies to use
+        fe_kwargs = {}
+        
+        if references == "OMAT24":
+            # Use OMAT24 references from HuggingFace
+            fe_kwargs["references"] = _get_omat24_references()
+        elif references == "MP20":
+            # Use MP-20 references from local file
+            fe_kwargs["references"] = _get_mp20_references()
+        # If references is None, use built-in references from FormationEnergyCalculator
+        # (works for FAIRChem models with task_name specified)
 
         # Wrap with FormationEnergyCalculator using provided kwargs
         calc = FormationEnergyCalculator(calculator=calc, **fe_kwargs)
