@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-import Path
-
 from functools import lru_cache, wraps
 from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
 
+import Path
 from ase.units import GPa as _GPa_to_eV_per_A3
 from monty.dev import requires
 
