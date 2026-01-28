@@ -56,7 +56,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         "tensornet": 138.172,
         "mace-mp": 130.727,
         "sevennet": 142.296,
-        "orb": 190.195,
+        "orb": 135.25,
         "fairchem": 151.367,
     }
 

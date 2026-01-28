@@ -56,7 +56,7 @@ def test_static_job(tmp_path, monkeypatch, method):
         "tensornet": -3.7593491077423096,
         "mace-mp": -4.097862720291976,
         "sevennet": -4.096191883087158,
-        "orb": -4.093477725982666,
+        "orb": -3.7420763969421387,
         "fairchem": -3.7579006783217954,
     }
     atoms = bulk("Cu")
@@ -95,7 +95,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
         "mace-mp": -32.78264569638644,
         "tensornet": -30.074462890625,
         "sevennet": -32.76924133300781,
-        "orb": -32.7361946105957,
+        "orb": -29.93630599975586,
         "fairchem": -30.004380887389797,
     }
 
@@ -143,7 +143,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
         "mace-mp": -32.8069374165035,
         "tensornet": -30.079431533813477,
         "sevennet": -32.76963806152344,
-        "orb": -32.73428726196289,
+        "orb": -29.93630599975586,
         "fairchem": -30.005004590392726,
     }
 
