@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import Path
+
 from functools import lru_cache, wraps
 from importlib.util import find_spec
 from logging import getLogger
@@ -76,7 +78,7 @@ def _get_omat24_references() -> dict[str, float]:
     )
 
     # Load and extract the omat references
-    with open(refs_file) as f:
+    with Path.open(refs_file) as f:
         refs_data = yaml.safe_load(f)
 
     omat_refs = refs_data.get("refs", {}).get("omat", {})
