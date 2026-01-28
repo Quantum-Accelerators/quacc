@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import Path
+from pathlib import Path
 
 from functools import lru_cache, wraps
 from importlib.util import find_spec
