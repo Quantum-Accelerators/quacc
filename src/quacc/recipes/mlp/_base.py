@@ -5,7 +5,7 @@ from __future__ import annotations
 from functools import lru_cache, wraps
 from importlib.util import find_spec
 from logging import getLogger
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from ase.units import GPa as _GPa_to_eV_per_A3
 from monty.dev import requires
@@ -55,35 +55,35 @@ def freezeargs(func: Callable) -> Callable:
 def _get_omat24_references() -> dict[str, float]:
     """
     Fetch formation energy references for OMAT24-trained models from HuggingFace.
-    
+
     These references come from https://huggingface.co/facebook/UMA/blob/main/references/form_elem_refs.yaml
-    
+
     Returns
     -------
     dict[str, float]
         Dictionary mapping element symbols to reference energies (eV/atom).
     """
-    from huggingface_hub import hf_hub_download
     import yaml
+    from huggingface_hub import hf_hub_download
 
     LOGGER.info("Downloading OMAT24 formation energy references from HuggingFace...")
-    
+
     # Download the form_elem_refs.yaml file from HuggingFace
     refs_file = hf_hub_download(
         repo_id="facebook/UMA",
         filename="references/form_elem_refs.yaml",
-        repo_type="model"
+        repo_type="model",
     )
-    
+
     # Load and extract the omat references
     with open(refs_file) as f:
         refs_data = yaml.safe_load(f)
-    
+
     omat_refs = refs_data.get("refs", {}).get("omat", {})
-    
+
     if not omat_refs:
         raise ValueError("Could not find 'refs.omat' in the downloaded reference file.")
-    
+
     LOGGER.info(f"Loaded OMAT24 references for {len(omat_refs)} elements.")
     return omat_refs
 
@@ -92,10 +92,10 @@ def _get_omat24_references() -> dict[str, float]:
 def _get_mp20_references() -> dict[str, float]:
     """
     Load formation energy references for MP-20 compatible models.
-    
+
     These references come from matbench-discovery repository:
     https://github.com/janosh/matbench-discovery
-    
+
     Returns
     -------
     dict[str, float]
@@ -106,27 +106,33 @@ def _get_mp20_references() -> dict[str, float]:
     from pathlib import Path
 
     LOGGER.info("Loading MP-20 formation energy references from local file...")
-    
+
     # Load from local gzipped JSON file
-    refs_file = Path(__file__).parent / "references" / "2023-02-07-mp-elemental-reference-entries.json.gz"
-    
+    refs_file = (
+        Path(__file__).parent
+        / "references"
+        / "2023-02-07-mp-elemental-reference-entries.json.gz"
+    )
+
     if not refs_file.exists():
         raise FileNotFoundError(
             f"MP-20 reference file not found at {refs_file}. "
             "Please ensure the file is in src/quacc/recipes/mlp/references/"
         )
-    
+
     # Load the gzipped JSON file
     with gzip.open(refs_file, "rt") as f:
         refs_data = json.load(f)
-    
+
     # Extract element references based on the expected structure
     # The file should contain element references
     if isinstance(refs_data, dict):
         mp20_refs = refs_data
     else:
-        raise ValueError(f"Unexpected format in MP-20 reference file: {type(refs_data)}")
-    
+        raise ValueError(
+            f"Unexpected format in MP-20 reference file: {type(refs_data)}"
+        )
+
     LOGGER.info(f"Loaded MP-20 references for {len(mp20_refs)} elements.")
     return mp20_refs
 
@@ -238,7 +244,7 @@ def pick_calculator(
 
         # Determine which reference energies to use
         fe_kwargs = {}
-        
+
         if references == "OMAT24":
             # Use OMAT24 references from HuggingFace
             fe_kwargs["references"] = _get_omat24_references()
