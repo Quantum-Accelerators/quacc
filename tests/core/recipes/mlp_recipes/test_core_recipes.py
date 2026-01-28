@@ -173,7 +173,7 @@ def test_static_job_formation_energy_fairchem(tmp_path, monkeypatch):
     output_cu = static_job(
         atoms_cu, method="fairchem", use_formation_energy=True, **calc_kwargs
     )
-    # For pure elements, formation energy should be close to zero
+    # For pure elements, total formation energy should be close to zero (eV)
     assert abs(output_cu["results"]["energy"]) < 0.1
     assert np.shape(output_cu["results"]["forces"]) == (1, 3)
 
@@ -182,8 +182,8 @@ def test_static_job_formation_energy_fairchem(tmp_path, monkeypatch):
     output_mgo = static_job(
         atoms_mgo, method="fairchem", use_formation_energy=True, **calc_kwargs
     )
-    # MgO has a substantial negative formation energy
-    assert output_mgo["results"]["energy"] < -2.0  # per formula unit
+    # MgO has a substantial negative formation energy (eV per formula unit)
+    assert output_mgo["results"]["energy"] < -2.0
     assert np.shape(output_mgo["results"]["forces"]) == (2, 3)
 
 
@@ -206,8 +206,8 @@ def test_relax_job_formation_energy_fairchem(tmp_path, monkeypatch):
     output = relax_job(
         atoms, method="fairchem", use_formation_energy=True, **calc_kwargs
     )
-    # 8 Cu atoms, formation energy should be near zero
-    assert abs(output["results"]["energy"]) < 0.8  # 8 * 0.1 eV tolerance per atom
+    # 8 Cu atoms, total formation energy should be near zero (eV)
+    assert abs(output["results"]["energy"]) < 0.8
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
 
@@ -230,7 +230,7 @@ def test_formation_energy_multiple_compounds_fairchem(tmp_path, monkeypatch):
     output_nacl = static_job(
         atoms_nacl, method="fairchem", use_formation_energy=True, **calc_kwargs
     )
-    # NaCl has negative formation energy
+    # NaCl has negative formation energy (eV per formula unit)
     assert output_nacl["results"]["energy"] < -1.0
 
     # Test Si
@@ -238,7 +238,7 @@ def test_formation_energy_multiple_compounds_fairchem(tmp_path, monkeypatch):
     output_si = static_job(
         atoms_si, method="fairchem", use_formation_energy=True, **calc_kwargs
     )
-    # Pure Si should have near-zero formation energy
+    # Pure Si should have near-zero formation energy (eV)
     assert abs(output_si["results"]["energy"]) < 0.1
 
     # Test Al
@@ -246,7 +246,7 @@ def test_formation_energy_multiple_compounds_fairchem(tmp_path, monkeypatch):
     output_al = static_job(
         atoms_al, method="fairchem", use_formation_energy=True, **calc_kwargs
     )
-    # Pure Al should have near-zero formation energy
+    # Pure Al should have near-zero formation energy (eV)
     assert abs(output_al["results"]["energy"]) < 0.1
 
 
@@ -273,8 +273,8 @@ def test_relax_job_formation_energy_cell_fairchem(tmp_path, monkeypatch):
         use_formation_energy=True,
         **calc_kwargs,
     )
-    # Should have relaxed and computed formation energy
-    assert output["results"]["energy"] < -8.0  # 8 formula units * ~-1 eV per formula unit
+    # Should have relaxed and computed total formation energy (eV for 8 formula units)
+    assert output["results"]["energy"] < -8.0
     assert output["atoms"] != atoms_mgo
 
 

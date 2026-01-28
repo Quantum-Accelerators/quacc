@@ -41,7 +41,8 @@ def static_job(
     use_formation_energy
         If True, wrap the calculator with FormationEnergyCalculator to compute
         formation energies. Currently only supported for FAIRChem with
-        method='fairchem' and task_name='omat'. Default is False.
+        method='fairchem' and task_name='omat'. Default is False. The formation
+        energy is returned in eV per formula unit (not eV/atom).
     formation_energy_kwargs
         Custom kwargs for the FormationEnergyCalculator wrapper. Only used if
         use_formation_energy=True. Default is None.
@@ -102,7 +103,8 @@ def relax_job(
     use_formation_energy
         If True, wrap the calculator with FormationEnergyCalculator to compute
         formation energies. Currently only supported for FAIRChem with
-        method='fairchem' and task_name='omat'. Default is False.
+        method='fairchem' and task_name='omat'. Default is False. The formation
+        energy is returned in eV per formula unit (not eV/atom).
     formation_energy_kwargs
         Custom kwargs for the FormationEnergyCalculator wrapper. Only used if
         use_formation_energy=True. Default is None.
