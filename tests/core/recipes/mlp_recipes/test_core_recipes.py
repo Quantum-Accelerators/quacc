@@ -155,6 +155,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())
 
+
 @pytest.mark.skipif(find_spec("fairchem") is None, reason="fairchem not installed")
 def test_static_job_formation_energy_fairchem(tmp_path, monkeypatch):
     """Test formation energy calculation with FAIRChem UMA omat."""
@@ -273,8 +274,10 @@ def test_relax_job_formation_energy_cell_fairchem(tmp_path, monkeypatch):
         use_formation_energy=True,
         **calc_kwargs,
     )
-    # Should have relaxed and computed total formation energy (eV for 8 formula units)
-    assert output["results"]["energy"] < -8.0
+    # Should have relaxed and computed formation energy
+    assert (
+        output["results"]["energy"] < -8.0
+    )  # 8 formula units * ~-1 eV per formula unit
     assert output["atoms"] != atoms_mgo
 
 
