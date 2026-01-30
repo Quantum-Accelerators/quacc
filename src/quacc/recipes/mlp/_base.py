@@ -259,7 +259,7 @@ def get_inference_batcher(
             # Same checkpoint, reuse batcher
             return _current_batcher
         else:
-            # Different checkpoint, update it instead of replacing batcher
+            # Different checkpoint, update it without shutting down
             # Load the new predict unit
             if name_or_path in pretrained_mlip.available_models:
                 new_predict_unit = pretrained_mlip.get_predict_unit(
@@ -270,24 +270,13 @@ def get_inference_batcher(
                     name_or_path, inference_settings=inference_settings, device=device
                 )
 
-            # Update the checkpoint without shutting down
-            try:
-                _current_batcher.update_checkpoint(new_predict_unit)
-                _current_checkpoint_key = checkpoint_key
-                return _current_batcher
-            except Exception:
-                # Fallback: shutdown and create new
-                try:
-                    _current_batcher.shutdown()
-                except ValueError as e:
-                    if "ray.kill()" in str(e) or "DeploymentHandle" in str(e):
-                        pass  # Expected error, ignore
-                    else:
-                        LOGGER.warning(f"Shutdown failed: {e}")
-                except Exception as e:
-                    LOGGER.warning(f"Shutdown failed: {e}")
-                _current_batcher = None
-                _current_checkpoint_key = None
+            # Update the checkpoint on the existing Ray server
+            _current_batcher.update_checkpoint(new_predict_unit)
+            _current_checkpoint_key = checkpoint_key
+            LOGGER.info(
+                f"Updated InferenceBatcher checkpoint to {name_or_path}"
+            )
+            return _current_batcher
 
     # Load the predict unit
     if name_or_path in pretrained_mlip.available_models:
