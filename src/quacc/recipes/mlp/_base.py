@@ -273,9 +273,7 @@ def get_inference_batcher(
             # Update the checkpoint on the existing Ray server
             _current_batcher.update_checkpoint(new_predict_unit)
             _current_checkpoint_key = checkpoint_key
-            LOGGER.info(
-                f"Updated InferenceBatcher checkpoint to {name_or_path}"
-            )
+            LOGGER.info(f"Updated InferenceBatcher checkpoint to {name_or_path}")
             return _current_batcher
 
     # Load the predict unit
