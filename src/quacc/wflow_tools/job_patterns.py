@@ -350,7 +350,6 @@ def map_partition_fairchembatch(
     batcher_kwargs = batcher_kwargs or {}
     batcher = get_inference_batcher(
         name_or_path=name_or_path,
-        task_name=task_name,
         inference_settings=inference_settings,
         device=device,
         **batcher_kwargs,

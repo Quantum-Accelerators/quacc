@@ -189,14 +189,14 @@ def _pick_calculator_cached(
     return calc
 
 
-# Global cache for InferenceBatcher instances (keyed by model config)
-_INFERENCE_BATCHER_CACHE: dict[tuple, InferenceBatcher] = {}
+# Single batcher cache - reuses same Ray Serve deployment by swapping checkpoints
+_current_batcher: InferenceBatcher | None = None
+_current_checkpoint_key: tuple | None = None
 
 
 @requires(has_fairchem, "fairchem must be installed. Run pip install fairchem-core.")
 def get_inference_batcher(
     name_or_path: str,
-    task_name: str | None = None,
     inference_settings: str = "default",
     device: str | None = None,
     **batcher_kwargs,
@@ -204,17 +204,15 @@ def get_inference_batcher(
     """
     Get or create a cached InferenceBatcher for FAIRChem batched inference.
 
-    The batcher is cached based on the model configuration, so repeated calls
-    with the same parameters will return the same batcher instance. This enables
-    efficient batched inference across multiple concurrent calculations.
+    The batcher is cached and reused across different model checkpoints by swapping
+    out the checkpoint without tearing down the Ray Serve deployment. This avoids
+    the overhead of repeatedly creating and destroying Ray Serve actors.
 
     Parameters
     ----------
     name_or_path
         A model name from fairchem.core.pretrained.available_models or a path
         to the checkpoint file.
-    task_name
-        Task name (e.g., 'omat', 'omol', 'oc20', 'odac', 'omc').
     inference_settings
         Settings for inference. Can be "default" (general purpose) or "turbo"
         (optimized for speed but requires fixed atomic composition).
@@ -234,68 +232,118 @@ def get_inference_batcher(
 
     Examples
     --------
-    >>> batcher = get_inference_batcher("uma-s-1", task_name="omat")
+    >>> batcher = get_inference_batcher("uma-s-1")
     >>> # Use batcher.batch_predict_unit in pick_calculator
     >>> calc = pick_calculator(
     ...     "fairchem", predict_unit=batcher.batch_predict_unit, task_name="omat"
     ... )
     """
+    global _current_batcher, _current_checkpoint_key
+
     from fairchem.core.calculate import InferenceBatcher, pretrained_mlip
 
-    # Build cache key from immutable config
-    cache_key = (
+    # Build checkpoint key (what changes when model changes)
+    checkpoint_key = (
         name_or_path,
-        task_name,
+        inference_settings,
+        device,
+    )
+    
+    # Build full config key (for batcher creation params)
+    full_config_key = (
+        name_or_path,
         inference_settings,
         device,
         frozenset(batcher_kwargs.items()) if batcher_kwargs else frozenset(),
     )
 
-    if cache_key not in _INFERENCE_BATCHER_CACHE:
-        # Load the predict unit
-        if name_or_path in pretrained_mlip.available_models:
-            predict_unit = pretrained_mlip.get_predict_unit(
-                name_or_path, inference_settings=inference_settings, device=device
-            )
+    # If batcher exists, check if we need to update checkpoint
+    if _current_batcher is not None:
+        if _current_checkpoint_key == checkpoint_key:
+            # Same checkpoint, reuse batcher
+            return _current_batcher
         else:
-            predict_unit = pretrained_mlip.load_predict_unit(
-                name_or_path, inference_settings=inference_settings, device=device
-            )
+            # Different checkpoint, update it instead of replacing batcher
+            # Load the new predict unit
+            if name_or_path in pretrained_mlip.available_models:
+                new_predict_unit = pretrained_mlip.get_predict_unit(
+                    name_or_path, inference_settings=inference_settings, device=device
+                )
+            else:
+                new_predict_unit = pretrained_mlip.load_predict_unit(
+                    name_or_path, inference_settings=inference_settings, device=device
+                )
+            
+            # Update the checkpoint without shutting down
+            try:
+                _current_batcher.update_checkpoint(new_predict_unit)
+                _current_checkpoint_key = checkpoint_key
+                return _current_batcher
+            except Exception as e:
+                # Fallback: shutdown and create new
+                try:
+                    _current_batcher.shutdown()
+                except ValueError as e:
+                    if "ray.kill()" in str(e) or "DeploymentHandle" in str(e):
+                        pass  # Expected error, ignore
+                    else:
+                        LOGGER.warning(f"Shutdown failed: {e}")
+                except Exception as e:
+                    LOGGER.warning(f"Shutdown failed: {e}")
+                _current_batcher = None
+                _current_checkpoint_key = None
 
-        # Get batcher settings with defaults
-        max_batch_size = batcher_kwargs.pop("max_batch_size", 512)
-        batch_wait_timeout_s = batcher_kwargs.pop("batch_wait_timeout_s", 0.1)
-        num_replicas = batcher_kwargs.pop("num_replicas", 1)
-        concurrency_backend_options = batcher_kwargs.pop(
-            "concurrency_backend_options", None
+    # Load the predict unit
+    if name_or_path in pretrained_mlip.available_models:
+        predict_unit = pretrained_mlip.get_predict_unit(
+            name_or_path, inference_settings=inference_settings, device=device
+        )
+    else:
+        predict_unit = pretrained_mlip.load_predict_unit(
+            name_or_path, inference_settings=inference_settings, device=device
         )
 
-        batcher = InferenceBatcher(
-            predict_unit=predict_unit,
-            max_batch_size=max_batch_size,
-            batch_wait_timeout_s=batch_wait_timeout_s,
-            num_replicas=num_replicas,
-            concurrency_backend_options=concurrency_backend_options,
-            **batcher_kwargs,
-        )
+    # Get batcher settings with defaults (make a copy to avoid mutating the cache key)
+    batcher_kwargs_copy = dict(batcher_kwargs) if batcher_kwargs else {}
+    max_batch_size = batcher_kwargs_copy.pop("max_batch_size", 512)
+    batch_wait_timeout_s = batcher_kwargs_copy.pop("batch_wait_timeout_s", 0.1)
+    num_replicas = batcher_kwargs_copy.pop("num_replicas", 1)
+    concurrency_backend_options = batcher_kwargs_copy.pop(
+        "concurrency_backend_options", None
+    )
 
-        _INFERENCE_BATCHER_CACHE[cache_key] = batcher
-        LOGGER.info(
-            f"Created new InferenceBatcher for {name_or_path} "
-            f"(max_batch_size={max_batch_size}, num_replicas={num_replicas})"
-        )
+    batcher = InferenceBatcher(
+        predict_unit=predict_unit,
+        max_batch_size=max_batch_size,
+        batch_wait_timeout_s=batch_wait_timeout_s,
+        num_replicas=num_replicas,
+        concurrency_backend_options=concurrency_backend_options,
+        **batcher_kwargs_copy,
+    )
 
-    return _INFERENCE_BATCHER_CACHE[cache_key]
+    _current_batcher = batcher
+    _current_checkpoint_key = checkpoint_key
+
+    LOGGER.info(
+        f"Created InferenceBatcher for {name_or_path} "
+        f"(max_batch_size={max_batch_size}, num_replicas={num_replicas})"
+    )
+
+    return batcher
 
 
 def shutdown_inference_batchers() -> None:
     """
-    Shutdown all cached InferenceBatcher instances and clear the cache.
+    Shutdown the cached InferenceBatcher instance and clear the cache.
 
     This should be called when you're done with batched inference to clean up
     Ray Serve resources.
     """
-    for batcher in _INFERENCE_BATCHER_CACHE.values():
-        batcher.shutdown()
-    _INFERENCE_BATCHER_CACHE.clear()
-    LOGGER.info("All InferenceBatcher instances shut down and cache cleared.")
+    global _current_batcher, _current_checkpoint_key
+
+    if _current_batcher is not None:
+        _current_batcher.shutdown()
+        _current_batcher = None
+        _current_checkpoint_key = None
+    
+    LOGGER.info("InferenceBatcher shut down and cache cleared.")
