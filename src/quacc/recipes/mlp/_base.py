@@ -243,14 +243,10 @@ def get_inference_batcher(
     from fairchem.core.calculate import InferenceBatcher, pretrained_mlip
 
     # Build checkpoint key (what changes when model changes)
-    checkpoint_key = (
-        name_or_path,
-        inference_settings,
-        device,
-    )
-    
+    checkpoint_key = (name_or_path, inference_settings, device)
+
     # Build full config key (for batcher creation params)
-    full_config_key = (
+    (
         name_or_path,
         inference_settings,
         device,
@@ -273,13 +269,13 @@ def get_inference_batcher(
                 new_predict_unit = pretrained_mlip.load_predict_unit(
                     name_or_path, inference_settings=inference_settings, device=device
                 )
-            
+
             # Update the checkpoint without shutting down
             try:
                 _current_batcher.update_checkpoint(new_predict_unit)
                 _current_checkpoint_key = checkpoint_key
                 return _current_batcher
-            except Exception as e:
+            except Exception:
                 # Fallback: shutdown and create new
                 try:
                     _current_batcher.shutdown()
@@ -345,5 +341,5 @@ def shutdown_inference_batchers() -> None:
         _current_batcher.shutdown()
         _current_batcher = None
         _current_checkpoint_key = None
-    
+
     LOGGER.info("InferenceBatcher shut down and cache cleared.")

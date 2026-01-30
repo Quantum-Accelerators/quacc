@@ -62,7 +62,9 @@ class TestGetInferenceBatcher:
         # Same config should return same batcher instance
         assert batcher1 is batcher2
 
-    def test_batcher_same_model_different_batch_sizes(self, tmp_path, monkeypatch, cleanup_batchers):
+    def test_batcher_same_model_different_batch_sizes(
+        self, tmp_path, monkeypatch, cleanup_batchers
+    ):
         """Test that same model with different batcher_kwargs reuses the batcher via checkpoint swap."""
         monkeypatch.chdir(tmp_path)
 
@@ -75,14 +77,10 @@ class TestGetInferenceBatcher:
         # Clear cache to start fresh
         shutdown_inference_batchers()
 
-        batcher1 = get_inference_batcher(
-            name_or_path="uma-s-1", max_batch_size=256
-        )
+        batcher1 = get_inference_batcher(name_or_path="uma-s-1", max_batch_size=256)
         batcher1_id = id(batcher1)
-        
-        batcher2 = get_inference_batcher(
-            name_or_path="uma-s-1", max_batch_size=512
-        )
+
+        batcher2 = get_inference_batcher(name_or_path="uma-s-1", max_batch_size=512)
 
         # Same model checkpoint, different batcher_kwargs: should reuse the batcher instance
         # via update_checkpoint (or in this case just return it since checkpoint is same)
@@ -91,7 +89,9 @@ class TestGetInferenceBatcher:
         # Same batcher still active
         assert _current_batcher is batcher2
 
-    def test_batcher_different_models_swaps_checkpoint(self, tmp_path, monkeypatch, cleanup_batchers):
+    def test_batcher_different_models_swaps_checkpoint(
+        self, tmp_path, monkeypatch, cleanup_batchers
+    ):
         """Test that different models trigger checkpoint swap."""
         monkeypatch.chdir(tmp_path)
 
@@ -104,11 +104,9 @@ class TestGetInferenceBatcher:
         # Clear cache to start fresh
         shutdown_inference_batchers()
 
-        batcher1 = get_inference_batcher(
-            name_or_path="uma-s-1"
-        )
-        batcher1_id = id(batcher1)
-        
+        batcher1 = get_inference_batcher(name_or_path="uma-s-1")
+        id(batcher1)
+
         # Note: this test would swap checkpoint to a different model if available
         # For now, we can't test with a truly different model without more setup,
         # so we verify the cache key behavior instead
@@ -131,9 +129,7 @@ class TestGetInferenceBatcher:
 
         shutdown_inference_batchers()
 
-        batcher = get_inference_batcher(
-            name_or_path="uma-s-1", max_batch_size=256
-        )
+        batcher = get_inference_batcher(name_or_path="uma-s-1", max_batch_size=256)
         assert batcher is not None
 
 
@@ -145,11 +141,11 @@ class TestShutdownInferenceBatchers:
         """Test that shutdown clears the batcher cache."""
         monkeypatch.chdir(tmp_path)
 
+        from quacc.recipes.mlp import _base
         from quacc.recipes.mlp._base import (
             get_inference_batcher,
             shutdown_inference_batchers,
         )
-        from quacc.recipes.mlp import _base
 
         # Create a batcher
         get_inference_batcher(name_or_path="uma-s-1")
@@ -298,7 +294,9 @@ class TestMapPartitionFairchemBatch:
                 additional_fields=[{"a": 1}, {"a": 2}, {"a": 3}],
             )
 
-    def test_batched_reuses_cached_batcher(self, tmp_path, monkeypatch, cleanup_batchers):
+    def test_batched_reuses_cached_batcher(
+        self, tmp_path, monkeypatch, cleanup_batchers
+    ):
         """Test that repeated calls reuse the cached batcher."""
         monkeypatch.chdir(tmp_path)
 
@@ -316,6 +314,7 @@ class TestMapPartitionFairchemBatch:
         )
 
         from quacc.recipes.mlp import _base
+
         batcher_after_first = _base._current_batcher
         assert batcher_after_first is not None
 
@@ -349,38 +348,30 @@ class TestMapPartitionFairchemBatch:
         assert len(results) == 1
         assert "results" in results[0]
 
-    def test_checkpoint_swap_consistency(
-        self, tmp_path, monkeypatch, cleanup_batchers
-    ):
+    def test_checkpoint_swap_consistency(self, tmp_path, monkeypatch, cleanup_batchers):
         """Test that checkpoint swapping produces consistent results.
-        
+
         Verifies that updating a checkpoint mid-way through batching operations
         doesn't break the results - i.e., batching with a model, updating to the
         same model, and batching again should produce identical results.
         """
         monkeypatch.chdir(tmp_path)
 
-        from quacc.recipes.mlp._base import (
-            shutdown_inference_batchers,
-            _current_batcher,
-        )
+        from quacc.recipes.mlp import _base
+        from quacc.recipes.mlp._base import shutdown_inference_batchers
         from quacc.recipes.mlp.core import static_job
         from quacc.wflow_tools.job_patterns import map_partition_fairchembatch
-        from quacc.recipes.mlp import _base
 
         # Create test atoms
         atoms_list = [bulk("Cu"), bulk("Cu") * (2, 1, 1), bulk("Cu") * (3, 1, 1)]
-        
+
         # Clear any existing batcher
         shutdown_inference_batchers()
         assert _base._current_batcher is None
 
         # First batch: process atoms with uma-s-1
         results_batch1 = map_partition_fairchembatch(
-            static_job,
-            atoms=atoms_list,
-            name_or_path="uma-s-1",
-            task_name="omat",
+            static_job, atoms=atoms_list, name_or_path="uma-s-1", task_name="omat"
         )
 
         first_batcher = _base._current_batcher
@@ -388,10 +379,7 @@ class TestMapPartitionFairchemBatch:
 
         # Process the same atoms again (this triggers checkpoint update to same model)
         results_batch2 = map_partition_fairchembatch(
-            static_job,
-            atoms=atoms_list,
-            name_or_path="uma-s-1",
-            task_name="omat",
+            static_job, atoms=atoms_list, name_or_path="uma-s-1", task_name="omat"
         )
 
         # Should still be using the same batcher instance (checkpoint was updated, not replaced)
@@ -399,7 +387,9 @@ class TestMapPartitionFairchemBatch:
 
         # Results should be identical
         assert len(results_batch1) == len(results_batch2) == 3
-        for i, (result1, result2) in enumerate(zip(results_batch1, results_batch2)):
+        for i, (result1, result2) in enumerate(
+            zip(results_batch1, results_batch2, strict=False)
+        ):
             assert result1["results"]["energy"] == pytest.approx(
                 result2["results"]["energy"], rel=1e-6
             ), f"Energy mismatch at index {i} after checkpoint update"
@@ -408,7 +398,7 @@ class TestMapPartitionFairchemBatch:
         self, tmp_path, monkeypatch, cleanup_batchers
     ):
         """Test that batching with checkpoint swaps equals sequential processing.
-        
+
         Verifies that:
         - Batch processing atoms [A, B, C, D] with checkpoint 1
         Then batch processing atoms [A, B, C, D] with checkpoint 1 (swapped)
@@ -422,16 +412,13 @@ class TestMapPartitionFairchemBatch:
 
         # Create test atoms - use fixed seed for reproducibility
         atoms_list = [bulk("Cu"), bulk("Cu") * (2, 1, 1)]
-        
+
         # Clear cache
         shutdown_inference_batchers()
 
         # Scenario 1: Process all atoms together
         results_all_at_once = map_partition_fairchembatch(
-            static_job,
-            atoms=atoms_list,
-            name_or_path="uma-s-1",
-            task_name="omat",
+            static_job, atoms=atoms_list, name_or_path="uma-s-1", task_name="omat"
         )
 
         # Clear cache for next test
@@ -440,18 +427,12 @@ class TestMapPartitionFairchemBatch:
         # Scenario 2: Process atoms in two batches with checkpoint swaps in between
         # Batch 1: first atom
         results_batch_first = map_partition_fairchembatch(
-            static_job,
-            atoms=[atoms_list[0]],
-            name_or_path="uma-s-1",
-            task_name="omat",
+            static_job, atoms=[atoms_list[0]], name_or_path="uma-s-1", task_name="omat"
         )
 
         # Batch 2: second atom (checkpoint stays same, but update_checkpoint is called)
         results_batch_second = map_partition_fairchembatch(
-            static_job,
-            atoms=[atoms_list[1]],
-            name_or_path="uma-s-1",
-            task_name="omat",
+            static_job, atoms=[atoms_list[1]], name_or_path="uma-s-1", task_name="omat"
         )
 
         # Combine the split results
@@ -461,7 +442,7 @@ class TestMapPartitionFairchemBatch:
         assert len(results_all_at_once) == len(results_split_batches) == 2
 
         for i, (result_together, result_separate) in enumerate(
-            zip(results_all_at_once, results_split_batches)
+            zip(results_all_at_once, results_split_batches, strict=False)
         ):
             # Energy should match
             assert result_together["results"]["energy"] == pytest.approx(
@@ -471,10 +452,10 @@ class TestMapPartitionFairchemBatch:
             # Forces should match
             assert (
                 result_together["results"]["forces"]
-                == pytest.approx(
-                    result_separate["results"]["forces"], rel=1e-6
-                )
-            ).all(), f"Forces mismatch at index {i} between together vs separate batches"
+                == pytest.approx(result_separate["results"]["forces"], rel=1e-6)
+            ).all(), (
+                f"Forces mismatch at index {i} between together vs separate batches"
+            )
 
     def test_end_to_end_ten_copper_atoms(self, tmp_path, monkeypatch, cleanup_batchers):
         """
