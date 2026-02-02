@@ -587,84 +587,15 @@ def _get_prefect_wrapped_flow(
 
 
 def _get_jobflow_wrapped_func(method=None, **job_kwargs):
-    """
-    Custom wrapper for `@job` decorated functions for `jobflow`.
-
-    We need this to emulate `@job` like behavior but want the decorated
-    function to return a `JobflowJobWrapper` class whose __getitem__ we can
-    intercept.
-
-    This wrapper only needs to exist till this functionality is available
-    in `jobflow.Job` directly, after which it can simply be implemented as:
-
-        from jobflow import job as jf_job
-        return jf_job(method, **job_kwargs)
-
-    """
-    from jobflow import Job
     from jobflow import job as jf_job
 
-    class JobflowJobWrapper(Job):
-        """A small Jobflow wrapper that holds a reference to a `jobflow.Job`
-        object, and relays all calls to it, except for `__getitem__` calls that
-        it relays to the `Job`'s `.output` attribute.
-
-        This is to make the `@flow` recipes that index directly inside a `@job`
-        work correctly. For example:
-
-            @job
-            def greetings(s):
-                return {"hello": f"Hello {s}", "bye": f"Goodbye {s}"}
-
-            @job
-            def upper(s):
-                return s.upper()
-
-            @flow
-            def greet(s):
-                job1 = greetings(s)
-                job2 = upper(job1["hello"])
-                return job2.output
-
-        This wrapper only needs to exist till this functionality is available
-        in `jobflow.Job` directly.
-        """
-
-        def __init__(self, job):
-            self._job = job
-
-        def __getitem__(self, key):
-            return self._job.output[key]
-
-        def __getattr__(self, item):
-            return getattr(self._job, item)
-
-    def decorator(func):
-        jobflow_wrapped = jf_job(func, **job_kwargs)
-
-        @wraps(func)
-        def wrapper(*args, **kw):
-            job = jobflow_wrapped(*args, **kw)
-            return JobflowJobWrapper(job)
-
-        wrapper.original = func
-
-        return wrapper
-
-    if method is None:
-        return decorator
-    return decorator(method)
+    return jf_job(method, **job_kwargs)
 
 
 def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
     from jobflow import flow as jf_flow
 
-    jobflow_flow = jf_flow(_func)
-
-    def wrapper(*args, **kwargs):
-        return jobflow_flow(*args, **kwargs)
-
-    return wrapper
+    return jf_flow(_func)
 
 
 class Delayed_:
