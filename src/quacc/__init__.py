@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import threading
 from importlib.metadata import version
-from logging import basicConfig, getLevelName
+from logging import basicConfig
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -94,7 +94,7 @@ _settings = get_settings()
 QuaccDefault = DefaultSetting()
 
 # Set logging info
-basicConfig(filename=_settings.LOG_FILENAME, level=getLevelName(_settings.LOG_LEVEL))
+basicConfig(filename=_settings.LOG_FILENAME, level=_settings.LOG_LEVEL)
 
 
 # Custom exceptions

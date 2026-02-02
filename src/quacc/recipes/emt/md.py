@@ -21,7 +21,8 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
 
-    from quacc.types import DynSchema, Filenames, MDParams, SourceDirectory
+    from quacc.types import DynSchema, MDParams, SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
@@ -33,7 +34,7 @@ def md_job(
     temperature_K: float | None = None,
     pressure_bar: float | None = None,
     md_params: MDParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> DynSchema:

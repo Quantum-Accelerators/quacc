@@ -1,3 +1,13 @@
+"""
+Meta FAIR recipes
+
+!!! Important
+
+    Make sure that you use the appropriate version pseudpotentials:
+    - OMat: v.54
+    - OMC: v.54
+"""
+
 from __future__ import annotations
 
 from importlib.util import find_spec
@@ -18,7 +28,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, SourceDirectory, VaspSchema
+    from quacc.types import SourceDirectory, VaspSchema
+    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
@@ -28,7 +39,7 @@ if TYPE_CHECKING:
 )
 def omat_static_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -58,6 +69,7 @@ def omat_static_job(
     from fairchem.data.omat.vasp.sets import OMat24StaticSet
 
     calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(OMat24StaticSet())
+    calc_defaults |= {"pp_version": "54", "incar_copilot": "ncore"}
 
     return run_and_summarize(
         atoms,
@@ -72,7 +84,7 @@ def omat_static_job(
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[fairchem]`")
 def omc_static_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -101,6 +113,7 @@ def omc_static_job(
     """
 
     calc_defaults = _make_omc_inputs(atoms)
+    calc_defaults |= {"pp_version": "54", "incar_copilot": "ncore"}
 
     return run_and_summarize(
         atoms,
@@ -148,7 +161,6 @@ def _make_omc_inputs(atoms: Atoms) -> dict:
             "LWAVE": False,
             "LAECHG": False,
             "LVTOT": False,
-            "NCORE": 100,
             "NELM": 200,
             "NELMDL": -10,
             "NSW": 0,

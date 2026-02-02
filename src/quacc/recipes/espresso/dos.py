@@ -20,20 +20,15 @@ if TYPE_CHECKING:
     from quacc.types import (
         EspressoDosSchema,
         EspressoProjwfcSchema,
-        Filenames,
         RunSchema,
         SourceDirectory,
     )
+    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
 def dos_job(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -85,12 +80,7 @@ def dos_job(
 
 @job
 def projwfc_job(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,

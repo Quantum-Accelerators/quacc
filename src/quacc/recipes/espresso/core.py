@@ -17,7 +17,9 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from src.quacc.types import EspressoBaseSet
 
-    from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
+    from quacc.types import OptParams, RunSchema, SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
+
 
 BASE_SET_METAL: EspressoBaseSet = {
     "input_data": {
@@ -42,12 +44,7 @@ def static_job(
     atoms: Atoms,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     test_run: bool = False,
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -109,12 +106,7 @@ def relax_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     relax_cell: bool = False,
     test_run: bool = False,
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -181,12 +173,7 @@ def ase_relax_job(
     autorestart: bool = True,
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -259,12 +246,7 @@ def ase_relax_job(
 
 @job
 def post_processing_job(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -327,12 +309,7 @@ def post_processing_job(
 @job
 def non_scf_job(
     atoms: Atoms,
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     test_run: bool = False,

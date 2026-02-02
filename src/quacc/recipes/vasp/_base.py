@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import (
-        Filenames,
         OptParams,
         SourceDirectory,
         VaspASEOptSchema,
@@ -24,6 +23,7 @@ if TYPE_CHECKING:
         VibKwargs,
         VibThermoSchema,
     )
+    from quacc.wflow_tools.job_argument import Copy
 
 
 def run_and_summarize(
@@ -33,7 +33,7 @@ def run_and_summarize(
     calc_swaps: dict[str, Any] | None = None,
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
 ) -> VaspSchema:
     """
     Base job function for VASP recipes.
@@ -82,7 +82,7 @@ def run_and_summarize_opt(
     opt_params: OptParams | None = None,
     report_mp_corrections: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | None = None,
 ) -> VaspASEOptSchema:
     """
     Base job function for VASP recipes with ASE optimizers.
@@ -138,7 +138,7 @@ def run_and_summarize_vib_and_thermo(
     calc_swaps: dict[str, Any] | None = None,
     vib_kwargs: VibKwargs | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | None = None,
 ) -> VibThermoSchema:
     """
     Base job function for VASP recipes with ASE vibrational analysis.

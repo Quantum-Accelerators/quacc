@@ -134,6 +134,7 @@ def test_gga_preset():
         "nelmin": 3,
         "nsw": 100,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {
             "Ac": "",
@@ -270,6 +271,7 @@ def test_metagga_preset():
         "nelmin": 3,
         "nsw": 100,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {
             "Ac": "",
@@ -411,6 +413,7 @@ def test_hybrid_preset():
         "nelmin": 3,
         "nsw": 100,
         "pp": "PBE",
+        "pp_version": "64",
         "prec": "accurate",
         "setups": {
             "Ac": "",
@@ -1431,6 +1434,7 @@ def test_pmg_input_set():
         "nelm": 100,
         "nsw": 99,
         "pp": "pbe",
+        "pp_version": "original",
         "prec": "accurate",
         "sigma": 0.05,
         "magmom": [0.6],
@@ -1467,6 +1471,7 @@ def test_pmg_input_set2():
         "nelm": 100,
         "nsw": 99,
         "pp": "pbe",
+        "pp_version": "original",
         "prec": "accurate",
         "sigma": 0.05,
         "magmom": [2.3, 2.3],
@@ -1496,6 +1501,56 @@ def test_command():
     assert Vasp(atoms, kpts=[2, 1, 1]).command.strip() == "vasp_std"
     assert Vasp(atoms, kspacing=50).command.strip() == "vasp_gam"
     assert Vasp(atoms, kspacing=0.1).command.strip() == "vasp_std"
+
+
+@pytest.mark.skipif(os.name == "nt", reason="Path handling is meant for Linux")
+def test_logger(caplog):
+    atoms = bulk("Cu")
+    with change_settings({"VASP_PP_PATH": "/path/to/pseudos"}):
+        with caplog.at_level(INFO):
+            Vasp(atoms)
+        assert "/path/to/pseudos/potpaw_PBE" in caplog.text
+        caplog.clear()
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="lda")
+        assert "/path/to/pseudos/potpaw_LDA" in caplog.text
+        caplog.clear()
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="lda", pp_version="64")
+        assert "/path/to/pseudos/potpaw_LDA.64" in caplog.text
+        caplog.clear()
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="PBE", pp_version=None)
+        assert "/path/to/pseudos/potpaw_PBE" in caplog.text
+        caplog.clear()
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="PBE", pp_version="")
+        assert "/path/to/pseudos/potpaw_PBE" in caplog.text
+        caplog.clear()
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, preset="QMOFSet")
+        assert "/path/to/pseudos/potpaw_PBE.54" in caplog.text
+        caplog.clear()
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, preset="DefaultSetGGA")
+        assert "/path/to/pseudos/potpaw_PBE.64" in caplog.text
+        caplog.clear()
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="pbe", pp_version="54")
+        assert "/path/to/pseudos/potpaw_PBE.54" in caplog.text
+        caplog.clear()
+
+        with caplog.at_level(INFO):
+            Vasp(atoms, xc="pbe", pp_version="original")
+        assert "/path/to/pseudos/potpaw_PBE.original" in caplog.text
+        caplog.clear()
 
 
 @pytest.mark.skipif(which(get_settings().VASP_CMD), reason="VASP is installed")

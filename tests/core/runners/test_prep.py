@@ -9,6 +9,7 @@ from ase.calculators.emt import EMT
 
 from quacc import JobFailure, change_settings, get_settings
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
+from quacc.wflow_tools.job_argument import Copy
 
 
 def make_files():
@@ -19,7 +20,7 @@ def make_files():
 
 
 def make_files2():
-    p = Path("quacc-tmp-1234")
+    p = Path("tmp-quacc-1234")
     os.makedirs(p)
 
 
@@ -56,7 +57,15 @@ def test_calc_setup(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): ["file1.txt"]}, {Path(): "file1.txt"}, {Path(): "file1*"}]
+    "copy_files",
+    [
+        {Path(): ["file1.txt"]},
+        {Path(): "file1.txt"},
+        {Path(): "file1*"},
+        Copy({Path(): ["file1.txt"]}),
+        Copy({Path(): "file1.txt"}),
+        Copy({Path(): "file1*"}),
+    ],
 )
 def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -85,7 +94,10 @@ def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
         {"saved": "file1.txt"},
         {"saved": "file1*"},
         {"saved": ["file1.txt"]},
-        {"saved": ["file1*"]},
+        Copy({Path("saved"): "file1.txt"}),
+        Copy({"saved": "file1.txt"}),
+        Copy({"saved": "file1*"}),
+        Copy({"saved": ["file1.txt"]}),
     ],
 )
 def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
@@ -109,7 +121,15 @@ def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
         assert "file2.txt" not in os.listdir(tmpdir)
 
 
-@pytest.mark.parametrize("copy_files", ["saved", Path("saved")])
+@pytest.mark.parametrize(
+    "copy_files",
+    [
+        {"saved": "*"},
+        {Path("saved"): "*"},
+        Copy({"saved": "*"}),
+        Copy({Path("saved"): "*"}),
+    ],
+)
 def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
     make_files3()
@@ -131,7 +151,7 @@ def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
         assert "file2.txt" in os.listdir(tmpdir)
 
 
-@pytest.mark.parametrize("copy_files", [{"saved": "*"}])
+@pytest.mark.parametrize("copy_files", [{"saved": "*"}, Copy({"saved": "*"})])
 def test_calc_setup_v4(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
     make_files3()
@@ -162,7 +182,7 @@ def test_calc_cleanup(tmp_path, monkeypatch):
 
     with change_settings({"SCRATCH_DIR": tmp_path}):
         settings = get_settings()
-        p = Path(tmp_path, "quacc-tmp-1234").resolve()
+        p = Path(tmp_path, "tmp-quacc-1234").resolve()
         assert p.is_dir()
         calc_cleanup(atoms, p, settings.RESULTS_DIR)
         assert not p.exists()

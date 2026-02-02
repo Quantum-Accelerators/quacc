@@ -6,11 +6,11 @@ import contextlib
 import os
 import socket
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from logging import getLogger
 from pathlib import Path
 from random import randint
-from shutil import copy, copytree
+from shutil import copy, copytree, ignore_patterns
 from typing import TYPE_CHECKING
 
 from monty.io import zopen
@@ -157,6 +157,7 @@ def copy_decompress_files(
                     destination_filepath,
                     symlinks=True,
                     dirs_exist_ok=True,
+                    ignore=ignore_patterns("error.*"),
                 )
                 decompress_dir(destination_filepath)
 
@@ -179,7 +180,7 @@ def make_unique_dir(
     Path
         Path to the job directory.
     """
-    time_now = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H-%M-%S-%f")
+    time_now = datetime.now(UTC).strftime("%Y-%m-%d-%H-%M-%S-%f")
     if prefix is None:
         prefix = ""
     job_dir = Path(f"{prefix}{time_now}-{randint(10000, 99999)}")

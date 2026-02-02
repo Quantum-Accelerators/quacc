@@ -4,7 +4,7 @@ It can be useful to understand how quacc handles files so that you can adjust th
 
 !!! Tip "Having an Organized Filesystem"
 
-    If you want to achieve a bit more structure in how your files are stored, you can dynamically set the `RESULTS_DIR` for each project of interest. Importantly, this should be done by modifying the `QUACC_RESULTS_DIR` environment variable (e.g. in your submission script) rather than modifying the YAML file directly, such that the change reflects only your given workflow. Similarly, to prevent the automatic creation of a unique directory for each job, you can set the `QUACC_CREATE_UNIQUE_DIR` environment variable to `False`.
+    If you want to achieve a bit more structure in how your files are stored, you can dynamically set the `RESULTS_DIR` quacc setting as you wish. If you wish to prevent the automatic creation of a unique directory for each job, you can set the `CREATE_UNIQUE_DIR` quacc setting to `False`.
 
 ## Scenario 1: The Default Case
 

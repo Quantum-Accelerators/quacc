@@ -31,16 +31,7 @@ def strip_decorator(func: Callable) -> Callable:
 
     settings = get_settings()
 
-    if settings.WORKFLOW_ENGINE == "covalent":
-        from covalent._workflow.lattice import Lattice
-
-        if hasattr(func, "electron_object"):
-            func = func.electron_object.function
-
-        if isinstance(func, Lattice):
-            func = func.workflow_function.get_deserialized()
-
-    elif settings.WORKFLOW_ENGINE == "dask":
+    if settings.WORKFLOW_ENGINE == "dask":
         from dask.delayed import Delayed
 
         from quacc.wflow_tools.decorators import Delayed_
