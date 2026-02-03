@@ -68,6 +68,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Minimum version of Custodian changes to 2025.12.14
 
+### Removed
+
+- Dropped support for Covalent
+
 ## [1.0.7]
 
 ### Added
