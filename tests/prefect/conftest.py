@@ -19,6 +19,7 @@ if has_prefect:
         os.environ["QUACC_CONFIG_FILE"] = str(file_dir / "quacc.yaml")
         os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)
         os.environ["QUACC_SCRATCH_DIR"] = str(TEST_SCRATCH_DIR)
+        os.environ["QUACC_AUTODISCOVER_DIR"] = "1"
 
     def pytest_sessionfinish(exitstatus):
         rmtree(TEST_RESULTS_DIR, ignore_errors=True)

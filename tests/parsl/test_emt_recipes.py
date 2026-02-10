@@ -65,7 +65,9 @@ def test_settings_swap(tmp_path_factory):
     )
     future1.result(), future2.result(), future3.result()
 
-    assert len(os.listdir(tmp_dir1)) == 12
+    assert (
+        len(os.listdir(tmp_dir1 / "bulk_to_slabs_flow" / "bulk_to_slabs_subflow")) == 12
+    )
 
 
 def test_checkpointing():
@@ -107,7 +109,9 @@ def test_settings_swap_all(tmp_path_factory):
     )
     future1.result(), future2.result(), future3.result()
 
-    assert len(os.listdir(tmp_dir1)) == 24
+    assert (
+        len(os.listdir(tmp_dir1 / "bulk_to_slabs_flow" / "bulk_to_slabs_subflow")) == 24
+    )
 
 
 def test_phonon_flow(tmp_path, monkeypatch):

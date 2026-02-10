@@ -12,6 +12,7 @@ from monty.shutil import gzip_dir
 
 from quacc import JobFailure, get_settings
 from quacc.utils.files import copy_decompress_files, make_unique_dir
+from quacc.wflow_tools.context import get_context_path, get_directory_context
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -62,10 +63,31 @@ def calc_setup(
     if atoms is not None:
         atoms.calc.directory = tmpdir
 
-    # Define the results directory
-    job_results_dir = settings.RESULTS_DIR.resolve()
-    if settings.CREATE_UNIQUE_DIR:
-        job_results_dir /= f"{tmpdir.name.split('tmp-')[-1]}"
+    # Define the results directory.
+    # When AUTODISCOVER_DIR is active, the context module provides both a root
+    # directory (directory_context) and a relative path (context_path) that
+    # mirrors the flow/subflow/job nesting.  When AUTODISCOVER_DIR is off,
+    # both will be empty and we fall through to the legacy behavior.
+    if Path(get_directory_context()).is_relative_to(settings.RESULTS_DIR):
+        # The directory context is already under RESULTS_DIR (normal case).
+        job_results_dir = settings.RESULTS_DIR / Path(get_directory_context())
+        job_results_dir = job_results_dir / get_context_path()
+    else:
+        # RESULTS_DIR was overridden (e.g. via swap_settings); use it as the
+        # base and append only the context path.
+        job_results_dir = settings.RESULTS_DIR / get_context_path()
+
+    if job_results_dir == settings.RESULTS_DIR:
+        # No autodiscover context was active — fall back to legacy behavior
+        # where a unique dir is derived from the tmpdir name.
+        if settings.CREATE_UNIQUE_DIR:
+            job_results_dir = settings.RESULTS_DIR / tmpdir.name.lstrip("tmp-")
+    else:
+        # Autodiscover is active: create a uniquely-suffixed directory so
+        # that multiple invocations of the same job don't collide.
+        job_results_dir = make_unique_dir(
+            base_path=job_results_dir.parent, prefix=f"{job_results_dir.stem}-"
+        )
 
     # Create a symlink to the tmpdir
     if os.name != "nt" and settings.SCRATCH_DIR:
@@ -122,13 +144,12 @@ def calc_cleanup(
     if settings.GZIP_FILES:
         gzip_dir(tmpdir)
 
-    # Move files from tmpdir to job_results_dir
-    if settings.CREATE_UNIQUE_DIR:
-        move(tmpdir, job_results_dir)
-    else:
-        for file_name in os.listdir(tmpdir):
-            move(tmpdir / file_name, job_results_dir / file_name)
-        rmtree(tmpdir)
+    # Move files from tmpdir to job_results_dir.
+    LOGGER.info(f"Moving {tmpdir} contents to {job_results_dir}")
+    job_results_dir.mkdir(parents=True, exist_ok=True)
+    for file_name in os.listdir(tmpdir):
+        move(tmpdir / file_name, job_results_dir / file_name)
+    rmtree(tmpdir)
     LOGGER.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir

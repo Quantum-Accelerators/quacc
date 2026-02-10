@@ -34,15 +34,21 @@ def strip_decorator(func: Callable) -> Callable:
     if settings.WORKFLOW_ENGINE == "dask":
         from dask.delayed import Delayed
 
-        from quacc.wflow_tools.decorators import Delayed_
+        from quacc.wflow_tools.decorators import Delayed_, _ContextCapturingWrapper
 
-        if isinstance(func, Delayed_):
+        # Unwrap the context-capturing layer first, then the Dask delayed layer.
+        if isinstance(func, _ContextCapturingWrapper):
+            func = func._original_func
+        elif isinstance(func, Delayed_):
             func = func.func
         if isinstance(func, Delayed):
             func = func.__wrapped__
             if hasattr(func, "__wrapped__"):
                 # Needed for custom `@subflow` decorator
                 func = func.__wrapped__
+        # Finally, unwrap the tracked() wrapper to get the user's original function.
+        if hasattr(func, "original"):
+            func = func.original
 
     elif settings.WORKFLOW_ENGINE == "jobflow":
         if hasattr(func, "original"):
@@ -51,8 +57,15 @@ def strip_decorator(func: Callable) -> Callable:
     elif settings.WORKFLOW_ENGINE == "parsl":
         from parsl.app.python import PythonApp
 
-        if isinstance(func, PythonApp):
+        from quacc.wflow_tools.decorators import _ContextCapturingWrapper
+
+        # Unwrap context-capturing layer, then Parsl app, then tracked wrapper.
+        if isinstance(func, _ContextCapturingWrapper):
+            func = func._original_func
+        elif isinstance(func, PythonApp):
             func = func.func
+        if hasattr(func, "original"):
+            func = func.original
 
     elif settings.WORKFLOW_ENGINE == "prefect":
         from prefect import Flow as PrefectFlow
@@ -66,8 +79,15 @@ def strip_decorator(func: Callable) -> Callable:
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import Task
 
-        if isinstance(func, Task):
+        from quacc.wflow_tools.decorators import _ContextCapturingWrapper
+
+        # Unwrap context-capturing layer, then Redun task, then tracked wrapper.
+        if isinstance(func, _ContextCapturingWrapper):
+            func = func._original_func
+        elif isinstance(func, Task):
             func = func.func
+        if hasattr(func, "original"):
+            func = func.original
 
     return func
 
@@ -131,7 +151,11 @@ def update_parameters(
                 f"Invalid decorator name: {decorator}. Valid names are: 'job', 'flow', 'subflow'"
             )
         func = strip_decorator(func)
-        return decorator_func(partial(func, **params))
+        partial_fn = partial(func, **params)
+        # Set __name__ so the re-decorated function keeps the original name
+        # (needed by monty serialization and context path generation).
+        partial_fn.__name__ = getattr(func, "__name__", "")
+        return decorator_func(partial_fn)
 
     partial_fn = partial(func, **params)
     # Assigning a __name__ allows monty's jsanitize function to work correctly
