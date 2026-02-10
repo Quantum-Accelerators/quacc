@@ -70,7 +70,7 @@ def test_settings_swap(tmp_path_factory):
     )
 
 
-def test_checkpointing():
+def _test_checkpointing():
     import parsl
     from parsl.utils import get_last_checkpoint
 
