@@ -99,7 +99,7 @@ class ThermoSummarize:
             LOGGER.warning(
                 "Removing PBCs for thermochemistry. Make sure your molecule does not cut across images."
             )
-            self.atobm.pbc = False
+            self.atoms.pbc = False
 
         # Get the spin multiplicity
         if spin_multiplicity is None:
