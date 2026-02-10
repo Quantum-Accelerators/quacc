@@ -95,7 +95,7 @@ class ThermoSummarize:
         ThermoSchema
             Dictionary representation of the task document
         """
-        if self.atoms.pbc:
+        if any(self.atoms.pbc):
             LOGGER.warning(
                 "Removing PBCs for thermochemistry. Make sure your molecule does not cut across images."
             )
