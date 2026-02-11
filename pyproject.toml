@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools<82"] # remove pin after https://github.com/facebookresearch/fairchem/pull/1763
 build-backend = "setuptools.build_meta"
 
 [project]
