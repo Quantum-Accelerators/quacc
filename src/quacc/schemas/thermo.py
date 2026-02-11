@@ -58,7 +58,7 @@ class ThermoSummarize:
         -------
         None
         """
-        self.atoms = atoms
+        self.atoms = atoms.copy()
         # Make sure vibrational freqs are imaginary, not negative
         vib_freqs_ = vib_freqs.copy()
         for i, f in enumerate(vib_freqs_):
@@ -95,6 +95,11 @@ class ThermoSummarize:
         ThermoSchema
             Dictionary representation of the task document
         """
+        if any(self.atoms.pbc):
+            LOGGER.warning(
+                "Removing PBCs for thermochemistry. Make sure your molecule does not cut across images."
+            )
+            self.atoms.pbc = False
 
         # Get the spin multiplicity
         if spin_multiplicity is None:
@@ -207,6 +212,7 @@ class ThermoSummarize:
         # Get symmetry for later use
         mol = AseAtomsAdaptor().get_molecule(self.atoms, charge_spin_check=False)
         point_group_data = PointGroupData().from_molecule(mol)
+        sigma = point_group_data.rotation_number or 1
 
         # Get the geometry
         natoms = len(self.atoms)
@@ -222,7 +228,7 @@ class ThermoSummarize:
             geometry,
             potentialenergy=self.energy,
             atoms=self.atoms,
-            symmetrynumber=point_group_data.rotation_number,
+            symmetrynumber=sigma,
             spin=spin,
             ignore_imag_modes=True,
         )

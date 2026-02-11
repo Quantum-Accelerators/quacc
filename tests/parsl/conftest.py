@@ -13,17 +13,18 @@ if has_parsl:
     import parsl
     from parsl.config import Config
     from parsl.dataflow.dependency_resolvers import DEEP_DEPENDENCY_RESOLVER
+    from parsl.dataflow.memoization import BasicMemoizer
 
 
 def pytest_sessionstart():
     import os
 
-    if parsl:
+    if has_parsl:
         parsl.load(
             Config(
                 dependency_resolver=DEEP_DEPENDENCY_RESOLVER,
                 run_dir=str(TEST_RUNINFO),
-                checkpoint_mode="task_exit",
+                memoizer=BasicMemoizer(checkpoint_mode="task_exit"),
             )
         )
     file_dir = Path(__file__).parent
@@ -33,7 +34,7 @@ def pytest_sessionstart():
 
 
 def pytest_sessionfinish(exitstatus):
-    if parsl:
+    if has_parsl:
         parsl.clear()
     rmtree(TEST_RESULTS_DIR, ignore_errors=True)
     if exitstatus == 0:

@@ -30,6 +30,7 @@ pytest tests/core/recipes/orca_recipes --noconftest
 # VASP
 export QUACC_VASP_PARALLEL_CMD="srun -N 1 --ntasks-per-node 32"
 export VASP_PP_PATH=$SOFTWARE/vasp/vasp_potcars
+export VASP_PP_VERSION="64"
 export ASE_VASP_VDW=$SOFTWARE/vasp/vdw_kernel
 export PATH=$SOFTWARE/vasp/6.5.1/bin:$PATH
 module purge

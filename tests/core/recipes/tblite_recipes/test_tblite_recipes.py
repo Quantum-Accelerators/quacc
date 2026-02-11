@@ -118,7 +118,6 @@ def test_freq_job_v2(tmp_path, monkeypatch):
     assert output["results"]["imag_vib_freqs"] == []
 
     assert output["molecule_metadata"]["symmetry"]["linear"] is False
-    assert output["molecule_metadata"]["symmetry"]["rotation_number"] == np.inf
     assert len(output["parameters_thermo"]["vib_freqs"]) == 0
     assert output["results"]["energy"] == -1.0
     assert output["results"]["enthalpy"] == pytest.approx(-0.9357685739989672)

@@ -48,11 +48,11 @@ if TYPE_CHECKING:
     from ase.optimize.optimize import Dynamics, Optimizer
 
     from quacc.types import (
-        Filenames,
         MaxwellBoltzmanDistributionKwargs,
         SourceDirectory,
         VibKwargs,
     )
+    from quacc.wflow_tools.job_argument import Copy
 
 
 class Runner(BaseRunner):
@@ -65,7 +65,7 @@ class Runner(BaseRunner):
         self,
         atoms: Atoms | list[Atoms],
         calculator: BaseCalculator,
-        copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+        copy_files: SourceDirectory | Copy | None = None,
     ) -> None:
         """
         Initialize the Runner object.
@@ -207,7 +207,10 @@ class Runner(BaseRunner):
         """
         # Set defaults
         merged_optimizer_kwargs = recursive_dict_merge(
-            {"logfile": self.tmpdir / "opt.log", "restart": self.tmpdir / "opt.json"},
+            {
+                "logfile": self.tmpdir / "opt.log",
+                "restart": str(self.tmpdir / "opt.json"),
+            },
             optimizer_kwargs,
         )
         run_kwargs = run_kwargs or {}
@@ -450,7 +453,6 @@ class Runner(BaseRunner):
         dyn.attach(traj.write)
         dyn.run(fmax, max_steps)
         traj.close()
-        dyn.logfile.close()
 
         calc_cleanup(None, neb_tmpdir, neb_results_dir)
         traj.filename = zpath(str(neb_results_dir / traj_filename))

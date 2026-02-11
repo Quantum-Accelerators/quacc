@@ -8,34 +8,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
 
     For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
 
-=== "Covalent"
-
-    **Installation**
-
-    To install Covalent, run
-
-    ```bash
-    pip install quacc[covalent]
-    ```
-
-    **Starting the Server**
-
-    Covalent uses a server to dispatch and store calculation details and results. To start the server, simply run `covalent start` in your terminal. It will return a URL (usually http://localhost:48008) that you can use to access the Covalent dashboard, which is shown below.
-
-    ![Covalent UI](../images/install/ui_blank.jpg)
-
-    !!! Tip
-
-        Once you start scaling up your calculations, we recommend hosting the Covalent server on a dedicated machine or using [Covalent Cloud](https://www.covalent.xyz/cloud/). Refer to the [Covalent Deployment Guide](https://docs.covalent.xyz/docs/user-documentation/server-deployment) for details.
-
-    ??? Note "For NERSC Users"
-
-        If you are using Perlmutter at NERSC, you will need to adjust the Covalent configuration directory because the home directory does not support file locking:
-
-        ```bash title="~/.bashrc"
-        export COVALENT_CONFIG_DIR="$SCRATCH/.config/covalent"
-        ```
-
 === "Dask"
 
     **Installation**
@@ -130,7 +102,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
               module load anaconda3/2025.6
               conda activate cms
               export QUACC_WORKFLOW_ENGINE=jobflow
-              export QUACC_CREATE_UNIQUE_DIR=False
             timeout_execute: 60
             resources:
               nodes: 1
@@ -150,7 +121,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
               module load vasp/6.5.1
               export QUACC_VASP_PARALLEL_CMD="srun --nodes 1 --ntasks-per-node 112"
               export QUACC_WORKFLOW_ENGINE=jobflow
-              export QUACC_CREATE_UNIQUE_DIR=False
             timeout_execute: 60
             resources:
               nodes: 1
@@ -334,7 +304,6 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
         pre_rocket: |
                     conda activate cms
                     export QUACC_WORKFLOW_ENGINE=jobflow
-                    export QUACC_CREATE_UNIQUE_DIR=False
         ```
 
         In the above example, you would need to change the path in the `rocket_launch` field to the correct path to your `my_fworker.yaml`. The nodes, walltime, account, and qos are the corresponding parameters for your queuing system. Finally, anything in the `pre_rocket` field will be executed before the job begins running. It is a good place to load modules and set environment variables. A representative example has been provided above.

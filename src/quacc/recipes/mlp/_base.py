@@ -64,8 +64,6 @@ def pick_calculator(
 
     !!! Note
 
-        To use `orb` method, `pynanoflann` must be installed. To install `pynanoflann`,
-        run `pip install "pynanoflann@git+https://github.com/dwastberg/pynanoflann"`.
         The `orb_models` are licensed under the APACHE license as found at the following
         link: https://github.com/orbital-materials/orb-models
 
@@ -123,12 +121,6 @@ def pick_calculator(
         calc = SevenNetCalculator(**calc_kwargs)
 
     elif method.lower() == "orb":
-        if not find_spec("pynanoflann"):
-            raise ImportError(
-                """orb-models requires pynanoflann.
-                Install pynanoflann with `pip install "pynanoflann@git+https://github.com/dwastberg/pynanoflann"`.
-                """
-            )
         from orb_models import __version__
         from orb_models.forcefield import pretrained
         from orb_models.forcefield.calculator import ORBCalculator

@@ -14,56 +14,6 @@ graph LR
   A[Input] --> B(Relax) --> C[Output];
 ```
 
-=== "Covalent"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and start the Covalent server:
-
-        ```bash
-        quacc set WORKFLOW_ENGINE covalent
-        covalent start
-        ```
-
-        Covalent also has its own [configuration variables](https://docs.covalent.xyz/docs/user-documentation/how-to/customization/) you may wish to consider modifying.
-
-    ```python
-    import covalent as ct
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-
-    # Define the workflow
-    @flow  # (1)!
-    def workflow(atoms):
-        return relax_job(atoms)  # (2)!
-
-
-    # Dispatch the workflow to the Covalent server
-    # with the bulk Cu Atoms object as the input
-    dispatch_id = ct.dispatch(workflow)(atoms)  # (3)!
-
-    # Fetch the result from the server
-    result = ct.get_result(dispatch_id, wait=True)  # (4)!
-    print(result)
-    ```
-
-    1. This can be written more compactly as:
-
-        ```python
-        workflow = flow(relax_job)
-        ```
-
-    2. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
-
-    3. This will dispatch the workflow to the Covalent server.
-
-    4. The `ct.get_result` function is used to fetch the workflow status and results from the server. You don't need to set `wait=True` in practice. Once you dispatch the workflow, it will begin running (if the resources are available).
-
 === "Dask"
 
     !!! Important
@@ -200,10 +150,11 @@ graph LR
 
     !!! Important
 
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md). It also helps to have `RESULTS_DIR` set to the default value so Jobflow can handle the directory management.
 
         ```bash
         quacc set WORKFLOW_ENGINE jobflow
+        quacc unset RESULTS_DIR
         ```
 
     ```python
@@ -218,7 +169,7 @@ graph LR
     job = relax_job(atoms)  # (1)!
 
     # Run the job locally
-    responses = jf.run_locally(job)  # (2)!
+    responses = jf.run_locally(job, ensure_success=True, create_folders=True)  # (2)!
 
     # Get the result
     result = responses[job.uuid][1].output
@@ -241,26 +192,6 @@ graph LR
   B --> E(Slab Relax) --> I(Slab Static) --> K[Output]
   B --> F(Slab Relax) --> J(Slab Static) --> K[Output];
 ```
-
-=== "Covalent"
-
-    ```python
-    import covalent as ct
-    from ase.build import bulk
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Dispatch the workflow
-    dispatch_id = ct.dispatch(bulk_to_slabs_flow)(atoms)  # (1)!
-
-    # Print the results
-    result = ct.get_result(dispatch_id, wait=True)
-    print(result)
-    ```
-
-    1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
 
 === "Dask"
 
@@ -335,6 +266,20 @@ graph LR
 
 === "Jobflow"
 
-    !!! Warning
+    ```python
+    import jobflow as jf
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
-        Due to the difference in how Jobflow handles workflows (particularly dynamic ones) compared to other supported workflow engines, any quacc recipes that have been pre-defined with a `#!Python @flow` decorator (i.e. have `_flow` in the name) cannot be run directly with Jobflow. Rather, a Jobflow-specific `Flow` needs to be constructed by the user.
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Create the workflow with arguments
+    workflow = bulk_to_slabs_flow(atoms)
+
+    # Dispatch the workflow and get results
+    results = jf.run_locally(workflow)
+
+    # Print the results
+    print(results)
+    ```

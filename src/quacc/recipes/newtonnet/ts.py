@@ -62,7 +62,7 @@ def ts_job(
     run_freq
         Whether to run the frequency job.
     freq_job_kwargs
-        Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
+        Keyword arguments to use for the [quacc.recipes.newtonnet.core.freq_job][]
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
@@ -147,7 +147,7 @@ def irc_job(
     run_freq
         Whether to run the frequency analysis.
     freq_job_kwargs
-        Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
+        Keyword arguments to use for the [quacc.recipes.newtonnet.core.freq_job][]
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
@@ -237,7 +237,7 @@ def quasi_irc_job(
     relax_job_kwargs
         Keyword arguments to use for the [quacc.recipes.newtonnet.core.relax_job][]
     freq_job_kwargs
-        Keyword arguments to use for the [quacc.recipes.newtonnet.ts.freq_job][]
+        Keyword arguments to use for the [quacc.recipes.newtonnet.core.freq_job][]
 
     Returns
     -------

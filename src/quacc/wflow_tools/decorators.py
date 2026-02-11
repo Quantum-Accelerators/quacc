@@ -21,9 +21,9 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think of
     each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
 
-    | Quacc | Covalent      | Parsl        | Dask      | Prefect | Redun  | Jobflow |
-    | ----- | ------------- | ------------ | --------- | ------- | ------ | ------- |
-    | `job` | `ct.electron` | `python_app` | `delayed` | `task`  | `task` | `job`   |
+    | Quacc | Parsl        | Dask      | Prefect | Redun  | Jobflow |
+    | ----- | ------------ | --------- | ------- | ------ | ------- |
+    | `job` | `python_app` | `delayed` | `task`  | `task` | `job`   |
 
     All `#!Python @job`-decorated functions are transformed into their corresponding
     decorator.
@@ -41,20 +41,6 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     ```
 
     ... is the same as doing
-
-    === "Covalent"
-
-        ```python
-        import covalent as ct
-
-
-        @ct.electron
-        def add(a, b):
-            return a + b
-
-
-        add(1, 2)
-        ```
 
     === "Dask"
 
@@ -148,11 +134,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     if changes := kwargs.pop("settings_swap", {}):
         return job(change_settings_wrap(_func, changes), **kwargs)
 
-    if settings.WORKFLOW_ENGINE == "covalent":
-        import covalent as ct
-
-        return ct.electron(_func, **kwargs)
-    elif settings.WORKFLOW_ENGINE == "dask":
+    if settings.WORKFLOW_ENGINE == "dask":
         from dask import delayed
 
         # See https://github.com/dask/dask/issues/10733
@@ -163,9 +145,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
 
         return Delayed_(delayed(wrapper, **kwargs))
     elif settings.WORKFLOW_ENGINE == "jobflow":
-        from jobflow import job as jf_job
-
-        return jf_job(_func, **kwargs)
+        return _get_jobflow_wrapped_func(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
@@ -198,9 +178,9 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
 
-    | Quacc  | Covalent     | Parsl     | Dask      | Prefect | Redun  | Jobflow   |
-    | ------ | ------------ | --------- | --------- | ------- | ------ | --------- |
-    | `flow` | `ct.lattice` | No effect | No effect | `flow`  | `task` | No effect |
+    | Quacc  | Parsl     | Dask      | Prefect | Redun  | Jobflow   |
+    | ------ | --------- | --------- | ------- | ------ | --------- |
+    | `flow` | No effect | No effect | `flow`  | `task` | No effect |
 
     All `#!Python @flow`-decorated functions are transformed into their corresponding
     decorator.
@@ -223,25 +203,6 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
     ```
 
     ... is the same as doing
-
-    === "Covalent"
-
-        ```python
-        import covalent as ct
-
-
-        @ct.electron
-        def add(a, b):
-            return a + b
-
-
-        @ct.lattice
-        def workflow(a, b, c):
-            return add(add(a, b), c)
-
-
-        workflow(1, 2, 3)
-        ```
 
     === "Dask"
 
@@ -342,16 +303,14 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
     if _func is None:
         return partial(flow, **kwargs)
 
-    elif settings.WORKFLOW_ENGINE == "covalent":
-        import covalent as ct
-
-        return ct.lattice(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "jobflow":
+        return _get_jobflow_wrapped_flow(_func)
     else:
         return _func
 
@@ -360,9 +319,9 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
-    | Quacc     | Covalent                  | Parsl      | Dask      | Prefect | Redun  | Jobflow   |
-    | --------- | ------------------------- | ---------- | --------- | ------- |------- | --------- |
-    | `subflow` | `ct.electron(ct.lattice)` | `join_app` | `delayed` | `flow`  | `task` | No effect |
+    | Quacc     | Parsl      | Dask      | Prefect | Redun  | Jobflow   |
+    | --------- | ---------- | --------- | ------- |------- | --------- |
+    | `subflow` | `join_app` | `delayed` | `flow`  | `task` | No effect |
 
     All `#!Python @subflow`-decorated functions are transformed into their corresponding
     decorator.
@@ -398,39 +357,6 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
     ```
 
     ... is the same as doing
-
-    === "Covalent"
-
-        ```python
-        import random
-        import covalent as ct
-
-
-        @ct.electron
-        def add(a, b):
-            return a + b
-
-
-        @ct.electron
-        def make_more(val):
-            return [val] * random.randint(2, 5)
-
-
-        @ct.electron
-        @ct.lattice
-        def add_distributed(vals, c):
-            return [add(val, c) for val in vals]
-
-
-        @ct.lattice
-        def workflow(a, b, c):
-            result1 = add(a, b)
-            result2 = make_more(result1)
-            return add_distributed(result2, c)
-
-
-        workflow(1, 2, 3)
-        ```
 
     === "Dask"
 
@@ -556,10 +482,6 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
     if _func is None:
         return partial(subflow, **kwargs)
 
-    elif settings.WORKFLOW_ENGINE == "covalent":
-        import covalent as ct
-
-        return ct.electron(ct.lattice(_func), **kwargs)
     elif settings.WORKFLOW_ENGINE == "dask":
         from dask.delayed import delayed
         from dask.distributed import worker_client
@@ -585,6 +507,8 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "jobflow":
+        return _get_jobflow_wrapped_func(_func, **kwargs)
     else:
         return _func
 
@@ -660,6 +584,18 @@ def _get_prefect_wrapped_flow(
             return prefect_flow(sync_wrapper, validate_parameters=False, **kwargs)
         else:
             return prefect_flow(_func, validate_parameters=False, **kwargs)
+
+
+def _get_jobflow_wrapped_func(method=None, **job_kwargs):
+    from jobflow import job as jf_job
+
+    return jf_job(method, **job_kwargs)
+
+
+def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
+    from jobflow import flow as jf_flow
+
+    return jf_flow(_func)
 
 
 class Delayed_:

@@ -1,11 +1,11 @@
-ase==3.26.0
-custodian==2025.10.11
-emmet-core==0.85.1
+ase @ git+https://gitlab.com/ase/ase.git
+custodian==2025.12.14
+emmet-core==0.86.3
 frozendict==2.4.7
 monty==2025.3.3
-psutil==7.1.3
-pydantic==2.12.4
+psutil==7.2.2
+pydantic==2.12.5
 pydantic-settings==2.12.0
 pymatgen==2025.10.7
-ruamel.yaml==0.18.16
+ruamel.yaml==0.19.1
 typer==0.17.4
