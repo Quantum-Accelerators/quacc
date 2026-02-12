@@ -8,7 +8,7 @@ It can be useful to understand how quacc handles files so that you can adjust th
 
 ## Scenario 1: The Default Case
 
-Here, let us begin by assuming we are using the default quacc settings. By default, `RESULTS_DIR` is set to `Path.cwd()` (i.e. the current working directory), but this can be modified by the user.
+Here, let us begin by assuming we are using the default quacc settings. By default, `RESULTS_DIR` is set to `Path()` (i.e. the current working directory), but this can be modified by the user.
 
 ### Job Runtime
 
