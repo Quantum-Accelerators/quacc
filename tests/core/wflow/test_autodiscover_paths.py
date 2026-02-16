@@ -5,7 +5,6 @@ from pathlib import Path
 from ase.build import bulk
 
 from quacc import change_settings, flow, get_settings, job, subflow
-from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 from quacc.wflow_tools.context import get_context_path, get_directory_context
 
 
@@ -31,7 +30,11 @@ def test_autodiscover_bulk_slabs_paths(tmp_path):
                 ...
                 └── static_job-<timestamp>
     """
-    with change_settings({"RESULTS_DIR": tmp_path}):
+    with change_settings({"AUTODISCOVER_DIR": True, "RESULTS_DIR": tmp_path}):
+        # Make sure we import the `@flow` inside the context manager after
+        # changing settings!
+        from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
         atoms = bulk("Cu")
         bulk_to_slabs_flow(atoms, run_static=True)
 
@@ -44,7 +47,7 @@ def test_autodiscover_bulk_slabs_paths(tmp_path):
 
 
 def test_autodiscover_paths_job(tmp_path):
-    with change_settings({"RESULTS_DIR": tmp_path}):
+    with change_settings({"AUTODISCOVER_DIR": True, "RESULTS_DIR": tmp_path}):
 
         @job
         def create_file_job(name):
@@ -63,7 +66,7 @@ def test_autodiscover_paths_job(tmp_path):
 
 
 def test_autodiscover_paths_flow_subflows(tmp_path):
-    with change_settings({"RESULTS_DIR": tmp_path}):
+    with change_settings({"AUTODISCOVER_DIR": True, "RESULTS_DIR": tmp_path}):
 
         @job
         def create_file_job(name):
@@ -100,7 +103,7 @@ def test_autodiscover_paths_flow_subflows(tmp_path):
 
 
 def test_autodiscover_paths_flow_no_subflows(tmp_path):
-    with change_settings({"RESULTS_DIR": tmp_path}):
+    with change_settings({"AUTODISCOVER_DIR": True, "RESULTS_DIR": tmp_path}):
 
         @job
         def create_file_job(name):
@@ -124,7 +127,7 @@ def test_autodiscover_paths_flow_no_subflows(tmp_path):
 
 
 def test_autodiscover_paths_flow_replace(tmp_path):
-    with change_settings({"RESULTS_DIR": tmp_path}):
+    with change_settings({"AUTODISCOVER_DIR": True, "RESULTS_DIR": tmp_path}):
 
         @job
         def create_file_job_replaced(name):
