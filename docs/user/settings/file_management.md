@@ -67,7 +67,7 @@ RESULTS_DIR
         └── OUTPUT.gz
 ```
 
-Here, `relax_job` is the name of the job, and is suffixed with a timestamp. A recipe may have multiple jobs with the same name, and the timestamp helps us distinguish one run of a job with another.
+Here, `relax_job` is the name of the job and is suffixed with a timestamp. A recipe may have multiple jobs with the same name, and the timestamp helps us distinguish one run of a job with another.
 
 For typical quacc recipes that have a flow, subflow(s), and job(s), the output folders will reflect the relationship between them. For example, the `bulk_to_slabs_flow` recipe results in something like:
 
@@ -87,7 +87,7 @@ For typical quacc recipes that have a flow, subflow(s), and job(s), the output f
                 ...
 ```
 
-At each level, the folder name has a prefix that identifies the name of the `@flow`, `@subflow` or `@job` being run, and the suffix indicates the timestamp. In general, the ordering of folders at a level corresponds to the order in which they were run.
+At each level, the folder name has a prefix that identifies the name of the `@flow`, `@subflow`, or `@job` being run, and the suffix indicates the timestamp. In general, the ordering of folders at a level corresponds to the order in which they were run.
 
 ## Specifying a `SCRATCH_DIR`
 
