@@ -162,6 +162,26 @@ def copy_decompress_files(
                 decompress_dir(destination_filepath)
 
 
+def make_unique_name(prefix: str | None = None) -> str:
+    """
+    Create a unique name suitable for newly created files/folders.
+
+    Parameters
+    ----------
+    prefix
+        Prefix to add to the name.
+
+    Returns
+    -------
+    str
+        A unique timestamped name.
+    """
+    time_now = datetime.now(UTC).strftime("%Y-%m-%d-%H-%M-%S-%f")
+    if prefix is None:
+        prefix = ""
+    return f"{prefix}{time_now}-{randint(10000, 99999)}"
+
+
 def make_unique_dir(
     base_path: Path | str | None = None, prefix: str | None = None
 ) -> Path:
@@ -180,10 +200,7 @@ def make_unique_dir(
     Path
         Path to the job directory.
     """
-    time_now = datetime.now(UTC).strftime("%Y-%m-%d-%H-%M-%S-%f")
-    if prefix is None:
-        prefix = ""
-    job_dir = Path(f"{prefix}{time_now}-{randint(10000, 99999)}")
+    job_dir = Path(make_unique_name(prefix))
     if base_path:
         job_dir = Path(base_path, job_dir)
     job_dir.mkdir(parents=True)

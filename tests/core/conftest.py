@@ -13,6 +13,7 @@ def pytest_sessionstart():
     os.environ["QUACC_CONFIG_FILE"] = str(file_dir / ".quacc.yaml")
     os.environ["QUACC_RESULTS_DIR"] = str(TEST_RESULTS_DIR)
     os.environ["QUACC_SCRATCH_DIR"] = str(TEST_SCRATCH_DIR)
+    os.environ["QUACC_AUTODISCOVER_DIR"] = "true"
 
 
 def pytest_sessionfinish(exitstatus):

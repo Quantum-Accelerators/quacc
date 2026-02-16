@@ -24,7 +24,7 @@ from typing import TYPE_CHECKING
 
 from monty.json import MSONable
 
-from quacc.utils.files import make_unique_dir
+from quacc.utils.files import make_unique_dir, make_unique_name
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -176,6 +176,8 @@ def _tracked_call(func, node_type, args, kwargs):
                 base_path=job_results_dir, prefix="quacc-"
             )
 
+        # Since we're creating a top-level directory, we don't need to create a unique name for the (top-level)
+        # flow right inside it, but can simply use `func.__name__`.
         with (
             directory_context(str(job_results_dir)),
             _push_context(func.__name__, node_type),
@@ -184,5 +186,7 @@ def _tracked_call(func, node_type, args, kwargs):
     else:
         # We are inside an already-tracked invocation; just push another
         # node onto the existing stack.
-        with _push_context(func.__name__, node_type):
+        # Create a unique name we can use at this level.
+        name = make_unique_name(prefix=f"{func.__name__}-")
+        with _push_context(name, node_type):
             return func(*args, **kwargs)

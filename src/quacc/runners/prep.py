@@ -83,11 +83,9 @@ def calc_setup(
         if settings.CREATE_UNIQUE_DIR:
             job_results_dir = settings.RESULTS_DIR / tmpdir.name.lstrip("tmp-")
     else:
-        # Autodiscover is active: create a uniquely-suffixed directory so
-        # that multiple invocations of the same job don't collide.
-        job_results_dir = make_unique_dir(
-            base_path=job_results_dir.parent, prefix=f"{job_results_dir.stem}-"
-        )
+        # Autodiscover is active: we presumably have a uniquely-suffixed directory so
+        # that multiple invocations of the same job don't collide; do nothing.
+        pass
 
     # Create a symlink to the tmpdir
     if os.name != "nt" and settings.SCRATCH_DIR:
