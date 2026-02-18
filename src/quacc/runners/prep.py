@@ -133,7 +133,10 @@ def calc_cleanup(
 
     # Safety check
     tmpdir_base = (settings.SCRATCH_DIR or settings.RESULTS_DIR).resolve()
-    if not tmpdir.relative_to(tmpdir_base).parts[0].startswith("tmp-"):
+    if not (
+        tmpdir.is_relative_to(tmpdir_base)
+        and tmpdir.relative_to(tmpdir_base).parts[0].startswith("tmp-")
+    ):
         msg = f"{tmpdir} does not appear to be a tmpdir... exiting for safety!"
         raise ValueError(msg)
 
@@ -182,7 +185,7 @@ def terminate(tmpdir: Path | str, exception: Exception) -> None:
     """
     settings = get_settings()
     tmpdir = Path(tmpdir)
-    job_failed_dir = tmpdir.with_name("failed-" + tmpdir.name)
+    job_failed_dir = tmpdir.with_name(tmpdir.name.replace("tmp-", "failed-"))
     tmpdir.rename(job_failed_dir)
 
     msg = f"Calculation failed! Files stored at {job_failed_dir}"
