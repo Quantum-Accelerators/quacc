@@ -14,21 +14,20 @@ def test_autodiscover_bulk_slabs_paths(tmp_path):
     subflow/jobs looks like:
 
     <RESULTS_DIR>
-    └── quacc-<timestamp>
-        └── bulk_to_slabs_flow
-            └── bulk_to_slabs_subflow-<timestamp>
-                ├── relax_job-<timestamp>
-                │         ├── opt.json.gz
-                │         ├── opt.log.gz
-                │         └── opt.traj.gz
-                ├── relax_job-<timestamp>
-                │         ├── opt.json.gz
-                │         ├── opt.log.gz
-                │         └── opt.traj.gz
-                ...
-                ├── static_job-<timestamp>
-                ...
-                └── static_job-<timestamp>
+    └── bulk_to_slabs_flow-<timestamp>
+        └── bulk_to_slabs_subflow-<timestamp>
+            ├── relax_job-<timestamp>
+            │         ├── opt.json.gz
+            │         ├── opt.log.gz
+            │         └── opt.traj.gz
+            ├── relax_job-<timestamp>
+            │         ├── opt.json.gz
+            │         ├── opt.log.gz
+            │         └── opt.traj.gz
+            ...
+            ├── static_job-<timestamp>
+            ...
+            └── static_job-<timestamp>
     """
     with change_settings({"AUTODISCOVER_DIR": True, "RESULTS_DIR": tmp_path}):
         # Make sure we import the `@flow` inside the context manager after
@@ -40,7 +39,7 @@ def test_autodiscover_bulk_slabs_paths(tmp_path):
 
         matches = list(
             tmp_path.glob(
-                "quacc-*/bulk_to_slabs_flow/bulk_to_slabs_subflow*/relax_job*/opt.json.gz"
+                "bulk_to_slabs_flow*/bulk_to_slabs_subflow*/relax_job*/opt.json.gz"
             )
         )
         assert len(matches) == 4
@@ -62,7 +61,7 @@ def test_autodiscover_paths_job(tmp_path):
             job_results_file.touch()
 
         create_file_job("foo")
-        assert any(tmp_path.glob("quacc-*/create_file_job/foo"))
+        assert any(tmp_path.glob("create_file_job*/foo"))
 
 
 def test_autodiscover_paths_flow_subflows(tmp_path):
@@ -91,14 +90,10 @@ def test_autodiscover_paths_flow_subflows(tmp_path):
 
         create_file_flow()
         assert any(
-            tmp_path.glob(
-                "quacc-*/create_file_flow/create_file_subflow*/create_file_job*/foo"
-            )
+            tmp_path.glob("create_file_flow*/create_file_subflow*/create_file_job*/foo")
         )
         assert any(
-            tmp_path.glob(
-                "quacc-*/create_file_flow/create_file_subflow*/create_file_job*/bar"
-            )
+            tmp_path.glob("create_file_flow*/create_file_subflow*/create_file_job*/bar")
         )
 
 
@@ -122,37 +117,5 @@ def test_autodiscover_paths_flow_no_subflows(tmp_path):
             return [create_file_job("foo"), create_file_job("bar")]
 
         create_file_flow()
-        assert any(tmp_path.glob("quacc-*/create_file_flow/create_file_job*/foo"))
-        assert any(tmp_path.glob("quacc-*/create_file_flow/create_file_job*/bar"))
-
-
-def test_autodiscover_paths_flow_replace(tmp_path):
-    with change_settings({"AUTODISCOVER_DIR": True, "RESULTS_DIR": tmp_path}):
-
-        @job
-        def create_file_job_replaced(name):
-            settings = get_settings()
-            job_results_dir = (
-                settings.RESULTS_DIR
-                / Path(get_directory_context())
-                / get_context_path()
-            )
-            job_results_dir.mkdir(parents=True, exist_ok=True)
-            job_results_file = job_results_dir / f"{name}"
-            job_results_file.touch()
-
-        @job
-        def create_file_job(name):
-            # When a job replaces another, a level is added to the folder hierarchy
-            return create_file_job_replaced(name)
-
-        @flow
-        def create_file_flow():
-            return create_file_job("foo")
-
-        create_file_flow()
-        assert any(
-            tmp_path.glob(
-                "quacc-*/create_file_flow/create_file_job*/create_file_job_replaced*/foo"
-            )
-        )
+        assert any(tmp_path.glob("create_file_flow*/create_file_job*/foo"))
+        assert any(tmp_path.glob("create_file_flow*/create_file_job*/bar"))

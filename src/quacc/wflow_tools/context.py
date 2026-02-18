@@ -24,7 +24,7 @@ from typing import TYPE_CHECKING
 
 from monty.json import MSONable
 
-from quacc.utils.files import make_unique_dir, make_unique_name
+from quacc.utils.files import make_unique_name
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -166,27 +166,19 @@ def _tracked_call(func, node_type, args, kwargs):
     if not settings.AUTODISCOVER_DIR:
         return func(*args, **kwargs)
 
+    # Create a unique name we can use at this level.
+    name = make_unique_name(prefix=f"{func.__name__}-")
+
     if is_top_level():
         # This is the outermost tracked call: create a unique root
         # directory (e.g. ``quacc-abc123/``) and initialize both the
         # directory context and the execution-context stack.
         job_results_dir = settings.RESULTS_DIR.resolve()
-        if settings.CREATE_UNIQUE_DIR:
-            job_results_dir = make_unique_dir(
-                base_path=job_results_dir, prefix="quacc-"
-            )
 
-        # Since we're creating a top-level directory, we don't need to create a unique name for the (top-level)
-        # flow right inside it, but can simply use `func.__name__`.
-        with (
-            directory_context(str(job_results_dir)),
-            _push_context(func.__name__, node_type),
-        ):
+        with directory_context(str(job_results_dir)), _push_context(name, node_type):
             return func(*args, **kwargs)
     else:
         # We are inside an already-tracked invocation; just push another
         # node onto the existing stack.
-        # Create a unique name we can use at this level.
-        name = make_unique_name(prefix=f"{func.__name__}-")
         with _push_context(name, node_type):
             return func(*args, **kwargs)

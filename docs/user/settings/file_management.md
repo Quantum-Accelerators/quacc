@@ -55,16 +55,26 @@ Quacc has a new feature for "auto-generation" of a sensible output folder struct
 
 Here, let us assume that `RESULTS_DIR` is set to `Path.cwd()` (i.e. the current working directory), though this can be modified just like any other setting.
 
+### Job Runtime
+
+At job runtime, the file structure looks like:
+
+```text
+RESULTS_DIR
+├── tmp-relax_job-2026-02-16-71530
+    ├── INPUT.gz
+    └── OUTPUT.gz
+```
+
 ### Job Success
 
 Once the job successfully completes, the file structure looks like:
 
 ```text
 RESULTS_DIR
-├── quacc-2026-02-16-67890
-    └── relax_job-2026-02-16-71530
-        ├── INPUT.gz
-        └── OUTPUT.gz
+├── relax_job-2026-02-16-71530
+    ├── INPUT.gz
+    └── OUTPUT.gz
 ```
 
 Here, `relax_job` is the name of the job and is suffixed with a timestamp. A recipe may have multiple jobs with the same name, and the timestamp helps us distinguish one run of a job with another.
@@ -73,21 +83,48 @@ For typical quacc recipes that have a flow, subflow(s), and job(s), the output f
 
 ```text
     RESULTS_DIR
-    └── quacc-2026-02-16-25313
-        └── bulk_to_slabs_flow-2026-02-16-35312
-            └── bulk_to_slabs_subflow-2026-02-16-38381
-                ├── relax_job-2026-02-16-45812
-                │         ├── opt.json.gz
-                │         ├── opt.log.gz
-                │         └── opt.traj.gz
-                ├── relax_job-2026-02-16-42525
-                │         ├── opt.json.gz
-                │         ├── opt.log.gz
-                │         └── opt.traj.gz
-                ...
+    └── bulk_to_slabs_flow-2026-02-16-35312
+        └── bulk_to_slabs_subflow-2026-02-16-38381
+            ├── relax_job-2026-02-16-45812
+            │         ├── opt.json.gz
+            │         ├── opt.log.gz
+            │         └── opt.traj.gz
+            ├── relax_job-2026-02-16-42525
+            │         ├── opt.json.gz
+            │         ├── opt.log.gz
+            │         └── opt.traj.gz
+            ...
 ```
 
 At each level, the folder name has a prefix that identifies the name of the `@flow`, `@subflow`, or `@job` being run, and the suffix indicates the timestamp. In general, the ordering of folders at a level corresponds to the order in which they were run.
+
+### Job Failure
+
+If the job fails or does not complete, then the file structure looks like:
+
+```text
+RESULTS_DIR
+├── failed-relax_job-2026-02-16-71530
+    ├── INPUT.gz
+    └── OUTPUT.gz
+```
+
+For typical quacc recipes that have a flow, subflow(s), and job(s), the file structure looks as follows. Here one of the two relax jobs has failed.
+
+```text
+    RESULTS_DIR
+    └── bulk_to_slabs_flow-2026-02-16-35312
+        └── bulk_to_slabs_subflow-2026-02-16-38381
+            ├── failed-relax_job-2026-02-16-45812
+            │         ├── opt.json.gz
+            │         ├── opt.log.gz
+            │         └── opt.traj.gz
+            ├── relax_job-2026-02-16-42525
+            │         ├── opt.json.gz
+            │         ├── opt.log.gz
+            │         └── opt.traj.gz
+            ...
+```
 
 ## Specifying a `SCRATCH_DIR`
 
@@ -98,6 +135,8 @@ Here, let's assume the user has specified the `SCRATCH_DIR` setting to be a cust
 ### Job Runtime
 
 At job runtime, the file structure looks like:
+
+If `AUTODISCOVER_DIR` is `false`:
 
 ```text
 RESULTS_DIR
@@ -112,7 +151,22 @@ SCRATCH_DIR
     └── OUTPUT
 ```
 
-Here, the `symlink-tmp-quacc-2023-12-08-67890` is a temporary symbolic link that points to `SCRATCH_DIR/tmp-quacc-2023-12-08-67890` so you can easily monitor the progress of the calculation. On Windows, no symbolink link is created, but the `tmp-quacc-2023-12-08-67890` directory is still created in `SCRATCH_DIR`.
+If `AUTODISCOVER_DIR` is `true`:
+
+```text
+RESULTS_DIR
+├── symlink-relax_job-quacc-2023-12-08-67890
+│
+```
+
+```text
+SCRATCH_DIR
+├── tmp-relax_job-2023-12-08-67890
+│   ├── INPUT
+    └── OUTPUT
+```
+
+In either case, `symlink-..` is a temporary symbolic link that points to `SCRATCH_DIR/tmp-..` so you can easily monitor the progress of the calculation. On Windows, no symbolink link is created, but the `tmp-..` directory is still created in `SCRATCH_DIR`.
 
 ### Job Success
 
@@ -136,10 +190,9 @@ If `AUTODISCOVER_DIR` is `true`:
 
 ```text
 RESULTS_DIR
-├── quacc-2026-02-16-67890
-    └── relax_job-2026-02-16-71530
-        ├── INPUT.gz
-        └── OUTPUT.gz
+└── relax_job-2026-02-16-71530
+    ├── INPUT.gz
+    └── OUTPUT.gz
 ```
 
 ```text
@@ -149,7 +202,9 @@ SCRATCH_DIR
 
 ### Job Failure
 
-If the job fails or does not complete, then the file structure looks like:
+If the job fails or does not complete, then the file structure looks as follows.
+
+If `AUTODISCOVER_DIR` is `false`:
 
 ```text
 RESULTS_DIR
@@ -163,3 +218,43 @@ SCRATCH_DIR
 │   ├── INPUT
     └── OUTPUT
 ```
+
+If `AUTODISCOVER_DIR` is `true`:
+
+```text
+RESULTS_DIR
+├── symlink-failed-relax_job-2023-12-08-67890
+│
+```
+
+```text
+SCRATCH_DIR
+├── failed-relax_job-2023-12-08-67890
+│   ├── INPUT
+    └── OUTPUT
+```
+
+For typical quacc recipes that have a flow, subflow(s), and job(s), the file structure looks as follows. Here one of the two relax jobs has failed.
+
+```text
+RESULTS_DIR
+├── symlink-failed-relax_job-2026-02-16-45812
+│
+```
+
+```text
+    SCRATCH_DIR
+    └── tmp-bulk_to_slabs_flow-2026-02-16-35312
+        └── bulk_to_slabs_subflow-2026-02-16-38381
+            ├── failed-relax_job-2026-02-16-45812
+            │         ├── opt.json.gz
+            │         ├── opt.log.gz
+            │         └── opt.traj.gz
+            ├── relax_job-2026-02-16-42525
+            │         ├── opt.json.gz
+            │         ├── opt.log.gz
+            │         └── opt.traj.gz
+            ...
+```
+
+The `symlink-` points to the corresponding `failed-..` job folder in `SCRATCH_DIR`.
