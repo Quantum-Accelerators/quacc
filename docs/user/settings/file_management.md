@@ -77,7 +77,7 @@ RESULTS_DIR
     └── OUTPUT.gz
 ```
 
-Here, `relax_job` is the name of the job and is suffixed with a timestamp. A recipe may have multiple jobs with the same name, and the timestamp helps us distinguish one run of a job with another.
+Here, `relax_job` is the name of the job and is suffixed with a timestamp. A recipe may have multiple jobs with the same name, and the timestamp helps us distinguish one run of a job from another.
 
 For typical quacc recipes that have a flow, subflow(s), and job(s), the output folders will reflect the relationship between them. For example, the `bulk_to_slabs_flow` recipe results in something like:
 
@@ -166,7 +166,30 @@ SCRATCH_DIR
     └── OUTPUT
 ```
 
-In either case, `symlink-..` is a temporary symbolic link that points to `SCRATCH_DIR/tmp-..` so you can easily monitor the progress of the calculation. On Windows, no symbolink link is created, but the `tmp-..` directory is still created in `SCRATCH_DIR`.
+For typical quacc recipes that have a flow, subflow(s), and job(s):
+
+```text
+RESULTS_DIR
+├── symlink-relax_job-2026-02-16-45812
+│
+```
+
+```text
+    SCRATCH_DIR
+    └── tmp-bulk_to_slabs_flow-2026-02-16-35312
+        └── bulk_to_slabs_subflow-2026-02-16-38381
+            ├── relax_job-2026-02-16-45812
+            │         ├── opt.json.gz
+            │         ├── opt.log.gz
+            │         └── opt.traj.gz
+            ├── relax_job-2026-02-16-42525
+            │         ├── opt.json.gz
+            │         ├── opt.log.gz
+            │         └── opt.traj.gz
+            ...
+```
+
+In all these cases, `symlink-..` is a temporary symbolic link that points to the corresponding job folder in `SCRATCH_DIR/tmp-..`, so you can easily monitor the progress of the calculation. On Windows, no symbolink link is created, but the `tmp-..` directory is still created in `SCRATCH_DIR`.
 
 ### Job Success
 
