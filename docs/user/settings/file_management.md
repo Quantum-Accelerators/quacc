@@ -82,18 +82,18 @@ Here, `relax_job` is the name of the job and is suffixed with a timestamp. A rec
 For typical quacc recipes that have a flow, subflow(s), and job(s), the output folders will reflect the relationship between them. For example, the `bulk_to_slabs_flow` recipe results in something like:
 
 ```text
-    RESULTS_DIR
-    └── bulk_to_slabs_flow-2026-02-16-35312
-        └── bulk_to_slabs_subflow-2026-02-16-38381
-            ├── relax_job-2026-02-16-45812
-            │         ├── opt.json.gz
-            │         ├── opt.log.gz
-            │         └── opt.traj.gz
-            ├── relax_job-2026-02-16-42525
-            │         ├── opt.json.gz
-            │         ├── opt.log.gz
-            │         └── opt.traj.gz
-            ...
+RESULTS_DIR
+└── bulk_to_slabs_flow-2026-02-16-35312
+    └── bulk_to_slabs_subflow-2026-02-16-38381
+        ├── relax_job-2026-02-16-45812
+        │         ├── opt.json.gz
+        │         ├── opt.log.gz
+        │         └── opt.traj.gz
+        ├── relax_job-2026-02-16-42525
+        │         ├── opt.json.gz
+        │         ├── opt.log.gz
+        │         └── opt.traj.gz
+        ...
 ```
 
 At each level, the folder name has a prefix that identifies the name of the `@flow`, `@subflow`, or `@job` being run, and the suffix indicates the timestamp. In general, the ordering of folders at a level corresponds to the order in which they were run.
@@ -112,18 +112,18 @@ RESULTS_DIR
 For typical quacc recipes that have a flow, subflow(s), and job(s), the file structure looks as follows. Here one of the two relax jobs has failed.
 
 ```text
-    RESULTS_DIR
-    └── bulk_to_slabs_flow-2026-02-16-35312
-        └── bulk_to_slabs_subflow-2026-02-16-38381
-            ├── failed-relax_job-2026-02-16-45812
-            │         ├── opt.json.gz
-            │         ├── opt.log.gz
-            │         └── opt.traj.gz
-            ├── relax_job-2026-02-16-42525
-            │         ├── opt.json.gz
-            │         ├── opt.log.gz
-            │         └── opt.traj.gz
-            ...
+RESULTS_DIR
+└── bulk_to_slabs_flow-2026-02-16-35312
+    └── bulk_to_slabs_subflow-2026-02-16-38381
+        ├── failed-relax_job-2026-02-16-45812
+        │         ├── opt.json.gz
+        │         ├── opt.log.gz
+        │         └── opt.traj.gz
+        ├── relax_job-2026-02-16-42525
+        │         ├── opt.json.gz
+        │         ├── opt.log.gz
+        │         └── opt.traj.gz
+        ...
 ```
 
 ## Specifying a `SCRATCH_DIR`
@@ -175,18 +175,18 @@ RESULTS_DIR
 ```
 
 ```text
-    SCRATCH_DIR
-    └── tmp-bulk_to_slabs_flow-2026-02-16-35312
-        └── bulk_to_slabs_subflow-2026-02-16-38381
-            ├── relax_job-2026-02-16-45812
-            │         ├── opt.json.gz
-            │         ├── opt.log.gz
-            │         └── opt.traj.gz
-            ├── relax_job-2026-02-16-42525
-            │         ├── opt.json.gz
-            │         ├── opt.log.gz
-            │         └── opt.traj.gz
-            ...
+SCRATCH_DIR
+└── tmp-bulk_to_slabs_flow-2026-02-16-35312
+    └── bulk_to_slabs_subflow-2026-02-16-38381
+        ├── relax_job-2026-02-16-45812
+        │         ├── opt.json.gz
+        │         ├── opt.log.gz
+        │         └── opt.traj.gz
+        ├── relax_job-2026-02-16-42525
+        │         ├── opt.json.gz
+        │         ├── opt.log.gz
+        │         └── opt.traj.gz
+        ...
 ```
 
 In all these cases, `symlink-..` is a temporary symbolic link that points to the corresponding job folder in `SCRATCH_DIR/tmp-..`, so you can easily monitor the progress of the calculation. On Windows, no symbolink link is created, but the `tmp-..` directory is still created in `SCRATCH_DIR`.
@@ -266,18 +266,18 @@ RESULTS_DIR
 ```
 
 ```text
-    SCRATCH_DIR
-    └── tmp-bulk_to_slabs_flow-2026-02-16-35312
-        └── bulk_to_slabs_subflow-2026-02-16-38381
-            ├── failed-relax_job-2026-02-16-45812
-            │         ├── opt.json.gz
-            │         ├── opt.log.gz
-            │         └── opt.traj.gz
-            ├── relax_job-2026-02-16-42525
-            │         ├── opt.json.gz
-            │         ├── opt.log.gz
-            │         └── opt.traj.gz
-            ...
+SCRATCH_DIR
+└── tmp-bulk_to_slabs_flow-2026-02-16-35312
+    └── bulk_to_slabs_subflow-2026-02-16-38381
+        ├── failed-relax_job-2026-02-16-45812
+        │         ├── opt.json.gz
+        │         ├── opt.log.gz
+        │         └── opt.traj.gz
+        ├── relax_job-2026-02-16-42525
+        │         ├── opt.json.gz
+        │         ├── opt.log.gz
+        │         └── opt.traj.gz
+        ...
 ```
 
 The `symlink-` points to the corresponding `failed-..` job folder in `SCRATCH_DIR`.
