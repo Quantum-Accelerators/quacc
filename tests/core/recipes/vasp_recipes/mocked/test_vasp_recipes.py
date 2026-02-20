@@ -322,6 +322,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
     outputs = bulk_to_slabs_flow(atoms)
+    outputs = [output for output in outputs if output["name"] == "VASP Slab Static"]
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
@@ -346,6 +347,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     outputs = bulk_to_slabs_flow(
         atoms, job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}}
     )
+    outputs = [output for output in outputs if output["name"] == "VASP Slab Static"]
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45

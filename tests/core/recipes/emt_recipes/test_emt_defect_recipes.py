@@ -16,7 +16,7 @@ def test_bulk_to_defects_flow(tmp_path, monkeypatch):
     output = bulk_to_defects_flow(
         atoms, job_params={"relax_job": {"opt_params": {"fmax": 5}}}
     )
-    assert len(output) == 2
+    assert len(output) == 4
     assert len(output[0]["atoms"]) == 107
 
     atoms = bulk("Cu")
