@@ -185,7 +185,7 @@ def terminate(tmpdir: Path | str, exception: Exception) -> None:
     """
     settings = get_settings()
     tmpdir = Path(tmpdir)
-    job_failed_dir = tmpdir.with_name(tmpdir.name.replace("tmp-", "failed-"))
+    job_failed_dir = tmpdir.with_name("failed-" + tmpdir.name.replace("tmp-", ""))
     tmpdir.rename(job_failed_dir)
 
     msg = f"Calculation failed! Files stored at {job_failed_dir}"

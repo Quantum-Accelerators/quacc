@@ -20,6 +20,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import Enum
 from functools import wraps
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from monty.json import MSONable
@@ -176,7 +177,20 @@ def _tracked_call(func, node_type, args, kwargs):
         job_results_dir = settings.RESULTS_DIR.resolve()
 
         with directory_context(str(job_results_dir)), _push_context(name, node_type):
-            return func(*args, **kwargs)
+            return_value = func(*args, **kwargs)
+
+            # If everything went okay, clean up temporary directory
+            tmpdir_base = (settings.SCRATCH_DIR or settings.RESULTS_DIR).resolve()
+            tmpdir = tmpdir_base / Path("tmp-" + name)
+            if tmpdir.exists():
+                for root, dirs, files in tmpdir.walk(top_down=False):
+                    for name in files:
+                        (root / name).unlink()
+                    for name in dirs:
+                        (root / name).rmdir()
+                tmpdir.rmdir()
+
+            return return_value
     else:
         # We are inside an already-tracked invocation; just push another
         # node onto the existing stack.
