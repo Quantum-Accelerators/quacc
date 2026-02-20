@@ -178,7 +178,7 @@ def _deformations_to_elastic_tensor(
             / units.GPa
         )
         for result in results
-        if result["name"] == "EMT Relax"
+        if result["name"].endswith("Relax")
     ]
     return ElasticityDoc.from_deformations_and_stresses(
         structure,
