@@ -538,6 +538,7 @@ if TYPE_CHECKING:
         deformed_results: list[RunSchema | OptSchema]
         undeformed_result: RunSchema | OptSchema
         elasticity_doc: ElasticityDoc
+        _jobs: list[RunSchema | OptSchema]
 
     class VibThermoSchema(VibSchema, ThermoSchema):
         """Combined Vibrations and Thermo schema"""
