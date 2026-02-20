@@ -16,6 +16,7 @@ Two ContextVars are used:
 from __future__ import annotations
 
 import asyncio
+import shutil
 from contextlib import contextmanager
 from contextvars import ContextVar
 from enum import Enum
@@ -183,12 +184,7 @@ def _tracked_call(func, node_type, args, kwargs):
             tmpdir_base = (settings.SCRATCH_DIR or settings.RESULTS_DIR).resolve()
             tmpdir = tmpdir_base / Path("tmp-" + name)
             if tmpdir.exists():
-                for root, dirs, files in tmpdir.walk(top_down=False):
-                    for name in files:
-                        (root / name).unlink()
-                    for name in dirs:
-                        (root / name).rmdir()
-                tmpdir.rmdir()
+                shutil.rmtree(tmpdir)
 
             return return_value
     else:
