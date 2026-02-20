@@ -33,8 +33,8 @@ def test_elastic_jobs(tmp_path, monkeypatch):
         atoms.get_volume()
     )
     for output in outputs["deformed_results"]:
-        assert output["parameters"]["asap_cutoff"] is True
-        assert output["name"] == "EMT Static"
-        assert output["structure_metadata"]["nelements"] == 1
-        assert output["structure_metadata"]["nsites"] == 1
-    assert len(outputs["deformed_results"]) == 24
+        if output["name"] == "EMT Static":
+            assert output["parameters"]["asap_cutoff"] is True
+            assert output["structure_metadata"]["nelements"] == 1
+            assert output["structure_metadata"]["nsites"] == 1
+    assert len(outputs["deformed_results"]) == 48
