@@ -10,7 +10,7 @@ from quacc import change_settings, flow, get_settings, job, subflow
 from quacc.wflow_tools.context import get_context_path, get_directory_context
 
 
-def test_autodiscover_bulk_slabs_paths(tmp_path):
+def test_nested_bulk_slabs_results(tmp_path):
     """
     The final "auto-discovered" folder structure of a standard quacc recipe like `bulk_to_slabs_flow` that has a
     subflow/jobs looks like:
@@ -47,7 +47,7 @@ def test_autodiscover_bulk_slabs_paths(tmp_path):
         assert len(matches) == 4
 
 
-def test_autodiscover_paths_job(tmp_path):
+def test_nested_results_job(tmp_path):
     with change_settings({"NESTED_RESULTS": True, "RESULTS_DIR": tmp_path}):
 
         @job
@@ -66,7 +66,7 @@ def test_autodiscover_paths_job(tmp_path):
         assert any(tmp_path.glob("create_file_job*/foo"))
 
 
-def test_autodiscover_paths_flow_subflows(tmp_path):
+def test_nested_results_flow_subflows(tmp_path):
     with change_settings({"NESTED_RESULTS": True, "RESULTS_DIR": tmp_path}):
 
         @job
@@ -99,7 +99,7 @@ def test_autodiscover_paths_flow_subflows(tmp_path):
         )
 
 
-def test_autodiscover_paths_flow_no_subflows(tmp_path):
+def test_nested_results_flow_no_subflows(tmp_path):
     with change_settings({"NESTED_RESULTS": True, "RESULTS_DIR": tmp_path}):
 
         @job
