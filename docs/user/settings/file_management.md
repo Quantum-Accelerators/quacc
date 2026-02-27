@@ -51,7 +51,7 @@ RESULTS_DIR
 
 ## Scenario 2: Auto-generation of folder structure
 
-Quacc has a new feature for "auto-generation" of a sensible output folder structure during job execution. To enable this feature, set `AUTODISCOVER_DIR` to `true`.
+Quacc has a new feature for "auto-generation" of a sensible output folder structure during job execution. To enable this feature, set `NESTED_RESULTS` to `true`.
 
 Here, let us assume that `RESULTS_DIR` is set to `Path.cwd()` (i.e. the current working directory), though this can be modified just like any other setting.
 
@@ -136,7 +136,7 @@ Here, let's assume the user has specified the `SCRATCH_DIR` setting to be a cust
 
 At job runtime, the file structure looks like:
 
-If `AUTODISCOVER_DIR` is `False`:
+If `NESTED_RESULTS` is `False`:
 
 ```text
 RESULTS_DIR
@@ -151,7 +151,7 @@ SCRATCH_DIR
     └── OUTPUT
 ```
 
-If `AUTODISCOVER_DIR` is `True`:
+If `NESTED_RESULTS` is `True`:
 
 ```text
 RESULTS_DIR
@@ -195,7 +195,7 @@ In all these cases, `symlink-..` is a temporary symbolic link that points to the
 
 Once the job successfully completes, the file structure looks like:
 
-If `AUTODISCOVER_DIR` is `False`:
+If `NESTED_RESULTS` is `False`:
 
 ```text
 RESULTS_DIR
@@ -209,7 +209,7 @@ SCRATCH_DIR
 │
 ```
 
-If `AUTODISCOVER_DIR` is `True`:
+If `NESTED_RESULTS` is `True`:
 
 ```text
 RESULTS_DIR
@@ -227,7 +227,7 @@ SCRATCH_DIR
 
 If the job fails or does not complete, then the file structure looks as follows.
 
-If `AUTODISCOVER_DIR` is `False`:
+If `NESTED_RESULTS` is `False`:
 
 ```text
 RESULTS_DIR
@@ -242,7 +242,7 @@ SCRATCH_DIR
     └── OUTPUT
 ```
 
-If `AUTODISCOVER_DIR` is `True`:
+If `NESTED_RESULTS` is `True`:
 
 ```text
 RESULTS_DIR
