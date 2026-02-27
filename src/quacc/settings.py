@@ -104,7 +104,7 @@ class QuaccSettings(BaseSettings):
         True,
         description="Whether to check for convergence, when implemented by a given recipe.",
     )
-    AUTODISCOVER_DIR: bool = Field(
+    NESTED_RESULTS: bool = Field(
         False,
         description=(
             """

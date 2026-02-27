@@ -2,8 +2,8 @@
 
 This module maintains a thread-/task-local stack of ContextNodes that records
 the nesting of flows, subflows and jobs as they execute.  When
-AUTODISCOVER_DIR is enabled, the context stack is translated into a
-filesystem path (e.g. ``quacc-<id>/my_flow/my_subflow/my_job-<id>``) so that
+NESTED_RESULTS is enabled, the context stack is translated into a
+filesystem path (e.g. ``my_flow-<id>/my_subflow-<id>/my_job-<id>``) so that
 every job's output lands in a directory tree that mirrors the workflow
 structure.
 
@@ -163,9 +163,9 @@ def _tracked_call(func, node_type, args, kwargs):
 
     settings = get_settings()
 
-    # When AUTODISCOVER_DIR is off, skip all context tracking and just
+    # When NESTED_RESULTS is off, skip all context tracking and just
     # delegate to the original function directly.
-    if not settings.AUTODISCOVER_DIR:
+    if not settings.NESTED_RESULTS:
         return func(*args, **kwargs)
 
     # Create a unique name we can use at this level.
@@ -173,7 +173,7 @@ def _tracked_call(func, node_type, args, kwargs):
 
     if is_top_level():
         # This is the outermost tracked call: create a unique root
-        # directory (e.g. ``quacc-abc123/``) and initialize both the
+        # directory (e.g. ``<flow-name>-<timestamp>/``) and initialize both the
         # directory context and the execution-context stack.
         job_results_dir = settings.RESULTS_DIR.resolve()
 

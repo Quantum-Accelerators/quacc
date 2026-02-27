@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from logging import getLogger
 from pathlib import Path
-from shutil import move, rmtree
+from shutil import move
 from typing import TYPE_CHECKING
 
 from monty.shutil import gzip_dir
@@ -45,11 +45,11 @@ def calc_setup(
         The path to the unique tmpdir, where the calculation will be run. It will be
         deleted after the calculation is complete. By default, this will be
         located within `QuaccSettings.SCRATCH_DIR`, but if that is not set, it will
-        be located within the `QuaccSettings.RESULTS_DIR`. For conenience, a symlink
+        be located within the `QuaccSettings.RESULTS_DIR`. For convenience, a symlink
         to this directory will be made in the `QuaccSettings.RESULTS_DIR`.
     Path
         The path to the results_dir, where the files will ultimately be stored.
-        By defualt, this will be the `QuaccSettings.RESULTS_DIR`, but if
+        By default, this will be the `QuaccSettings.RESULTS_DIR`, but if
         `QuaccSettings.CREATE_UNIQUE_DIR` is set, it will be a unique directory
         within the `QuaccSettings.RESULTS_DIR`.
     """
@@ -57,9 +57,9 @@ def calc_setup(
     settings = get_settings()
     tmpdir_base = (settings.SCRATCH_DIR or settings.RESULTS_DIR).resolve()
 
-    if settings.AUTODISCOVER_DIR:
+    if settings.NESTED_RESULTS:
         # Define the results directory.
-        # When AUTODISCOVER_DIR is active, the context module provides both a root
+        # When NESTED_RESULTS is active, the context module provides both a root
         # directory (directory_context) and a relative path (context_path) that
         # mirrors the flow/subflow/job nesting.
         if Path(get_directory_context()).is_relative_to(settings.RESULTS_DIR):
@@ -102,7 +102,7 @@ def calc_setup(
             for k, v in copy_files.items():
                 copy_decompress_files(k, v, tmpdir)
 
-    return tmpdir, job_results_dir
+    return tmpdir.resolve(), job_results_dir.resolve()
 
 
 def calc_cleanup(
@@ -153,7 +153,10 @@ def calc_cleanup(
     job_results_dir.mkdir(parents=True, exist_ok=True)
     for file_name in os.listdir(tmpdir):
         move(tmpdir / file_name, job_results_dir / file_name)
-    rmtree(tmpdir)
+
+    if not any(tmpdir.iterdir()):
+        tmpdir.rmdir()
+
     LOGGER.info(f"Calculation results stored at {job_results_dir}")
 
     # Remove symlink to tmpdir

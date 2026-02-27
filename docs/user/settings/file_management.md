@@ -136,7 +136,7 @@ Here, let's assume the user has specified the `SCRATCH_DIR` setting to be a cust
 
 At job runtime, the file structure looks like:
 
-If `AUTODISCOVER_DIR` is `false`:
+If `AUTODISCOVER_DIR` is `False`:
 
 ```text
 RESULTS_DIR
@@ -151,7 +151,7 @@ SCRATCH_DIR
     └── OUTPUT
 ```
 
-If `AUTODISCOVER_DIR` is `true`:
+If `AUTODISCOVER_DIR` is `True`:
 
 ```text
 RESULTS_DIR
@@ -195,7 +195,7 @@ In all these cases, `symlink-..` is a temporary symbolic link that points to the
 
 Once the job successfully completes, the file structure looks like:
 
-If `AUTODISCOVER_DIR` is `false`:
+If `AUTODISCOVER_DIR` is `False`:
 
 ```text
 RESULTS_DIR
@@ -209,7 +209,7 @@ SCRATCH_DIR
 │
 ```
 
-If `AUTODISCOVER_DIR` is `true`:
+If `AUTODISCOVER_DIR` is `True`:
 
 ```text
 RESULTS_DIR
@@ -227,7 +227,7 @@ SCRATCH_DIR
 
 If the job fails or does not complete, then the file structure looks as follows.
 
-If `AUTODISCOVER_DIR` is `false`:
+If `AUTODISCOVER_DIR` is `False`:
 
 ```text
 RESULTS_DIR
@@ -242,7 +242,7 @@ SCRATCH_DIR
     └── OUTPUT
 ```
 
-If `AUTODISCOVER_DIR` is `true`:
+If `AUTODISCOVER_DIR` is `True`:
 
 ```text
 RESULTS_DIR
@@ -280,4 +280,4 @@ SCRATCH_DIR
         ...
 ```
 
-The `symlink-` points to the corresponding `failed-..` job folder in `SCRATCH_DIR`.
+The `symlink-` points to the corresponding `failed-...` job folder in `SCRATCH_DIR`.
