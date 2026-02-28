@@ -115,11 +115,11 @@ def _elastic_tensor_subflow(
     results = []
     for deformed in deformed_structure_set:
         result = relax_job(deformed.to_ase_atoms(), relax_cell=False)
+        results.append(result)
 
         if static_job is not None:
             result = static_job(result["atoms"])
-
-        results.append(result)
+            results.append(result)
 
     elasticity_doc = _deformations_to_elastic_tensor(
         undeformed_result=undeformed_result,
@@ -171,13 +171,14 @@ def _deformations_to_elastic_tensor(
     stresses = [
         Stress(
             (
-                voigt_6_to_full_3x3_stress(relax_result["results"]["stress"])
-                if len(relax_result["results"]["stress"]) == 6
-                else relax_result["results"]["stress"]
+                voigt_6_to_full_3x3_stress(result["results"]["stress"])
+                if len(result["results"]["stress"]) == 6
+                else result["results"]["stress"]
             )
             / units.GPa
         )
-        for relax_result in results
+        for result in results
+        if result["name"].endswith("Relax")
     ]
     return ElasticityDoc.from_deformations_and_stresses(
         structure,

@@ -101,7 +101,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
     for output in outputs["deformed_results"]:
         assert output["structure_metadata"]["nelements"] == 1
         assert output["structure_metadata"]["nsites"] == 1
-    assert len(outputs["deformed_results"]) == 24
+    assert len(outputs["deformed_results"]) == 48
 
     outputs = elastic_tensor_flow(
         atoms,
@@ -119,7 +119,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
     for output in outputs["deformed_results"]:
         assert output["structure_metadata"]["nelements"] == 1
         assert output["structure_metadata"]["nsites"] == 1
-    assert len(outputs["deformed_results"]) == 24
+    assert len(outputs["deformed_results"]) == 48
 
     outputs = elastic_tensor_flow(
         atoms,

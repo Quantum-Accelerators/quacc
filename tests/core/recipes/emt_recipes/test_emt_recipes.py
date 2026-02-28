@@ -216,14 +216,16 @@ def test_customizer():
         atoms, job_params={"static_job": {"asap_cutoff": True}}
     )
     for result in results:
-        assert result["parameters"]["asap_cutoff"] is True
+        if result["name"] == "EMT Static":
+            assert result["parameters"]["asap_cutoff"] is True
 
 
 def test_customizer_v2():
     atoms = bulk("Cu")
     results = bulk_to_slabs_flow(atoms, job_params={"relax_job": {"asap_cutoff": True}})
     for result in results:
-        assert result["parameters"]["asap_cutoff"] is False
+        if result["name"] == "EMT Static":
+            assert result["parameters"]["asap_cutoff"] is False
 
 
 def test_all_customizers():
@@ -240,4 +242,7 @@ def test_all_customizers_v2():
         job_params={"all": {"asap_cutoff": True}, "static_job": {"asap_cutoff": False}},
     )
     for result in results:
-        assert result["parameters"]["asap_cutoff"] is False
+        if result["name"] == "EMT Static":
+            assert result["parameters"]["asap_cutoff"] is False
+        else:
+            assert result["parameters"]["asap_cutoff"] is True
