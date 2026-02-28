@@ -2,7 +2,7 @@ ase @ git+https://gitlab.com/ase/ase.git
 custodian==2025.12.14
 emmet-core==0.86.3
 frozendict==2.4.7
-monty==2025.3.3
+monty==2026.2.18
 psutil==7.2.2
 pydantic==2.12.5
 pydantic-settings==2.13.1
