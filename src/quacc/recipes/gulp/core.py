@@ -12,7 +12,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, RunSchema, SourceDirectory
+    from quacc.types import RunSchema, SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
@@ -22,7 +23,7 @@ def static_job(
     keywords: list[str] | None = None,
     options: list[str] | None = None,
     library: str | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
@@ -78,7 +79,7 @@ def relax_job(
     keywords: list[str] | None = None,
     options: list[str] | None = None,
     library: str | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """

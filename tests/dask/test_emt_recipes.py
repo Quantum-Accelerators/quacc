@@ -11,6 +11,7 @@ from dask.distributed import get_client
 from quacc import flow, job
 from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
+from quacc.wflow_tools.job_argument import Copy
 
 client = get_client()
 
@@ -38,7 +39,9 @@ def test_copy_files(tmp_path, monkeypatch):
     @flow
     def myflow(atoms):
         result1 = relax_job(atoms)
-        return relax_job(result1["atoms"], copy_files={result1["dir_name"]: "opt.*"})
+        return relax_job(
+            result1["atoms"], copy_files=Copy({result1["dir_name"]: "opt.*"})
+        )
 
     assert "atoms" in client.compute(myflow(atoms)).result()
 

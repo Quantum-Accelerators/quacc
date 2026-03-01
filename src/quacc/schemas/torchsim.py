@@ -43,6 +43,7 @@ class PropertyFn(StrEnum):
     STRESS = "stress"
     KINETIC_ENERGY = "kinetic_energy"
     TEMPERATURE = "temperature"
+    MAX_FORCE = "max_force"
 
 
 PROPERTY_FN_REGISTRY: dict[str, Callable] = {

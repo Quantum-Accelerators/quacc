@@ -7,6 +7,7 @@ from functools import partial, wraps
 from typing import TYPE_CHECKING, Any
 
 from quacc.settings import change_settings_wrap
+from quacc.wflow_tools.context import NodeType, tracked
 
 if TYPE_CHECKING:
     from quacc.settings import QuaccSettings
@@ -132,7 +133,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
         return partial(job, **kwargs)
 
     if changes := kwargs.pop("settings_swap", {}):
-        return job(change_settings_wrap(_func, changes), **kwargs)
+        _func = change_settings_wrap(_func, changes)
 
     if settings.WORKFLOW_ENGINE == "dask":
         from dask import delayed
@@ -144,10 +145,9 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
             return _func(*f_args, **f_kwargs)
 
         return Delayed_(delayed(wrapper, **kwargs))
-    elif settings.WORKFLOW_ENGINE == "jobflow":
-        from jobflow import job as jf_job
 
-        return jf_job(_func, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "jobflow":
+        return _get_jobflow_wrapped_func(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
@@ -172,6 +172,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
         else:
             return task(_func, **kwargs)
     else:
+        _func = tracked(NodeType.JOB)(_func)
         return _func
 
 
@@ -311,8 +312,10 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "jobflow":
+        return _get_jobflow_wrapped_flow(_func)
     else:
-        return _func
+        return tracked(NodeType.FLOW)(_func)
 
 
 def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
@@ -507,7 +510,10 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         from redun import task
 
         return task(_func, namespace=_func.__module__, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "jobflow":
+        return _get_jobflow_wrapped_func(_func, **kwargs)
     else:
+        _func = tracked(NodeType.SUBFLOW)(_func)
         return _func
 
 
@@ -582,6 +588,18 @@ def _get_prefect_wrapped_flow(
             return prefect_flow(sync_wrapper, validate_parameters=False, **kwargs)
         else:
             return prefect_flow(_func, validate_parameters=False, **kwargs)
+
+
+def _get_jobflow_wrapped_func(method=None, **job_kwargs):
+    from jobflow import job as jf_job
+
+    return jf_job(method, **job_kwargs)
+
+
+def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
+    from jobflow import flow as jf_flow
+
+    return jf_flow(_func)
 
 
 class Delayed_:

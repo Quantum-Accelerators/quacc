@@ -15,7 +15,8 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, RunSchema, SourceDirectory
+    from quacc.types import RunSchema, SourceDirectory
+    from quacc.wflow_tools.job_argument import Copy
 
 
 def run_and_summarize(
@@ -23,7 +24,7 @@ def run_and_summarize(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: SourceDirectory | Copy | None = None,
 ) -> RunSchema:
     """
     Base function to carry out Psi4 recipes.
