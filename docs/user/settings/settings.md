@@ -86,7 +86,7 @@ with change_settings({"GZIP_FILES": False}):
 
         @job
         def add(a, b):
-            with change_settings({"GZIP_FILES": False}):
+            with change_settings({"RESULTS_DIR": "/path/to/my/favorite/dir"}):
                 return a + b
         ```
 

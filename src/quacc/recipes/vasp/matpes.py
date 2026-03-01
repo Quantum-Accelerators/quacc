@@ -35,8 +35,8 @@ def matpes_static_job(
     *,
     level: Literal["PBE", "r2SCAN", "HSE06"],
     kspacing: float | None = 0.22,
-    use_improvements: bool = True,
-    write_extra_files: bool = True,
+    use_improvements: bool = False,
+    write_extra_files: bool = False,
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -81,7 +81,7 @@ def matpes_static_job(
     )
 
     # Set the user-defined KSPACING
-    calc_defaults["kspacing"] = kspacing
+    calc_defaults |= {"kspacing": kspacing, "incar_copilot": "nore"}
 
     # Set some parameters that we think are improvements to MatPES
     if use_improvements:

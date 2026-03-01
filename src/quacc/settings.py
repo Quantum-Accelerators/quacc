@@ -58,16 +58,16 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
 
-    WORKFLOW_ENGINE: (
-        Literal["covalent", "dask", "parsl", "prefect", "redun", "jobflow"] | None
-    ) = Field(None, description=("The workflow manager to use, if any."))
+    WORKFLOW_ENGINE: Literal["dask", "parsl", "prefect", "redun", "jobflow"] | None = (
+        Field(None, description=("The workflow manager to use, if any."))
+    )
 
     # ---------------------------
     # General Settings
     # ---------------------------
 
     RESULTS_DIR: Path = Field(
-        Path.cwd(),
+        Path(),
         description=(
             """
             Directory to permanently store I/O-based calculation results in.
@@ -103,6 +103,16 @@ class QuaccSettings(BaseSettings):
     CHECK_CONVERGENCE: bool = Field(
         True,
         description="Whether to check for convergence, when implemented by a given recipe.",
+    )
+    NESTED_RESULTS: bool = Field(
+        False,
+        description=(
+            """
+            Whether to auto-discover sensible paths for output files in
+            RESULTS_DIR for each flow. The path chosen reflect the relationship
+            the flow and the subflows/jobs executed within it.
+            """
+        ),
     )
 
     # ---------------------------
@@ -239,11 +249,15 @@ class QuaccSettings(BaseSettings):
     )
     VASP_PP_PATH: Path | None = Field(
         os.environ.get("VASP_PP_PATH"),
-        description="Path to the VASP pseudopotential library. Must contain the directories `potpaw_PBE` and `potpaw` for PBE and LDA pseudopotentials, respectively. If ASE's VASP_PP_PATH is set, you do not need to set this.",
+        description="Path to the VASP pseudopotential folders.",
+    )
+    VASP_PP_VERSION: str | None = Field(
+        os.environ.get("VASP_PP_VERSION"),
+        description="Version of VASP pseudopotentials to use",
     )
     VASP_VDW: Path | None = Field(
         os.environ.get("ASE_VASP_VDW"),
-        description="Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals. If ASE's ASE_VASP_VDW is set, you do not need to set this.",
+        description="Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals.",
     )
 
     # VASP Settings: General
@@ -400,7 +414,7 @@ class QuaccSettings(BaseSettings):
     # Logger Settings
     # ---------------------------
     LOG_FILENAME: Path | None = Field(None, description="Path to store the log file.")
-    LOG_LEVEL: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] | None = Field(
+    LOG_LEVEL: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] = Field(
         "INFO", description=("Logger level.")
     )
 
@@ -492,11 +506,12 @@ class QuaccSettings(BaseSettings):
         return _type_handler(cls._use_custom_config_settings(settings))
 
     @model_validator(mode="after")
-    def enforce_unique_dir_rule(self):
+    def set_jobflow_settings(self):
         """
-        If WORKFLOW_ENGINE is covalent, force CREATE_UNIQUE_DIR = False.
+        If WORKFLOW_ENGINE is jobflow, ensure that CREATE_UNIQUE_DIR
+        is set to False since Jobflow already handles this for us.
         """
-        if self.WORKFLOW_ENGINE == "covalent":
+        if self.WORKFLOW_ENGINE == "jobflow":
             object.__setattr__(self, "CREATE_UNIQUE_DIR", False)
         return self
 

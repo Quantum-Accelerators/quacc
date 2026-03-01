@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import change_settings, flow, job
+from quacc import flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_funcs
@@ -36,9 +36,6 @@ if TYPE_CHECKING:
         relax1: VaspSchema
         relax2: VaspSchema
         static: VaspSchema
-
-
-_MP_SETTINGS = {"VASP_INCAR_COPILOT": "off", "VASP_USE_CUSTODIAN": True}
 
 
 @job
@@ -73,15 +70,15 @@ def mp_prerelax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24PreRelaxMaker()
     )
-    with change_settings(_MP_SETTINGS):
-        return run_and_summarize(
-            atoms,
-            calc_defaults=calc_defaults,
-            calc_swaps=calc_kwargs,
-            report_mp_corrections=True,
-            additional_fields={"name": "MP PBESol Pre-Relax"},
-            copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
-        )
+    calc_defaults["incar_copilot"] = "ncore"
+    return run_and_summarize(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        report_mp_corrections=True,
+        additional_fields={"name": "MP PBESol Pre-Relax"},
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
+    )
 
 
 @job
@@ -115,15 +112,15 @@ def mp_metagga_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24RelaxMaker()
     )
-    with change_settings(_MP_SETTINGS):
-        return run_and_summarize(
-            atoms,
-            calc_defaults=calc_defaults,
-            calc_swaps=calc_kwargs,
-            report_mp_corrections=True,
-            additional_fields={"name": "MP r2SCAN Relax"},
-            copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
-        )
+    calc_defaults["incar_copilot"] = "ncore"
+    return run_and_summarize(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        report_mp_corrections=True,
+        additional_fields={"name": "MP r2SCAN Relax"},
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
+    )
 
 
 @job
@@ -157,15 +154,15 @@ def mp_metagga_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24StaticMaker()
     )
-    with change_settings(_MP_SETTINGS):
-        return run_and_summarize(
-            atoms,
-            calc_defaults=calc_defaults,
-            calc_swaps=calc_kwargs,
-            report_mp_corrections=True,
-            additional_fields={"name": "MP r2SCAN Static"},
-            copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
-        )
+    calc_defaults["incar_copilot"] = "ncore"
+    return run_and_summarize(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        report_mp_corrections=True,
+        additional_fields={"name": "MP r2SCAN Static"},
+        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
+    )
 
 
 @flow

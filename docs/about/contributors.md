@@ -12,7 +12,7 @@ The currently active maintainers are as follows:
 
 ## Contributors
 
-Additional contributions were made by the individuals listed [here](https://github.com/quantum-accelerators/quacc/graphs/contributors). Their contributions are summarized below.
+Additional contributions were made by the individuals listed [here](https://github.com/quantum-accelerators/quacc/graphs/contributors). Some of their contributions are summarized below.
 
 !!! Note "Add Your Name!"
 

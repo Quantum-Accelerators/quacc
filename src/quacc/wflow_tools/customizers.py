@@ -31,16 +31,7 @@ def strip_decorator(func: Callable) -> Callable:
 
     settings = get_settings()
 
-    if settings.WORKFLOW_ENGINE == "covalent":
-        from covalent._workflow.lattice import Lattice
-
-        if hasattr(func, "electron_object"):
-            func = func.electron_object.function
-
-        if isinstance(func, Lattice):
-            func = func.workflow_function.get_deserialized()
-
-    elif settings.WORKFLOW_ENGINE == "dask":
+    if settings.WORKFLOW_ENGINE == "dask":
         from dask.delayed import Delayed
 
         from quacc.wflow_tools.decorators import Delayed_
@@ -142,7 +133,17 @@ def update_parameters(
         func = strip_decorator(func)
         return decorator_func(partial(func, **params))
 
-    return partial(func, **params)
+    partial_fn = partial(func, **params)
+    # Assigning a __name__ allows monty's jsanitize function to work correctly
+    # with this partial function.
+    if hasattr(func, "name"):
+        partial_fn.__name__ = func.name
+    elif hasattr(func, "__name__"):
+        partial_fn.__name__ = func.__name__
+    else:
+        partial_fn.__name__ = ""
+
+    return partial_fn
 
 
 def customize_funcs(

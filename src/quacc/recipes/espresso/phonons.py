@@ -32,16 +32,12 @@ if TYPE_CHECKING:
         RunSchema,
         SourceDirectory,
     )
+    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
 def phonon_job(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     use_phcg: bool = False,
@@ -119,9 +115,7 @@ def phonon_job(
 
 @job
 def q2r_job(
-    copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy),
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -165,9 +159,7 @@ def q2r_job(
 
 @job
 def matdyn_job(
-    copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy),
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -505,12 +497,7 @@ def grid_phonon_flow(
 
 @job
 def dvscf_q2r_job(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -582,12 +569,7 @@ def dvscf_q2r_job(
 
 @job
 def postahc_job(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,

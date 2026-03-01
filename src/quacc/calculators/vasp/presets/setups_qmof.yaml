@@ -3,6 +3,7 @@
 # Li_sv-->Li, Yb_2-->Yb_3, Eu_2-->Eu_3
 # Last modified: 08-01-2023
 inputs:
+  pp_version: "54"
   setups:
     Ac: Ac
     Ag: Ag

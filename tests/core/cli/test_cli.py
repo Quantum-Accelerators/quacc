@@ -51,15 +51,15 @@ def test_set(runner):
                 val = line.split(":")[-1].strip()
     assert not val
 
-    response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "covalent"])
+    response = runner.invoke(app, ["set", "WORKFLOW_ENGINE", "dask"])
     assert response.exit_code == 0
-    assert "covalent" in response.stdout
+    assert "dask" in response.stdout
     val = None
     with open(TEST_YAML) as f:
         for line in f:
             if "WORKFLOW_ENGINE" in line:
                 val = line.split(":")[-1].strip()
-    assert val == "covalent"
+    assert val == "dask"
 
     response = runner.invoke(app, ["set", "VASP_PARALLEL_CMD", "dummy"])
     assert response.exit_code == 0

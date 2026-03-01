@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import subprocess
+from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -32,6 +33,8 @@ if TYPE_CHECKING:
 
     from quacc.types import DefaultSetting
 
+LOGGER = getLogger(__name__)
+
 
 class Vasp(Vasp_):
     """This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters
@@ -44,7 +47,7 @@ class Vasp(Vasp_):
         input_atoms: Atoms,
         preset: None | str | Path = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
-        incar_copilot: Literal["off", "on", "aggressive"]
+        incar_copilot: Literal["off", "on", "aggressive", "ncore"]
         | DefaultSetting = QuaccDefault,
         copy_magmoms: bool | DefaultSetting = QuaccDefault,
         preset_mag_default: float | DefaultSetting = QuaccDefault,
@@ -83,6 +86,7 @@ class Vasp(Vasp_):
                     by the user.
                 aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR
                     flags even if they are already set by the user.
+                ncore: Only automatically set NCORE based on the number of available cores.
         copy_magmoms
             If True, any pre-existing `atoms.get_magnetic_moments()` will be set in
             `atoms.set_initial_magnetic_moments()`. Set this to False if you want to
@@ -179,6 +183,22 @@ class Vasp(Vasp_):
         # Set the VASP pseudopotential directory
         if self._settings.VASP_PP_PATH:
             os.environ["VASP_PP_PATH"] = str(self._settings.VASP_PP_PATH)
+            potpaw_prefix = (
+                "potpaw_LDA"
+                if (
+                    self.user_calc_params.get("xc", "PW91").lower() == "lda"
+                    or self.user_calc_params.get("pp", "PBE").lower() == "lda"
+                )
+                else "potpaw_PBE"
+            )
+            if self.user_calc_params.get("pp_version", None):
+                potpaw_suffix = f".{self.user_calc_params['pp_version']}"
+            else:
+                potpaw_suffix = ""
+            potpaw_path = (
+                self._settings.VASP_PP_PATH / f"{potpaw_prefix}{potpaw_suffix}"
+            ).resolve()
+            LOGGER.info(f"Using PAW pseudopotentials: {potpaw_path}")
 
         # Set the ASE_VASP_VDW environment variable
         if self._settings.VASP_VDW:
@@ -196,8 +216,10 @@ class Vasp(Vasp_):
         vasp_cmd = (
             self._settings.VASP_GAMMA_CMD if use_gamma else self._settings.VASP_CMD
         )
+        full_vasp_cmd = f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"
+        LOGGER.info(f"Using VASP command: {full_vasp_cmd.strip()}")
 
-        return f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"
+        return full_vasp_cmd
 
     def _cleanup_params(self) -> None:
         """

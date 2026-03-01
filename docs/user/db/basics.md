@@ -51,10 +51,6 @@ Here, we describe how to set up quacc with a database of your choosing.
         store.update(sanitized_results, key="uuid")
     ```
 
-=== "Covalent"
-
-    Covalent automatically stores all the inputs and outputs in an SQLite database, which you can find at the `"db_path"` when you run `covalent config`, and the results can be queried using the `#!Python ct.get_result(<dispatch ID>)` syntax.
-
 === "Prefect"
 
     To use a database with Prefect, read the [Database](https://docs.prefect.io/latest/concepts/database/) section of the Prefect documentation as well as how to [persist results](https://docs.prefect.io/latest/concepts/results/#persisting-results).

@@ -31,6 +31,8 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["efermi"] == "midgap"
     assert output["parameters"]["kpts"] == [3, 3, 3]
+    assert output["parameters"]["pp"] == "PBE"
+    assert output["parameters"]["pp_version"] == "64"
     assert output["results"]["energy"] < 0
 
 
