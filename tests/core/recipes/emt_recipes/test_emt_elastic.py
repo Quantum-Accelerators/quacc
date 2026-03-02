@@ -12,9 +12,9 @@ def test_elastic_jobs(tmp_path, monkeypatch):
     atoms = bulk("Cu")
 
     outputs = elastic_tensor_flow(atoms, run_static=False)
-    assert outputs["deformed_results"]["relax"][0]["atoms"].get_volume() != pytest.approx(
-        atoms.get_volume()
-    )
+    assert outputs["deformed_results"]["relax"][0][
+        "atoms"
+    ].get_volume() != pytest.approx(atoms.get_volume())
     assert outputs["elasticity_doc"].bulk_modulus.voigt == pytest.approx(134.579)
     for output in outputs["deformed_results"]["relax"]:
         assert output["parameters"]["asap_cutoff"] is False
@@ -26,12 +26,12 @@ def test_elastic_jobs(tmp_path, monkeypatch):
     outputs = elastic_tensor_flow(
         atoms, run_static=True, job_params={"static_job": {"asap_cutoff": True}}
     )
-    assert outputs["deformed_results"]["static"][0]["atoms"].get_volume() != pytest.approx(
-        atoms.get_volume()
-    )
-    assert outputs["deformed_results"]["static"][0]["atoms"].get_volume() != pytest.approx(
-        atoms.get_volume()
-    )
+    assert outputs["deformed_results"]["static"][0][
+        "atoms"
+    ].get_volume() != pytest.approx(atoms.get_volume())
+    assert outputs["deformed_results"]["static"][0][
+        "atoms"
+    ].get_volume() != pytest.approx(atoms.get_volume())
     for output in outputs["deformed_results"]["static"]:
         assert output["parameters"]["asap_cutoff"] is True
         assert output["structure_metadata"]["nelements"] == 1
