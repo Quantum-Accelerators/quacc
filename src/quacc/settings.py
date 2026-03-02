@@ -104,6 +104,16 @@ class QuaccSettings(BaseSettings):
         True,
         description="Whether to check for convergence, when implemented by a given recipe.",
     )
+    NESTED_RESULTS: bool = Field(
+        False,
+        description=(
+            """
+            Whether to auto-discover sensible paths for output files in
+            RESULTS_DIR for each flow. The path chosen reflect the relationship
+            the flow and the subflows/jobs executed within it.
+            """
+        ),
+    )
 
     # ---------------------------
     # Prefect Settings
