@@ -275,7 +275,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
         opt_params={"max_steps": 10, "fmax": 1.0e-1, "optimizer": BFGS},
     )
 
-    with zopen(results["dir_name"] / "pw.out.gz", "rb") as fd:
+    with zopen(results["dir_name"] / "pw.out.gz", "rt") as fd:
         lines = str(fd.read())
 
     assert "Cannot read rho : file not found" not in lines
@@ -427,7 +427,7 @@ def test_pw_restart(tmp_path, monkeypatch):
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0
 
-    with zopen(results["dir_name"] / "pw.out.gz", "rb") as fd:
+    with zopen(results["dir_name"] / "pw.out.gz", "rt") as fd:
         lines = str(fd.read())
 
     assert "Cannot read rho : file not found" not in lines
@@ -465,7 +465,7 @@ def test_pw_restart_inplace(tmp_path, monkeypatch):
     assert new_input_data["system"]["ecutwfc"] == 30.0
     assert new_input_data["system"]["ecutrho"] == 240.0
 
-    with zopen(results["dir_name"] / "pw.out.gz", "rb") as fd:
+    with zopen(results["dir_name"] / "pw.out.gz", "rt") as fd:
         lines = str(fd.read())
 
     assert "Cannot read rho : file not found" not in lines
