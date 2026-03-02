@@ -45,9 +45,15 @@ def check_logfile(logfile: str | Path, check_str: str) -> bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    logfile_path = Path(logfile).expanduser()
-    zlog = Path(zpath(str(logfile_path)))
-    with zopen(zlog, "r") as f:
+    logfile_path = zpath(Path(logfile).expanduser())
+
+    # While `zpath` gives us the path to any compressed/uncompressed version of the
+    # file, monty version 2026.2.18 has dropped support for implicit read mode.
+    # Here we determine the correct mode based on the extensions that `zpath` supports.
+    exts = (".gz", ".GZ", ".bz2", ".BZ2", ".z", ".Z")
+    mode = "rb" if any(str(logfile_path).endswith(ext) for ext in exts) else "rt"
+
+    with zopen(logfile_path, mode) as f:
         for line in f:
             clean_line = line if isinstance(line, str) else line.decode("utf-8")
             if check_str.lower() in clean_line.lower():
