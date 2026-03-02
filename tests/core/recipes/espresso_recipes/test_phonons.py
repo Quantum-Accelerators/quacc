@@ -99,7 +99,7 @@ def test_phonon_job(tmp_path, monkeypatch):
 
         recover_ph_results = phonon_job(ph_results["dir_name"], input_data=ph_loose)
 
-        with zopen(Path(recover_ph_results["dir_name"], "ph.out.gz")) as f:
+        with zopen(Path(recover_ph_results["dir_name"], "ph.out.gz"), "rb") as f:
             lines = str(f.read())
 
         assert "Reading collected, re-writing distributed wavefunctions in" in lines
@@ -178,7 +178,7 @@ def test_phonon_job_lqdir(tmp_path, monkeypatch):
             qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)],
         )
 
-        with zopen(Path(recover_ph_results["dir_name"], "ph.out.gz")) as f:
+        with zopen(Path(recover_ph_results["dir_name"], "ph.out.gz"), "rb") as f:
             lines = str(f.read())
 
         assert "Reading collected, re-writing distributed wavefunctions in" in lines
@@ -382,7 +382,7 @@ def test_phonon_calculation_spin_orbit_example_06(tmp_path, monkeypatch):
             pt_relax_results["dir_name"], **pt_phonon_x_params, qpts=(1.0, 0.0, 0.0)
         )
 
-        with zopen(Path(pt_phonon_x_results["dir_name"], "ph.out.gz")) as f:
+        with zopen(Path(pt_phonon_x_results["dir_name"], "ph.out.gz"), "rb") as f:
             lines = str(f.read())
 
         assert "Reading collected, re-writing distributed wavefunctions in" in lines
@@ -445,7 +445,7 @@ def test_phonon_calculation_si_spin_orbit(tmp_path, monkeypatch, caplog):
             == "matdyn"
         )
 
-        with zopen(Path(si_phonon_results["dir_name"], "ph.out.gz")) as f:
+        with zopen(Path(si_phonon_results["dir_name"], "ph.out.gz"), "rb") as f:
             lines = str(f.read())
 
         assert Path(
