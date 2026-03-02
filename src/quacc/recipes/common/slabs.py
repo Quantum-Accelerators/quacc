@@ -21,7 +21,7 @@ def bulk_to_slabs_subflow(
     relax_job: Job,
     static_job: Job | None = None,
     make_slabs_kwargs: dict[str, Any] | None = None,
-) -> list[dict]:
+) -> dict[dict]:
     """
     Workflow consisting of:
 
@@ -45,21 +45,21 @@ def bulk_to_slabs_subflow(
 
     Returns
     -------
-    list[dict]
-        List of schemas.
+    dict[dict]
+        Dict of schemas.
     """
     make_slabs_kwargs = make_slabs_kwargs or {}
 
     slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
-    results = []
+    results = {"relax": [], "static": []}
     for slab in slabs:
         result = relax_job(slab)
-        results.append(result)
+        results["relax"].append(result)
 
         if static_job is not None:
             result = static_job(result["atoms"])
-            results.append(result)
+            results["static"].append(result)
 
     return results
 

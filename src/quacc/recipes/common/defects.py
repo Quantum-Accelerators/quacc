@@ -33,7 +33,7 @@ def bulk_to_defects_subflow(
     relax_job: Job,
     static_job: Job | None = None,
     make_defects_kwargs: dict[str, Any] | None = None,
-) -> list[dict]:
+) -> dict[dict]:
     """
     Workflow consisting of:
 
@@ -56,19 +56,19 @@ def bulk_to_defects_subflow(
 
     Returns
     -------
-    list[dict]
-        List of dictionary of results.
+    dict[dict]
+        Dict of dictionary of results.
     """
     make_defects_kwargs = make_defects_kwargs or {}
     defects = make_defects_from_bulk(atoms, **make_defects_kwargs)
 
-    results = []
+    results = {"relax": [], "static": []}
     for defect in defects:
         result = relax_job(defect)
-        results.append(result)
+        results["relax"].append(result)
 
         if static_job is not None:
             result = static_job(result["atoms"])
-            results.append(result)
+            results["static"].append(result)
 
     return results

@@ -103,8 +103,8 @@ def _elastic_tensor_subflow(
 
     Returns
     -------
-    list[dict]
-        List of schemas.
+    dict[dict]
+        Dict of schemas.
     """
     deform_kwargs = deform_kwargs or {}
 
@@ -112,19 +112,19 @@ def _elastic_tensor_subflow(
         undeformed_result["atoms"], **deform_kwargs
     )
 
-    results = []
+    results = {"relax": [], "static": []}
     for deformed in deformed_structure_set:
         result = relax_job(deformed.to_ase_atoms(), relax_cell=False)
-        results.append(result)
+        results["relax"].append(result)
 
         if static_job is not None:
             result = static_job(result["atoms"])
-            results.append(result)
+            results["static"].append(result)
 
     elasticity_doc = _deformations_to_elastic_tensor(
         undeformed_result=undeformed_result,
         deformed_structure_set=deformed_structure_set,
-        results=results,
+        results=results["relax"],
     )
 
     return {
@@ -178,7 +178,6 @@ def _deformations_to_elastic_tensor(
             / units.GPa
         )
         for result in results
-        if result["name"].endswith("Relax")
     ]
     return ElasticityDoc.from_deformations_and_stresses(
         structure,
