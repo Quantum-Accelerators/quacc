@@ -49,8 +49,7 @@ def check_logfile(logfile: str | Path, check_str: str) -> bool:
 
     with zopen(logfile_path, "rt") as f:
         for line in f:
-            clean_line = line if isinstance(line, str) else line.decode("utf-8")
-            if check_str.lower() in clean_line.lower():
+            if check_str.lower() in line.lower():
                 return True
     return False
 
