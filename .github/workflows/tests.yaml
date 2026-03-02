@@ -61,7 +61,7 @@ jobs:
   tests-engines:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         wflow_engine: [dask, parsl, prefect, redun, jobflow]
 

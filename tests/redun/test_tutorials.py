@@ -32,7 +32,7 @@ def test_tutorial1b(tmp_path, monkeypatch, scheduler):
     atoms = bulk("Cu")
 
     # Run the job locally
-    assert len(scheduler.run(bulk_to_slabs_flow(atoms))) == 8
+    assert len(scheduler.run(bulk_to_slabs_flow(atoms)["static"])) == 4
 
 
 def test_tutorial2a(tmp_path, monkeypatch, scheduler):
@@ -82,4 +82,4 @@ def test_tutorial2c(tmp_path, monkeypatch, scheduler):
     atoms = bulk("Cu")
 
     # Run the workflow
-    assert len(scheduler.run(workflow(atoms))) == 4
+    assert len(scheduler.run(workflow(atoms)["relax"])) == 4
