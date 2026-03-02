@@ -1,2 +1,2 @@
-jobflow==0.3.1
+jobflow @ git+https://github.com/vineetbansal/jobflow.git@vb/job_dict
 jobflow-remote==1.0.0

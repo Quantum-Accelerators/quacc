@@ -71,7 +71,7 @@ def slab_to_ads_subflow(
     relax_job: Job,
     static_job: Job | None,
     make_ads_kwargs: dict[str, Any] | None = None,
-) -> list[dict]:
+) -> dict[dict]:
     """
     Workflow consisting of:
 
@@ -97,20 +97,20 @@ def slab_to_ads_subflow(
 
     Returns
     -------
-    list[dict]
-        List of schemas.
+    dict[dict]
+        Dict of schemas.
     """
     make_ads_kwargs = make_ads_kwargs or {}
 
     slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
-    results = []
+    results = {"relax": [], "static": []}
     for slab in slabs:
         result = relax_job(slab)
-        results.append(result)
+        results["relax"].append(result)
 
         if static_job is not None:
             result = static_job(result["atoms"])
-            results.append(result)
+            results["static"].append(result)
 
     return results
