@@ -45,12 +45,11 @@ def check_logfile(logfile: str | Path, check_str: str) -> bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    logfile_path = Path(logfile).expanduser()
-    zlog = Path(zpath(str(logfile_path)))
-    with zopen(zlog, "r") as f:
+    logfile_path = zpath(Path(logfile).expanduser())
+
+    with zopen(logfile_path, "rt") as f:
         for line in f:
-            clean_line = line if isinstance(line, str) else line.decode("utf-8")
-            if check_str.lower() in clean_line.lower():
+            if check_str.lower() in line.lower():
                 return True
     return False
 
