@@ -1,0 +1,198 @@
+[project]
+site_name = "quacc"
+site_url = "https://quantum-accelerators.github.io/quacc/"
+site_description = "Quacc is a flexible and extensible platform for high-throughput computational materials science and quantum chemistry."
+site_author = "Andrew S. Rosen"
+repo_url = "https://github.com/Quantum-Accelerators/quacc/"
+edit_uri = "blob/main/docs/"
+use_directory_urls = false
+
+nav = [
+    { "Home" = "index.md" },
+    { "Installation Guide" = [
+        "install/install.md",
+        "install/codes.md",
+        "install/wflow_engines.md"
+    ] },
+    { "User Guide" = [
+        { "Recipes" = [
+            "user/recipes/recipes_intro.md",
+            "user/recipes/workflows.md",
+            "user/recipes/torchsim.md"
+        ] },
+        { "Settings Management" = [
+            "user/settings/settings.md",
+            "user/settings/file_management.md",
+            "user/settings/settings_list.md"
+        ] },
+        { "Workflow Basics" = [
+            "user/basics/wflow_overview.md",
+            "user/basics/wflow_decorators.md",
+            "user/basics/wflow_syntax.md"
+        ] },
+        { "Using a Workflow Engine" = [
+            "user/wflow_engine/wflow_engines1.md",
+            "user/wflow_engine/wflow_engines2.md",
+            "user/wflow_engine/executors.md"
+        ] },
+        { "Using a Database" = [
+            "user/db/context.md",
+            "user/db/basics.md"
+        ] },
+        { "Miscellaneous" = [
+            "user/misc/file_transfers.md",
+            "user/misc/restarts.md"
+        ] }
+    ] },
+    { "Code Documentation" = "reference/" },
+    { "Developer Guide" = [
+        "dev/contributing.md",
+        "dev/docs.md",
+        { "Writing New Recipes" = [
+            "dev/recipes/jobs.md",
+            "dev/recipes/flows.md"
+        ] }
+    ] },
+    { "For Maintainers" = [
+        "maintainers/internal.md"
+    ] },
+    { "About" = [
+        "about/faq.md",
+        "about/contributors.md",
+        "about/changelog.md",
+        "about/conduct.md",
+        "about/license.md"
+    ] }
+]
+
+[project.theme]
+favicon = "images/quacc_favicon.png"
+logo = "images/quacc_logo_wide.png"
+features = [
+    "content.action.edit",
+    "content.code.copy",
+    "content.code.select",
+    "content.code.annotate",
+    "content.tabs.link",
+    "content.tooltips",
+    "navigation.footer",
+    "navigation.path",
+    "navigation.tracking",
+    "navigation.sections",
+    "navigation.top",
+    "search.highlight",
+    "search.suggest",
+    "search.share",
+    "header.autohide",
+    "toc.follow"
+]
+
+[project.theme.palette]
+primary = "orange"
+scheme = "slate"
+
+[project.extra]
+social = [
+    { icon = "fontawesome/brands/github", link = "https://github.com/Quantum-Accelerators/" }
+]
+
+[project.markdown_extensions.abbr]
+
+[project.markdown_extensions.admonition]
+
+[project.markdown_extensions.attr_list]
+
+[project.markdown_extensions.def_list]
+
+[project.markdown_extensions.footnotes]
+
+[project.markdown_extensions.md_in_html]
+
+[project.markdown_extensions.toc]
+permalink = true
+
+[project.markdown_extensions.pymdownx.arithmatex]
+generic = true
+
+[project.markdown_extensions.pymdownx.betterem]
+smart_enable = "all"
+
+[project.markdown_extensions.pymdownx.caret]
+
+[project.markdown_extensions.pymdownx.details]
+
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+line_spans = "__span"
+pygments_lang_class = true
+
+[project.markdown_extensions.pymdownx.inlinehilite]
+
+[project.markdown_extensions.pymdownx.keys]
+
+[project.markdown_extensions.pymdownx.magiclink]
+
+[project.markdown_extensions.pymdownx.mark]
+
+[project.markdown_extensions.pymdownx.snippets]
+
+[project.markdown_extensions.pymdownx.smartsymbols]
+
+[project.markdown_extensions.pymdownx.superfences]
+custom_fences = [
+    { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" }
+]
+
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+
+[project.markdown_extensions.pymdownx.tasklist]
+custom_checkbox = true
+
+[project.markdown_extensions.pymdownx.tilde]
+
+[project.plugins.search]
+separator = '[\\s\\-,:!=\\[\\]()\"`/]+|\\.(?!\\d)|&[lg]t;|(?!\\b)(?=[A-Z][a-z])'
+
+[project.plugins.autorefs]
+
+# https://github.com/zensical/backlog/issues/37
+[project.plugins.social]
+
+[project.plugins.offline]
+
+[project.plugins.mkdocstrings]
+default_handler = "python"
+
+[project.plugins.mkdocstrings.handlers.python]
+inventories = [
+    "https://docs.python.org/3/objects.inv",
+    "https://ase-lib.org/objects.inv",
+    "https://pymatgen.org/objects.inv",
+    "https://materialsproject.github.io/pymatgen-analysis-defects/objects.inv",
+    "https://materialsproject.github.io/emmet/objects.inv",
+    "https://materialsproject.github.io/jobflow/objects.inv",
+    "https://numpy.org/doc/stable/objects.inv",
+    "https://docs.pydantic.dev/latest/objects.inv",
+    "https://phonopy.github.io/phonopy/objects.inv"
+]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+docstring_style = "numpy"
+docstring_section_style = "list"
+separate_signature = true
+merge_init_into_class = true
+show_signature_annotations = true
+signature_crossrefs = true
+show_if_no_docstring = true
+
+[project.plugins.mkdocstrings.handlers.python.options.docstring_options]
+ignore_init_summary = true
+
+# https://github.com/zensical/backlog/issues/8
+[project.plugins.gen-files]
+scripts = ["docs/gen_ref_pages.py"]
+
+# https://github.com/zensical/backlog/issues/13
+[project.plugins.literate-nav]
+nav_file = "SUMMARY.md"
