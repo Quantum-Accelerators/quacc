@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from quacc import job
 from quacc.recipes.mlp._base import pick_calculator
@@ -11,7 +11,7 @@ from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Literal
 
     from ase.atoms import Atoms
 
@@ -23,6 +23,8 @@ def static_job(
     atoms: Atoms,
     method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
     additional_fields: dict[str, Any] | None = None,
+    use_formation_energy: bool = False,
+    references: Literal["MP20", "OMAT24"] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -36,11 +38,24 @@ def static_job(
         Universal ML interatomic potential method to use
     additional_fields
         Additional fields to add to the results dictionary.
+    use_formation_energy
+        If True, wrap the calculator with FormationEnergyCalculator to compute
+        formation energies. Requires fairchem-core package to be installed.
+        Supported for all methods. Default is False. The formation energy is
+        returned in eV per formula unit (not eV/atom).
+    references
+        Formation energy references to use. Only used if use_formation_energy=True.
+        Options:
+        - None: Use built-in references from FormationEnergyCalculator (FAIRChem models only)
+        - "OMAT24": Use OMAT24 references from https://huggingface.co/facebook/UMA
+        - "MP20": Use MP-20 references from matbench-discovery
+        Default is None.
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
-        `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`,
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of
+        available keys, refer to the `mace.calculators.mace_mp`,
+        `chgnet.model.dynamics.CHGNetCalculator`, `matgl.ext.ase.M3GNetCalculator`,
+        `sevenn.sevennet_calculator.SevenNetCalculator`,
         `orb_models.forcefield.calculator.ORBCalculator`,
         `fairchem.core.FAIRChemCalculator` calculators.
 
@@ -50,7 +65,12 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc = pick_calculator(method, **calc_kwargs)
+    calc = pick_calculator(
+        method,
+        use_formation_energy=use_formation_energy,
+        references=references,
+        **calc_kwargs,
+    )
     final_atoms = Runner(atoms, calc).run_calc()
     return Summarize(
         additional_fields={"name": f"{method} Static"} | (additional_fields or {})
@@ -64,6 +84,8 @@ def relax_job(
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
+    use_formation_energy: bool = False,
+    references: Literal["MP20", "OMAT24"] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
@@ -82,11 +104,24 @@ def relax_job(
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     additional_fields
         Additional fields to add to the results dictionary.
+    use_formation_energy
+        If True, wrap the calculator with FormationEnergyCalculator to compute
+        formation energies. Requires fairchem-core package to be installed.
+        Supported for all methods. Default is False. The formation energy is
+        returned in eV per formula unit (not eV/atom).
+    references
+        Formation energy references to use. Only used if use_formation_energy=True.
+        Options:
+        - None: Use built-in references from FormationEnergyCalculator (FAIRChem models only)
+        - "OMAT24": Use OMAT24 references from https://huggingface.co/facebook/UMA
+        - "MP20": Use MP-20 references from matbench-discovery
+        Default is None.
     **calc_kwargs
         Custom kwargs for the underlying calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
-        `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`,
+        `quacc.Remove` to remove a pre-existing key entirely. For a list of
+        available keys, refer to the `mace.calculators.mace_mp`,
+        `chgnet.model.dynamics.CHGNetCalculator`, `matgl.ext.ase.M3GNetCalculator`,
+        `sevenn.sevennet_calculator.SevenNetCalculator`,
         `orb_models.forcefield.calculator.ORBCalculator`,
         `fairchem.core.FAIRChemCalculator` calculators.
 
@@ -99,7 +134,12 @@ def relax_job(
     opt_defaults = {"fmax": 0.05}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    calc = pick_calculator(method, **calc_kwargs)
+    calc = pick_calculator(
+        method,
+        use_formation_energy=use_formation_energy,
+        references=references,
+        **calc_kwargs,
+    )
 
     dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_flags)
 
