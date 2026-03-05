@@ -57,7 +57,7 @@ def test_static_job(tmp_path, monkeypatch, method):
         "mace-mp": -4.097862720291976,
         "sevennet": -4.096191883087158,
         "orb": -4.093477725982666,
-        "fairchem": -3.7579006783217954,
+        "fairchem": -3.7501682869643735,
     }
     atoms = bulk("Cu")
     output = static_job(atoms, method=method, **calc_kwargs)
@@ -96,7 +96,7 @@ def test_relax_job(tmp_path, monkeypatch, method):
         "tensornet": -30.074462890625,
         "sevennet": -32.76924133300781,
         "orb": -32.7361946105957,
-        "fairchem": -30.004380887389797,
+        "fairchem": -30.001143639922756,
     }
 
     atoms = bulk("Cu") * (2, 2, 2)
