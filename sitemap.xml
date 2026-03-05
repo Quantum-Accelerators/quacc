@@ -76,6 +76,9 @@
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/atoms/slabs.html</loc>
       </url>
       <url>
+        <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/atoms/ts.html</loc>
+      </url>
+      <url>
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/calculators/espresso/espresso.html</loc>
       </url>
       <url>
@@ -305,6 +308,9 @@
       </url>
       <url>
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/settings.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/types.html</loc>
       </url>
       <url>
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/utils/dicts.html</loc>
