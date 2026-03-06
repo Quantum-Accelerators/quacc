@@ -55,11 +55,11 @@ def bulk_to_slabs_subflow(
     results = []
     for slab in slabs:
         result = relax_job(slab)
+        results.append(result)
 
         if static_job is not None:
             result = static_job(result["atoms"])
-
-        results.append(result)
+            results.append(result)
 
     return results
 
@@ -107,10 +107,10 @@ def slab_to_ads_subflow(
     results = []
     for slab in slabs:
         result = relax_job(slab)
+        results.append(result)
 
         if static_job is not None:
             result = static_job(result["atoms"])
-
-        results.append(result)
+            results.append(result)
 
     return results

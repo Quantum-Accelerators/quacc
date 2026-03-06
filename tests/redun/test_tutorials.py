@@ -32,7 +32,7 @@ def test_tutorial1b(tmp_path, monkeypatch, scheduler):
     atoms = bulk("Cu")
 
     # Run the job locally
-    assert len(scheduler.run(bulk_to_slabs_flow(atoms))) == 4
+    assert len(scheduler.run(bulk_to_slabs_flow(atoms))) == 8
 
 
 def test_tutorial2a(tmp_path, monkeypatch, scheduler):
