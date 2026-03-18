@@ -499,9 +499,26 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         return delayed(wrapper, **kwargs)
     elif settings.WORKFLOW_ENGINE == "parsl":
-        from parsl import join_app
+        from parsl import join_app, python_app
 
-        wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
+        # Parsl join_app only supports returning a list (or single) future, not
+        # a dict. To support dict returns, we unpack the futures as individual
+        # positional args to a python_app (Parsl resolves direct args) and
+        # reconstruct the dict from the resolved values.
+        collect_app = python_app(
+            lambda key, *values: dict(zip(key, values, strict=False))
+        )
+
+        def dict_aware_wrapper(*f_args, **f_kwargs):
+            result = _func(*f_args, **f_kwargs)
+            if isinstance(result, dict):
+                keys = list(result.keys())
+                value_futures = list(result.values())
+                return collect_app(keys, *value_futures)
+            return result
+
+        dict_aware_wrapper.__name__ = _func.__name__
+        wrapped_fn = _get_parsl_wrapped_func(dict_aware_wrapper, kwargs)
 
         return join_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
