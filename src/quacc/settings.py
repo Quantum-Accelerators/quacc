@@ -117,6 +117,23 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
+    # FAIRChem Settings
+    # ---------------------------
+    FAIRCHEM_RAY_SERVE_BATCHING: bool = Field(
+        False,
+        description=(
+            """
+            Whether to use Ray Serve for batched FAIRChem inference. When True,
+            the 'fairchem' method in pick_calculator will use RayServeMLIPUnit
+            to send inference requests to a Ray Serve deployment instead of
+            running inference locally. This enables efficient batched inference
+            across multiple concurrent calculations. Requires a Ray Serve inference
+            server to be running (e.g., via SlurmRayTaskRunner with start_inference_server=True).
+            """
+        ),
+    )
+
+    # ---------------------------
     # ORCA Settings
     # ---------------------------
     ORCA_CMD: str = Field(

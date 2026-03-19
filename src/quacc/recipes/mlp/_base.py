@@ -81,11 +81,15 @@ def pick_calculator(
         The instantiated calculator
     """
     import torch
+    from quacc import get_settings
 
-    if not torch.cuda.is_available():
-        LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
-
+    settings = get_settings()
     method = method.lower()
+
+    # Skip CUDA warning for rayserve batching mode (inference happens on remote GPU)
+    use_ray_serve = method == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING
+    if not use_ray_serve and not torch.cuda.is_available():
+        LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if "m3gnet" in method or "chgnet" in method or "tensornet" in method:
         import matgl
@@ -132,7 +136,62 @@ def pick_calculator(
     elif method.lower() == "fairchem":
         from fairchem.core import FAIRChemCalculator, __version__
 
-        calc = FAIRChemCalculator.from_model_checkpoint(**calc_kwargs)
+        # Check if Ray Serve batching is enabled AND Ray is actually available
+        if use_ray_serve:
+            try:
+                import ray
+                if not ray.is_initialized():
+                    LOGGER.warning(
+                        "FAIRCHEM_RAY_SERVE_BATCHING is enabled but Ray is not initialized. "
+                        "Falling back to local inference. To use Ray Serve batching, ensure "
+                        "your flow is running with a Ray cluster (e.g., SlurmRayTaskRunner with "
+                        "start_inference_server=True)."
+                    )
+                    use_ray_serve = False
+            except ImportError:
+                LOGGER.warning(
+                    "FAIRCHEM_RAY_SERVE_BATCHING is enabled but Ray is not installed. "
+                    "Falling back to local inference."
+                )
+                use_ray_serve = False
+
+        if use_ray_serve:
+            # Use Ray Serve deployment for inference
+            from fairchem.core.units.mlip_unit.batch import RayServeMLIPUnit
+
+            # RayServeMLIPUnit accepts model_id and inference_settings
+            # Convert frozen dict to mutable for pop operations
+            calc_kwargs = dict(calc_kwargs)
+            
+            # Determine model_id: prefer name_or_path (local checkpoint) over model_id/checkpoint
+            name_or_path = calc_kwargs.pop("name_or_path", None)
+            if name_or_path is not None:
+                model_id = str(name_or_path)
+            else:
+                model_id = calc_kwargs.pop("model_id", None) or calc_kwargs.pop("checkpoint", "uma-s-1p1")
+            
+            inference_settings = calc_kwargs.pop("inference_settings", "default")
+            task_name = calc_kwargs.pop("task_name", "omat")
+            
+            # Remove from_model_checkpoint-specific kwargs that don't apply to direct constructor
+            # (device, overrides are only used when loading checkpoint locally)
+            calc_kwargs.pop("device", None)
+            calc_kwargs.pop("overrides", None)
+            calc_kwargs.pop("seed", None)
+            
+            mlip_unit = RayServeMLIPUnit(
+                model_id=model_id,
+                inference_settings=inference_settings,
+            )
+            
+            # FAIRChemCalculator with predict_unit only accepts task_name and seed (deprecated)
+            calc = FAIRChemCalculator(
+                predict_unit=mlip_unit,
+                task_name=task_name,
+            )
+        else:
+            # Use local inference
+            calc = FAIRChemCalculator.from_model_checkpoint(**calc_kwargs)
 
     else:
         raise ValueError(f"Unrecognized {method=}.")
