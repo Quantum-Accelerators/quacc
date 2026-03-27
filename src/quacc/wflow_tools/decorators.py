@@ -558,6 +558,34 @@ def _get_parsl_wrapped_func(
     return wrapper
 
 
+class _PrefectFlow:
+    def __init__(self, flow: Callable) -> None:
+        self._flow = flow
+        self._explicit_runner = False
+
+    def __call__(self, *args, **kwargs):
+        if not self._explicit_runner:
+            from prefect.context import get_run_context
+            from prefect.exceptions import MissingContextError
+
+            try:
+                ctx = get_run_context()
+                return self._flow.with_options(task_runner=ctx.task_runner)(
+                    *args, **kwargs
+                )
+            except MissingContextError:
+                pass
+        return self._flow(*args, **kwargs)
+
+    def with_options(self, **kwargs) -> _PrefectFlow:
+        new_flow = _PrefectFlow(self._flow.with_options(**kwargs))
+        new_flow._explicit_runner = "task_runner" in kwargs or self._explicit_runner
+        return new_flow
+
+    def __getattr__(self, name: str):
+        return getattr(self._flow, name)
+
+
 def _get_prefect_wrapped_flow(
     _func: Callable, settings: QuaccSettings, **kwargs
 ) -> Callable:
@@ -573,10 +601,10 @@ def _get_prefect_wrapped_flow(
                 result = await _func(*f_args, **f_kwargs)
                 return resolve_futures_to_results(result)
 
-            return prefect_flow(async_wrapper, validate_parameters=False, **kwargs)
+            decorated = prefect_flow(async_wrapper, validate_parameters=False, **kwargs)
 
         else:
-            return prefect_flow(_func, validate_parameters=False, **kwargs)
+            decorated = prefect_flow(_func, validate_parameters=False, **kwargs)
     else:
         if settings.PREFECT_RESOLVE_FLOW_RESULTS:
 
@@ -585,9 +613,11 @@ def _get_prefect_wrapped_flow(
                 result = _func(*f_args, **f_kwargs)
                 return resolve_futures_to_results(result)
 
-            return prefect_flow(sync_wrapper, validate_parameters=False, **kwargs)
+            decorated = prefect_flow(sync_wrapper, validate_parameters=False, **kwargs)
         else:
-            return prefect_flow(_func, validate_parameters=False, **kwargs)
+            decorated = prefect_flow(_func, validate_parameters=False, **kwargs)
+
+    return _PrefectFlow(decorated)
 
 
 def _get_jobflow_wrapped_func(method=None, **job_kwargs):
