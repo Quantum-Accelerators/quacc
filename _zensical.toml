@@ -39,9 +39,10 @@ nav = [
             "user/db/context.md",
             "user/db/basics.md"
         ] },
-        { "Miscellaneous" = [
-            "user/misc/file_transfers.md",
-            "user/misc/restarts.md"
+        { "Advanced" = [
+            "user/advanced/file_transfers.md",
+            "user/advanced/restarts.md",
+            "user/advanced/torchsim.md"
         ] }
     ] },
     { "Code Documentation" = "reference/" },
