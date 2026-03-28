@@ -18,7 +18,6 @@ nav = [
         { "Recipes" = [
             "user/recipes/recipes_intro.md",
             "user/recipes/workflows.md",
-            "user/recipes/torchsim.md"
         ] },
         { "Settings Management" = [
             "user/settings/settings.md",
