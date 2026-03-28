@@ -6418,7 +6418,7 @@
 </span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_VASP_PP_VERSION</span><span class="o">=</span><span class="s2">&quot;64&quot;</span>
 </span></code></pre></div>
 <p>The <code>VASP_PARALLEL_CMD</code> setting tells Custodian and/or ASE how to parallelize VASP. Note that it does not include the executable.</p>
-<p>The <code>VASP_PP_PATH</code> setting should be defined as described in the <a href="https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials">ASE documentation</a> such that it is a directory containing each VASP pseudopotential folder. Similarly, the <code>VASP_PP_VERSION</code> setting defines the version of the pseudopotentials to use.</p>
+<p>The <code>VASP_PP_PATH</code> setting should be defined as described in the <a href="https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials">ASE documentation</a> such that it is a directory containing each VASP pseudopotential folder. Similarly, the <code>VASP_PP_VERSION</code> setting defines the default version of the pseudopotentials to use if none is specified in a chosen recipe.</p>
 <p>Additional settings can be specified as well, such as the name of the VASP executables if they differ from the default values (i.e. <code>vasp_std</code>, <code>vasp_gam</code>).</p>
 
 
