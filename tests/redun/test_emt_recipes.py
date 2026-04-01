@@ -28,7 +28,7 @@ def test_functools(tmp_path, monkeypatch, scheduler, job_decorators):
             job_params={"relax_job": {"opt_params": {"fmax": 0.1}}},
             job_decorators=job_decorators,
         )
-    )
+    )["relax"]
     assert len(result) == 4
     assert "atoms" in result[-1]
     assert result[-1]["parameters_opt"]["fmax"] == 0.1
