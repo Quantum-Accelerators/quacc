@@ -1,2 +1,2 @@
-jobflow @ git+https://github.com/vineetbansal/jobflow.git@vb/job_dict
+jobflow @ git+https://github.com/materialsproject/jobflow.git@7a4e874
 jobflow-remote==1.0.0
