@@ -96,6 +96,4 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     Cons:
 
-    - Is not fully compatible with all the features of `quacc`
-    - Parsing the output of a workflow is not as intuitive as other solutions
-    - Defining dynamic workflows with Jobflow's `Response` object can be more complex than other solutions
+    - Requires the use of a database like MongoDB, which may not be widely accessible
