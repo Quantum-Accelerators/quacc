@@ -1,6 +1,6 @@
 # Workflow Engine Setup
 
-Using a workflow engine is a crucial component for scaling up quacc calculations in a high-throughput setting. We describe the necessary installation steps here for the workflow manager of your choosing.
+Using a workflow engine is optional but is beneficial when scaling up quacc calculations in a high-throughput setting. We describe the necessary installation steps here for the workflow manager of your choosing.
 
 !!! Tip "Picking a Workflow Engine"
 
