@@ -232,7 +232,7 @@ def pick_model(
         The type of model to instantiate.
     model : str | Path
         Path to the model file or checkpoint. For some models, string names may
-        be allowed, such as "uma-s-1" for FairChemModel.
+        be allowed, such as "uma-s-1p1" for FairChemModel.
     **model_kwargs : Any
         Additional keyword arguments to pass to the model constructor.
 
