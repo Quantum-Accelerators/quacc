@@ -3,7 +3,7 @@ Meta FAIR recipes
 
 !!! Important
 
-    Make sure that you use the appropriate version pseudpotentials:
+    Calculations will be use the following version of pseudopotentials:
     - OMat: v.54
     - OMC: v.54
 """
