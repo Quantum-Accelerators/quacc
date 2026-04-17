@@ -462,8 +462,6 @@ If you haven't done so already:
 
     === "Prefect Submitit"
 
-        For this example, we will try running a pre-defined workflow where we carve all possible slabs from a given structure, run a new relaxation calculation on each slab, and then a static calculation for each relaxed slab. This is implemented in [quacc.recipes.emt.slabs.bulk_to_slabs_flow][].
-
         From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to start a Prefect Server which will monitor requests to run Prefect workflows.
 
         ```bash title="terminal"
@@ -480,6 +478,39 @@ If you haven't done so already:
 
         runner = SlurmTaskRunner(time_limit="00:02:00", slurm_account="rosengroup")
         ```
+
+        Here, we will run single-core TBLite relaxation and frequency calculations for 20 molecules from the so-called "g2" collection of small, neutral molecules. Note that the full "g2" collection has 162 molecules, but running all of them in quick succession will risk surpassing the free-tier rate limit of Prefect Cloud.
+
+        Now we define our workflow to dispatch, attaching the runner we created above as the task runner:
+
+        ```python
+        from quacc import flow
+        from quacc.recipes.tblite.core import freq_job, relax_job
+
+
+        @flow(task_runner=runner)
+        def workflow(atoms_objects):
+            futures = []
+            for atoms in atoms_objects:
+                relax_output = relax_job(atoms)
+                freq_output = freq_job(
+                    relax_output["atoms"], energy=relax_output["results"]["energy"]
+                )
+                futures.append(freq_output)
+
+            return futures
+        ```
+
+        Finally, we dispatch the workflow and fetch the results:
+
+        ```python
+        from ase.collections import g2
+
+        atoms_objects = [g2[name] for name in g2.names[:20]]
+        results = workflow(atoms_objects)
+        ```
+
+        It is also possible to attach a `SlurmTaskRunner` to a pre-defined recipe. As an example, we will try running a pre-defined workflow where we carve all possible slabs from a given structure, run a new relaxation calculation on each slab, and then a static calculation for each relaxed slab. This is implemented in [quacc.recipes.emt.slabs.bulk_to_slabs_flow][].
 
         To customize slurm arguments for individual `#!Python @job`s within the `#!Python @flow`, you can create a dictionary keyed by the `#!Python @job` name. This approach is used in general to modify the default parameters of a subset of jobs in a pre-made workflow. Here we use a special `#!Python slurm_kwargs` key in the dictionary value to modify the `#!Python cpus_per_task` of `#!Python relax_job`s.
 
