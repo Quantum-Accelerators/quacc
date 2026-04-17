@@ -171,3 +171,78 @@ def _make_omc_inputs(atoms: Atoms) -> dict:
         auto_kspacing=True,
     )
     return MPtoASEConverter(atoms=atoms).convert_input_generator(input_generator)
+
+
+@job
+def odac_static_job(
+    atoms: Atoms,
+    kpts: tuple = (1, 1, 1),
+    copy_files: SourceDirectory | Copy | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    **calc_kwargs,
+) -> VaspSchema:
+    """
+    Carry out a static calculation with ODAC settings.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    kpts
+        The k-point grid mesh. Please choose this carefully. The original
+        ODAC23 paper uses a 1x1x1 k-point grid, which is not generally suitable.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
+        Vasp calculator keyword arguments are supported.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
+        See the type-hint for the data structure.
+    """
+
+    calc_defaults = {
+        "kpts": kpts,
+        "nwrite": 2,
+        "istart": 0,
+        "xc": "pbe",
+        "ivdw": 12,
+        "encut": 600.0,
+        "lcharg": False,
+        "lwave": False,
+        "ismear": 0,
+        "sigma": 0.2,
+        "ispin": 2,
+        "prec": "accurate",
+        "nelm": 60,
+        "nelmin": 2,
+        "ediff": 1e-5,
+        "ediffg": -0.05,
+        "maxmix": 40,
+        "nsw": 2000,
+        "ibrion": 2,
+        "isif": 3,
+        "potim": 0.01,
+        "algo": "normal",
+        "ldiag": True,
+        "lreal": "auto",
+        "lplane": True,
+        "ncore": 4,
+        "gamma": True,
+        "isym": 0,
+        "pp_version": "54",
+    }
+    return run_and_summarize(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "ODAC Static"} | (additional_fields or {}),
+        copy_files=copy_files,
+    )
