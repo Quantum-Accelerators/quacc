@@ -159,13 +159,14 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
-        from prefect import task
+        from prefect_submitit import task
 
         if settings.PREFECT_AUTO_SUBMIT:
 
             @wraps(_func)
             def wrapper(*f_args, **f_kwargs):
-                decorated = task(_func, **kwargs)
+                slurm_kwargs = f_kwargs.pop("slurm_kwargs", {})
+                decorated = task(_func, slurm_kwargs=slurm_kwargs, **kwargs)
                 return decorated.submit(*f_args, **f_kwargs)
 
             return wrapper
