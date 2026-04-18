@@ -28,9 +28,15 @@ In the previous examples, we have been running calculations on the local machine
 
 === "Prefect"
 
-    To scale up calculations, read about the concept of a Prefect [task runner](https://docs.prefect.io/latest/concepts/task-runners/). By default, `quacc` automatically submits all `#!Python @job`-decorated functions to the specified task runner and so concurrency is achieved by default.
+    === "Prefect Dask"
 
-    To use Prefect in a job scheduler environment, you can create a [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/usage_guide/) that can be used in conjunction with [dask-jobqueue](https://jobqueue.dask.org/en/latest). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the `dask-jobqueue` documentation.
+        To scale up calculations, read about the concept of a Prefect [task runner](https://docs.prefect.io/latest/concepts/task-runners/). By default, `quacc` automatically submits all `#!Python @job`-decorated functions to the specified task runner and so concurrency is achieved by default.
+
+        To use Prefect in a job scheduler environment, you can create a [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/usage_guide/) that can be used in conjunction with [dask-jobqueue](https://jobqueue.dask.org/en/latest). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the `dask-jobqueue` documentation.
+
+    === "Prefect Submitit"
+
+        You can use [prefect-submitit](https://github.com/dexterity-systems/prefect-submitit) in a SLURM job scheduler environment (common in academic institutions), by creating a `SlurmTaskRunner`. Unlike the Dask-based approach, `prefect-submitit` submits each `#!Python @job` as an individual job to the scheduler, without requiring a persistent Dask cluster. This makes it well-suited for workflows where each task requires its own dedicated allocation.
 
 === "Jobflow"
 
@@ -369,88 +375,161 @@ If you haven't done so already:
 
 === "Prefect"
 
-    Here, we will run single-core TBLite relaxation and frequency calculations for 20 molecules from the so-called "g2" collection of small, neutral molecules. Note that the full "g2" collection has 162 molecules, but running all of them in quick succession will risk surpassing the free-tier rate limit of Prefect Cloud.
+    === "Prefect Dask"
 
-    On the remote machine, first make sure to install the necessary dependencies:
+        Here, we will run single-core TBLite relaxation and frequency calculations for 20 molecules from the so-called "g2" collection of small, neutral molecules. Note that the full "g2" collection has 162 molecules, but running all of them in quick succession will risk surpassing the free-tier rate limit of Prefect Cloud.
 
-    ```
-    pip install quacc[tblite]
-    ```
+        On the remote machine, first make sure to install the necessary dependencies:
 
-    From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) that will request one Slurm allocation for one node, with a `#!Python @job` running on each core of the allocation:
+        ```
+        pip install quacc[tblite]
+        ```
 
-    ```python
-    from dask.distributed import Client
-    from dask_jobqueue import SLURMCluster
+        From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to instantiate a Dask [`SLURMCluster`](https://jobqueue.dask.org/en/latest/generated/dask_jobqueue.SLURMCluster.html) that will request one Slurm allocation for one node, with a `#!Python @job` running on each core of the allocation:
 
-    account = "MyAccountName"
+        ```python
+        from dask.distributed import Client
+        from dask_jobqueue import SLURMCluster
 
-    slurm_jobs = 1
-    cores_per_node = 112
+        account = "MyAccountName"
 
-    env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
+        slurm_jobs = 1
+        cores_per_node = 112
 
-    cluster_kwargs = {
-        "cores": cores_per_node,  # (2)!
-        "memory": "64 GB",
-        "shebang": "#!/bin/bash",
-        "account": account,
-        "walltime": "00:10:00",
-        "job_mem": "0",
-        "job_script_prologue": [
-            "source ~/.bashrc",
-            env_vars,
-        ],
-        "job_directives_skip": ["-n", "--cpus-per-task"],  # (3)!
-        "job_extra_directives": ["-q debug", "-C cpu"],  # (4)!
-    }
-    cluster = SLURMCluster(**cluster_kwargs)
-    print(cluster.job_script())
-    cluster.scale(jobs=slurm_jobs)
-    client = Client(cluster)
-    ```
+        env_vars = "export OMP_NUM_THREADS=1,1"  # (1)!
 
-    1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
+        cluster_kwargs = {
+            "cores": cores_per_node,  # (2)!
+            "memory": "64 GB",
+            "shebang": "#!/bin/bash",
+            "account": account,
+            "walltime": "00:10:00",
+            "job_mem": "0",
+            "job_script_prologue": [
+                "source ~/.bashrc",
+                env_vars,
+            ],
+            "job_directives_skip": ["-n", "--cpus-per-task"],  # (3)!
+            "job_extra_directives": ["-q debug", "-C cpu"],  # (4)!
+        }
+        cluster = SLURMCluster(**cluster_kwargs)
+        print(cluster.job_script())
+        cluster.scale(jobs=slurm_jobs)
+        client = Client(cluster)
+        ```
 
-    2. It is also worthwhile to play around with the `processes` argument, which defaults to sqrt(cores).
+        1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
 
-    3. We have skipped the `-n` and `--cpus-per-task` Slurm directives because we will be using the full node here.
+        2. It is also worthwhile to play around with the `processes` argument, which defaults to sqrt(cores).
 
-    4. We have set the queue to submit to and the constraint to use.
+        3. We have skipped the `-n` and `--cpus-per-task` Slurm directives because we will be using the full node here.
 
-    Now we define our workflow to dispatch, attaching it to the premade Dask cluster:
+        4. We have set the queue to submit to and the constraint to use.
 
-    ```python
-    from prefect_dask import DaskTaskRunner
-    from quacc import flow
-    from quacc.recipes.tblite.core import freq_job, relax_job
+        Now we define our workflow to dispatch, attaching it to the premade Dask cluster:
+
+        ```python
+        from prefect_dask import DaskTaskRunner
+        from quacc import flow
+        from quacc.recipes.tblite.core import freq_job, relax_job
 
 
-    @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
-    def workflow(atoms_objects):
-        futures = []
-        for atoms in atoms_objects:
-            relax_output = relax_job(atoms)
-            freq_output = freq_job(
-                relax_output["atoms"], energy=relax_output["results"]["energy"]
-            )
-            futures.append(freq_output)
+        @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
+        def workflow(atoms_objects):
+            futures = []
+            for atoms in atoms_objects:
+                relax_output = relax_job(atoms)
+                freq_output = freq_job(
+                    relax_output["atoms"], energy=relax_output["results"]["energy"]
+                )
+                futures.append(freq_output)
 
-        return futures
-    ```
+            return futures
+        ```
 
-    Finally, we dispatch the workflow and fetch the results:
+        Finally, we dispatch the workflow and fetch the results:
 
-    ```python
-    from ase.collections import g2
+        ```python
+        from ase.collections import g2
 
-    atoms_objects = [g2[name] for name in g2.names[:20]]
-    results = workflow(atoms_objects)
-    ```
+        atoms_objects = [g2[name] for name in g2.names[:20]]
+        results = workflow(atoms_objects)
+        ```
 
-    !!! Tip "One-Time Dask Clusters"
+        !!! Tip "One-Time Dask Clusters"
 
-        If preferred, it is also possible to instantiate a [one-time, temporary](https://prefecthq.github.io/prefect-dask/usage_guide/#using-a-temporary-cluster) Dask cluster via the `DaskTaskRunner` directly rather than connecting to an existing Dask cluster, as described in the [Task Runner documentation](https://prefecthq.github.io/prefect-dask/task_runners/). This is the more conventional job scheduling approach, where each workflow will run on its own Slurm allocation.
+            If preferred, it is also possible to instantiate a [one-time, temporary](https://prefecthq.github.io/prefect-dask/usage_guide/#using-a-temporary-cluster) Dask cluster via the `DaskTaskRunner` directly rather than connecting to an existing Dask cluster, as described in the [Task Runner documentation](https://prefecthq.github.io/prefect-dask/task_runners/). This is the more conventional job scheduling approach, where each workflow will run on its own Slurm allocation.
+
+    === "Prefect Submitit"
+
+        From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to start a Prefect Server which will monitor requests to run Prefect workflows.
+
+        ```bash title="terminal"
+        prefect server start
+        ```
+
+        We create a `SlurmTaskRunner` that will dispatch jobs to SLURM. You can supply
+        any arguments that are [supported](https://github.com/facebookincubator/submitit/blob/ca51a66b6da2400468f338133eabdfb4c9a2936c/submitit/auto/auto.py#L121)
+        by the [submitit](https://github.com/facebookincubator/submitit) library (that `prefect-submitit` depends on). Other arguments
+        to SLURM can be supplied via the `slurm_*` prefix.
+
+        ```python title="python"
+        from prefect_submitit import SlurmTaskRunner
+
+        runner = SlurmTaskRunner(time_limit="00:02:00", slurm_account="rosengroup")
+        ```
+
+        Here, we will run single-core TBLite relaxation and frequency calculations for 20 molecules from the so-called "g2" collection of small, neutral molecules. Note that the full "g2" collection has 162 molecules, but running all of them in quick succession will risk surpassing the free-tier rate limit of Prefect Cloud.
+
+        Now we define our workflow to dispatch, attaching the runner we created above as the task runner:
+
+        ```python
+        from quacc import flow
+        from quacc.recipes.tblite.core import freq_job, relax_job
+
+
+        @flow(task_runner=runner)
+        def workflow(atoms_objects):
+            futures = []
+            for atoms in atoms_objects:
+                relax_output = relax_job(atoms)
+                freq_output = freq_job(
+                    relax_output["atoms"], energy=relax_output["results"]["energy"]
+                )
+                futures.append(freq_output)
+
+            return futures
+        ```
+
+        Finally, we dispatch the workflow and fetch the results:
+
+        ```python
+        from ase.collections import g2
+
+        atoms_objects = [g2[name] for name in g2.names[:20]]
+        results = workflow(atoms_objects)
+        ```
+
+        It is also possible to attach a `SlurmTaskRunner` to a pre-defined recipe. As an example, we will try running a pre-defined workflow where we carve all possible slabs from a given structure, run a new relaxation calculation on each slab, and then a static calculation for each relaxed slab. This is implemented in [quacc.recipes.emt.slabs.bulk_to_slabs_flow][].
+
+        To customize slurm arguments for individual `#!Python @job`s within the `#!Python @flow`, you can create a dictionary keyed by the `#!Python @job` name. This approach is used in general to modify the default parameters of a subset of jobs in a pre-made workflow. Here we use a special `#!Python slurm_kwargs` key in the dictionary value to modify the `#!Python cpus_per_task` of `#!Python relax_job`s.
+
+        ```python title="python"
+        job_params = {"relax_job": {"slurm_kwargs": {"cpus_per_task": 4}}}
+        ```
+
+        Finally, we attach the `#!Python SlurmTaskRunner` to the workflow using `with_options` (which attaches the task runner to the `@flow`), call it with the desired arguments
+        along with our custom `job_params`, and dispatch it:
+
+        ```python title="python"
+        from ase.build import bulk
+        from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+        atoms = bulk("Cu")
+        bulk_to_slabs_flow.with_options(task_runner=runner)(
+            atoms, run_static=False, job_params=job_params
+        )
+        ```
 
 === "Jobflow"
 
@@ -664,71 +743,74 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
 
 === "Prefect"
 
-    ```python
-    from dask.distributed import Client
-    from dask_jobqueue import SLURMCluster
+    === "Prefect Dask"
 
-    account = "MyAccountName"
+        ```python
+        from dask.distributed import Client
+        from dask_jobqueue import SLURMCluster
 
-    slurm_jobs = 2
-    nodes_per_calc = 1
-    cores_per_node = 112
+        account = "MyAccountName"
 
-    vasp_parallel_cmd = (
-        f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
-    )
+        slurm_jobs = 2
+        nodes_per_calc = 1
+        cores_per_node = 112
 
-    cluster_kwargs = {
-        "cores": 1,  # (1)!
-        "memory": "64 GB",
-        "shebang": "#!/bin/bash",
-        "account": account,
-        "walltime": "00:10:00",
-        "job_mem": "0",
-        "job_script_prologue": [
-            "source ~/.bashrc",
-            "module load vasp/6.4.1-cpu",
-            f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
-        ],
-        "job_directives_skip": ["-n", "--cpus-per-task"],
-        "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
-    }
-    cluster = SLURMCluster(**cluster_kwargs)
-    print(cluster.job_script())
-    cluster.scale(jobs=slurm_jobs)
-    client = Client(cluster)
-    ```
+        vasp_parallel_cmd = (
+            f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+        )
 
-    1. Since we only want to run one VASP job per allocation, we set this to 1. VASP will still use multiple cores via the `srun` command. The same could be achieved by setting `processes=1`.
+        cluster_kwargs = {
+            "cores": 1,  # (1)!
+            "memory": "64 GB",
+            "shebang": "#!/bin/bash",
+            "account": account,
+            "walltime": "00:10:00",
+            "job_mem": "0",
+            "job_script_prologue": [
+                "source ~/.bashrc",
+                "module load vasp/6.4.1-cpu",
+                f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
+            ],
+            "job_directives_skip": ["-n", "--cpus-per-task"],
+            "job_extra_directives": [f"-N {nodes_per_calc}", "-q debug", "-C cpu"],
+        }
+        cluster = SLURMCluster(**cluster_kwargs)
+        print(cluster.job_script())
+        cluster.scale(jobs=slurm_jobs)
+        client = Client(cluster)
+        ```
 
-    Now we define our workflow to dispatch, attaching it to the premade Dask cluster:
+        1. Since we only want to run one VASP job per allocation, we set this to 1. VASP will still use multiple cores via the `srun` command. The same could be achieved by setting `processes=1`.
 
-    ```python
-    from prefect_dask import DaskTaskRunner
-    from quacc import flow
+        Now we define our workflow to dispatch, attaching it to the premade Dask cluster:
+
+        ```python
+        from prefect_dask import DaskTaskRunner
+        from quacc import flow
 
 
-    @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
-    def workflow(list_of_atoms):
-        from quacc.recipes.vasp.core import relax_job, static_job
+        @flow(task_runner=DaskTaskRunner(address=client.scheduler.address))
+        def workflow(list_of_atoms):
+            from quacc.recipes.vasp.core import relax_job, static_job
 
-        futures = []
-        for atoms in list_of_atoms:
-            relax_output = relax_job(atoms, kpts=[3, 3, 3])
-            static_output = static_job(relax_output["atoms"], kpts=[3, 3, 3])
-            futures.append(static_output)
+            futures = []
+            for atoms in list_of_atoms:
+                relax_output = relax_job(atoms, kpts=[3, 3, 3])
+                static_output = static_job(relax_output["atoms"], kpts=[3, 3, 3])
+                futures.append(static_output)
 
-        return futures
-    ```
+            return futures
+        ```
 
-    Finally, we dispatch the workflow and fetch the results:
+        Finally, we dispatch the workflow and fetch the results:
 
-    ```python
-    from ase.build import bulk
+        ```python
+        from ase.build import bulk
 
-    list_of_atoms = [bulk("Cu"), bulk("C")]
-    results = workflow(list_of_atoms)
-    ```
+        list_of_atoms = [bulk("Cu"), bulk("C")]
+        results = workflow(list_of_atoms)
+        ```
+
 
 === "Jobflow"
 
