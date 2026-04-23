@@ -261,13 +261,14 @@ class QuaccSettings(BaseSettings):
     )
 
     # VASP Settings: General
-    VASP_INCAR_COPILOT: Literal["off", "on", "aggressive"] = Field(
-        "on",
+    VASP_INCAR_COPILOT: Literal["off", "light", "default", "aggressive"] = Field(
+        "default",
         description=(
             """
             Controls VASP co-pilot mode for automated INCAR parameter handling.
             off: Do not use co-pilot mode. INCAR parameters will be unmodified.
-            on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
+            light: Use co-pilot mode for only a subset of swaps. This will only modify INCAR flags not already set by the user.
+            default: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
             aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
             """
         ),
