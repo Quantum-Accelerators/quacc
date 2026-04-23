@@ -1284,3 +1284,44 @@ def test_fairchem_omc(patch_metallic_taskdoc):
         "kpts": (7, 7, 7),
         "gamma": True,
     }
+
+
+def test_fairchem_odac(patch_nonmetallic_taskdoc):
+    from quacc.recipes.vasp.fairchem import odac_static_job
+
+    atoms = bulk("Si")
+    output = odac_static_job(atoms)
+    output["parameters"].pop("ncore")
+    assert output["parameters"] == {
+        "kpts": (1, 1, 1),
+        "nwrite": 2,
+        "istart": 0,
+        "gga": "PE",
+        "xc": "pbe",
+        "ivdw": 12,
+        "encut": 600.0,
+        "lcharg": False,
+        "lwave": False,
+        "ismear": 0,
+        "sigma": 0.2,
+        "ispin": 2,
+        "prec": "accurate",
+        "nelm": 60,
+        "nelmin": 2,
+        "ediff": 1e-5,
+        "ediffg": -0.05,
+        "maxmix": 40,
+        "nsw": 2000,
+        "ibrion": 2,
+        "isif": 3,
+        "lorbit": 11,
+        "potim": 0.01,
+        "algo": "normal",
+        "ldiag": True,
+        "lreal": "auto",
+        "lplane": True,
+        "gamma": True,
+        "isym": 0,
+        "pp": "PBE",
+        "pp_version": "54",
+    }
