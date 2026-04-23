@@ -63,123 +63,7 @@ def get_param_swaps(
     max_Z = input_atoms.get_atomic_numbers().max()
 
     # ----------------------------
-    # Light INCAR swaps
-    # ----------------------------
-    if incar_copilot_mode.lower() != "off":
-        if (
-            calc.parameters.get("ismear", 1) == -5
-            and (calc.kpts is not None and np.prod(calc.kpts) < 4)
-            and calc.parameters.get("kspacing", None) is None
-        ):
-            LOGGER.info(
-                "Recommending ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5."
-            )
-            calc.set(ismear=0)
-
-        if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
-            ncores = psutil.cpu_count(logical=False) or 1
-            for ncore in range(int(np.sqrt(ncores)), ncores):
-                if ncores % ncore == 0:
-                    LOGGER.info(
-                        f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
-                    )
-                    calc.set(ncore=ncore, npar=None)
-                    break
-
-        if (
-            calc.parameters.get("ncore", 1) > 1
-            or (calc.parameters.get("npar") and calc.parameters.get("npar", 1) > 1)
-        ) and (
-            calc.parameters.get("lhfcalc", False) is True
-            or calc.parameters.get("lrpa", False) is True
-            or calc.parameters.get("lepsilon", False) is True
-            or calc.parameters.get("ibrion", 0) in [5, 6, 7, 8]
-        ):
-            LOGGER.info(
-                "Recommending NCORE = 1 because NCORE/NPAR is not compatible with this job type."
-            )
-            calc.set(ncore=1, npar=None)
-
-        if (
-            calc.parameters.get("kpar")
-            and (
-                calc.kpts is not None
-                and calc.parameters.get("kpar", 1) > np.prod(calc.kpts)
-            )
-            and calc.float_params["kspacing"] is None
-        ):
-            LOGGER.info(
-                "Recommending KPAR = 1 because you have too few k-points to parallelize."
-            )
-            calc.set(kpar=1)
-
-        if (
-            calc.parameters.get("isif", 2) in (3, 6, 7, 8)
-            and calc.parameters.get("nsw", 0) > 0
-        ):
-            if calc.encut is None:
-                LOGGER.warning(
-                    "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT=1.3*max(ENMAX)."
-                )
-            if "He" in input_atoms.get_chemical_symbols() and (
-                calc.encut is None or calc.encut < 478.896 * 1.3
-            ):
-                LOGGER.warning(
-                    "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=623."
-                )
-
-            if (
-                "Li" in input_atoms.get_chemical_symbols()
-                and calc.parameters.get("setups", {})
-                and isinstance(calc.parameters["setups"], dict)
-                and calc.parameters["setups"].get("Li", "") in ("Li_sv", "_sv")
-                and (calc.encut is None or calc.encut < 499.034 * 1.3)
-            ):
-                LOGGER.warning(
-                    "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=650."
-                )
-
-        if (
-            (
-                calc.parameters.get("xc", "").lower() == "r2scan"
-                or calc.parameters.get("metagga", "").lower() == "r2scan"
-            )
-            and calc.parameters.get("ivdw", 0) == 13
-            and not calc.parameters.get("vdw_s6")
-            and not calc.parameters.get("vdw_s8")
-            and not calc.parameters.get("vdw_a1")
-            and not calc.parameters.get("vdw_a2")
-        ):
-            LOGGER.info(
-                "Recommending VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN-D4."
-            )
-            calc.set(
-                vdw_s6=1.0, vdw_s8=0.60187490, vdw_a1=0.51559235, vdw_a2=5.77342911
-            )
-
-        if (
-            calc.parameters.get("lhfcalc", False)
-            and calc.parameters.get("hfscreen", 0) == 0.2
-            and calc.parameters.get("ivdw", 1) == 12
-            and not calc.parameters.get("vdw_s6")
-            and not calc.parameters.get("vdw_s8")
-            and not calc.parameters.get("vdw_a1")
-            and not calc.parameters.get("vdw_a2")
-        ):
-            LOGGER.info(
-                "Recommending VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for HSE06-D3(BJ)."
-            )
-            calc.set(vdw_s6=1.0, vdw_s8=2.310, vdw_a1=0.383, vdw_a2=5.685)
-
-        if input_atoms.get_chemical_formula() == "O2" and all(
-            input_atoms.get_initial_magnetic_moments() == 0
-        ):
-            LOGGER.warning(
-                "You are running O2 without magnetic moments, but its ground state should have 2 unpaired electrons!"
-            )
-
-    # ----------------------------
-    # Remaining INCAR swaps
+    # General INCAR swaps
     # ----------------------------
     if incar_copilot_mode.lower() not in {"off", "light"}:
         if calc.parameters.get("lmaxmix", 2) < 6 and max_Z > 56:
@@ -318,6 +202,122 @@ def get_param_swaps(
         ):
             LOGGER.info("Recommending ISEARCH = 1 because you have ALGO = All.")
             calc.set(isearch=1)
+
+    # ----------------------------
+    # Light INCAR swaps
+    # ----------------------------
+    if incar_copilot_mode.lower() != "off":
+        if (
+            calc.parameters.get("ismear", 1) == -5
+            and (calc.kpts is not None and np.prod(calc.kpts) < 4)
+            and calc.parameters.get("kspacing", None) is None
+        ):
+            LOGGER.info(
+                "Recommending ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5."
+            )
+            calc.set(ismear=0)
+
+        if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
+            ncores = psutil.cpu_count(logical=False) or 1
+            for ncore in range(int(np.sqrt(ncores)), ncores):
+                if ncores % ncore == 0:
+                    LOGGER.info(
+                        f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
+                    )
+                    calc.set(ncore=ncore, npar=None)
+                    break
+
+        if (
+            calc.parameters.get("ncore", 1) > 1
+            or (calc.parameters.get("npar") and calc.parameters.get("npar", 1) > 1)
+        ) and (
+            calc.parameters.get("lhfcalc", False) is True
+            or calc.parameters.get("lrpa", False) is True
+            or calc.parameters.get("lepsilon", False) is True
+            or calc.parameters.get("ibrion", 0) in [5, 6, 7, 8]
+        ):
+            LOGGER.info(
+                "Recommending NCORE = 1 because NCORE/NPAR is not compatible with this job type."
+            )
+            calc.set(ncore=1, npar=None)
+
+        if (
+            calc.parameters.get("kpar")
+            and (
+                calc.kpts is not None
+                and calc.parameters.get("kpar", 1) > np.prod(calc.kpts)
+            )
+            and calc.float_params["kspacing"] is None
+        ):
+            LOGGER.info(
+                "Recommending KPAR = 1 because you have too few k-points to parallelize."
+            )
+            calc.set(kpar=1)
+
+        if (
+            calc.parameters.get("isif", 2) in (3, 6, 7, 8)
+            and calc.parameters.get("nsw", 0) > 0
+        ):
+            if calc.encut is None:
+                LOGGER.warning(
+                    "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT=1.3*max(ENMAX)."
+                )
+            if "He" in input_atoms.get_chemical_symbols() and (
+                calc.encut is None or calc.encut < 478.896 * 1.3
+            ):
+                LOGGER.warning(
+                    "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=623."
+                )
+
+            if (
+                "Li" in input_atoms.get_chemical_symbols()
+                and calc.parameters.get("setups", {})
+                and isinstance(calc.parameters["setups"], dict)
+                and calc.parameters["setups"].get("Li", "") in ("Li_sv", "_sv")
+                and (calc.encut is None or calc.encut < 499.034 * 1.3)
+            ):
+                LOGGER.warning(
+                    "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=650."
+                )
+
+        if (
+            (
+                calc.parameters.get("xc", "").lower() == "r2scan"
+                or calc.parameters.get("metagga", "").lower() == "r2scan"
+            )
+            and calc.parameters.get("ivdw", 0) == 13
+            and not calc.parameters.get("vdw_s6")
+            and not calc.parameters.get("vdw_s8")
+            and not calc.parameters.get("vdw_a1")
+            and not calc.parameters.get("vdw_a2")
+        ):
+            LOGGER.info(
+                "Recommending VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN-D4."
+            )
+            calc.set(
+                vdw_s6=1.0, vdw_s8=0.60187490, vdw_a1=0.51559235, vdw_a2=5.77342911
+            )
+
+        if (
+            calc.parameters.get("lhfcalc", False)
+            and calc.parameters.get("hfscreen", 0) == 0.2
+            and calc.parameters.get("ivdw", 1) == 12
+            and not calc.parameters.get("vdw_s6")
+            and not calc.parameters.get("vdw_s8")
+            and not calc.parameters.get("vdw_a1")
+            and not calc.parameters.get("vdw_a2")
+        ):
+            LOGGER.info(
+                "Recommending VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for HSE06-D3(BJ)."
+            )
+            calc.set(vdw_s6=1.0, vdw_s8=2.310, vdw_a1=0.383, vdw_a2=5.685)
+
+        if input_atoms.get_chemical_formula() == "O2" and all(
+            input_atoms.get_initial_magnetic_moments() == 0
+        ):
+            LOGGER.warning(
+                "You are running O2 without magnetic moments, but its ground state should have 2 unpaired electrons!"
+            )
 
     if incar_copilot_mode == "aggressive":
         new_parameters = calc.parameters
