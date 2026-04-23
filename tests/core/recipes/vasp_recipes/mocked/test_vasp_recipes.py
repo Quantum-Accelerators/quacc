@@ -38,7 +38,7 @@ from quacc.recipes.vasp.slabs import static_job as slab_static_job
 has_atomate2 = util.find_spec("atomate2") is not None
 has_fairchem = util.find_spec("fairchem") is not None
 has_fairchem_omat = has_fairchem and util.find_spec("fairchem.data.omat") is not None
-has_fairchem_omc = has_fairchem and util.find_spec("fairchem.data.omc") is not None
+has_fairchem_omc = has_fairchem and util.find_spec("fairchem.data") is not None and util.find_spec("fairchem.data.omc") is not None
 
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
