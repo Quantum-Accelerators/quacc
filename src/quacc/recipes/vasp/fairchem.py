@@ -128,7 +128,7 @@ def omc_static_job(
     input_generator = create_vasp_inputs.create_input_generator(incar_path)
     calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_generator(
         input_generator
-    ) | {"incar_copilot": "ncore"}
+    ) | {"incar_copilot": "light"}
 
     return run_and_summarize(
         atoms,
