@@ -72,7 +72,7 @@ def omat_static_job(
 
     calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(
         OMat24StaticSet()
-    ) | {"incar_copilot": "ncore"}
+    ) | {"incar_copilot": "light"}
 
     return run_and_summarize(
         atoms,
