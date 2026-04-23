@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.4]
+
+### Fixed
+
+- Fixed bug where D4 parameters were not set automatically when IVDW = 13 was set for some recipes
+
+## [1.2.3]
+
+### Fixed
+
+- Added dispersion correct kwarg to `mof_off_static_job`
+
 ## [1.2.2]
 
 ### Added
