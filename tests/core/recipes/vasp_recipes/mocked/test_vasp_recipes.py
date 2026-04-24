@@ -1323,7 +1323,6 @@ def test_fairchem_omc(patch_metallic_taskdoc):
     }
 
 
-
 def test_fairchem_odac(patch_nonmetallic_taskdoc):
     from quacc.recipes.vasp.fairchem import odac_static_job
 
@@ -1359,4 +1358,3 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
         "pp": "PBE",
         "pp_version": "54",
     }
-
