@@ -20,7 +20,11 @@ from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 
 has_fairchem = bool(find_spec("fairchem"))
-has_fairchem_omat = has_fairchem and bool(find_spec("fairchem.data.omat"))
+has_fairchem_omat = (
+    has_fairchem
+    and bool(find_spec("fairchem.data"))
+    and bool(find_spec("fairchem.data.omat"))
+)
 has_atomate2 = bool(find_spec("atomate2"))
 
 if TYPE_CHECKING:
