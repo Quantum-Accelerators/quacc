@@ -41,6 +41,7 @@ has_fairchem_omc = (
     has_fairchem
     and util.find_spec("fairchem.data") is not None
     and util.find_spec("fairchem.data.omc") is not None
+)
 has_fairchem_omat = (
     has_fairchem
     and util.find_spec("fairchem.data") is not None
