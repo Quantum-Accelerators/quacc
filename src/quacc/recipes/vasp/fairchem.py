@@ -25,6 +25,7 @@ has_fairchem_omc = (
     has_fairchem
     and bool(find_spec("fairchem.data"))
     and bool(find_spec("fairchem.data.omc"))
+)
 has_fairchem_omat = (
     has_fairchem
     and bool(find_spec("fairchem.data"))
