@@ -37,11 +37,14 @@ from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 has_atomate2 = util.find_spec("atomate2") is not None
 has_fairchem = util.find_spec("fairchem") is not None
-has_fairchem_omat = has_fairchem and util.find_spec("fairchem.data.omat") is not None
 has_fairchem_omc = (
     has_fairchem
     and util.find_spec("fairchem.data") is not None
     and util.find_spec("fairchem.data.omc") is not None
+has_fairchem_omat = (
+    has_fairchem
+    and util.find_spec("fairchem.data") is not None
+    and util.find_spec("fairchem.data.omat") is not None
 )
 
 FILE_DIR = Path(__file__).parent
@@ -1337,7 +1340,6 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
     assert output["parameters"] == {
         "kpts": (1, 1, 1),
         "nwrite": 2,
-        "istart": 0,
         "gga": "PE",
         "xc": "pbe",
         "ivdw": 12,
@@ -1351,13 +1353,10 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
         "nelm": 60,
         "nelmin": 2,
         "ediff": 1e-5,
-        "ediffg": -0.05,
         "maxmix": 40,
-        "nsw": 2000,
-        "ibrion": 2,
+        "nsw": 0,
         "isif": 3,
         "lorbit": 11,
-        "potim": 0.01,
         "algo": "normal",
         "ldiag": True,
         "lreal": "auto",

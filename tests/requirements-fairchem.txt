@@ -1,4 +1,4 @@
 fairchem-core==2.19.0
 fairchem-data-omat==0.2
 fairchem-data-omc==0.1.0
-atomate2==0.1.1
+atomate2==0.1.2
