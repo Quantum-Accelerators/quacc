@@ -11,6 +11,7 @@ Meta FAIR recipes
 from __future__ import annotations
 
 from importlib.util import find_spec
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -20,6 +21,11 @@ from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 
 has_fairchem = bool(find_spec("fairchem"))
+has_fairchem_omc = (
+    has_fairchem
+    and bool(find_spec("fairchem.data"))
+    and bool(find_spec("fairchem.data.omc"))
+)
 has_fairchem_omat = (
     has_fairchem
     and bool(find_spec("fairchem.data"))
@@ -72,8 +78,9 @@ def omat_static_job(
     """
     from fairchem.data.omat.vasp.sets import OMat24StaticSet
 
-    calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(OMat24StaticSet())
-    calc_defaults |= {"pp_version": "54", "incar_copilot": "light"}
+    calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(
+        OMat24StaticSet()
+    ) | {"incar_copilot": "light"}
 
     return run_and_summarize(
         atoms,
@@ -85,6 +92,10 @@ def omat_static_job(
 
 
 @job
+@requires(
+    has_fairchem_omc,
+    "fairchem-data-omc is not installed. Run `pip install quacc[fairchem]`",
+)
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[fairchem]`")
 def omc_static_job(
     atoms: Atoms,
@@ -115,9 +126,17 @@ def omc_static_job(
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
+    from argparse import Namespace
 
-    calc_defaults = _make_omc_inputs(atoms)
-    calc_defaults |= {"pp_version": "54", "incar_copilot": "light"}
+    from fairchem.data.omc.scripts import create_vasp_inputs
+
+    incar_path = Namespace(
+        incar_yml_dir=Path(create_vasp_inputs.__file__).parent / "incars", type="static"
+    )
+    input_generator = create_vasp_inputs.create_input_generator(incar_path)
+    calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_generator(
+        input_generator
+    ) | {"incar_copilot": "light"}
 
     return run_and_summarize(
         atoms,
@@ -126,55 +145,6 @@ def omc_static_job(
         additional_fields={"name": "OMC Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
-
-
-def _make_omc_inputs(atoms: Atoms) -> dict:
-    """
-    Helper function to make a fairchem input set.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    dataset
-        Dataset to use. Currently only "omc" is supported.
-
-    Returns
-    -------
-    dict
-        Dictionary of ASE VASP calculator parameters.
-    """
-    from atomate2.vasp.sets.core import StaticSetGenerator
-
-    input_generator = StaticSetGenerator(
-        user_incar_settings={
-            "ADDGRID": True,
-            "ALGO": "Normal",
-            "EDIFF": 1e-06,
-            "ENCUT": 520,
-            "GGA": "PE",
-            "IBRION": -1,
-            "ISIF": 0,
-            "ISMEAR": 0,
-            "ISPIN": 1,
-            "IVDW": 11,
-            "LREAL": False,
-            "LMIXTAU": True,
-            "LASPH": True,
-            "LORBIT": 11,
-            "LWAVE": False,
-            "LAECHG": False,
-            "LVTOT": False,
-            "NELM": 200,
-            "NELMDL": -10,
-            "NSW": 0,
-            "PREC": "Normal",
-            "SIGMA": 0.1,
-        },
-        user_potcar_functional="PBE_54_W_HASH",
-        auto_kspacing=True,
-    )
-    return MPtoASEConverter(atoms=atoms).convert_input_generator(input_generator)
 
 
 @job
