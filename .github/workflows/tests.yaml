@@ -370,6 +370,9 @@ jobs:
         run: |
           echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
+      - name: Set PyG backend
+        run: export MATGL_BACKEND=PYG
+
       - name: Run tests with pytest
         run: pytest -k 'mlp' --durations=10 --cov=quacc --cov-report=xml
 
