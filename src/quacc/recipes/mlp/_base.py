@@ -97,7 +97,7 @@ def pick_calculator(
         elif method == "chgnet":
             model = matgl.load_model("CHGNet-MatPES-PBE-2025.2.10-2.7M-PES")
         elif method == "tensornet":
-            model = matgl.load_model("TensorNet-MatPES-PBE-v2025.1-PES")
+            model = matgl.load_model("TensorNet-MatPES-PBE-v2025.2-PES")
         else:
             model = matgl.load_model(method)
 
