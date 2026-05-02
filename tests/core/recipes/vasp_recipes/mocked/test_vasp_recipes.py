@@ -317,7 +317,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
 
     ### --------- Test bulk_to_slabs_flow --------- ###
 
-    outputs = bulk_to_slabs_flow(atoms, run_static=False)
+    outputs = bulk_to_slabs_flow(atoms, run_static=False)["relax"]
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
@@ -325,7 +325,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert outputs[3]["structure_metadata"]["nsites"] == 42
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
-    outputs = bulk_to_slabs_flow(atoms)
+    outputs = bulk_to_slabs_flow(atoms)["static"]
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
@@ -337,7 +337,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         atoms,
         job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
         run_static=False,
-    )
+    )["relax"]
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
@@ -349,7 +349,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
 
     outputs = bulk_to_slabs_flow(
         atoms, job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}}
-    )
+    )["static"]
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
@@ -363,12 +363,12 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     atoms = outputs[0]["atoms"]
     adsorbate = molecule("H2")
 
-    outputs = slab_to_ads_flow(atoms, adsorbate, run_static=False)
+    outputs = slab_to_ads_flow(atoms, adsorbate, run_static=False)["relax"]
 
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
-    outputs = slab_to_ads_flow(atoms, adsorbate)
+    outputs = slab_to_ads_flow(atoms, adsorbate)["static"]
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
@@ -377,7 +377,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         adsorbate,
         job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
         run_static=False,
-    )
+    )["relax"]
 
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
@@ -388,7 +388,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         atoms,
         adsorbate,
         job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
-    )
+    )["static"]
 
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
@@ -397,7 +397,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
 
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
-    outputs = slab_to_ads_flow(atoms, adsorbate2)
+    outputs = slab_to_ads_flow(atoms, adsorbate2)["static"]
     assert [output["structure_metadata"]["nsites"] == 84 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 

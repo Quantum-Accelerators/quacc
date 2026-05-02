@@ -31,7 +31,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
     atoms = bulk("Cu")
 
     # Define the workflow
-    future = bulk_to_slabs_flow(atoms)  # (1)!
+    future = bulk_to_slabs_flow(atoms)["static"]  # (1)!
 
     # Print the results
     assert "atoms" in future.result()[0]  # (2)!
@@ -101,7 +101,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     future = workflow(atoms)
 
     # Fetch the results
-    result = future.result()
+    result = future.result()["relax"]
 
     # Print the results
     assert len(result) == 4
