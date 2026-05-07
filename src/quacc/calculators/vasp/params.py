@@ -338,6 +338,12 @@ def get_param_swaps(
         LOGGER.info(
             f"The following parameters were changed: {sort_dict(changed_parameters)}"
         )
+    if unchanged_parameters := {
+        k: new_parameters[k] for k not in set(new_parameters) - set(user_calc_params)
+    }:
+        LOGGER.info(
+            f"The following parameters were NOT changed since incar_copilot_mode={incar_copilot_mode}: {sort_dict(changed_parameters)}"
+        )
     return new_parameters
 
 
