@@ -217,15 +217,14 @@ def get_param_swaps(
             )
             calc.set(ismear=0)
 
-        if (
-            calc.parameters.get("ismear", 1) == -5
-            and calc.parameters.get("algo", "normal") in ("all", "conjugate", "damped")
-        ):
+        if calc.parameters.get("ismear", 1) == -5 and calc.parameters.get(
+            "algo", "normal"
+        ) in ("all", "conjugate", "damped"):
             LOGGER.info(
                 "Recommending ISMEAR = 0 because you are doing an IMSEAR = -5 calculation."
             )
             calc.set(ismear=0)
-        
+
         if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
             ncores = psutil.cpu_count(logical=False) or 1
             for ncore in range(int(np.sqrt(ncores)), ncores):
