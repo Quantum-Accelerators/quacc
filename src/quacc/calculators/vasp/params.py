@@ -208,7 +208,7 @@ def get_param_swaps(
                 "Recommending ISMEAR = 0 because KSPACING is likely too large for ISMEAR = -5."
             )
             calc.set(ismear=0)
-        
+
         if calc.parameters.get("ismear", 1) == -5 and calc.parameters.get(
             "algo", "normal"
         ) in ("all", "conjugate", "damped"):
@@ -224,7 +224,7 @@ def get_param_swaps(
                 "Recommending ALGO = Normal because you have a hybrid calculation."
             )
             calc.set(algo="normal")
-        
+
         if (
             calc.parameters.get("ncore", 1) > 1
             or (calc.parameters.get("npar") and calc.parameters.get("npar", 1) > 1)
@@ -238,7 +238,7 @@ def get_param_swaps(
                 "Recommending NCORE = 1 because NCORE/NPAR is not compatible with this job type."
             )
             calc.set(ncore=1, npar=None)
-        
+
         if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
             ncores = psutil.cpu_count(logical=False) or 1
             for ncore in range(int(np.sqrt(ncores)), ncores):
