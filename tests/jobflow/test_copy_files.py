@@ -6,7 +6,7 @@ jf = pytest.importorskip("jobflow")
 
 from pathlib import Path
 
-from quacc import job
+from quacc import flow, job
 from quacc.wflow_tools.job_argument import Copy
 
 
@@ -24,11 +24,15 @@ def test_copy_files(tmp_path, monkeypatch):
 
         return {"dir_name": output_dir}
 
-    job1 = create_file("job1")
-    job2 = create_file("job2", copy=Copy({job1.output["dir_name"]: "job1*"}))
-    flow = jf.Flow([job1, job2])
-    assert str(flow.graph) == "DiGraph with 2 nodes and 1 edges"
-    jf.run_locally(flow, ensure_success=True, create_folders=True)
+    @flow
+    def create_files():
+        job1 = create_file("job1")
+        job2 = create_file("job2", copy=Copy({job1["dir_name"]: "job1*"}))
+        return [job1, job2]
+
+    workflow = create_files()
+    assert str(workflow.graph) == "DiGraph with 2 nodes and 1 edges"
+    jf.run_locally(workflow, ensure_success=True, create_folders=True)
 
     # Individual job folders/files should exist, and the job1 file should be
     # copied over to the job2 folder.

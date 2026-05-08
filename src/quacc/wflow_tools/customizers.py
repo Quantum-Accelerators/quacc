@@ -133,7 +133,17 @@ def update_parameters(
         func = strip_decorator(func)
         return decorator_func(partial(func, **params))
 
-    return partial(func, **params)
+    partial_fn = partial(func, **params)
+    # Assigning a __name__ allows monty's jsanitize function to work correctly
+    # with this partial function.
+    if hasattr(func, "name"):
+        partial_fn.__name__ = func.name
+    elif hasattr(func, "__name__"):
+        partial_fn.__name__ = func.__name__
+    else:
+        partial_fn.__name__ = ""
+
+    return partial_fn
 
 
 def customize_funcs(

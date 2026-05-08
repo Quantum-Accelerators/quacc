@@ -45,12 +45,11 @@ def check_logfile(logfile: str | Path, check_str: str) -> bool:
     bool
         True if the string is found in the logfile, False otherwise.
     """
-    logfile_path = Path(logfile).expanduser()
-    zlog = Path(zpath(str(logfile_path)))
-    with zopen(zlog, "r") as f:
+    logfile_path = zpath(Path(logfile).expanduser())
+
+    with zopen(logfile_path, "rt") as f:
         for line in f:
-            clean_line = line if isinstance(line, str) else line.decode("utf-8")
-            if check_str.lower() in clean_line.lower():
+            if check_str.lower() in line.lower():
                 return True
     return False
 
@@ -162,6 +161,26 @@ def copy_decompress_files(
                 decompress_dir(destination_filepath)
 
 
+def make_unique_name(prefix: str | None = None) -> str:
+    """
+    Create a unique name suitable for newly created files/folders.
+
+    Parameters
+    ----------
+    prefix
+        Prefix to add to the name.
+
+    Returns
+    -------
+    str
+        A unique timestamped name.
+    """
+    time_now = datetime.now(UTC).strftime("%Y-%m-%d-%H-%M-%S-%f")
+    if prefix is None:
+        prefix = ""
+    return f"{prefix}{time_now}-{randint(10000, 99999)}"
+
+
 def make_unique_dir(
     base_path: Path | str | None = None, prefix: str | None = None
 ) -> Path:
@@ -180,10 +199,7 @@ def make_unique_dir(
     Path
         Path to the job directory.
     """
-    time_now = datetime.now(UTC).strftime("%Y-%m-%d-%H-%M-%S-%f")
-    if prefix is None:
-        prefix = ""
-    job_dir = Path(f"{prefix}{time_now}-{randint(10000, 99999)}")
+    job_dir = Path(make_unique_name(prefix))
     if base_path:
         job_dir = Path(base_path, job_dir)
     job_dir.mkdir(parents=True)

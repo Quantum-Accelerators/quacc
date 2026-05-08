@@ -29,6 +29,7 @@ def mof_off_static_job(
     atoms: Atoms,
     *,
     level: Literal["PBE", "r2SCAN"],
+    dispersion: Literal["D3BJ", "D4"] | None = None,
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -41,6 +42,8 @@ def mof_off_static_job(
         Atoms object
     level
         The level of theory: "PBE", "r2SCAN"
+    dispersion
+        Dispersion corrections: None, "D3BJ", "D4"
     prev_dir
         A previous directory for a prior step in the workflow.
     **calc_kwargs
@@ -60,6 +63,12 @@ def mof_off_static_job(
         "use_improvements": True,
         "write_extra_files": True,
     }
+    if dispersion:
+        disp = dispersion.lower()
+        if disp == "d3bj":
+            default_parameters["ivdw"] = 12
+        elif disp == "d4":
+            default_parameters["ivdw"] = 13
     calc_flags = recursive_dict_merge(default_parameters, calc_kwargs)
 
     return matpes_static_job(atoms, level=level, prev_dir=prev_dir, **calc_flags)

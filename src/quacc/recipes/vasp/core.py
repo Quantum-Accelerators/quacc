@@ -43,7 +43,9 @@ def static_job(
     **calc_kwargs,
 ) -> VaspSchema:
     """
-    Carry out a single-point calculation.
+    Carry out a single-point calculation. If you want high quality forces,
+    then you should set ISMEAR = 0 instead of ISMEAR = -5 (particularly for
+    metals).
 
     Parameters
     ----------

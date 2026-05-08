@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-prefect = pytest.importorskip("jobflow")
+prefect = pytest.importorskip("prefect")
 
 from pathlib import Path
 

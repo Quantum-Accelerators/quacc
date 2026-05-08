@@ -67,14 +67,14 @@ def mp_gga_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MPGGARelaxMaker()
     )
-    calc_defaults["incar_copilot"] = "ncore"
+    calc_defaults["incar_copilot"] = "light"
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP GGA Relax"},
-        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
+        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]} if prev_dir else None,
     )
 
 
@@ -110,14 +110,14 @@ def mp_gga_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MPGGAStaticMaker()
     )
-    calc_defaults["incar_copilot"] = "ncore"
+    calc_defaults["incar_copilot"] = "light"
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP GGA Static"},
-        copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
+        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]} if prev_dir else None,
     )
 
 

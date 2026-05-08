@@ -130,6 +130,7 @@ def process_in_flight_autobatcher_dict(
             state, model, autobatcher=autobatcher_dict, max_iterations=max_iterations
         )
     else:
+        autobatcher_dict.setdefault("memory_scales_with", model.memory_scales_with)
         autobatcher = InFlightAutoBatcher(model=model, **autobatcher_dict)
 
     autobatcher_details = _get_autobatcher_details(autobatcher)
@@ -153,6 +154,7 @@ def process_binning_autobatcher_dict(
     else:
         # pop max_iterations if present
         autobatcher_dict.pop("max_iterations", None)
+        autobatcher_dict.setdefault("memory_scales_with", model.memory_scales_with)
         autobatcher = BinningAutoBatcher(model=model, **autobatcher_dict)
 
     autobatcher_details = _get_autobatcher_details(autobatcher)
@@ -230,7 +232,7 @@ def pick_model(
         The type of model to instantiate.
     model : str | Path
         Path to the model file or checkpoint. For some models, string names may
-        be allowed, such as "uma-s-1" for FairChemModel.
+        be allowed, such as "uma-s-1p1" for FairChemModel.
     **model_kwargs : Any
         Additional keyword arguments to pass to the model constructor.
 
