@@ -81,6 +81,7 @@ def pick_calculator(
         The instantiated calculator
     """
     import torch
+
     from quacc import get_settings
 
     settings = get_settings()
@@ -140,6 +141,7 @@ def pick_calculator(
         if use_ray_serve:
             try:
                 import ray
+
                 if not ray.is_initialized():
                     LOGGER.warning(
                         "FAIRCHEM_RAY_SERVE_BATCHING is enabled but Ray is not initialized. "
@@ -173,9 +175,8 @@ def pick_calculator(
             if name_or_path is not None:
                 checkpoint_id = str(name_or_path)
             else:
-                checkpoint_id = (
-                    calc_kwargs.pop("model_id", None)
-                    or calc_kwargs.pop("checkpoint", "uma-s-1p1")
+                checkpoint_id = calc_kwargs.pop("model_id", None) or calc_kwargs.pop(
+                    "checkpoint", "uma-s-1p1"
                 )
 
             inference_settings = calc_kwargs.pop("inference_settings", "default")
@@ -193,10 +194,7 @@ def pick_calculator(
                 multiplexed_model_id=multiplexed_model_id,
             )
 
-            calc = FAIRChemCalculator(
-                predict_unit=mlip_unit,
-                task_name=task_name,
-            )
+            calc = FAIRChemCalculator(predict_unit=mlip_unit, task_name=task_name)
         else:
             # Use local inference
             calc = FAIRChemCalculator.from_model_checkpoint(**calc_kwargs)
