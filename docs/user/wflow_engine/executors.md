@@ -137,6 +137,12 @@ If you haven't done so already:
     prefect cloud login
     ```
 
+    If you're self-hosting, you will need to start a Prefect Server on the remote machine, which will monitor requests to run Prefect workflows.
+
+    ```bash
+    prefect server start
+    ```
+
     ??? Note "For NERSC Users"
 
         If using Perlmutter at NERSC with the Dask backend for Prefect, your calculations should be run from the `$SCRATCH` directory. This is because the `$SCRATCH` directory is the only directory that supports file locking mechanisms, which Dask relies on.
@@ -461,12 +467,6 @@ If you haven't done so already:
             If preferred, it is also possible to instantiate a [one-time, temporary](https://prefecthq.github.io/prefect-dask/usage_guide/#using-a-temporary-cluster) Dask cluster via the `DaskTaskRunner` directly rather than connecting to an existing Dask cluster, as described in the [Task Runner documentation](https://prefecthq.github.io/prefect-dask/task_runners/). This is the more conventional job scheduling approach, where each workflow will run on its own Slurm allocation.
 
     === "Prefect Submitit"
-
-        From an interactive resource like a Jupyter Notebook or IPython kernel on the login node of the remote machine, you will need to start a Prefect Server which will monitor requests to run Prefect workflows.
-
-        ```bash title="terminal"
-        prefect server start
-        ```
 
         We create a `SlurmTaskRunner` that will dispatch jobs to SLURM. You can supply
         any arguments that are [supported](https://github.com/facebookincubator/submitit/blob/ca51a66b6da2400468f338133eabdfb4c9a2936c/submitit/auto/auto.py#L121)
@@ -805,6 +805,62 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
         Finally, we dispatch the workflow and fetch the results:
 
         ```python
+        from ase.build import bulk
+
+        list_of_atoms = [bulk("Cu"), bulk("C")]
+        results = workflow(list_of_atoms)
+        ```
+
+    === "Prefect Submitit"
+
+        We create a `SlurmTaskRunner` for MPI-based VASP jobs. Each `#!Python @job` is dispatched as its own Slurm allocation — here, one node with 128 tasks (one per core):
+
+        ```python title="python"
+        nodes_per_calc = 1
+        cores_per_node = 128
+        vasp_parallel_cmd = (
+            f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+        )
+
+        from prefect_submitit import SlurmTaskRunner
+
+        runner = SlurmTaskRunner(
+            time_limit="00:10:00",
+            slurm_account="MyAccountName",
+            slurm_nodes=nodes_per_calc,
+            slurm_ntasks_per_node=cores_per_node,
+            slurm_constraint="cpu",
+            slurm_qos="debug",
+            setup=[
+                "source ~/.bashrc",
+                "conda activate cms",
+                "module load vasp/6.4.1-cpu",
+                f"export QUACC_VASP_PARALLEL_CMD='{vasp_parallel_cmd}'",
+            ],
+        )
+        ```
+
+        Now we define our workflow to dispatch, attaching the runner as the task runner:
+
+        ```python title="python"
+        from quacc import flow
+        from quacc.recipes.vasp.core import relax_job, static_job
+
+
+        @flow(task_runner=runner)
+        def workflow(list_of_atoms):
+            futures = []
+            for atoms in list_of_atoms:
+                relax_output = relax_job(atoms, kpts=[3, 3, 3])
+                static_output = static_job(relax_output["atoms"], kpts=[3, 3, 3])
+                futures.append(static_output)
+
+            return futures
+        ```
+
+        Finally, we dispatch the workflow:
+
+        ```python title="python"
         from ase.build import bulk
 
         list_of_atoms = [bulk("Cu"), bulk("C")]
