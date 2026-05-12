@@ -37,7 +37,11 @@ from quacc.recipes.vasp.slabs import static_job as slab_static_job
 
 has_atomate2 = util.find_spec("atomate2") is not None
 has_fairchem = util.find_spec("fairchem") is not None
-has_fairchem_omat = has_fairchem and util.find_spec("fairchem.data.omat") is not None
+has_fairchem_omat = (
+    has_fairchem
+    and util.find_spec("fairchem.data") is not None
+    and util.find_spec("fairchem.data.omat") is not None
+)
 
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
@@ -1215,6 +1219,44 @@ def test_mof_off(patch_metallic_taskdoc):
         "xc": "r2scan",
     }
 
+    output = mof_off_static_job(bulk("Al"), level="r2scan", dispersion="d4", ncore=None)
+    assert output["parameters"] == {
+        "algo": "all",
+        "ediff": 1e-05,
+        "efermi": "midgap",
+        "encut": 680.0,
+        "gga_compat": False,
+        "isearch": 1,
+        "ismear": 0,
+        "ispin": 2,
+        "kspacing": 0.4,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lelf": True,
+        "lmaxmix": 6,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": False,
+        "lwave": False,
+        "magmom": [0.6],
+        "metagga": "R2SCAN",
+        "nedos": 3001,
+        "nelm": 200,
+        "nsw": 0,
+        "pp": "PBE",
+        "pp_version": "64",
+        "prec": "accurate",
+        "setups": {"Al": ""},
+        "sigma": 0.05,
+        "xc": "r2scan",
+        "ivdw": 13,
+        "vdw_s6": 1.0,
+        "vdw_s8": 0.60187490,
+        "vdw_a1": 0.51559235,
+        "vdw_a2": 5.77342911,
+    }
+
 
 @pytest.mark.skipif(not has_fairchem_omat, reason="fairchem not installed")
 def test_fairchem_omat(patch_metallic_taskdoc):
@@ -1282,4 +1324,41 @@ def test_fairchem_omc(patch_metallic_taskdoc):
         "pp_version": "54",
         "kpts": (7, 7, 7),
         "gamma": True,
+    }
+
+
+def test_fairchem_odac(patch_nonmetallic_taskdoc):
+    from quacc.recipes.vasp.fairchem import odac_static_job
+
+    atoms = bulk("Si")
+    output = odac_static_job(atoms)
+    output["parameters"].pop("ncore")
+    assert output["parameters"] == {
+        "kpts": (1, 1, 1),
+        "nwrite": 2,
+        "gga": "PE",
+        "xc": "pbe",
+        "ivdw": 12,
+        "encut": 600.0,
+        "lcharg": False,
+        "lwave": False,
+        "ismear": 0,
+        "sigma": 0.2,
+        "ispin": 2,
+        "prec": "accurate",
+        "nelm": 60,
+        "nelmin": 2,
+        "ediff": 1e-5,
+        "maxmix": 40,
+        "nsw": 0,
+        "isif": 3,
+        "lorbit": 11,
+        "algo": "normal",
+        "ldiag": True,
+        "lreal": "auto",
+        "lplane": True,
+        "gamma": True,
+        "isym": 0,
+        "pp": "PBE",
+        "pp_version": "54",
     }
