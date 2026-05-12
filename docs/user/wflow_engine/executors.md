@@ -831,7 +831,7 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
             slurm_ntasks_per_node=cores_per_node,
             slurm_constraint="cpu",
             slurm_qos="debug",
-            setup=[
+            slurm_setup=[
                 "source ~/.bashrc",
                 "conda activate cms",
                 "module load vasp/6.4.1-cpu",
