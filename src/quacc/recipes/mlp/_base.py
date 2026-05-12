@@ -98,11 +98,11 @@ def pick_calculator(
         from matgl.ext.ase import PESCalculator
 
         if method == "m3gnet":
-            model = matgl.load_model("M3GNet-MatPES-PBE-v2025.1-PES")
+            model = matgl.load_model("M3GNet-PES-MatPES-PBE-2025.2")
         elif method == "chgnet":
-            model = matgl.load_model("CHGNet-MatPES-PBE-2025.2.10-2.7M-PES")
+            model = matgl.load_model("CHGNet-PES-MatPES-PBE-2025.2.10")
         elif method == "tensornet":
-            model = matgl.load_model("TensorNet-MatPES-PBE-v2025.1-PES")
+            model = matgl.load_model("TensorNet-PES-MatPES-PBE-2025.2")
         else:
             model = matgl.load_model(method)
 
