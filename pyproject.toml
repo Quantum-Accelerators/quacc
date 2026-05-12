@@ -47,7 +47,7 @@ fairchem = ["fairchem-data-omat>=0.2", "fairchem-data-oc>=1.0.2", "fairchem-core
 jobflow = ["jobflow>=0.3.0", "jobflow-remote>=1.0.0"]
 orb = ["orb-models>=0.4.1"]
 mace = ["mace-torch>=0.3.3", "mace-models>=0.1.6"]
-matgl = ["matgl>=2.0.2"]
+matgl = ["matgl>=3.0.3"]
 mp = ["atomate2>=0.0.14"]
 newtonnet = ["newtonnet>=1.1,<2.0", "numpy<=1.26.4"]
 parsl = ["parsl[monitoring]>=2024.5.27; platform_system!='Windows'"]
