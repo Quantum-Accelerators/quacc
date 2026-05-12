@@ -93,14 +93,6 @@ def get_param_swaps(
             )
             calc.set(algo="all", isearch=1)
 
-        if calc.parameters.get("lhfcalc", False) and (
-            calc.parameters.get("algo", "normal").lower() != "normal"
-        ):
-            LOGGER.info(
-                "Recommending ALGO = Normal because you have a hybrid calculation."
-            )
-            calc.set(algo="normal")
-
         if (
             is_metal
             and (calc.parameters.get("ismear", 1) < 0)
@@ -128,15 +120,6 @@ def get_param_swaps(
             calc.set(ismear=-5)
 
         if (
-            calc.parameters.get("kspacing", 0.5) > 0.5
-            and calc.parameters.get("ismear", 1) == -5
-        ):
-            LOGGER.info(
-                "Recommending ISMEAR = 0 because KSPACING is likely too large for ISMEAR = -5."
-            )
-            calc.set(ismear=0)
-
-        if (
             pmg_kpts
             and pmg_kpts.get("line_density")
             and calc.parameters.get("ismear", 1) != 0
@@ -156,7 +139,7 @@ def get_param_swaps(
 
         if calc.parameters.get("nsw", 0) > 0 and calc.parameters.get("laechg", False):
             LOGGER.info(
-                "Recommending LAECHG = False because you have NSW > 0. LAECHG is not compatible with NSW > 0."
+                "Recommending LAECHG = False because you have NSW > 0. LAECHG is supposedly not compatible with NSW > 0."
             )
             calc.set(laechg=False)
 
@@ -217,15 +200,30 @@ def get_param_swaps(
             )
             calc.set(ismear=0)
 
-        if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
-            ncores = psutil.cpu_count(logical=False) or 1
-            for ncore in range(int(np.sqrt(ncores)), ncores):
-                if ncores % ncore == 0:
-                    LOGGER.info(
-                        f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
-                    )
-                    calc.set(ncore=ncore, npar=None)
-                    break
+        if (
+            calc.parameters.get("kspacing", 0.5) > 0.5
+            and calc.parameters.get("ismear", 1) == -5
+        ):
+            LOGGER.info(
+                "Recommending ISMEAR = 0 because KSPACING is likely too large for ISMEAR = -5."
+            )
+            calc.set(ismear=0)
+
+        if calc.parameters.get("ismear", 1) == -5 and calc.parameters.get(
+            "algo", "normal"
+        ) in ("all", "conjugate", "damped"):
+            LOGGER.info(
+                "Recommending ALGO = Normal because your ALGO is not compatible with ISMSEAR = -5."
+            )
+            calc.set(algo="normal")
+
+        if calc.parameters.get("lhfcalc", False) and (
+            calc.parameters.get("algo", "normal").lower() != "normal"
+        ):
+            LOGGER.info(
+                "Recommending ALGO = Normal because you have a hybrid calculation."
+            )
+            calc.set(algo="normal")
 
         if (
             calc.parameters.get("ncore", 1) > 1
@@ -240,6 +238,16 @@ def get_param_swaps(
                 "Recommending NCORE = 1 because NCORE/NPAR is not compatible with this job type."
             )
             calc.set(ncore=1, npar=None)
+
+        if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
+            ncores = psutil.cpu_count(logical=False) or 1
+            for ncore in range(int(np.sqrt(ncores)), ncores):
+                if ncores % ncore == 0:
+                    LOGGER.info(
+                        f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
+                    )
+                    calc.set(ncore=ncore, npar=None)
+                    break
 
         if (
             calc.parameters.get("kpar")
@@ -329,6 +337,14 @@ def get_param_swaps(
     }:
         LOGGER.info(
             f"The following parameters were changed: {sort_dict(changed_parameters)}"
+        )
+    if unchanged_parameters := {
+        k: new_parameters[k]
+        for k in new_parameters
+        if k not in set(new_parameters) - set(user_calc_params)
+    }:
+        LOGGER.info(
+            f"The following parameters were NOT changed since incar_copilot_mode={incar_copilot_mode}: {sort_dict(unchanged_parameters)}"
         )
     return new_parameters
 
