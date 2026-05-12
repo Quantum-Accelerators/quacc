@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.40">
+      <meta name="generator" content="zensical-0.0.41">
     
     
       
@@ -6085,6 +6085,7 @@
     <li class="md-path__item">
       <a href="../../../../index.html" class="md-path__link">
         
+  
   <span class="md-ellipsis">
     Home
   </span>
@@ -6100,19 +6101,29 @@
   
     
     
-      
-  
-  
+    
     
     
       
   
   
+    
+    
+    
+    
+    
+      
+  
+  
+    
+    
+    
     
     
       <li class="md-path__item">
         <a href="../../atoms/core.html" class="md-path__link">
           
+  
   <span class="md-ellipsis">
     Code Documentation
   </span>
@@ -6134,14 +6145,21 @@
   
     
     
+    
+    
+    
       
   
   
     
     
+    
+    
+    
       <li class="md-path__item">
         <a href="../../atoms/core.html" class="md-path__link">
           
+  
   <span class="md-ellipsis">
     quacc
   </span>
@@ -6160,14 +6178,21 @@
   
     
     
+    
+    
+    
       
   
   
     
     
+    
+    
+    
       <li class="md-path__item">
         <a href="../common/defects.html" class="md-path__link">
           
+  
   <span class="md-ellipsis">
     recipes
   </span>
@@ -6186,9 +6211,13 @@
   
     
     
+    
+    
+    
       <li class="md-path__item">
         <a href="_base.html" class="md-path__link">
           
+  
   <span class="md-ellipsis">
     mlp
   </span>
@@ -6597,11 +6626,11 @@ link: <a href="https://github.com/orbital-materials/orb-models">https://github.c
 </span><span id="__span-0-93"><a id="__codelineno-0-93" name="__codelineno-0-93"></a>        <span class="kn">from</span><span class="w"> </span><span class="nn">matgl.ext.ase</span><span class="w"> </span><span class="kn">import</span> <span class="n">PESCalculator</span>
 </span><span id="__span-0-94"><a id="__codelineno-0-94" name="__codelineno-0-94"></a>
 </span><span id="__span-0-95"><a id="__codelineno-0-95" name="__codelineno-0-95"></a>        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;m3gnet&quot;</span><span class="p">:</span>
-</span><span id="__span-0-96"><a id="__codelineno-0-96" name="__codelineno-0-96"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">matgl</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;M3GNet-MatPES-PBE-v2025.1-PES&quot;</span><span class="p">)</span>
+</span><span id="__span-0-96"><a id="__codelineno-0-96" name="__codelineno-0-96"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">matgl</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;M3GNet-PES-MatPES-PBE-2025.2&quot;</span><span class="p">)</span>
 </span><span id="__span-0-97"><a id="__codelineno-0-97" name="__codelineno-0-97"></a>        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;chgnet&quot;</span><span class="p">:</span>
-</span><span id="__span-0-98"><a id="__codelineno-0-98" name="__codelineno-0-98"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">matgl</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;CHGNet-MatPES-PBE-2025.2.10-2.7M-PES&quot;</span><span class="p">)</span>
+</span><span id="__span-0-98"><a id="__codelineno-0-98" name="__codelineno-0-98"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">matgl</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;CHGNet-PES-MatPES-PBE-2025.2.10&quot;</span><span class="p">)</span>
 </span><span id="__span-0-99"><a id="__codelineno-0-99" name="__codelineno-0-99"></a>        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;tensornet&quot;</span><span class="p">:</span>
-</span><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">matgl</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;TensorNet-MatPES-PBE-v2025.1-PES&quot;</span><span class="p">)</span>
+</span><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">matgl</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="s2">&quot;TensorNet-PES-MatPES-PBE-2025.2&quot;</span><span class="p">)</span>
 </span><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a>        <span class="k">else</span><span class="p">:</span>
 </span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a>            <span class="n">model</span> <span class="o">=</span> <span class="n">matgl</span><span class="o">.</span><span class="n">load_model</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
 </span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>
