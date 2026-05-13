@@ -158,3 +158,5 @@ if _settings.WORKFLOW_ENGINE == "parsl":
     from quacc.atoms.core import get_atoms_id_parsl
 
     id_for_memo.register(Atoms)(get_atoms_id_parsl)
+
+

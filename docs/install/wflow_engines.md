@@ -52,6 +52,18 @@ Using a workflow engine is optional but is beneficial when scaling up quacc calc
     prefect config set PREFECT_LOGGING_EXTRA_LOGGERS=quacc
     ```
 
+=== "Ray"
+
+    **Installation**
+
+    To install Ray, run the following:
+
+    ```bash
+    pip install quacc[ray]
+    ```
+
+    Ray has [many configuration options](https://docs.ray.io/en/latest/ray-core/configure.html), including support for [running on HPC clusters](https://docs.ray.io/en/latest/cluster/getting-started.html).
+
 === "Redun"
 
     **Installation**

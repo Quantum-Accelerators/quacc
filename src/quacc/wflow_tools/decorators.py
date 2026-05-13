@@ -171,6 +171,22 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
             return wrapper
         else:
             return task(_func, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "ray":
+        import ray
+
+        _ray_target = _wrap_partial_for_ray(_func)
+
+        remote_func = (
+            ray.remote(**kwargs)(_ray_target) if kwargs else ray.remote(_ray_target)
+        )
+
+        @wraps(_ray_target)
+        def wrapper(*f_args, **f_kwargs):
+            f_args = tuple(_unwrap_ray_future(a) for a in f_args)
+            f_kwargs = {k: _unwrap_ray_future(v) for k, v in f_kwargs.items()}
+            return RayFuture(remote_func.remote(*f_args, **f_kwargs))
+
+        return wrapper
     else:
         _func = tracked(NodeType.JOB)(_func)
         return _func
@@ -512,6 +528,42 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "jobflow":
         return _get_jobflow_wrapped_func(_func, **kwargs)
+    elif settings.WORKFLOW_ENGINE == "ray":
+        import ray
+
+        target_func = _wrap_partial_for_ray(_func)
+
+        def _resolve(r):
+            if isinstance(r, RayFuture):
+                return ray.get(r._ref)
+            if isinstance(r, ray.ObjectRef):
+                return ray.get(r)
+            return r
+
+        @wraps(target_func)
+        def _ray_subflow_target(*f_args, **f_kwargs):
+            result = target_func(*f_args, **f_kwargs)
+            if type(result) is list:
+                return [_resolve(r) for r in result]
+            if type(result) is tuple:
+                return tuple(_resolve(r) for r in result)
+            if type(result) is dict:
+                return {k: _resolve(v) for k, v in result.items()}
+            return _resolve(result)
+
+        remote_subflow = (
+            ray.remote(**kwargs)(_ray_subflow_target)
+            if kwargs
+            else ray.remote(_ray_subflow_target)
+        )
+
+        @wraps(target_func)
+        def wrapper(*f_args, **f_kwargs):
+            f_args = tuple(_unwrap_ray_future(a) for a in f_args)
+            f_kwargs = {k: _unwrap_ray_future(v) for k, v in f_kwargs.items()}
+            return RayFuture(remote_subflow.remote(*f_args, **f_kwargs))
+
+        return wrapper
     else:
         _func = tracked(NodeType.SUBFLOW)(_func)
         return _func
@@ -617,3 +669,66 @@ class Delayed_:
 
     def __call__(self, *args, **kwargs):
         return self.func(*args, **kwargs)
+
+
+class RayFuture:
+    """Proxy around a ``ray.ObjectRef`` that adds future-style operations
+    (``__getitem__``) so that recipe code which indexes into job results works
+    transparently with Ray, mirroring the behaviour of dask Delayed and
+    Parsl/Prefect futures.
+    """
+
+    __slots__ = ("_ref",)
+
+    def __init__(self, ref: Any) -> None:
+        self._ref = ref
+
+    def __reduce__(self):
+        return (RayFuture, (self._ref,))
+
+    def __getitem__(self, key: Any) -> RayFuture:
+        from quacc import job
+
+        @job
+        def _ray_getitem(obj, k):
+            return obj[k]
+
+        return _ray_getitem(self, key)
+
+    def result(self) -> Any:
+        """Block until the underlying Ray task completes and return its result."""
+        import ray
+
+        return ray.get(self._ref)
+
+
+def _unwrap_ray_future(value: Any) -> Any:
+    """Recursively replace ``RayFuture`` instances with their underlying
+    ``ray.ObjectRef`` so Ray can track task dependencies. Only plain ``list``,
+    ``tuple`` and ``dict`` containers are traversed; subclasses pass through
+    unchanged so engine-specific objects (e.g. ``DictCopy``) keep their type.
+    """
+    if isinstance(value, RayFuture):
+        return value._ref
+    if type(value) is list:
+        return [_unwrap_ray_future(v) for v in value]
+    if type(value) is tuple:
+        return tuple(_unwrap_ray_future(v) for v in value)
+    if type(value) is dict:
+        return {k: _unwrap_ray_future(v) for k, v in value.items()}
+    return value
+
+
+def _wrap_partial_for_ray(func: Callable) -> Callable:
+    """Wrap a ``functools.partial`` in a real function so Ray accepts it."""
+    if not isinstance(func, partial):
+        return func
+
+    inner = func
+
+    @wraps(inner.func)
+    def _real(*f_args, **f_kwargs):
+        return inner(*f_args, **f_kwargs)
+
+    return _real
+
