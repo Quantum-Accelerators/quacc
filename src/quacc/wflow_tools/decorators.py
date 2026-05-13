@@ -731,4 +731,3 @@ def _wrap_partial_for_ray(func: Callable) -> Callable:
         return inner(*f_args, **f_kwargs)
 
     return _real
-
