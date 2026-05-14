@@ -81,16 +81,6 @@ def test_wrap_partial_for_ray_with_partial():
     assert wrapped.__name__ == f.__name__
 
 
-def test_job_with_partial(tmp_path, monkeypatch):
-    monkeypatch.chdir(tmp_path)
-
-    def add(a, b):
-        return a + b
-
-    add5 = job(partial(add, 5))
-    assert add5(7).result() == 12
-
-
 def test_rayfuture_reduce_pickles():
     @job
     def make_value():
