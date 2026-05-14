@@ -111,6 +111,9 @@ skip_gitignore = true
 source = ["src"]
 patch = ["subprocess"]
 
+[tool.coverage.paths]
+source = ["src/", "*/site-packages/"]
+
 [tool.coverage.report]
 exclude_also = [
   "if TYPE_CHECKING:",
