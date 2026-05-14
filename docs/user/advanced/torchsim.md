@@ -443,7 +443,7 @@ The quacc recipes wrap TorchSim's high-level functions with additional features:
 
 The quacc TorchSim recipes provide a powerful interface for running batched atomistic simulations with machine learning potentials. Key advantages include:
 
-1. **Workflow compatibility** - Works with Prefect, Parsl, Dask, and other engines
+1. **Workflow compatibility** - Works with Prefect, Parsl, Dask, Ray, and other engines
 2. **Batch efficiency** - Process multiple systems in parallel on GPU
 3. **Automatic memory management** - Autobatching handles large datasets
 4. **Standardized outputs** - Consistent result schemas across all jobs

@@ -65,6 +65,27 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - The dashboard, while useful for monitoring successes and failures, is not ideal for analyzing results
     - The software is geared more towards data engineering than scientific computing, and that is reflected in the features and documentation
 
+=== "Ray"
+
+    [Ray](https://www.ray.io/) is a high-performance distributed computing framework originally developed at UC Berkeley. Within quacc, we utilize [Ray Core](https://docs.ray.io/en/latest/ray-core/walkthrough.html) for parallel, distributed task execution, allowing workflows to scale seamlessly from a single laptop to a multi-node cluster.
+
+    [Ray](https://www.ray.io/) is a high-performance distributed computing framework originally developed at UC Berkeley. Within quacc, we utilize [Ray Core](https://docs.ray.io/en/latest/ray-core/walkthrough.html) for parallel, distributed task execution, allowing workflows to scale seamlessly from a single laptop to a multi-node cluster.
+
+    **Pros:**
+
+    - **Widely Adopted & Supported:** Extremely popular with a massive community and active development, backed heavily by the broader ML/AI ecosystem.
+    - **Lightweight & Intuitive:** Employs a simple `@ray.remote` decorator to easily parallelize Python functions and manage data objects.
+    - **Scalability:** Natively handles both single-node and multi-node distributed execution with remarkably low task-scheduling overhead.
+    - **Observability:** Features a robust, built-in web dashboard for real-time monitoring of task progress, resource utilization, and system logs.
+    - **HPC Compatibility:** Can be deployed on supercomputers and clusters with provided [HPC deployment guides](https://docs.ray.io/en/latest/cluster/vms/user-guides/community/slurm.html).
+
+    **Cons:**
+
+    - **HPC Integration:** Unlike Parsl or Dask-Jobqueue, Ray does not have native wrappers for traditional HPC job schedulers (e.g., Slurm, PBS). Managing node startup (`ray start`) generally requires manual configuration within batch scripts.
+    - **Workflow History:** While the built-in dashboard provides excellent live monitoring, retaining a persistent history of completed workflows requires setting up additional tooling or infrastructure.
+    - **Remote Orchestration:** Submitting calculations from a local machine to a remote cluster, or coordinating tasks across disjoint compute resources, requires extra networking setup (such as configuring Ray Client).
+    - **Ecosystem Focus:** The broader Ray ecosystem (Tune, Serve, Train) is primarily designed for machine learning workloads, meaning some of the extended features and documentation are less relevant to high-throughput chemistry workflows.
+
 === "Redun"
 
     [Redun](https://insitro.github.io/redun/) is a flexible workflow management program developed by [Insitro](https://insitro.com/).

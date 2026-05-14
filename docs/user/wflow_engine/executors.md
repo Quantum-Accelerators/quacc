@@ -38,6 +38,10 @@ In the previous examples, we have been running calculations on the local machine
 
         You can use [prefect-submitit](https://github.com/dexterity-systems/prefect-submitit) in a SLURM job scheduler environment (common in academic institutions), by creating a `SlurmTaskRunner`. Unlike the Dask-based approach, `prefect-submitit` submits each `#!Python @job` as an individual job to the scheduler, without requiring a persistent Dask cluster. This makes it well-suited for workflows where each task requires its own dedicated allocation.
 
+=== "Ray"
+
+    A Ray cluster can be deployed across multiple nodes of an HPC machine and used to schedule quacc `#!Python @job`-decorated tasks concurrently. The recommended approach for HPC machines with a job scheduler is documented in the Ray ["Deploying on Slurm"](https://docs.ray.io/en/latest/cluster/vms/user-guides/community/slurm.html) guide. Once a Ray head and worker nodes have been started inside a Slurm allocation, calls to `#!Python ray.init(address="auto")` will connect to the cluster and any quacc `#!Python @job` will be scheduled across all available cores.
+
 === "Jobflow"
 
     Out-of-the-box, Jobflow can be used to run on your local machine. You will, however, need a "manager" to run your workflows on HPC machines. The recommended option is [jobflow-remote](https://github.com/Matgenix/jobflow-remote), but you can also use [Fireworks](https://github.com/materialsproject/fireworks).
@@ -146,6 +150,15 @@ If you haven't done so already:
     ??? Note "For NERSC Users"
 
         If using Perlmutter at NERSC with the Dask backend for Prefect, your calculations should be run from the `$SCRATCH` directory. This is because the `$SCRATCH` directory is the only directory that supports file locking mechanisms, which Dask relies on.
+
+=== "Ray"
+
+    On the remote machine:
+
+    ```bash
+    pip install quacc[ray]
+    quacc set WORKFLOW_ENGINE ray
+    ```
 
 === "Jobflow"
 
@@ -531,6 +544,55 @@ If you haven't done so already:
         )
         ```
 
+=== "Ray"
+
+    Here, we will run single-core TBLite relaxation and frequency calculations for 20 molecules from the so-called "g2" collection of small, neutral molecules.
+
+    On the remote machine, first make sure to install the necessary dependencies:
+
+    ```
+    pip install quacc[tblite,ray]
+    ```
+
+    Inside a single-node Slurm allocation (or interactively on a compute node), start a Ray cluster scoped to the allocation. The simplest setup is to call `#!Python ray.init()` from Python, which will launch a head node using all of the available cores:
+
+    ```python
+    import os
+
+    import ray
+
+    os.environ["OMP_NUM_THREADS"] = "1,1"  # (1)!
+    ray.init(num_cpus=112)  # (2)!
+    ```
+
+    1. Since we are running single-core jobs, we need to set the `OMP_NUM_THREADS` environment variable to "1,1" according to the [TBLite documentation](https://tblite.readthedocs.io/en/latest/tutorial/parallel.html#running-tblite-in-parallel).
+
+    2. Set `num_cpus` to the number of cores available on the node so that Ray can schedule one `#!Python @job`-decorated task per core. For multi-node allocations, follow the ["Deploying on Slurm"](https://docs.ray.io/en/latest/cluster/vms/user-guides/community/slurm.html) guide and connect with `#!Python ray.init(address="auto")`.
+
+    Now we define and dispatch the workflow:
+
+    ```python
+    from ase.collections import g2
+    from quacc.recipes.tblite.core import freq_job, relax_job
+
+
+    def workflow(atoms_objects):
+        futures = []
+        for atoms in atoms_objects:
+            relax_output = relax_job(atoms)
+            freq_output = freq_job(
+                relax_output["atoms"], energy=relax_output["results"]["energy"]
+            )
+            futures.append(freq_output)
+
+        return futures
+
+
+    atoms_objects = [g2[name] for name in g2.names[:20]]
+    futures = workflow(atoms_objects)
+    results = [f.result() for f in futures]
+    ```
+
 === "Jobflow"
 
     === "Jobflow Remote"
@@ -867,6 +929,55 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
         results = workflow(list_of_atoms)
         ```
 
+
+=== "Ray"
+
+    Inside a Slurm allocation that spans multiple nodes, start a Ray cluster across the allocation as documented in the Ray ["Deploying on Slurm"](https://docs.ray.io/en/latest/cluster/vms/user-guides/community/slurm.html) guide, then connect to it from Python:
+
+    ```python
+    import os
+
+    import ray
+
+    nodes_per_calc = 1
+    cores_per_node = 112
+
+    os.environ["QUACC_VASP_PARALLEL_CMD"] = (
+        f"srun -N {nodes_per_calc} --ntasks-per-node={cores_per_node} --cpu_bind=cores"
+    )
+
+    ray.init(address="auto")  # (1)!
+    ```
+
+    1. This connects to the Ray cluster you started across the Slurm allocation. Each `#!Python @job` will be scheduled onto one node of the cluster, and inside the job VASP will be launched in parallel via `srun`.
+
+    Now define and dispatch the workflow:
+
+    ```python
+    from ase.build import bulk
+    from quacc import job, redecorate
+    from quacc.recipes.vasp.core import relax_job, static_job
+
+    relax_job_ = redecorate(relax_job, job(num_cpus=cores_per_node))  # (1)!
+    static_job_ = redecorate(static_job, job(num_cpus=cores_per_node))
+
+
+    def workflow(list_of_atoms):
+        futures = []
+        for atoms in list_of_atoms:
+            relax_output = relax_job_(atoms, kpts=[3, 3, 3])
+            static_output = static_job_(relax_output["atoms"], kpts=[3, 3, 3])
+            futures.append(static_output)
+
+        return futures
+
+
+    list_of_atoms = [bulk("Cu"), bulk("C")]
+    futures = workflow(list_of_atoms)
+    results = [f.result() for f in futures]
+    ```
+
+    1. We use `redecorate` to request the full set of cores for each VASP job so that Ray only schedules one MPI VASP job per node at a time.
 
 === "Jobflow"
 
