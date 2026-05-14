@@ -6090,7 +6090,7 @@
 <p class="admonition-title">Recommendations</p>
 <p>Not sure which to choose? Generally, we recommend Jobflow for users of academic HPC systems with job schedulers. Otherwise, we recommend Prefect. Some additional opinions on the matter.</p>
 </div>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Dask</label><label for="__tabbed_1_2">Parsl</label><label for="__tabbed_1_3">Prefect</label><label for="__tabbed_1_4">Redun</label><label for="__tabbed_1_5">Jobflow</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Dask</label><label for="__tabbed_1_2">Parsl</label><label for="__tabbed_1_3">Prefect</label><label for="__tabbed_1_4">Ray</label><label for="__tabbed_1_5">Redun</label><label for="__tabbed_1_6">Jobflow</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p><a href="https://www.dask.org/">Dask</a> is a popular parallel computing library for Python. We use <a href="https://docs.dask.org/en/stable/delayed.html">Dask Delayed</a> for lazy function execution, <a href="https://distributed.dask.org/en/stable/">Dask Distributed</a> for distributed compute, and (optionally) <a href="https://jobqueue.dask.org/en/latest/">Dask-Jobqueue</a> for orchestrating the execution on HPC machines.</p>
@@ -6144,6 +6144,25 @@
 <li>If using Prefect Cloud, the compute nodes must have a network connection</li>
 <li>The dashboard, while useful for monitoring successes and failures, is not ideal for analyzing results</li>
 <li>The software is geared more towards data engineering than scientific computing, and that is reflected in the features and documentation</li>
+</ul>
+</div>
+<div class="tabbed-block">
+<p><a href="https://www.ray.io/">Ray</a> is a high-performance distributed computing framework originally developed at UC Berkeley. Within quacc, we utilize <a href="https://docs.ray.io/en/latest/ray-core/walkthrough.html">Ray Core</a> for parallel, distributed task execution, allowing workflows to scale seamlessly from a single laptop to a multi-node cluster.</p>
+<p><a href="https://www.ray.io/">Ray</a> is a high-performance distributed computing framework originally developed at UC Berkeley. Within quacc, we utilize <a href="https://docs.ray.io/en/latest/ray-core/walkthrough.html">Ray Core</a> for parallel, distributed task execution, allowing workflows to scale seamlessly from a single laptop to a multi-node cluster.</p>
+<p><strong>Pros:</strong></p>
+<ul>
+<li><strong>Widely Adopted &amp; Supported:</strong> Extremely popular with a massive community and active development, backed heavily by the broader ML/AI ecosystem.</li>
+<li><strong>Lightweight &amp; Intuitive:</strong> Employs a simple <code>@ray.remote</code> decorator to easily parallelize Python functions and manage data objects.</li>
+<li><strong>Scalability:</strong> Natively handles both single-node and multi-node distributed execution with remarkably low task-scheduling overhead.</li>
+<li><strong>Observability:</strong> Features a robust, built-in web dashboard for real-time monitoring of task progress, resource utilization, and system logs.</li>
+<li><strong>HPC Compatibility:</strong> Can be deployed on supercomputers and clusters with provided <a href="https://docs.ray.io/en/latest/cluster/vms/user-guides/community/slurm.html">HPC deployment guides</a>.</li>
+</ul>
+<p><strong>Cons:</strong></p>
+<ul>
+<li><strong>HPC Integration:</strong> Unlike Parsl or Dask-Jobqueue, Ray does not have native wrappers for traditional HPC job schedulers (e.g., Slurm, PBS). Managing node startup (<code>ray start</code>) generally requires manual configuration within batch scripts.</li>
+<li><strong>Workflow History:</strong> While the built-in dashboard provides excellent live monitoring, retaining a persistent history of completed workflows requires setting up additional tooling or infrastructure.</li>
+<li><strong>Remote Orchestration:</strong> Submitting calculations from a local machine to a remote cluster, or coordinating tasks across disjoint compute resources, requires extra networking setup (such as configuring Ray Client).</li>
+<li><strong>Ecosystem Focus:</strong> The broader Ray ecosystem (Tune, Serve, Train) is primarily designed for machine learning workloads, meaning some of the extended features and documentation are less relevant to high-throughput chemistry workflows.</li>
 </ul>
 </div>
 <div class="tabbed-block">

@@ -6194,7 +6194,7 @@
 <p>A <code class="language-Python highlight"><span class="nd">@flow</span></code> in quacc is a collection of one or more jobs. It defines the logic of the workflow, connecting the output of one job to the inputs of one or more other jobs. As a general guideline, the flow should not contain computations beyond those of the underlying jobs or subflows.</p>
 <h3 id="subflow"><code>@subflow</code><a class="headerlink" href="#subflow" title="Permanent link">&para;</a></h3>
 <p>A <code class="language-Python highlight"><span class="nd">@subflow</span></code> in quacc is any workflow that returns a list of job outputs and where the number of jobs to be called is not necessarily known until runtime.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:5"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Dask</label><label for="__tabbed_1_2">Parsl</label><label for="__tabbed_1_3">Prefect</label><label for="__tabbed_1_4">Redun</label><label for="__tabbed_1_5">Jobflow</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Dask</label><label for="__tabbed_1_2">Parsl</label><label for="__tabbed_1_3">Prefect</label><label for="__tabbed_1_4">Ray</label><label for="__tabbed_1_5">Redun</label><label for="__tabbed_1_6">Jobflow</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Take a moment to read the Dask Delayed documentation <a href="https://docs.dask.org/en/stable/delayed.html">overview page</a> to get a sense of how the Dask decorators works and the Dask Distributed <a href="https://distributed.dask.org/en/stable/quickstart.html">quickstart page</a> to understand how to submit tasks to a Dask cluster. Namely, you should understand the <code class="language-Python highlight"><span class="nd">@delayed</span></code> decorator and how to interface with the <code>Client</code>.</p>
@@ -6277,6 +6277,34 @@
 </tbody>
 </table>
 </center>
+</div>
+<div class="tabbed-block">
+<p>Take a moment to read the Ray documentation's <a href="https://docs.ray.io/en/latest/ray-core/walkthrough.html">Walkthrough</a> to get a sense of how Ray works. Namely, you should understand the <a href="https://docs.ray.io/en/latest/ray-core/api/doc/ray.remote.html"><code class="language-Python highlight"><span class="nd">@ray</span><span class="o">.</span><span class="n">remote</span></code></a> decorator and how <code>.remote()</code> calls return <a href="https://docs.ray.io/en/latest/ray-core/objects.html"><code>ObjectRef</code></a> handles that can be resolved with <code class="language-Python highlight"><span class="n">ray</span><span class="o">.</span><span class="n">get</span></code>.</p>
+<center>
+<table>
+<thead>
+<tr>
+<th>Quacc</th>
+<th>Ray</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="language-Python highlight"><span class="nd">@job</span></code></td>
+<td><code class="language-Python highlight"><span class="nd">@ray</span><span class="o">.</span><span class="n">remote</span></code></td>
+</tr>
+<tr>
+<td><code class="language-Python highlight"><span class="nd">@flow</span></code></td>
+<td>No effect</td>
+</tr>
+<tr>
+<td><code class="language-Python highlight"><span class="nd">@subflow</span></code></td>
+<td><code class="language-Python highlight"><span class="nd">@ray</span><span class="o">.</span><span class="n">remote</span></code></td>
+</tr>
+</tbody>
+</table>
+</center>
+<p>Quacc wraps the returned <code>ObjectRef</code> in a small <code>RayFuture</code> proxy so that recipe code which indexes into job results (e.g. <code>result["atoms"]</code>) keeps working. To resolve a future to its final value, call <code>future.result()</code>.</p>
 </div>
 <div class="tabbed-block">
 <p>Take a moment to read the Redun documentation's <a href="https://insitro.github.io/redun/design.html">Design Overview page</a> to get a sense of how Redun works. Namely, you should understand the <code>Task</code> decorator and how to interface with the <code>Scheduler</code>.</p>
