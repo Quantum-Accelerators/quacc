@@ -53,6 +53,7 @@ newtonnet = ["newtonnet>=1.1,<2.0", "numpy<=1.26.4"]
 parsl = ["parsl[monitoring]>=2024.5.27; platform_system!='Windows'"]
 phonons = ["phonopy>=2.20.0", "seekpath>=2.1.0"]
 prefect = ["prefect[dask]>=3.3.6", "dask-jobqueue>=0.8.2"]
+ray = ["ray>=2.55.0"]
 redun = ["redun>=0.16.2"]
 sella = ["sella>=2.3.5"]
 sevenn = ["sevenn>=0.10.1"]
@@ -109,6 +110,9 @@ skip_gitignore = true
 [tool.coverage.run]
 source = ["src"]
 patch = ["subprocess"]
+
+[tool.coverage.paths]
+source = ["src/", "*/site-packages/"]
 
 [tool.coverage.report]
 exclude_also = [

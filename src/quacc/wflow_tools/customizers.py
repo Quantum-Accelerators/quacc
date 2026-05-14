@@ -69,6 +69,10 @@ def strip_decorator(func: Callable) -> Callable:
         if isinstance(func, Task):
             func = func.func
 
+    elif settings.WORKFLOW_ENGINE == "ray":
+        if hasattr(func, "__wrapped__"):
+            func = func.__wrapped__
+
     return func
 
 
@@ -119,7 +123,7 @@ def update_parameters(
 
     settings = get_settings()
 
-    if decorator and settings.WORKFLOW_ENGINE == "dask":
+    if decorator and settings.WORKFLOW_ENGINE in ("dask", "ray"):
         if decorator == "job":
             decorator_func = job
         elif decorator == "flow":
