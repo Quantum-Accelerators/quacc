@@ -535,9 +535,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         @wraps(target_func)
         def _ray_subflow_target(*f_args, **f_kwargs):
-            return _resolve_ray_subflow_result(
-                target_func(*f_args, **f_kwargs), ray
-            )
+            return _resolve_ray_subflow_result(target_func(*f_args, **f_kwargs), ray)
 
         remote_subflow = (
             ray.remote(**kwargs)(_ray_subflow_target)
