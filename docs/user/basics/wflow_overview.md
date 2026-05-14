@@ -69,8 +69,6 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
 
     [Ray](https://www.ray.io/) is a high-performance distributed computing framework originally developed at UC Berkeley. Within quacc, we utilize [Ray Core](https://docs.ray.io/en/latest/ray-core/walkthrough.html) for parallel, distributed task execution, allowing workflows to scale seamlessly from a single laptop to a multi-node cluster.
 
-    [Ray](https://www.ray.io/) is a high-performance distributed computing framework originally developed at UC Berkeley. Within quacc, we utilize [Ray Core](https://docs.ray.io/en/latest/ray-core/walkthrough.html) for parallel, distributed task execution, allowing workflows to scale seamlessly from a single laptop to a multi-node cluster.
-
     **Pros:**
 
     - **Widely Adopted & Supported:** Extremely popular with a massive community and active development, backed heavily by the broader ML/AI ecosystem.
