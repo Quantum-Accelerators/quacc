@@ -10,6 +10,9 @@ ray = pytest.importorskip("ray")
 from quacc import flow, job, subflow
 from quacc.wflow_tools.decorators import (
     RayFuture,
+    _ray_getitem,
+    _resolve_ray_subflow_result,
+    _resolve_ray_value,
     _unwrap_ray_future,
     _wrap_partial_for_ray,
 )
@@ -193,3 +196,48 @@ def test_job_with_kwargs(tmp_path, monkeypatch):
         return a + b
 
     assert add(2, 3).result() == 5
+
+
+def test_ray_getitem_helper():
+    assert _ray_getitem({"a": 1, "b": 2}, "a") == 1
+    assert _ray_getitem([10, 20, 30], 2) == 30
+    assert _ray_getitem((1, 2, 3), 0) == 1
+
+
+def test_resolve_ray_value_passthrough():
+    assert _resolve_ray_value(5, ray) == 5
+    assert _resolve_ray_value("abc", ray) == "abc"
+    obj = object()
+    assert _resolve_ray_value(obj, ray) is obj
+
+
+def test_resolve_ray_value_rayfuture_and_objectref():
+    ref = ray.put(99)
+    assert _resolve_ray_value(ref, ray) == 99
+
+    fut = RayFuture(ray.put(123))
+    assert _resolve_ray_value(fut, ray) == 123
+
+
+def test_resolve_ray_subflow_result_scalar():
+    assert _resolve_ray_subflow_result(7, ray) == 7
+    fut = RayFuture(ray.put(8))
+    assert _resolve_ray_subflow_result(fut, ray) == 8
+
+
+def test_resolve_ray_subflow_result_list():
+    fut = RayFuture(ray.put(2))
+    out = _resolve_ray_subflow_result([fut, 3, ray.put(4)], ray)
+    assert out == [2, 3, 4]
+
+
+def test_resolve_ray_subflow_result_tuple():
+    fut = RayFuture(ray.put(2))
+    out = _resolve_ray_subflow_result((fut, 3), ray)
+    assert out == (2, 3)
+
+
+def test_resolve_ray_subflow_result_dict():
+    fut = RayFuture(ray.put(2))
+    out = _resolve_ray_subflow_result({"a": fut, "b": 3}, ray)
+    assert out == {"a": 2, "b": 3}

@@ -533,23 +533,11 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         target_func = _wrap_partial_for_ray(_func)
 
-        def _resolve(r):
-            if isinstance(r, RayFuture):
-                return ray.get(r._ref)
-            if isinstance(r, ray.ObjectRef):
-                return ray.get(r)
-            return r
-
         @wraps(target_func)
         def _ray_subflow_target(*f_args, **f_kwargs):
-            result = target_func(*f_args, **f_kwargs)
-            if type(result) is list:
-                return [_resolve(r) for r in result]
-            if type(result) is tuple:
-                return tuple(_resolve(r) for r in result)
-            if type(result) is dict:
-                return {k: _resolve(v) for k, v in result.items()}
-            return _resolve(result)
+            return _resolve_ray_subflow_result(
+                target_func(*f_args, **f_kwargs), ray
+            )
 
         remote_subflow = (
             ray.remote(**kwargs)(_ray_subflow_target)
@@ -689,11 +677,7 @@ class RayFuture:
     def __getitem__(self, key: Any) -> RayFuture:
         from quacc import job
 
-        @job
-        def _ray_getitem(obj, k):
-            return obj[k]
-
-        return _ray_getitem(self, key)
+        return job(_ray_getitem)(self, key)
 
     def result(self) -> Any:
         """Block until the underlying Ray task completes and return its result."""
@@ -731,3 +715,28 @@ def _wrap_partial_for_ray(func: Callable) -> Callable:
         return inner(*f_args, **f_kwargs)
 
     return _real
+
+
+def _ray_getitem(obj: Any, k: Any) -> Any:
+    """Indexing helper executed remotely by ``RayFuture.__getitem__``."""
+    return obj[k]
+
+
+def _resolve_ray_value(value: Any, ray_mod: Any) -> Any:
+    """Resolve a single ``RayFuture``/``ObjectRef`` to its concrete value."""
+    if isinstance(value, RayFuture):
+        return ray_mod.get(value._ref)
+    if isinstance(value, ray_mod.ObjectRef):
+        return ray_mod.get(value)
+    return value
+
+
+def _resolve_ray_subflow_result(result: Any, ray_mod: Any) -> Any:
+    """Recursively resolve futures returned from a ray subflow body."""
+    if type(result) is list:
+        return [_resolve_ray_value(r, ray_mod) for r in result]
+    if type(result) is tuple:
+        return tuple(_resolve_ray_value(r, ray_mod) for r in result)
+    if type(result) is dict:
+        return {k: _resolve_ray_value(v, ray_mod) for k, v in result.items()}
+    return _resolve_ray_value(result, ray_mod)
