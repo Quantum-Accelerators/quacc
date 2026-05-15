@@ -24,7 +24,7 @@ from quacc.recipes.mlp._base import pick_calculator
 
 
 @pytest.fixture
-def _enable_batching(monkeypatch):
+def enable_batching(monkeypatch):
     settings = get_settings()
     monkeypatch.setattr(settings, "FAIRCHEM_RAY_SERVE_BATCHING", True, raising=False)
     pick_calculator.__wrapped__.cache_clear()
@@ -38,7 +38,8 @@ def _stub_calc(**_kwargs):
     return SimpleNamespace(parameters={})
 
 
-def test_falls_back_when_ray_not_initialized(monkeypatch, caplog, _enable_batching):
+@pytest.mark.usefixtures("enable_batching")
+def test_falls_back_when_ray_not_initialized(monkeypatch, caplog):
     import ray
 
     monkeypatch.setattr(ray, "is_initialized", lambda: False)
@@ -54,7 +55,8 @@ def test_falls_back_when_ray_not_initialized(monkeypatch, caplog, _enable_batchi
     assert "Ray is not initialized" in caplog.text
 
 
-def test_falls_back_when_ray_not_installed(monkeypatch, caplog, _enable_batching):
+@pytest.mark.usefixtures("enable_batching")
+def test_falls_back_when_ray_not_installed(monkeypatch, caplog):
     import builtins
 
     real_import = builtins.__import__
@@ -82,7 +84,7 @@ def _stub_predict_unit(**_kwargs):
 
 
 @pytest.fixture
-def _stub_serve_unit():
+def stub_serve_unit():
     """Replace ``BatchServerPredictUnit.from_deployment_connection_info``
     so we don't need a live Ray Serve deployment."""
     captured = {}
@@ -111,20 +113,20 @@ def _stub_serve_unit():
         yield captured
 
 
-def test_serve_branch_uses_name_or_path(
-    monkeypatch, _enable_batching, _stub_serve_unit
-):
+@pytest.mark.usefixtures("enable_batching")
+def test_serve_branch_uses_name_or_path(monkeypatch, stub_serve_unit):
     import ray
 
     monkeypatch.setattr(ray, "is_initialized", lambda: True)
     pick_calculator(
         method="fairchem", name_or_path="my/local/ckpt.pt", task_name="oc20"
     )
-    assert _stub_serve_unit["multiplexed_model_id"] == "my/local/ckpt.pt:default"
-    assert _stub_serve_unit["deployment_name"] == "predict-server"
+    assert stub_serve_unit["multiplexed_model_id"] == "my/local/ckpt.pt:default"
+    assert stub_serve_unit["deployment_name"] == "predict-server"
 
 
-def test_serve_branch_uses_model_id(monkeypatch, _enable_batching, _stub_serve_unit):
+@pytest.mark.usefixtures("enable_batching")
+def test_serve_branch_uses_model_id(monkeypatch, stub_serve_unit):
     import ray
 
     monkeypatch.setattr(ray, "is_initialized", lambda: True)
@@ -134,23 +136,21 @@ def test_serve_branch_uses_model_id(monkeypatch, _enable_batching, _stub_serve_u
         inference_settings="fast",
         task_name="omat",
     )
-    assert _stub_serve_unit["multiplexed_model_id"] == "uma-s-2:fast"
+    assert stub_serve_unit["multiplexed_model_id"] == "uma-s-2:fast"
 
 
-def test_serve_branch_default_checkpoint(
-    monkeypatch, _enable_batching, _stub_serve_unit
-):
+@pytest.mark.usefixtures("enable_batching")
+def test_serve_branch_default_checkpoint(monkeypatch, stub_serve_unit):
     import ray
 
     monkeypatch.setattr(ray, "is_initialized", lambda: True)
     # Neither name_or_path, model_id, nor checkpoint provided → default
     pick_calculator(method="fairchem", task_name="omat")
-    assert _stub_serve_unit["multiplexed_model_id"] == "uma-s-1p1:default"
+    assert stub_serve_unit["multiplexed_model_id"] == "uma-s-1p1:default"
 
 
-def test_serve_branch_drops_local_only_kwargs(
-    monkeypatch, _enable_batching, _stub_serve_unit
-):
+@pytest.mark.usefixtures("enable_batching")
+def test_serve_branch_drops_local_only_kwargs(monkeypatch, stub_serve_unit):
     """``device``/``overrides``/``seed`` must be stripped before reaching
     the Ray Serve helper (it doesn't accept them)."""
     import ray
@@ -169,4 +169,4 @@ def test_serve_branch_drops_local_only_kwargs(
         overrides={"foo": 1},
         seed=42,
     )
-    assert _stub_serve_unit["multiplexed_model_id"] == "uma-s-1p1:default"
+    assert stub_serve_unit["multiplexed_model_id"] == "uma-s-1p1:default"
