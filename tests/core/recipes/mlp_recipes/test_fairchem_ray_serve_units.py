@@ -26,9 +26,7 @@ from quacc.recipes.mlp._base import pick_calculator
 @pytest.fixture
 def _enable_batching(monkeypatch):
     settings = get_settings()
-    monkeypatch.setattr(
-        settings, "FAIRCHEM_RAY_SERVE_BATCHING", True, raising=False
-    )
+    monkeypatch.setattr(settings, "FAIRCHEM_RAY_SERVE_BATCHING", True, raising=False)
     pick_calculator.__wrapped__.cache_clear()
     yield
     pick_calculator.__wrapped__.cache_clear()
@@ -44,12 +42,14 @@ def test_falls_back_when_ray_not_initialized(monkeypatch, caplog, _enable_batchi
     import ray
 
     monkeypatch.setattr(ray, "is_initialized", lambda: False)
-    with patch(
-        "fairchem.core.FAIRChemCalculator.from_model_checkpoint",
-        side_effect=_stub_calc,
-    ) as mock_local:
-        with caplog.at_level("WARNING"):
-            pick_calculator(method="fairchem", name_or_path="uma-s-1p1")
+    with (
+        patch(
+            "fairchem.core.FAIRChemCalculator.from_model_checkpoint",
+            side_effect=_stub_calc,
+        ) as mock_local,
+        caplog.at_level("WARNING"),
+    ):
+        pick_calculator(method="fairchem", name_or_path="uma-s-1p1")
     mock_local.assert_called_once()
     assert "Ray is not initialized" in caplog.text
 
@@ -65,14 +65,14 @@ def test_falls_back_when_ray_not_installed(monkeypatch, caplog, _enable_batching
         return real_import(name, *args, **kwargs)
 
     monkeypatch.setattr(builtins, "__import__", _no_ray)
-    with patch(
-        "fairchem.core.FAIRChemCalculator.from_model_checkpoint",
-        side_effect=_stub_calc,
-    ) as mock_local:
-        with caplog.at_level("WARNING"):
-            pick_calculator(
-                method="fairchem", name_or_path="uma-s-1p1-fallback"
-            )
+    with (
+        patch(
+            "fairchem.core.FAIRChemCalculator.from_model_checkpoint",
+            side_effect=_stub_calc,
+        ) as mock_local,
+        caplog.at_level("WARNING"),
+    ):
+        pick_calculator(method="fairchem", name_or_path="uma-s-1p1-fallback")
     mock_local.assert_called_once()
     assert "Ray is not installed" in caplog.text
 
@@ -96,18 +96,24 @@ def _stub_serve_unit():
             ),
         )
 
-    with patch(
-        "fairchem.core.units.mlip_unit.predict.BatchServerPredictUnit.from_deployment_connection_info",
-        side_effect=_capture,
-    ), patch(
-        "fairchem.core.FAIRChemCalculator", side_effect=lambda **k: SimpleNamespace(
-            parameters={}, predictor=k.get("predict_unit")
-        )
+    with (
+        patch(
+            "fairchem.core.units.mlip_unit.predict.BatchServerPredictUnit.from_deployment_connection_info",
+            side_effect=_capture,
+        ),
+        patch(
+            "fairchem.core.FAIRChemCalculator",
+            side_effect=lambda **k: SimpleNamespace(
+                parameters={}, predictor=k.get("predict_unit")
+            ),
+        ),
     ):
         yield captured
 
 
-def test_serve_branch_uses_name_or_path(monkeypatch, _enable_batching, _stub_serve_unit):
+def test_serve_branch_uses_name_or_path(
+    monkeypatch, _enable_batching, _stub_serve_unit
+):
     import ray
 
     monkeypatch.setattr(ray, "is_initialized", lambda: True)
@@ -131,7 +137,9 @@ def test_serve_branch_uses_model_id(monkeypatch, _enable_batching, _stub_serve_u
     assert _stub_serve_unit["multiplexed_model_id"] == "uma-s-2:fast"
 
 
-def test_serve_branch_default_checkpoint(monkeypatch, _enable_batching, _stub_serve_unit):
+def test_serve_branch_default_checkpoint(
+    monkeypatch, _enable_batching, _stub_serve_unit
+):
     import ray
 
     monkeypatch.setattr(ray, "is_initialized", lambda: True)
