@@ -157,6 +157,58 @@ graph LR
 
     3. This will create and run the `Flow`. At this point, the workflow has been dispatched and the final results are returned.
 
+=== "Ray"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and initialize Ray:
+
+        ```bash
+        quacc set WORKFLOW_ENGINE ray
+        ```
+
+        ```python title="python"
+        import ray
+
+        ray.init()  #  (1)!
+        ```
+
+        1. It is necessary to initialize Ray before submitting calculations. This command starts (or connects to) a local Ray cluster and only needs to be done once.
+
+    ```python
+    import ray
+    from quacc import job
+
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+
+    @job
+    def mult(a, b):
+        return a * b
+
+
+    def workflow(a, b, c):  #  (2)!
+        output1 = add(a, b)
+        output2 = mult(output1, c)
+        return output2
+
+
+    future = workflow(1, 2, 3)  #  (3)!
+    result = future.result()  #  (4)!
+    print(result)  # 9
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into a Ray `#!Python @ray.remote`.
+
+    2. The `#!Python @flow` decorator doesn't actually do anything when using Ray, so we chose to not include it here for brevity.
+
+    3. This returns a `RayFuture` proxy wrapping a Ray `ObjectRef`. A reference is returned without blocking.
+
+    4. `#!Python future.result()` blocks until the workflow is complete and returns the resolved result. `RayFuture` is the small proxy quacc returns from `#!Python @job`-decorated functions; for plain `ObjectRef`s use `#!Python ray.get` as usual.
+
 === "Redun"
 
     !!! Important
@@ -278,6 +330,10 @@ graph LR
 === "Prefect"
 
     If you want to learn more about Prefect, you can read the [Prefect Documentation](https://docs.prefect.io/). Please refer to the [Prefect community resources](https://www.prefect.io/community) for any Prefect-specific questions.
+
+=== "Ray"
+
+    If you want to learn more about Ray, you can read the [Ray Core documentation](https://docs.ray.io/en/latest/ray-core/walkthrough.html) and the [Ray cluster guide](https://docs.ray.io/en/latest/cluster/getting-started.html). Please refer to the [Ray Discuss forum](https://discuss.ray.io/) for any Ray-specific questions.
 
 === "Redun"
 
