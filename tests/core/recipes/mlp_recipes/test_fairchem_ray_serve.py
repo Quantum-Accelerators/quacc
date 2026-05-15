@@ -13,8 +13,7 @@ if find_spec("fairchem"):
 
     if not get_token():
         pytest.skip(
-            "HF_TOKEN required for fairchem ray-serve tests",
-            allow_module_level=True,
+            "HF_TOKEN required for fairchem ray-serve tests", allow_module_level=True
         )
 
 import numpy as np
@@ -88,9 +87,7 @@ def _assert_calc_path(batching):
     calc = pick_calculator(
         method="fairchem", name_or_path="uma-s-1p1", task_name="omat"
     )
-    used_batching = isinstance(
-        getattr(calc, "predictor", None), BatchServerPredictUnit
-    )
+    used_batching = isinstance(getattr(calc, "predictor", None), BatchServerPredictUnit)
     assert used_batching is batching, (
         f"Expected FAIRCHEM_RAY_SERVE_BATCHING={batching} path, "
         f"but BatchServerPredictUnit usage was {used_batching}."
@@ -106,9 +103,7 @@ def test_static_job(tmp_path, monkeypatch, _batching):
     output = static_job(
         atoms, method="fairchem", name_or_path="uma-s-1p1", task_name="omat"
     )
-    assert output["results"]["energy"] == pytest.approx(
-        -3.7501682869643735, rel=1e-3
-    )
+    assert output["results"]["energy"] == pytest.approx(-3.7501682869643735, rel=1e-3)
     assert np.shape(output["results"]["forces"]) == (1, 3)
     assert output["atoms"] == atoms
     _assert_calc_path(_batching)
@@ -177,7 +172,5 @@ def test_elastic_jobs(tmp_path, monkeypatch, _batching):
     assert outputs["undeformed_result"]["results"]["stress"] == pytest.approx(
         0, abs=1e-2
     )
-    assert outputs["elasticity_doc"].bulk_modulus.voigt == pytest.approx(
-        151.367, abs=2
-    )
+    assert outputs["elasticity_doc"].bulk_modulus.voigt == pytest.approx(151.367, abs=2)
     _assert_calc_path(_batching)
