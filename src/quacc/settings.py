@@ -58,9 +58,9 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
 
-    WORKFLOW_ENGINE: Literal["dask", "parsl", "prefect", "redun", "jobflow"] | None = (
-        Field(None, description=("The workflow manager to use, if any."))
-    )
+    WORKFLOW_ENGINE: (
+        Literal["dask", "parsl", "prefect", "ray", "redun", "jobflow"] | None
+    ) = Field(None, description=("The workflow manager to use, if any."))
 
     # ---------------------------
     # General Settings
@@ -103,6 +103,16 @@ class QuaccSettings(BaseSettings):
     CHECK_CONVERGENCE: bool = Field(
         True,
         description="Whether to check for convergence, when implemented by a given recipe.",
+    )
+    NESTED_RESULTS: bool = Field(
+        False,
+        description=(
+            """
+            Whether to auto-discover sensible paths for output files in
+            RESULTS_DIR for each flow. The path chosen reflect the relationship
+            the flow and the subflows/jobs executed within it.
+            """
+        ),
     )
 
     # ---------------------------
@@ -251,13 +261,14 @@ class QuaccSettings(BaseSettings):
     )
 
     # VASP Settings: General
-    VASP_INCAR_COPILOT: Literal["off", "on", "aggressive"] = Field(
-        "on",
+    VASP_INCAR_COPILOT: Literal["off", "light", "default", "aggressive"] = Field(
+        "default",
         description=(
             """
             Controls VASP co-pilot mode for automated INCAR parameter handling.
             off: Do not use co-pilot mode. INCAR parameters will be unmodified.
-            on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
+            light: Use co-pilot mode for only a subset of swaps. This will only modify INCAR flags not already set by the user.
+            default: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
             aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
             """
         ),

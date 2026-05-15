@@ -118,6 +118,42 @@ graph LR
 
     2. The workflow has been dispatched to the Prefect server at this point and the result returned.
 
+=== "Ray"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md) and initialize Ray:
+
+        ```bash title="terminal"
+        quacc set WORKFLOW_ENGINE ray
+        ```
+
+        ```python title="python"
+        import ray
+
+        ray.init()
+        ```
+
+    ```python
+    import ray
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Submit the job
+    future = relax_job(atoms)  # (1)!
+
+    # Print result
+    result = future.result()  # (2)!
+    print(result)
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here. We also did not need to use a `#!Python @flow` decorator because Ray does not have an analogous decorator. At this point, we have a `RayFuture` (a thin proxy around a Ray `ObjectRef`).
+
+    2. `#!Python future.result()` blocks until the task is complete and returns the resolved result. `RayFuture` is the small proxy quacc returns from `#!Python @job`-decorated functions.
+
 === "Redun"
 
     !!! Important
@@ -240,6 +276,23 @@ graph LR
 
     # Print the results
     print(results)
+    ```
+
+=== "Ray"
+
+    ```python
+    import ray
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Define the workflow
+    future = bulk_to_slabs_flow(atoms)
+
+    # Print the results
+    print(future.result())
     ```
 
 === "Redun"

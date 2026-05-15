@@ -1,2 +1,2 @@
-jobflow==0.3.0
+jobflow==0.3.1
 jobflow-remote==1.0.0

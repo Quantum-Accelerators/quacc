@@ -1,6 +1,6 @@
 # Workflow Engine Setup
 
-Using a workflow engine is a crucial component for scaling up quacc calculations in a high-throughput setting. We describe the necessary installation steps here for the workflow manager of your choosing.
+Using a workflow engine is optional but is beneficial when scaling up quacc calculations in a high-throughput setting. We describe the necessary installation steps here for the workflow manager of your choosing.
 
 !!! Tip "Picking a Workflow Engine"
 
@@ -51,6 +51,18 @@ Using a workflow engine is a crucial component for scaling up quacc calculations
     ```bash
     prefect config set PREFECT_LOGGING_EXTRA_LOGGERS=quacc
     ```
+
+=== "Ray"
+
+    **Installation**
+
+    To install Ray, run the following:
+
+    ```bash
+    pip install quacc[ray]
+    ```
+
+    Ray has [many configuration options](https://docs.ray.io/en/latest/ray-core/configure.html), including support for [running on HPC clusters](https://docs.ray.io/en/latest/cluster/getting-started.html).
 
 === "Redun"
 

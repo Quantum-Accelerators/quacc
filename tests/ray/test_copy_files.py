@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-prefect = pytest.importorskip("prefect")
+ray = pytest.importorskip("ray")
 
 from pathlib import Path
 
@@ -27,13 +27,10 @@ def test_copy_files(tmp_path, monkeypatch):
     @flow
     def create_files():
         job1 = create_file("job1")
-        job2 = create_file("job2", copy=Copy({job1["dir_name"]: "job1*"}))
-        return [job1, job2]
+        return create_file("job2", copy=Copy({job1.result()["dir_name"]: "job1*"}))
 
-    create_files()
+    (create_files()).result()
 
-    # Individual job folders/files should exist, and the job1 file should be
-    # copied over to the job2 folder.
     assert Path(tmp_path / "job1/job1").exists()
     assert Path(tmp_path / "job2/job2").exists()
     assert Path(tmp_path / "job2/job1").exists()
