@@ -190,7 +190,7 @@ def pick_calculator(
             multiplexed_model_id = f"{checkpoint_id}:{inference_settings}"
 
             mlip_unit = BatchServerPredictUnit.from_deployment_connection_info(
-                deployment_name="predict-server",
+                deployment_name="multiplexed-predict-server",
                 multiplexed_model_id=multiplexed_model_id,
             )
 
