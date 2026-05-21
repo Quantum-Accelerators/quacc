@@ -71,4 +71,6 @@ def mof_off_static_job(
             default_parameters["ivdw"] = 13
     calc_flags = recursive_dict_merge(default_parameters, calc_kwargs)
 
-    return matpes_static_job(atoms, level=level, prev_dir=prev_dir, **calc_flags)
+    return matpes_static_job(
+        atoms, level=level, auto_ispin=True, prev_dir=prev_dir, **calc_flags
+    )
