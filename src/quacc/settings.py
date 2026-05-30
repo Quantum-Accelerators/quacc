@@ -10,9 +10,9 @@ from shutil import which
 from typing import TYPE_CHECKING, Literal, Union
 
 import psutil
-from ruamel.yaml import YAML
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from ruamel.yaml import YAML
 
 if TYPE_CHECKING:
     from collections.abc import Callable
