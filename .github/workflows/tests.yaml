@@ -63,7 +63,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        wflow_engine: [dask, parsl, prefect, redun, jobflow]
+        wflow_engine: [dask, parsl, prefect, ray, redun, jobflow]
 
     defaults:
       run:
@@ -82,7 +82,7 @@ jobs:
 
       - name: Set up conda
         if: matrix.wflow_engine == 'dask'
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           python-version: "3.13"
           activate-environment: quacc-env
@@ -131,7 +131,7 @@ jobs:
           cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
@@ -179,7 +179,7 @@ jobs:
           cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
@@ -227,7 +227,7 @@ jobs:
           cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
@@ -275,7 +275,7 @@ jobs:
           cache-dependency-path: tests/requirements**.txt
 
       - name: Set up conda
-        uses: conda-incubator/setup-miniconda@v3
+        uses: conda-incubator/setup-miniconda@v4
         with:
           python-version: ${{ matrix.python-version }}
           activate-environment: quacc-env
@@ -518,7 +518,7 @@ jobs:
         uses: actions/download-artifact@v8
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v6
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:

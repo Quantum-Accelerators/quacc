@@ -37,6 +37,7 @@ def matpes_static_job(
     kspacing: float | None = 0.22,
     use_improvements: bool = False,
     write_extra_files: bool = False,
+    auto_ispin: bool = False,
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -58,6 +59,10 @@ def matpes_static_job(
         and ENAUG deleted.
     write_extra_files
         Whether to write out the following IO files: LELF = True and NEDOS = 3001.
+    auto_ispin
+        If generating input set from a previous calculation, this controls whether
+        to disable magnetisation (ISPIN = 1) if the absolute value of all magnetic
+        moments are less than 0.02.
     prev_dir
         A previous directory for a prior step in the workflow.
     **calc_kwargs
@@ -75,13 +80,13 @@ def matpes_static_job(
     from atomate2.vasp.jobs.matpes import MatPesGGAStaticMaker
 
     maker = MatPesGGAStaticMaker()
-    maker.input_set_generator.auto_ispin = True
+    maker.input_set_generator.auto_ispin = auto_ispin
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         maker
     )
 
     # Set the user-defined KSPACING
-    calc_defaults |= {"kspacing": kspacing, "incar_copilot": "nore"}
+    calc_defaults |= {"kspacing": kspacing, "incar_copilot": "light"}
 
     # Set some parameters that we think are improvements to MatPES
     if use_improvements:
