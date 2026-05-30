@@ -10,9 +10,9 @@ from shutil import which
 from typing import TYPE_CHECKING, Literal, Union
 
 import psutil
-from monty.serialization import loadfn
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from ruamel.yaml import YAML
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -499,7 +499,7 @@ class QuaccSettings(BaseSettings):
 
         new_settings = {}  # type: dict
         if config_file_path.exists() and config_file_path.stat().st_size > 0:
-            new_settings |= loadfn(config_file_path)
+            new_settings |= YAML().load(config_file_path)
 
         new_settings.update(settings)
         return new_settings
