@@ -327,24 +327,29 @@ def get_param_swaps(
                 "You are running O2 without magnetic moments, but its ground state should have 2 unpaired electrons!"
             )
 
+    recommended_parameters = calc.parameters.copy()
     if incar_copilot_mode == "aggressive":
-        new_parameters = calc.parameters
+        new_parameters = recommended_parameters
     else:
-        new_parameters = calc.parameters | user_calc_params
+        new_parameters = recommended_parameters | user_calc_params
 
+    missing = object()
     if changed_parameters := {
-        k: new_parameters[k] for k in set(new_parameters) - set(user_calc_params)
+        k: v for k, v in new_parameters.items() if user_calc_params.get(k, missing) != v
     }:
         LOGGER.info(
             f"The following parameters were changed: {sort_dict(changed_parameters)}"
         )
-    if unchanged_parameters := {
-        k: new_parameters[k]
-        for k in new_parameters
-        if k not in set(new_parameters) - set(user_calc_params)
-    }:
+
+    if incar_copilot_mode != "aggressive" and (
+        unchanged_parameters := {
+            k: new_parameters[k]
+            for k in user_calc_params
+            if recommended_parameters.get(k, missing) != user_calc_params[k]
+        }
+    ):
         LOGGER.warning(
-            f"The following parameters were NOT changed since the user specifically requested them: {sort_dict(unchanged_parameters)}"
+            f"The following parameters were NOT changed despite recommendations so as to not override the user's choices: {sort_dict(unchanged_parameters)}"
         )
     return new_parameters
 
