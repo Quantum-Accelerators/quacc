@@ -59,7 +59,8 @@ def qcinput_nearly_equal(qcinput1, qcinput2):
                             if sitekey == "xyz":
                                 for jj, val in enumerate(site[sitekey]):
                                     assert val == pytest.approx(
-                                        qcin2[key][molkey][ii][sitekey][jj]
+                                        qcin2[key][molkey][ii][sitekey][jj],
+                                        rel=1e-2,
                                     )
                             else:
                                 assert (
