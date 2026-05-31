@@ -6628,7 +6628,14 @@
 
                   <details class="mkdocstrings-source">
                     <summary>Source code in <code>quacc/calculators/vasp/params.py</code></summary>
-                    <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-500">500</a></span>
+                    <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-493">493</a></span>
+<span class="normal"><a href="#__codelineno-0-494">494</a></span>
+<span class="normal"><a href="#__codelineno-0-495">495</a></span>
+<span class="normal"><a href="#__codelineno-0-496">496</a></span>
+<span class="normal"><a href="#__codelineno-0-497">497</a></span>
+<span class="normal"><a href="#__codelineno-0-498">498</a></span>
+<span class="normal"><a href="#__codelineno-0-499">499</a></span>
+<span class="normal"><a href="#__codelineno-0-500">500</a></span>
 <span class="normal"><a href="#__codelineno-0-501">501</a></span>
 <span class="normal"><a href="#__codelineno-0-502">502</a></span>
 <span class="normal"><a href="#__codelineno-0-503">503</a></span>
@@ -6646,39 +6653,32 @@
 <span class="normal"><a href="#__codelineno-0-515">515</a></span>
 <span class="normal"><a href="#__codelineno-0-516">516</a></span>
 <span class="normal"><a href="#__codelineno-0-517">517</a></span>
-<span class="normal"><a href="#__codelineno-0-518">518</a></span>
-<span class="normal"><a href="#__codelineno-0-519">519</a></span>
-<span class="normal"><a href="#__codelineno-0-520">520</a></span>
-<span class="normal"><a href="#__codelineno-0-521">521</a></span>
-<span class="normal"><a href="#__codelineno-0-522">522</a></span>
-<span class="normal"><a href="#__codelineno-0-523">523</a></span>
-<span class="normal"><a href="#__codelineno-0-524">524</a></span>
-<span class="normal"><a href="#__codelineno-0-525">525</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-500"><a id="__codelineno-0-500" name="__codelineno-0-500"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-</span><span id="__span-0-501"><a id="__codelineno-0-501" name="__codelineno-0-501"></a>    <span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prev_dir</span><span class="p">:</span> <span class="n">SourceDirectory</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="__span-0-502"><a id="__codelineno-0-502" name="__codelineno-0-502"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-503"><a id="__codelineno-0-503" name="__codelineno-0-503"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-504"><a id="__codelineno-0-504" name="__codelineno-0-504"></a><span class="sd">    Initialize the converter.</span>
+<span class="normal"><a href="#__codelineno-0-518">518</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-493"><a id="__codelineno-0-493" name="__codelineno-0-493"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+</span><span id="__span-0-494"><a id="__codelineno-0-494" name="__codelineno-0-494"></a>    <span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">prev_dir</span><span class="p">:</span> <span class="n">SourceDirectory</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-495"><a id="__codelineno-0-495" name="__codelineno-0-495"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-496"><a id="__codelineno-0-496" name="__codelineno-0-496"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-497"><a id="__codelineno-0-497" name="__codelineno-0-497"></a><span class="sd">    Initialize the converter.</span>
+</span><span id="__span-0-498"><a id="__codelineno-0-498" name="__codelineno-0-498"></a>
+</span><span id="__span-0-499"><a id="__codelineno-0-499" name="__codelineno-0-499"></a><span class="sd">    Parameters</span>
+</span><span id="__span-0-500"><a id="__codelineno-0-500" name="__codelineno-0-500"></a><span class="sd">    ----------</span>
+</span><span id="__span-0-501"><a id="__codelineno-0-501" name="__codelineno-0-501"></a><span class="sd">    atoms</span>
+</span><span id="__span-0-502"><a id="__codelineno-0-502" name="__codelineno-0-502"></a><span class="sd">        The ASE atoms object.</span>
+</span><span id="__span-0-503"><a id="__codelineno-0-503" name="__codelineno-0-503"></a><span class="sd">    prev_dir</span>
+</span><span id="__span-0-504"><a id="__codelineno-0-504" name="__codelineno-0-504"></a><span class="sd">        The previous directory.</span>
 </span><span id="__span-0-505"><a id="__codelineno-0-505" name="__codelineno-0-505"></a>
-</span><span id="__span-0-506"><a id="__codelineno-0-506" name="__codelineno-0-506"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-507"><a id="__codelineno-0-507" name="__codelineno-0-507"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-508"><a id="__codelineno-0-508" name="__codelineno-0-508"></a><span class="sd">    atoms</span>
-</span><span id="__span-0-509"><a id="__codelineno-0-509" name="__codelineno-0-509"></a><span class="sd">        The ASE atoms object.</span>
-</span><span id="__span-0-510"><a id="__codelineno-0-510" name="__codelineno-0-510"></a><span class="sd">    prev_dir</span>
-</span><span id="__span-0-511"><a id="__codelineno-0-511" name="__codelineno-0-511"></a><span class="sd">        The previous directory.</span>
-</span><span id="__span-0-512"><a id="__codelineno-0-512" name="__codelineno-0-512"></a>
-</span><span id="__span-0-513"><a id="__codelineno-0-513" name="__codelineno-0-513"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-514"><a id="__codelineno-0-514" name="__codelineno-0-514"></a><span class="sd">    -------</span>
-</span><span id="__span-0-515"><a id="__codelineno-0-515" name="__codelineno-0-515"></a><span class="sd">    None</span>
-</span><span id="__span-0-516"><a id="__codelineno-0-516" name="__codelineno-0-516"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-517"><a id="__codelineno-0-517" name="__codelineno-0-517"></a>    <span class="k">if</span> <span class="n">atoms</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">prev_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-518"><a id="__codelineno-0-518" name="__codelineno-0-518"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either atoms or prev_dir must be provided.&quot;</span><span class="p">)</span>
-</span><span id="__span-0-519"><a id="__codelineno-0-519" name="__codelineno-0-519"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="n">atoms</span>
-</span><span id="__span-0-520"><a id="__codelineno-0-520" name="__codelineno-0-520"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">prev_dir</span> <span class="o">=</span> <span class="n">prev_dir</span>
-</span><span id="__span-0-521"><a id="__codelineno-0-521" name="__codelineno-0-521"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
-</span><span id="__span-0-522"><a id="__codelineno-0-522" name="__codelineno-0-522"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ase_sort</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ase_resort</span> <span class="o">=</span> <span class="n">Vasp_</span><span class="p">()</span><span class="o">.</span><span class="n">_make_sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
-</span><span id="__span-0-523"><a id="__codelineno-0-523" name="__codelineno-0-523"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">AseAtomsAdaptor</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ase_sort</span><span class="p">])</span>
-</span><span id="__span-0-524"><a id="__codelineno-0-524" name="__codelineno-0-524"></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="__span-0-525"><a id="__codelineno-0-525" name="__codelineno-0-525"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-506"><a id="__codelineno-0-506" name="__codelineno-0-506"></a><span class="sd">    Returns</span>
+</span><span id="__span-0-507"><a id="__codelineno-0-507" name="__codelineno-0-507"></a><span class="sd">    -------</span>
+</span><span id="__span-0-508"><a id="__codelineno-0-508" name="__codelineno-0-508"></a><span class="sd">    None</span>
+</span><span id="__span-0-509"><a id="__codelineno-0-509" name="__codelineno-0-509"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-510"><a id="__codelineno-0-510" name="__codelineno-0-510"></a>    <span class="k">if</span> <span class="n">atoms</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">prev_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-511"><a id="__codelineno-0-511" name="__codelineno-0-511"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Either atoms or prev_dir must be provided.&quot;</span><span class="p">)</span>
+</span><span id="__span-0-512"><a id="__codelineno-0-512" name="__codelineno-0-512"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="n">atoms</span>
+</span><span id="__span-0-513"><a id="__codelineno-0-513" name="__codelineno-0-513"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">prev_dir</span> <span class="o">=</span> <span class="n">prev_dir</span>
+</span><span id="__span-0-514"><a id="__codelineno-0-514" name="__codelineno-0-514"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+</span><span id="__span-0-515"><a id="__codelineno-0-515" name="__codelineno-0-515"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">ase_sort</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ase_resort</span> <span class="o">=</span> <span class="n">Vasp_</span><span class="p">()</span><span class="o">.</span><span class="n">_make_sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+</span><span id="__span-0-516"><a id="__codelineno-0-516" name="__codelineno-0-516"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">AseAtomsAdaptor</span><span class="o">.</span><span class="n">get_structure</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ase_sort</span><span class="p">])</span>
+</span><span id="__span-0-517"><a id="__codelineno-0-517" name="__codelineno-0-517"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-518"><a id="__codelineno-0-518" name="__codelineno-0-518"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="kc">None</span>
 </span></code></pre></div></td></tr></table></div>
                   </details>
 
@@ -6806,7 +6806,14 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/calculators/vasp/params.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-553">553</a></span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-546">546</a></span>
+<span class="normal"><a href="#__codelineno-0-547">547</a></span>
+<span class="normal"><a href="#__codelineno-0-548">548</a></span>
+<span class="normal"><a href="#__codelineno-0-549">549</a></span>
+<span class="normal"><a href="#__codelineno-0-550">550</a></span>
+<span class="normal"><a href="#__codelineno-0-551">551</a></span>
+<span class="normal"><a href="#__codelineno-0-552">552</a></span>
+<span class="normal"><a href="#__codelineno-0-553">553</a></span>
 <span class="normal"><a href="#__codelineno-0-554">554</a></span>
 <span class="normal"><a href="#__codelineno-0-555">555</a></span>
 <span class="normal"><a href="#__codelineno-0-556">556</a></span>
@@ -6828,43 +6835,36 @@
 <span class="normal"><a href="#__codelineno-0-572">572</a></span>
 <span class="normal"><a href="#__codelineno-0-573">573</a></span>
 <span class="normal"><a href="#__codelineno-0-574">574</a></span>
-<span class="normal"><a href="#__codelineno-0-575">575</a></span>
-<span class="normal"><a href="#__codelineno-0-576">576</a></span>
-<span class="normal"><a href="#__codelineno-0-577">577</a></span>
-<span class="normal"><a href="#__codelineno-0-578">578</a></span>
-<span class="normal"><a href="#__codelineno-0-579">579</a></span>
-<span class="normal"><a href="#__codelineno-0-580">580</a></span>
-<span class="normal"><a href="#__codelineno-0-581">581</a></span>
-<span class="normal"><a href="#__codelineno-0-582">582</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-553"><a id="__codelineno-0-553" name="__codelineno-0-553"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">&quot;atomate2 is not installed.&quot;</span><span class="p">)</span>
-</span><span id="__span-0-554"><a id="__codelineno-0-554" name="__codelineno-0-554"></a><span class="k">def</span><span class="w"> </span><span class="nf">convert_input_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_generator</span><span class="p">:</span> <span class="n">VaspInputGenerator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="__span-0-555"><a id="__codelineno-0-555" name="__codelineno-0-555"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-556"><a id="__codelineno-0-556" name="__codelineno-0-556"></a><span class="sd">    Convert a VaspInputGenerator to a dictionary of ASE VASP parameters.</span>
-</span><span id="__span-0-557"><a id="__codelineno-0-557" name="__codelineno-0-557"></a>
-</span><span id="__span-0-558"><a id="__codelineno-0-558" name="__codelineno-0-558"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-559"><a id="__codelineno-0-559" name="__codelineno-0-559"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-560"><a id="__codelineno-0-560" name="__codelineno-0-560"></a><span class="sd">    input_generator</span>
-</span><span id="__span-0-561"><a id="__codelineno-0-561" name="__codelineno-0-561"></a><span class="sd">        The instantiated VaspInputGenerator.</span>
-</span><span id="__span-0-562"><a id="__codelineno-0-562" name="__codelineno-0-562"></a>
-</span><span id="__span-0-563"><a id="__codelineno-0-563" name="__codelineno-0-563"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-564"><a id="__codelineno-0-564" name="__codelineno-0-564"></a><span class="sd">    -------</span>
-</span><span id="__span-0-565"><a id="__codelineno-0-565" name="__codelineno-0-565"></a><span class="sd">    dict</span>
-</span><span id="__span-0-566"><a id="__codelineno-0-566" name="__codelineno-0-566"></a><span class="sd">        The ASE VASP parameters.</span>
-</span><span id="__span-0-567"><a id="__codelineno-0-567" name="__codelineno-0-567"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-568"><a id="__codelineno-0-568" name="__codelineno-0-568"></a>    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">input_generator</span><span class="p">,</span> <span class="s2">&quot;sort_structure&quot;</span><span class="p">)</span>
-</span><span id="__span-0-569"><a id="__codelineno-0-569" name="__codelineno-0-569"></a>    <span class="n">input_generator</span><span class="o">.</span><span class="n">sort_structure</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="__span-0-570"><a id="__codelineno-0-570" name="__codelineno-0-570"></a>    <span class="n">input_set</span> <span class="o">=</span> <span class="n">input_generator</span><span class="o">.</span><span class="n">get_input_set</span><span class="p">(</span>
-</span><span id="__span-0-571"><a id="__codelineno-0-571" name="__codelineno-0-571"></a>        <span class="n">structure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span> <span class="n">potcar_spec</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">prev_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prev_dir</span>
+<span class="normal"><a href="#__codelineno-0-575">575</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-546"><a id="__codelineno-0-546" name="__codelineno-0-546"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">&quot;atomate2 is not installed.&quot;</span><span class="p">)</span>
+</span><span id="__span-0-547"><a id="__codelineno-0-547" name="__codelineno-0-547"></a><span class="k">def</span><span class="w"> </span><span class="nf">convert_input_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_generator</span><span class="p">:</span> <span class="n">VaspInputGenerator</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="__span-0-548"><a id="__codelineno-0-548" name="__codelineno-0-548"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-549"><a id="__codelineno-0-549" name="__codelineno-0-549"></a><span class="sd">    Convert a VaspInputGenerator to a dictionary of ASE VASP parameters.</span>
+</span><span id="__span-0-550"><a id="__codelineno-0-550" name="__codelineno-0-550"></a>
+</span><span id="__span-0-551"><a id="__codelineno-0-551" name="__codelineno-0-551"></a><span class="sd">    Parameters</span>
+</span><span id="__span-0-552"><a id="__codelineno-0-552" name="__codelineno-0-552"></a><span class="sd">    ----------</span>
+</span><span id="__span-0-553"><a id="__codelineno-0-553" name="__codelineno-0-553"></a><span class="sd">    input_generator</span>
+</span><span id="__span-0-554"><a id="__codelineno-0-554" name="__codelineno-0-554"></a><span class="sd">        The instantiated VaspInputGenerator.</span>
+</span><span id="__span-0-555"><a id="__codelineno-0-555" name="__codelineno-0-555"></a>
+</span><span id="__span-0-556"><a id="__codelineno-0-556" name="__codelineno-0-556"></a><span class="sd">    Returns</span>
+</span><span id="__span-0-557"><a id="__codelineno-0-557" name="__codelineno-0-557"></a><span class="sd">    -------</span>
+</span><span id="__span-0-558"><a id="__codelineno-0-558" name="__codelineno-0-558"></a><span class="sd">    dict</span>
+</span><span id="__span-0-559"><a id="__codelineno-0-559" name="__codelineno-0-559"></a><span class="sd">        The ASE VASP parameters.</span>
+</span><span id="__span-0-560"><a id="__codelineno-0-560" name="__codelineno-0-560"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-561"><a id="__codelineno-0-561" name="__codelineno-0-561"></a>    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">input_generator</span><span class="p">,</span> <span class="s2">&quot;sort_structure&quot;</span><span class="p">)</span>
+</span><span id="__span-0-562"><a id="__codelineno-0-562" name="__codelineno-0-562"></a>    <span class="n">input_generator</span><span class="o">.</span><span class="n">sort_structure</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="__span-0-563"><a id="__codelineno-0-563" name="__codelineno-0-563"></a>    <span class="n">input_set</span> <span class="o">=</span> <span class="n">input_generator</span><span class="o">.</span><span class="n">get_input_set</span><span class="p">(</span>
+</span><span id="__span-0-564"><a id="__codelineno-0-564" name="__codelineno-0-564"></a>        <span class="n">structure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span> <span class="n">potcar_spec</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">prev_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prev_dir</span>
+</span><span id="__span-0-565"><a id="__codelineno-0-565" name="__codelineno-0-565"></a>    <span class="p">)</span>
+</span><span id="__span-0-566"><a id="__codelineno-0-566" name="__codelineno-0-566"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">incar_dict</span> <span class="o">=</span> <span class="n">input_set</span><span class="o">.</span><span class="n">incar</span>
+</span><span id="__span-0-567"><a id="__codelineno-0-567" name="__codelineno-0-567"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">pmg_kpts</span> <span class="o">=</span> <span class="n">input_set</span><span class="o">.</span><span class="n">kpoints</span>
+</span><span id="__span-0-568"><a id="__codelineno-0-568" name="__codelineno-0-568"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">potcar_symbols</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-0-569"><a id="__codelineno-0-569" name="__codelineno-0-569"></a>        <span class="n">input_set</span><span class="o">.</span><span class="n">potcar</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-0-570"><a id="__codelineno-0-570" name="__codelineno-0-570"></a>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_set</span><span class="o">.</span><span class="n">potcar</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+</span><span id="__span-0-571"><a id="__codelineno-0-571" name="__codelineno-0-571"></a>        <span class="k">else</span> <span class="n">input_set</span><span class="o">.</span><span class="n">potcar</span>
 </span><span id="__span-0-572"><a id="__codelineno-0-572" name="__codelineno-0-572"></a>    <span class="p">)</span>
-</span><span id="__span-0-573"><a id="__codelineno-0-573" name="__codelineno-0-573"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">incar_dict</span> <span class="o">=</span> <span class="n">input_set</span><span class="o">.</span><span class="n">incar</span>
-</span><span id="__span-0-574"><a id="__codelineno-0-574" name="__codelineno-0-574"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">pmg_kpts</span> <span class="o">=</span> <span class="n">input_set</span><span class="o">.</span><span class="n">kpoints</span>
-</span><span id="__span-0-575"><a id="__codelineno-0-575" name="__codelineno-0-575"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">potcar_symbols</span> <span class="o">=</span> <span class="p">(</span>
-</span><span id="__span-0-576"><a id="__codelineno-0-576" name="__codelineno-0-576"></a>        <span class="n">input_set</span><span class="o">.</span><span class="n">potcar</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-0-577"><a id="__codelineno-0-577" name="__codelineno-0-577"></a>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">input_set</span><span class="o">.</span><span class="n">potcar</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
-</span><span id="__span-0-578"><a id="__codelineno-0-578" name="__codelineno-0-578"></a>        <span class="k">else</span> <span class="n">input_set</span><span class="o">.</span><span class="n">potcar</span>
-</span><span id="__span-0-579"><a id="__codelineno-0-579" name="__codelineno-0-579"></a>    <span class="p">)</span>
-</span><span id="__span-0-580"><a id="__codelineno-0-580" name="__codelineno-0-580"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">potcar_functional</span> <span class="o">=</span> <span class="n">input_generator</span><span class="o">.</span><span class="n">potcar_functional</span>
-</span><span id="__span-0-581"><a id="__codelineno-0-581" name="__codelineno-0-581"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">poscar</span> <span class="o">=</span> <span class="n">input_set</span><span class="o">.</span><span class="n">poscar</span>
-</span><span id="__span-0-582"><a id="__codelineno-0-582" name="__codelineno-0-582"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert</span><span class="p">()</span>
+</span><span id="__span-0-573"><a id="__codelineno-0-573" name="__codelineno-0-573"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">potcar_functional</span> <span class="o">=</span> <span class="n">input_generator</span><span class="o">.</span><span class="n">potcar_functional</span>
+</span><span id="__span-0-574"><a id="__codelineno-0-574" name="__codelineno-0-574"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">poscar</span> <span class="o">=</span> <span class="n">input_set</span><span class="o">.</span><span class="n">poscar</span>
+</span><span id="__span-0-575"><a id="__codelineno-0-575" name="__codelineno-0-575"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6914,7 +6914,14 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/calculators/vasp/params.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-527">527</a></span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-520">520</a></span>
+<span class="normal"><a href="#__codelineno-0-521">521</a></span>
+<span class="normal"><a href="#__codelineno-0-522">522</a></span>
+<span class="normal"><a href="#__codelineno-0-523">523</a></span>
+<span class="normal"><a href="#__codelineno-0-524">524</a></span>
+<span class="normal"><a href="#__codelineno-0-525">525</a></span>
+<span class="normal"><a href="#__codelineno-0-526">526</a></span>
+<span class="normal"><a href="#__codelineno-0-527">527</a></span>
 <span class="normal"><a href="#__codelineno-0-528">528</a></span>
 <span class="normal"><a href="#__codelineno-0-529">529</a></span>
 <span class="normal"><a href="#__codelineno-0-530">530</a></span>
@@ -6931,38 +6938,31 @@
 <span class="normal"><a href="#__codelineno-0-541">541</a></span>
 <span class="normal"><a href="#__codelineno-0-542">542</a></span>
 <span class="normal"><a href="#__codelineno-0-543">543</a></span>
-<span class="normal"><a href="#__codelineno-0-544">544</a></span>
-<span class="normal"><a href="#__codelineno-0-545">545</a></span>
-<span class="normal"><a href="#__codelineno-0-546">546</a></span>
-<span class="normal"><a href="#__codelineno-0-547">547</a></span>
-<span class="normal"><a href="#__codelineno-0-548">548</a></span>
-<span class="normal"><a href="#__codelineno-0-549">549</a></span>
-<span class="normal"><a href="#__codelineno-0-550">550</a></span>
-<span class="normal"><a href="#__codelineno-0-551">551</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-527"><a id="__codelineno-0-527" name="__codelineno-0-527"></a><span class="k">def</span><span class="w"> </span><span class="nf">convert_input_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_set</span><span class="p">:</span> <span class="n">VaspInputSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="__span-0-528"><a id="__codelineno-0-528" name="__codelineno-0-528"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-529"><a id="__codelineno-0-529" name="__codelineno-0-529"></a><span class="sd">    Convert a Pymatgen VaspInputSet to a dictionary of ASE VASP parameters.</span>
-</span><span id="__span-0-530"><a id="__codelineno-0-530" name="__codelineno-0-530"></a>
-</span><span id="__span-0-531"><a id="__codelineno-0-531" name="__codelineno-0-531"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-532"><a id="__codelineno-0-532" name="__codelineno-0-532"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-533"><a id="__codelineno-0-533" name="__codelineno-0-533"></a><span class="sd">    input_set</span>
-</span><span id="__span-0-534"><a id="__codelineno-0-534" name="__codelineno-0-534"></a><span class="sd">        The instantiated Pymatgen VaspInputSet.</span>
-</span><span id="__span-0-535"><a id="__codelineno-0-535" name="__codelineno-0-535"></a>
-</span><span id="__span-0-536"><a id="__codelineno-0-536" name="__codelineno-0-536"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-537"><a id="__codelineno-0-537" name="__codelineno-0-537"></a><span class="sd">    -------</span>
-</span><span id="__span-0-538"><a id="__codelineno-0-538" name="__codelineno-0-538"></a><span class="sd">    dict</span>
-</span><span id="__span-0-539"><a id="__codelineno-0-539" name="__codelineno-0-539"></a><span class="sd">        The ASE VASP parameters.</span>
-</span><span id="__span-0-540"><a id="__codelineno-0-540" name="__codelineno-0-540"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-541"><a id="__codelineno-0-541" name="__codelineno-0-541"></a>    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">input_set</span><span class="p">,</span> <span class="s2">&quot;sort_structure&quot;</span><span class="p">)</span>
-</span><span id="__span-0-542"><a id="__codelineno-0-542" name="__codelineno-0-542"></a>    <span class="n">input_set</span><span class="o">.</span><span class="n">sort_structure</span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="__span-0-543"><a id="__codelineno-0-543" name="__codelineno-0-543"></a>    <span class="n">vasp_input</span> <span class="o">=</span> <span class="n">input_set</span><span class="o">.</span><span class="n">get_input_set</span><span class="p">(</span>
-</span><span id="__span-0-544"><a id="__codelineno-0-544" name="__codelineno-0-544"></a>        <span class="n">structure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span> <span class="n">potcar_spec</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">prev_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prev_dir</span>
-</span><span id="__span-0-545"><a id="__codelineno-0-545" name="__codelineno-0-545"></a>    <span class="p">)</span>
-</span><span id="__span-0-546"><a id="__codelineno-0-546" name="__codelineno-0-546"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">incar_dict</span> <span class="o">=</span> <span class="n">vasp_input</span><span class="p">[</span><span class="s2">&quot;INCAR&quot;</span><span class="p">]</span>
-</span><span id="__span-0-547"><a id="__codelineno-0-547" name="__codelineno-0-547"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">pmg_kpts</span> <span class="o">=</span> <span class="n">vasp_input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;KPOINTS&quot;</span><span class="p">)</span>
-</span><span id="__span-0-548"><a id="__codelineno-0-548" name="__codelineno-0-548"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">potcar_symbols</span> <span class="o">=</span> <span class="n">vasp_input</span><span class="p">[</span><span class="s2">&quot;POTCAR.spec&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-0-549"><a id="__codelineno-0-549" name="__codelineno-0-549"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">potcar_functional</span> <span class="o">=</span> <span class="n">input_set</span><span class="o">.</span><span class="n">potcar_functional</span>
-</span><span id="__span-0-550"><a id="__codelineno-0-550" name="__codelineno-0-550"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">poscar</span> <span class="o">=</span> <span class="n">vasp_input</span><span class="p">[</span><span class="s2">&quot;POSCAR&quot;</span><span class="p">]</span>
-</span><span id="__span-0-551"><a id="__codelineno-0-551" name="__codelineno-0-551"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert</span><span class="p">()</span>
+<span class="normal"><a href="#__codelineno-0-544">544</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-520"><a id="__codelineno-0-520" name="__codelineno-0-520"></a><span class="k">def</span><span class="w"> </span><span class="nf">convert_input_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_set</span><span class="p">:</span> <span class="n">VaspInputSet</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="__span-0-521"><a id="__codelineno-0-521" name="__codelineno-0-521"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-522"><a id="__codelineno-0-522" name="__codelineno-0-522"></a><span class="sd">    Convert a Pymatgen VaspInputSet to a dictionary of ASE VASP parameters.</span>
+</span><span id="__span-0-523"><a id="__codelineno-0-523" name="__codelineno-0-523"></a>
+</span><span id="__span-0-524"><a id="__codelineno-0-524" name="__codelineno-0-524"></a><span class="sd">    Parameters</span>
+</span><span id="__span-0-525"><a id="__codelineno-0-525" name="__codelineno-0-525"></a><span class="sd">    ----------</span>
+</span><span id="__span-0-526"><a id="__codelineno-0-526" name="__codelineno-0-526"></a><span class="sd">    input_set</span>
+</span><span id="__span-0-527"><a id="__codelineno-0-527" name="__codelineno-0-527"></a><span class="sd">        The instantiated Pymatgen VaspInputSet.</span>
+</span><span id="__span-0-528"><a id="__codelineno-0-528" name="__codelineno-0-528"></a>
+</span><span id="__span-0-529"><a id="__codelineno-0-529" name="__codelineno-0-529"></a><span class="sd">    Returns</span>
+</span><span id="__span-0-530"><a id="__codelineno-0-530" name="__codelineno-0-530"></a><span class="sd">    -------</span>
+</span><span id="__span-0-531"><a id="__codelineno-0-531" name="__codelineno-0-531"></a><span class="sd">    dict</span>
+</span><span id="__span-0-532"><a id="__codelineno-0-532" name="__codelineno-0-532"></a><span class="sd">        The ASE VASP parameters.</span>
+</span><span id="__span-0-533"><a id="__codelineno-0-533" name="__codelineno-0-533"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-534"><a id="__codelineno-0-534" name="__codelineno-0-534"></a>    <span class="k">assert</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">input_set</span><span class="p">,</span> <span class="s2">&quot;sort_structure&quot;</span><span class="p">)</span>
+</span><span id="__span-0-535"><a id="__codelineno-0-535" name="__codelineno-0-535"></a>    <span class="n">input_set</span><span class="o">.</span><span class="n">sort_structure</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="__span-0-536"><a id="__codelineno-0-536" name="__codelineno-0-536"></a>    <span class="n">vasp_input</span> <span class="o">=</span> <span class="n">input_set</span><span class="o">.</span><span class="n">get_input_set</span><span class="p">(</span>
+</span><span id="__span-0-537"><a id="__codelineno-0-537" name="__codelineno-0-537"></a>        <span class="n">structure</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="p">,</span> <span class="n">potcar_spec</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">prev_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">prev_dir</span>
+</span><span id="__span-0-538"><a id="__codelineno-0-538" name="__codelineno-0-538"></a>    <span class="p">)</span>
+</span><span id="__span-0-539"><a id="__codelineno-0-539" name="__codelineno-0-539"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">incar_dict</span> <span class="o">=</span> <span class="n">vasp_input</span><span class="p">[</span><span class="s2">&quot;INCAR&quot;</span><span class="p">]</span>
+</span><span id="__span-0-540"><a id="__codelineno-0-540" name="__codelineno-0-540"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">pmg_kpts</span> <span class="o">=</span> <span class="n">vasp_input</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;KPOINTS&quot;</span><span class="p">)</span>
+</span><span id="__span-0-541"><a id="__codelineno-0-541" name="__codelineno-0-541"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">potcar_symbols</span> <span class="o">=</span> <span class="n">vasp_input</span><span class="p">[</span><span class="s2">&quot;POTCAR.spec&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-0-542"><a id="__codelineno-0-542" name="__codelineno-0-542"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">potcar_functional</span> <span class="o">=</span> <span class="n">input_set</span><span class="o">.</span><span class="n">potcar_functional</span>
+</span><span id="__span-0-543"><a id="__codelineno-0-543" name="__codelineno-0-543"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">poscar</span> <span class="o">=</span> <span class="n">vasp_input</span><span class="p">[</span><span class="s2">&quot;POSCAR&quot;</span><span class="p">]</span>
+</span><span id="__span-0-544"><a id="__codelineno-0-544" name="__codelineno-0-544"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_convert</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7012,7 +7012,14 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/calculators/vasp/params.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-584">584</a></span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-577">577</a></span>
+<span class="normal"><a href="#__codelineno-0-578">578</a></span>
+<span class="normal"><a href="#__codelineno-0-579">579</a></span>
+<span class="normal"><a href="#__codelineno-0-580">580</a></span>
+<span class="normal"><a href="#__codelineno-0-581">581</a></span>
+<span class="normal"><a href="#__codelineno-0-582">582</a></span>
+<span class="normal"><a href="#__codelineno-0-583">583</a></span>
+<span class="normal"><a href="#__codelineno-0-584">584</a></span>
 <span class="normal"><a href="#__codelineno-0-585">585</a></span>
 <span class="normal"><a href="#__codelineno-0-586">586</a></span>
 <span class="normal"><a href="#__codelineno-0-587">587</a></span>
@@ -7020,29 +7027,22 @@
 <span class="normal"><a href="#__codelineno-0-589">589</a></span>
 <span class="normal"><a href="#__codelineno-0-590">590</a></span>
 <span class="normal"><a href="#__codelineno-0-591">591</a></span>
-<span class="normal"><a href="#__codelineno-0-592">592</a></span>
-<span class="normal"><a href="#__codelineno-0-593">593</a></span>
-<span class="normal"><a href="#__codelineno-0-594">594</a></span>
-<span class="normal"><a href="#__codelineno-0-595">595</a></span>
-<span class="normal"><a href="#__codelineno-0-596">596</a></span>
-<span class="normal"><a href="#__codelineno-0-597">597</a></span>
-<span class="normal"><a href="#__codelineno-0-598">598</a></span>
-<span class="normal"><a href="#__codelineno-0-599">599</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-584"><a id="__codelineno-0-584" name="__codelineno-0-584"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">&quot;atomate2 is not installed.&quot;</span><span class="p">)</span>
-</span><span id="__span-0-585"><a id="__codelineno-0-585" name="__codelineno-0-585"></a><span class="k">def</span><span class="w"> </span><span class="nf">convert_maker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">VaspMaker</span><span class="p">:</span> <span class="n">BaseVaspMaker</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-</span><span id="__span-0-586"><a id="__codelineno-0-586" name="__codelineno-0-586"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-587"><a id="__codelineno-0-587" name="__codelineno-0-587"></a><span class="sd">    Convert an atomate2 VaspMaker to a dictionary of ASE VASP parameters.</span>
-</span><span id="__span-0-588"><a id="__codelineno-0-588" name="__codelineno-0-588"></a>
-</span><span id="__span-0-589"><a id="__codelineno-0-589" name="__codelineno-0-589"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-590"><a id="__codelineno-0-590" name="__codelineno-0-590"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-591"><a id="__codelineno-0-591" name="__codelineno-0-591"></a><span class="sd">    VaspMaker</span>
-</span><span id="__span-0-592"><a id="__codelineno-0-592" name="__codelineno-0-592"></a><span class="sd">        The instantiated atomate2 VaspMaker.</span>
-</span><span id="__span-0-593"><a id="__codelineno-0-593" name="__codelineno-0-593"></a>
-</span><span id="__span-0-594"><a id="__codelineno-0-594" name="__codelineno-0-594"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-595"><a id="__codelineno-0-595" name="__codelineno-0-595"></a><span class="sd">    -------</span>
-</span><span id="__span-0-596"><a id="__codelineno-0-596" name="__codelineno-0-596"></a><span class="sd">    dict</span>
-</span><span id="__span-0-597"><a id="__codelineno-0-597" name="__codelineno-0-597"></a><span class="sd">        The ASE VASP parameters.</span>
-</span><span id="__span-0-598"><a id="__codelineno-0-598" name="__codelineno-0-598"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-599"><a id="__codelineno-0-599" name="__codelineno-0-599"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_input_generator</span><span class="p">(</span><span class="n">VaspMaker</span><span class="o">.</span><span class="n">input_set_generator</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-592">592</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-577"><a id="__codelineno-0-577" name="__codelineno-0-577"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">&quot;atomate2 is not installed.&quot;</span><span class="p">)</span>
+</span><span id="__span-0-578"><a id="__codelineno-0-578" name="__codelineno-0-578"></a><span class="k">def</span><span class="w"> </span><span class="nf">convert_maker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">VaspMaker</span><span class="p">:</span> <span class="n">BaseVaspMaker</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+</span><span id="__span-0-579"><a id="__codelineno-0-579" name="__codelineno-0-579"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-580"><a id="__codelineno-0-580" name="__codelineno-0-580"></a><span class="sd">    Convert an atomate2 VaspMaker to a dictionary of ASE VASP parameters.</span>
+</span><span id="__span-0-581"><a id="__codelineno-0-581" name="__codelineno-0-581"></a>
+</span><span id="__span-0-582"><a id="__codelineno-0-582" name="__codelineno-0-582"></a><span class="sd">    Parameters</span>
+</span><span id="__span-0-583"><a id="__codelineno-0-583" name="__codelineno-0-583"></a><span class="sd">    ----------</span>
+</span><span id="__span-0-584"><a id="__codelineno-0-584" name="__codelineno-0-584"></a><span class="sd">    VaspMaker</span>
+</span><span id="__span-0-585"><a id="__codelineno-0-585" name="__codelineno-0-585"></a><span class="sd">        The instantiated atomate2 VaspMaker.</span>
+</span><span id="__span-0-586"><a id="__codelineno-0-586" name="__codelineno-0-586"></a>
+</span><span id="__span-0-587"><a id="__codelineno-0-587" name="__codelineno-0-587"></a><span class="sd">    Returns</span>
+</span><span id="__span-0-588"><a id="__codelineno-0-588" name="__codelineno-0-588"></a><span class="sd">    -------</span>
+</span><span id="__span-0-589"><a id="__codelineno-0-589" name="__codelineno-0-589"></a><span class="sd">    dict</span>
+</span><span id="__span-0-590"><a id="__codelineno-0-590" name="__codelineno-0-590"></a><span class="sd">        The ASE VASP parameters.</span>
+</span><span id="__span-0-591"><a id="__codelineno-0-591" name="__codelineno-0-591"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-592"><a id="__codelineno-0-592" name="__codelineno-0-592"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">convert_input_generator</span><span class="p">(</span><span class="n">VaspMaker</span><span class="o">.</span><span class="n">input_set_generator</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7447,14 +7447,7 @@
 <span class="normal"><a href="#__codelineno-0-339">339</a></span>
 <span class="normal"><a href="#__codelineno-0-340">340</a></span>
 <span class="normal"><a href="#__codelineno-0-341">341</a></span>
-<span class="normal"><a href="#__codelineno-0-342">342</a></span>
-<span class="normal"><a href="#__codelineno-0-343">343</a></span>
-<span class="normal"><a href="#__codelineno-0-344">344</a></span>
-<span class="normal"><a href="#__codelineno-0-345">345</a></span>
-<span class="normal"><a href="#__codelineno-0-346">346</a></span>
-<span class="normal"><a href="#__codelineno-0-347">347</a></span>
-<span class="normal"><a href="#__codelineno-0-348">348</a></span>
-<span class="normal"><a href="#__codelineno-0-349">349</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_param_swaps</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-342">342</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_param_swaps</span><span class="p">(</span>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="n">user_calc_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="n">input_atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="n">pmg_kpts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;line_density&quot;</span><span class="p">,</span> <span class="s2">&quot;kppvol&quot;</span><span class="p">,</span> <span class="s2">&quot;kppa&quot;</span><span class="p">],</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -7759,15 +7752,8 @@
 </span><span id="__span-0-338"><a id="__codelineno-0-338" name="__codelineno-0-338"></a>        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
 </span><span id="__span-0-339"><a id="__codelineno-0-339" name="__codelineno-0-339"></a>            <span class="sa">f</span><span class="s2">&quot;The following parameters were changed: </span><span class="si">{</span><span class="n">sort_dict</span><span class="p">(</span><span class="n">changed_parameters</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
 </span><span id="__span-0-340"><a id="__codelineno-0-340" name="__codelineno-0-340"></a>        <span class="p">)</span>
-</span><span id="__span-0-341"><a id="__codelineno-0-341" name="__codelineno-0-341"></a>    <span class="k">if</span> <span class="n">unchanged_parameters</span> <span class="o">:=</span> <span class="p">{</span>
-</span><span id="__span-0-342"><a id="__codelineno-0-342" name="__codelineno-0-342"></a>        <span class="n">k</span><span class="p">:</span> <span class="n">new_parameters</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
-</span><span id="__span-0-343"><a id="__codelineno-0-343" name="__codelineno-0-343"></a>        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">new_parameters</span>
-</span><span id="__span-0-344"><a id="__codelineno-0-344" name="__codelineno-0-344"></a>        <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_parameters</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">user_calc_params</span><span class="p">)</span>
-</span><span id="__span-0-345"><a id="__codelineno-0-345" name="__codelineno-0-345"></a>    <span class="p">}:</span>
-</span><span id="__span-0-346"><a id="__codelineno-0-346" name="__codelineno-0-346"></a>        <span class="n">LOGGER</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
-</span><span id="__span-0-347"><a id="__codelineno-0-347" name="__codelineno-0-347"></a>            <span class="sa">f</span><span class="s2">&quot;The following parameters were NOT changed since the user specifically requested them: </span><span class="si">{</span><span class="n">sort_dict</span><span class="p">(</span><span class="n">unchanged_parameters</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
-</span><span id="__span-0-348"><a id="__codelineno-0-348" name="__codelineno-0-348"></a>        <span class="p">)</span>
-</span><span id="__span-0-349"><a id="__codelineno-0-349" name="__codelineno-0-349"></a>    <span class="k">return</span> <span class="n">new_parameters</span>
+</span><span id="__span-0-341"><a id="__codelineno-0-341" name="__codelineno-0-341"></a>
+</span><span id="__span-0-342"><a id="__codelineno-0-342" name="__codelineno-0-342"></a>    <span class="k">return</span> <span class="n">new_parameters</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7819,7 +7805,14 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/calculators/vasp/params.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-408">408</a></span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-401">401</a></span>
+<span class="normal"><a href="#__codelineno-0-402">402</a></span>
+<span class="normal"><a href="#__codelineno-0-403">403</a></span>
+<span class="normal"><a href="#__codelineno-0-404">404</a></span>
+<span class="normal"><a href="#__codelineno-0-405">405</a></span>
+<span class="normal"><a href="#__codelineno-0-406">406</a></span>
+<span class="normal"><a href="#__codelineno-0-407">407</a></span>
+<span class="normal"><a href="#__codelineno-0-408">408</a></span>
 <span class="normal"><a href="#__codelineno-0-409">409</a></span>
 <span class="normal"><a href="#__codelineno-0-410">410</a></span>
 <span class="normal"><a href="#__codelineno-0-411">411</a></span>
@@ -7831,33 +7824,26 @@
 <span class="normal"><a href="#__codelineno-0-417">417</a></span>
 <span class="normal"><a href="#__codelineno-0-418">418</a></span>
 <span class="normal"><a href="#__codelineno-0-419">419</a></span>
-<span class="normal"><a href="#__codelineno-0-420">420</a></span>
-<span class="normal"><a href="#__codelineno-0-421">421</a></span>
-<span class="normal"><a href="#__codelineno-0-422">422</a></span>
-<span class="normal"><a href="#__codelineno-0-423">423</a></span>
-<span class="normal"><a href="#__codelineno-0-424">424</a></span>
-<span class="normal"><a href="#__codelineno-0-425">425</a></span>
-<span class="normal"><a href="#__codelineno-0-426">426</a></span>
-<span class="normal"><a href="#__codelineno-0-427">427</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-408"><a id="__codelineno-0-408" name="__codelineno-0-408"></a><span class="k">def</span><span class="w"> </span><span class="nf">normalize_params</span><span class="p">(</span><span class="n">user_calc_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span id="__span-0-409"><a id="__codelineno-0-409" name="__codelineno-0-409"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-410"><a id="__codelineno-0-410" name="__codelineno-0-410"></a><span class="sd">    Normalizes the user-provided calculator parameters.</span>
-</span><span id="__span-0-411"><a id="__codelineno-0-411" name="__codelineno-0-411"></a>
-</span><span id="__span-0-412"><a id="__codelineno-0-412" name="__codelineno-0-412"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-413"><a id="__codelineno-0-413" name="__codelineno-0-413"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-414"><a id="__codelineno-0-414" name="__codelineno-0-414"></a><span class="sd">    user_calc_params</span>
-</span><span id="__span-0-415"><a id="__codelineno-0-415" name="__codelineno-0-415"></a><span class="sd">        The user-provided calculator parameters.</span>
-</span><span id="__span-0-416"><a id="__codelineno-0-416" name="__codelineno-0-416"></a>
-</span><span id="__span-0-417"><a id="__codelineno-0-417" name="__codelineno-0-417"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-418"><a id="__codelineno-0-418" name="__codelineno-0-418"></a><span class="sd">    -------</span>
-</span><span id="__span-0-419"><a id="__codelineno-0-419" name="__codelineno-0-419"></a><span class="sd">    dict</span>
-</span><span id="__span-0-420"><a id="__codelineno-0-420" name="__codelineno-0-420"></a><span class="sd">        The updated user-provided calculator parameters.</span>
-</span><span id="__span-0-421"><a id="__codelineno-0-421" name="__codelineno-0-421"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-422"><a id="__codelineno-0-422" name="__codelineno-0-422"></a>    <span class="k">return</span> <span class="p">{</span>
-</span><span id="__span-0-423"><a id="__codelineno-0-423" name="__codelineno-0-423"></a>        <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span><span class="p">):</span> <span class="p">(</span>
-</span><span id="__span-0-424"><a id="__codelineno-0-424" name="__codelineno-0-424"></a>            <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span>
-</span><span id="__span-0-425"><a id="__codelineno-0-425" name="__codelineno-0-425"></a>        <span class="p">)</span>
-</span><span id="__span-0-426"><a id="__codelineno-0-426" name="__codelineno-0-426"></a>        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">user_calc_params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-</span><span id="__span-0-427"><a id="__codelineno-0-427" name="__codelineno-0-427"></a>    <span class="p">}</span>
+<span class="normal"><a href="#__codelineno-0-420">420</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-401"><a id="__codelineno-0-401" name="__codelineno-0-401"></a><span class="k">def</span><span class="w"> </span><span class="nf">normalize_params</span><span class="p">(</span><span class="n">user_calc_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span id="__span-0-402"><a id="__codelineno-0-402" name="__codelineno-0-402"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-403"><a id="__codelineno-0-403" name="__codelineno-0-403"></a><span class="sd">    Normalizes the user-provided calculator parameters.</span>
+</span><span id="__span-0-404"><a id="__codelineno-0-404" name="__codelineno-0-404"></a>
+</span><span id="__span-0-405"><a id="__codelineno-0-405" name="__codelineno-0-405"></a><span class="sd">    Parameters</span>
+</span><span id="__span-0-406"><a id="__codelineno-0-406" name="__codelineno-0-406"></a><span class="sd">    ----------</span>
+</span><span id="__span-0-407"><a id="__codelineno-0-407" name="__codelineno-0-407"></a><span class="sd">    user_calc_params</span>
+</span><span id="__span-0-408"><a id="__codelineno-0-408" name="__codelineno-0-408"></a><span class="sd">        The user-provided calculator parameters.</span>
+</span><span id="__span-0-409"><a id="__codelineno-0-409" name="__codelineno-0-409"></a>
+</span><span id="__span-0-410"><a id="__codelineno-0-410" name="__codelineno-0-410"></a><span class="sd">    Returns</span>
+</span><span id="__span-0-411"><a id="__codelineno-0-411" name="__codelineno-0-411"></a><span class="sd">    -------</span>
+</span><span id="__span-0-412"><a id="__codelineno-0-412" name="__codelineno-0-412"></a><span class="sd">    dict</span>
+</span><span id="__span-0-413"><a id="__codelineno-0-413" name="__codelineno-0-413"></a><span class="sd">        The updated user-provided calculator parameters.</span>
+</span><span id="__span-0-414"><a id="__codelineno-0-414" name="__codelineno-0-414"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-415"><a id="__codelineno-0-415" name="__codelineno-0-415"></a>    <span class="k">return</span> <span class="p">{</span>
+</span><span id="__span-0-416"><a id="__codelineno-0-416" name="__codelineno-0-416"></a>        <span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span><span class="p">):</span> <span class="p">(</span>
+</span><span id="__span-0-417"><a id="__codelineno-0-417" name="__codelineno-0-417"></a>            <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span>
+</span><span id="__span-0-418"><a id="__codelineno-0-418" name="__codelineno-0-418"></a>        <span class="p">)</span>
+</span><span id="__span-0-419"><a id="__codelineno-0-419" name="__codelineno-0-419"></a>        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">user_calc_params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span id="__span-0-420"><a id="__codelineno-0-420" name="__codelineno-0-420"></a>    <span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -7909,7 +7895,14 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/calculators/vasp/params.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-352">352</a></span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-345">345</a></span>
+<span class="normal"><a href="#__codelineno-0-346">346</a></span>
+<span class="normal"><a href="#__codelineno-0-347">347</a></span>
+<span class="normal"><a href="#__codelineno-0-348">348</a></span>
+<span class="normal"><a href="#__codelineno-0-349">349</a></span>
+<span class="normal"><a href="#__codelineno-0-350">350</a></span>
+<span class="normal"><a href="#__codelineno-0-351">351</a></span>
+<span class="normal"><a href="#__codelineno-0-352">352</a></span>
 <span class="normal"><a href="#__codelineno-0-353">353</a></span>
 <span class="normal"><a href="#__codelineno-0-354">354</a></span>
 <span class="normal"><a href="#__codelineno-0-355">355</a></span>
@@ -7955,67 +7948,60 @@
 <span class="normal"><a href="#__codelineno-0-395">395</a></span>
 <span class="normal"><a href="#__codelineno-0-396">396</a></span>
 <span class="normal"><a href="#__codelineno-0-397">397</a></span>
-<span class="normal"><a href="#__codelineno-0-398">398</a></span>
-<span class="normal"><a href="#__codelineno-0-399">399</a></span>
-<span class="normal"><a href="#__codelineno-0-400">400</a></span>
-<span class="normal"><a href="#__codelineno-0-401">401</a></span>
-<span class="normal"><a href="#__codelineno-0-402">402</a></span>
-<span class="normal"><a href="#__codelineno-0-403">403</a></span>
-<span class="normal"><a href="#__codelineno-0-404">404</a></span>
-<span class="normal"><a href="#__codelineno-0-405">405</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-352"><a id="__codelineno-0-352" name="__codelineno-0-352"></a><span class="k">def</span><span class="w"> </span><span class="nf">remove_unused_flags</span><span class="p">(</span><span class="n">user_calc_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span id="__span-0-353"><a id="__codelineno-0-353" name="__codelineno-0-353"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-354"><a id="__codelineno-0-354" name="__codelineno-0-354"></a><span class="sd">    Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.</span>
-</span><span id="__span-0-355"><a id="__codelineno-0-355" name="__codelineno-0-355"></a>
-</span><span id="__span-0-356"><a id="__codelineno-0-356" name="__codelineno-0-356"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-357"><a id="__codelineno-0-357" name="__codelineno-0-357"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-358"><a id="__codelineno-0-358" name="__codelineno-0-358"></a><span class="sd">    user_calc_params</span>
-</span><span id="__span-0-359"><a id="__codelineno-0-359" name="__codelineno-0-359"></a><span class="sd">        The updated user-provided calculator parameters.</span>
-</span><span id="__span-0-360"><a id="__codelineno-0-360" name="__codelineno-0-360"></a>
-</span><span id="__span-0-361"><a id="__codelineno-0-361" name="__codelineno-0-361"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-362"><a id="__codelineno-0-362" name="__codelineno-0-362"></a><span class="sd">    -------</span>
-</span><span id="__span-0-363"><a id="__codelineno-0-363" name="__codelineno-0-363"></a><span class="sd">    dict</span>
-</span><span id="__span-0-364"><a id="__codelineno-0-364" name="__codelineno-0-364"></a><span class="sd">        The updated user-provided calculator parameters.</span>
-</span><span id="__span-0-365"><a id="__codelineno-0-365" name="__codelineno-0-365"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-366"><a id="__codelineno-0-366" name="__codelineno-0-366"></a>    <span class="n">new_user_calc_params</span> <span class="o">=</span> <span class="n">user_calc_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span id="__span-0-367"><a id="__codelineno-0-367" name="__codelineno-0-367"></a>    <span class="k">if</span> <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nsw&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-</span><span id="__span-0-368"><a id="__codelineno-0-368" name="__codelineno-0-368"></a>        <span class="c1"># Turn off opt flags if NSW = 0</span>
-</span><span id="__span-0-369"><a id="__codelineno-0-369" name="__codelineno-0-369"></a>        <span class="n">opt_flags</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ediffg&quot;</span><span class="p">,</span> <span class="s2">&quot;ibrion&quot;</span><span class="p">,</span> <span class="s2">&quot;potim&quot;</span><span class="p">,</span> <span class="s2">&quot;iopt&quot;</span><span class="p">)</span>
-</span><span id="__span-0-370"><a id="__codelineno-0-370" name="__codelineno-0-370"></a>        <span class="k">for</span> <span class="n">opt_flag</span> <span class="ow">in</span> <span class="n">opt_flags</span><span class="p">:</span>
-</span><span id="__span-0-371"><a id="__codelineno-0-371" name="__codelineno-0-371"></a>            <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">opt_flag</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-</span><span id="__span-0-372"><a id="__codelineno-0-372" name="__codelineno-0-372"></a>
-</span><span id="__span-0-373"><a id="__codelineno-0-373" name="__codelineno-0-373"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ldau&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-</span><span id="__span-0-374"><a id="__codelineno-0-374" name="__codelineno-0-374"></a>        <span class="s2">&quot;ldau_luj&quot;</span>
-</span><span id="__span-0-375"><a id="__codelineno-0-375" name="__codelineno-0-375"></a>    <span class="p">):</span>
-</span><span id="__span-0-376"><a id="__codelineno-0-376" name="__codelineno-0-376"></a>        <span class="c1"># Turn off +U flags if +U is not even used</span>
-</span><span id="__span-0-377"><a id="__codelineno-0-377" name="__codelineno-0-377"></a>        <span class="n">ldau_flags</span> <span class="o">=</span> <span class="p">(</span>
-</span><span id="__span-0-378"><a id="__codelineno-0-378" name="__codelineno-0-378"></a>            <span class="s2">&quot;ldau&quot;</span><span class="p">,</span>
-</span><span id="__span-0-379"><a id="__codelineno-0-379" name="__codelineno-0-379"></a>            <span class="s2">&quot;ldauu&quot;</span><span class="p">,</span>
-</span><span id="__span-0-380"><a id="__codelineno-0-380" name="__codelineno-0-380"></a>            <span class="s2">&quot;ldauj&quot;</span><span class="p">,</span>
-</span><span id="__span-0-381"><a id="__codelineno-0-381" name="__codelineno-0-381"></a>            <span class="s2">&quot;ldaul&quot;</span><span class="p">,</span>
-</span><span id="__span-0-382"><a id="__codelineno-0-382" name="__codelineno-0-382"></a>            <span class="s2">&quot;ldautype&quot;</span><span class="p">,</span>
-</span><span id="__span-0-383"><a id="__codelineno-0-383" name="__codelineno-0-383"></a>            <span class="s2">&quot;ldauprint&quot;</span><span class="p">,</span>
-</span><span id="__span-0-384"><a id="__codelineno-0-384" name="__codelineno-0-384"></a>            <span class="s2">&quot;ldau_luj&quot;</span><span class="p">,</span>
-</span><span id="__span-0-385"><a id="__codelineno-0-385" name="__codelineno-0-385"></a>        <span class="p">)</span>
-</span><span id="__span-0-386"><a id="__codelineno-0-386" name="__codelineno-0-386"></a>        <span class="k">for</span> <span class="n">ldau_flag</span> <span class="ow">in</span> <span class="n">ldau_flags</span><span class="p">:</span>
-</span><span id="__span-0-387"><a id="__codelineno-0-387" name="__codelineno-0-387"></a>            <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">ldau_flag</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="normal"><a href="#__codelineno-0-398">398</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-345"><a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="k">def</span><span class="w"> </span><span class="nf">remove_unused_flags</span><span class="p">(</span><span class="n">user_calc_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span id="__span-0-346"><a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-347"><a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="sd">    Removes unused flags in the INCAR, like EDIFFG if you are doing NSW = 0.</span>
+</span><span id="__span-0-348"><a id="__codelineno-0-348" name="__codelineno-0-348"></a>
+</span><span id="__span-0-349"><a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">    Parameters</span>
+</span><span id="__span-0-350"><a id="__codelineno-0-350" name="__codelineno-0-350"></a><span class="sd">    ----------</span>
+</span><span id="__span-0-351"><a id="__codelineno-0-351" name="__codelineno-0-351"></a><span class="sd">    user_calc_params</span>
+</span><span id="__span-0-352"><a id="__codelineno-0-352" name="__codelineno-0-352"></a><span class="sd">        The updated user-provided calculator parameters.</span>
+</span><span id="__span-0-353"><a id="__codelineno-0-353" name="__codelineno-0-353"></a>
+</span><span id="__span-0-354"><a id="__codelineno-0-354" name="__codelineno-0-354"></a><span class="sd">    Returns</span>
+</span><span id="__span-0-355"><a id="__codelineno-0-355" name="__codelineno-0-355"></a><span class="sd">    -------</span>
+</span><span id="__span-0-356"><a id="__codelineno-0-356" name="__codelineno-0-356"></a><span class="sd">    dict</span>
+</span><span id="__span-0-357"><a id="__codelineno-0-357" name="__codelineno-0-357"></a><span class="sd">        The updated user-provided calculator parameters.</span>
+</span><span id="__span-0-358"><a id="__codelineno-0-358" name="__codelineno-0-358"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-359"><a id="__codelineno-0-359" name="__codelineno-0-359"></a>    <span class="n">new_user_calc_params</span> <span class="o">=</span> <span class="n">user_calc_params</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span id="__span-0-360"><a id="__codelineno-0-360" name="__codelineno-0-360"></a>    <span class="k">if</span> <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;nsw&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span id="__span-0-361"><a id="__codelineno-0-361" name="__codelineno-0-361"></a>        <span class="c1"># Turn off opt flags if NSW = 0</span>
+</span><span id="__span-0-362"><a id="__codelineno-0-362" name="__codelineno-0-362"></a>        <span class="n">opt_flags</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;ediffg&quot;</span><span class="p">,</span> <span class="s2">&quot;ibrion&quot;</span><span class="p">,</span> <span class="s2">&quot;potim&quot;</span><span class="p">,</span> <span class="s2">&quot;iopt&quot;</span><span class="p">)</span>
+</span><span id="__span-0-363"><a id="__codelineno-0-363" name="__codelineno-0-363"></a>        <span class="k">for</span> <span class="n">opt_flag</span> <span class="ow">in</span> <span class="n">opt_flags</span><span class="p">:</span>
+</span><span id="__span-0-364"><a id="__codelineno-0-364" name="__codelineno-0-364"></a>            <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">opt_flag</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span id="__span-0-365"><a id="__codelineno-0-365" name="__codelineno-0-365"></a>
+</span><span id="__span-0-366"><a id="__codelineno-0-366" name="__codelineno-0-366"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;ldau&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+</span><span id="__span-0-367"><a id="__codelineno-0-367" name="__codelineno-0-367"></a>        <span class="s2">&quot;ldau_luj&quot;</span>
+</span><span id="__span-0-368"><a id="__codelineno-0-368" name="__codelineno-0-368"></a>    <span class="p">):</span>
+</span><span id="__span-0-369"><a id="__codelineno-0-369" name="__codelineno-0-369"></a>        <span class="c1"># Turn off +U flags if +U is not even used</span>
+</span><span id="__span-0-370"><a id="__codelineno-0-370" name="__codelineno-0-370"></a>        <span class="n">ldau_flags</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-0-371"><a id="__codelineno-0-371" name="__codelineno-0-371"></a>            <span class="s2">&quot;ldau&quot;</span><span class="p">,</span>
+</span><span id="__span-0-372"><a id="__codelineno-0-372" name="__codelineno-0-372"></a>            <span class="s2">&quot;ldauu&quot;</span><span class="p">,</span>
+</span><span id="__span-0-373"><a id="__codelineno-0-373" name="__codelineno-0-373"></a>            <span class="s2">&quot;ldauj&quot;</span><span class="p">,</span>
+</span><span id="__span-0-374"><a id="__codelineno-0-374" name="__codelineno-0-374"></a>            <span class="s2">&quot;ldaul&quot;</span><span class="p">,</span>
+</span><span id="__span-0-375"><a id="__codelineno-0-375" name="__codelineno-0-375"></a>            <span class="s2">&quot;ldautype&quot;</span><span class="p">,</span>
+</span><span id="__span-0-376"><a id="__codelineno-0-376" name="__codelineno-0-376"></a>            <span class="s2">&quot;ldauprint&quot;</span><span class="p">,</span>
+</span><span id="__span-0-377"><a id="__codelineno-0-377" name="__codelineno-0-377"></a>            <span class="s2">&quot;ldau_luj&quot;</span><span class="p">,</span>
+</span><span id="__span-0-378"><a id="__codelineno-0-378" name="__codelineno-0-378"></a>        <span class="p">)</span>
+</span><span id="__span-0-379"><a id="__codelineno-0-379" name="__codelineno-0-379"></a>        <span class="k">for</span> <span class="n">ldau_flag</span> <span class="ow">in</span> <span class="n">ldau_flags</span><span class="p">:</span>
+</span><span id="__span-0-380"><a id="__codelineno-0-380" name="__codelineno-0-380"></a>            <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">ldau_flag</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</span><span id="__span-0-381"><a id="__codelineno-0-381" name="__codelineno-0-381"></a>
+</span><span id="__span-0-382"><a id="__codelineno-0-382" name="__codelineno-0-382"></a>    <span class="c1"># Handle kspacing flags</span>
+</span><span id="__span-0-383"><a id="__codelineno-0-383" name="__codelineno-0-383"></a>    <span class="k">if</span> <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kspacing&quot;</span><span class="p">):</span>
+</span><span id="__span-0-384"><a id="__codelineno-0-384" name="__codelineno-0-384"></a>        <span class="n">new_user_calc_params</span><span class="p">[</span><span class="s2">&quot;gamma&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-385"><a id="__codelineno-0-385" name="__codelineno-0-385"></a>        <span class="n">new_user_calc_params</span><span class="p">[</span><span class="s2">&quot;kpts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-386"><a id="__codelineno-0-386" name="__codelineno-0-386"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-387"><a id="__codelineno-0-387" name="__codelineno-0-387"></a>        <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;kgamma&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 </span><span id="__span-0-388"><a id="__codelineno-0-388" name="__codelineno-0-388"></a>
-</span><span id="__span-0-389"><a id="__codelineno-0-389" name="__codelineno-0-389"></a>    <span class="c1"># Handle kspacing flags</span>
-</span><span id="__span-0-390"><a id="__codelineno-0-390" name="__codelineno-0-390"></a>    <span class="k">if</span> <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;kspacing&quot;</span><span class="p">):</span>
-</span><span id="__span-0-391"><a id="__codelineno-0-391" name="__codelineno-0-391"></a>        <span class="n">new_user_calc_params</span><span class="p">[</span><span class="s2">&quot;gamma&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="__span-0-392"><a id="__codelineno-0-392" name="__codelineno-0-392"></a>        <span class="n">new_user_calc_params</span><span class="p">[</span><span class="s2">&quot;kpts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-</span><span id="__span-0-393"><a id="__codelineno-0-393" name="__codelineno-0-393"></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="__span-0-394"><a id="__codelineno-0-394" name="__codelineno-0-394"></a>        <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;kgamma&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-</span><span id="__span-0-395"><a id="__codelineno-0-395" name="__codelineno-0-395"></a>
-</span><span id="__span-0-396"><a id="__codelineno-0-396" name="__codelineno-0-396"></a>    <span class="c1"># Remove None keys</span>
-</span><span id="__span-0-397"><a id="__codelineno-0-397" name="__codelineno-0-397"></a>    <span class="n">none_keys</span> <span class="o">=</span> <span class="p">[</span>
-</span><span id="__span-0-398"><a id="__codelineno-0-398" name="__codelineno-0-398"></a>        <span class="n">k</span>
-</span><span id="__span-0-399"><a id="__codelineno-0-399" name="__codelineno-0-399"></a>        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-</span><span id="__span-0-400"><a id="__codelineno-0-400" name="__codelineno-0-400"></a>        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Vasp_</span><span class="p">()</span><span class="o">.</span><span class="n">input_params</span>
-</span><span id="__span-0-401"><a id="__codelineno-0-401" name="__codelineno-0-401"></a>    <span class="p">]</span>
-</span><span id="__span-0-402"><a id="__codelineno-0-402" name="__codelineno-0-402"></a>    <span class="k">for</span> <span class="n">none_key</span> <span class="ow">in</span> <span class="n">none_keys</span><span class="p">:</span>
-</span><span id="__span-0-403"><a id="__codelineno-0-403" name="__codelineno-0-403"></a>        <span class="k">del</span> <span class="n">new_user_calc_params</span><span class="p">[</span><span class="n">none_key</span><span class="p">]</span>
-</span><span id="__span-0-404"><a id="__codelineno-0-404" name="__codelineno-0-404"></a>
-</span><span id="__span-0-405"><a id="__codelineno-0-405" name="__codelineno-0-405"></a>    <span class="k">return</span> <span class="n">new_user_calc_params</span>
+</span><span id="__span-0-389"><a id="__codelineno-0-389" name="__codelineno-0-389"></a>    <span class="c1"># Remove None keys</span>
+</span><span id="__span-0-390"><a id="__codelineno-0-390" name="__codelineno-0-390"></a>    <span class="n">none_keys</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="__span-0-391"><a id="__codelineno-0-391" name="__codelineno-0-391"></a>        <span class="n">k</span>
+</span><span id="__span-0-392"><a id="__codelineno-0-392" name="__codelineno-0-392"></a>        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">new_user_calc_params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span id="__span-0-393"><a id="__codelineno-0-393" name="__codelineno-0-393"></a>        <span class="k">if</span> <span class="n">v</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Vasp_</span><span class="p">()</span><span class="o">.</span><span class="n">input_params</span>
+</span><span id="__span-0-394"><a id="__codelineno-0-394" name="__codelineno-0-394"></a>    <span class="p">]</span>
+</span><span id="__span-0-395"><a id="__codelineno-0-395" name="__codelineno-0-395"></a>    <span class="k">for</span> <span class="n">none_key</span> <span class="ow">in</span> <span class="n">none_keys</span><span class="p">:</span>
+</span><span id="__span-0-396"><a id="__codelineno-0-396" name="__codelineno-0-396"></a>        <span class="k">del</span> <span class="n">new_user_calc_params</span><span class="p">[</span><span class="n">none_key</span><span class="p">]</span>
+</span><span id="__span-0-397"><a id="__codelineno-0-397" name="__codelineno-0-397"></a>
+</span><span id="__span-0-398"><a id="__codelineno-0-398" name="__codelineno-0-398"></a>    <span class="k">return</span> <span class="n">new_user_calc_params</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8075,7 +8061,14 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/calculators/vasp/params.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-430">430</a></span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-423">423</a></span>
+<span class="normal"><a href="#__codelineno-0-424">424</a></span>
+<span class="normal"><a href="#__codelineno-0-425">425</a></span>
+<span class="normal"><a href="#__codelineno-0-426">426</a></span>
+<span class="normal"><a href="#__codelineno-0-427">427</a></span>
+<span class="normal"><a href="#__codelineno-0-428">428</a></span>
+<span class="normal"><a href="#__codelineno-0-429">429</a></span>
+<span class="normal"><a href="#__codelineno-0-430">430</a></span>
 <span class="normal"><a href="#__codelineno-0-431">431</a></span>
 <span class="normal"><a href="#__codelineno-0-432">432</a></span>
 <span class="normal"><a href="#__codelineno-0-433">433</a></span>
@@ -8094,40 +8087,33 @@
 <span class="normal"><a href="#__codelineno-0-446">446</a></span>
 <span class="normal"><a href="#__codelineno-0-447">447</a></span>
 <span class="normal"><a href="#__codelineno-0-448">448</a></span>
-<span class="normal"><a href="#__codelineno-0-449">449</a></span>
-<span class="normal"><a href="#__codelineno-0-450">450</a></span>
-<span class="normal"><a href="#__codelineno-0-451">451</a></span>
-<span class="normal"><a href="#__codelineno-0-452">452</a></span>
-<span class="normal"><a href="#__codelineno-0-453">453</a></span>
-<span class="normal"><a href="#__codelineno-0-454">454</a></span>
-<span class="normal"><a href="#__codelineno-0-455">455</a></span>
-<span class="normal"><a href="#__codelineno-0-456">456</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-430"><a id="__codelineno-0-430" name="__codelineno-0-430"></a><span class="k">def</span><span class="w"> </span><span class="nf">set_auto_dipole</span><span class="p">(</span>
-</span><span id="__span-0-431"><a id="__codelineno-0-431" name="__codelineno-0-431"></a>    <span class="n">user_calc_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">input_atoms</span><span class="p">:</span> <span class="n">Atoms</span>
-</span><span id="__span-0-432"><a id="__codelineno-0-432" name="__codelineno-0-432"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span id="__span-0-433"><a id="__codelineno-0-433" name="__codelineno-0-433"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-434"><a id="__codelineno-0-434" name="__codelineno-0-434"></a><span class="sd">    Sets flags related to the auto_dipole kwarg.</span>
+<span class="normal"><a href="#__codelineno-0-449">449</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-423"><a id="__codelineno-0-423" name="__codelineno-0-423"></a><span class="k">def</span><span class="w"> </span><span class="nf">set_auto_dipole</span><span class="p">(</span>
+</span><span id="__span-0-424"><a id="__codelineno-0-424" name="__codelineno-0-424"></a>    <span class="n">user_calc_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">input_atoms</span><span class="p">:</span> <span class="n">Atoms</span>
+</span><span id="__span-0-425"><a id="__codelineno-0-425" name="__codelineno-0-425"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span id="__span-0-426"><a id="__codelineno-0-426" name="__codelineno-0-426"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-427"><a id="__codelineno-0-427" name="__codelineno-0-427"></a><span class="sd">    Sets flags related to the auto_dipole kwarg.</span>
+</span><span id="__span-0-428"><a id="__codelineno-0-428" name="__codelineno-0-428"></a>
+</span><span id="__span-0-429"><a id="__codelineno-0-429" name="__codelineno-0-429"></a><span class="sd">    Parameters</span>
+</span><span id="__span-0-430"><a id="__codelineno-0-430" name="__codelineno-0-430"></a><span class="sd">    ----------</span>
+</span><span id="__span-0-431"><a id="__codelineno-0-431" name="__codelineno-0-431"></a><span class="sd">    user_calc_params</span>
+</span><span id="__span-0-432"><a id="__codelineno-0-432" name="__codelineno-0-432"></a><span class="sd">        The user-provided calculator parameters.</span>
+</span><span id="__span-0-433"><a id="__codelineno-0-433" name="__codelineno-0-433"></a><span class="sd">    input_atoms</span>
+</span><span id="__span-0-434"><a id="__codelineno-0-434" name="__codelineno-0-434"></a><span class="sd">        The input atoms.</span>
 </span><span id="__span-0-435"><a id="__codelineno-0-435" name="__codelineno-0-435"></a>
-</span><span id="__span-0-436"><a id="__codelineno-0-436" name="__codelineno-0-436"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-437"><a id="__codelineno-0-437" name="__codelineno-0-437"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-438"><a id="__codelineno-0-438" name="__codelineno-0-438"></a><span class="sd">    user_calc_params</span>
-</span><span id="__span-0-439"><a id="__codelineno-0-439" name="__codelineno-0-439"></a><span class="sd">        The user-provided calculator parameters.</span>
-</span><span id="__span-0-440"><a id="__codelineno-0-440" name="__codelineno-0-440"></a><span class="sd">    input_atoms</span>
-</span><span id="__span-0-441"><a id="__codelineno-0-441" name="__codelineno-0-441"></a><span class="sd">        The input atoms.</span>
-</span><span id="__span-0-442"><a id="__codelineno-0-442" name="__codelineno-0-442"></a>
-</span><span id="__span-0-443"><a id="__codelineno-0-443" name="__codelineno-0-443"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-444"><a id="__codelineno-0-444" name="__codelineno-0-444"></a><span class="sd">    -------</span>
-</span><span id="__span-0-445"><a id="__codelineno-0-445" name="__codelineno-0-445"></a><span class="sd">    dict</span>
-</span><span id="__span-0-446"><a id="__codelineno-0-446" name="__codelineno-0-446"></a><span class="sd">        The updated user-provided calculator parameters.</span>
-</span><span id="__span-0-447"><a id="__codelineno-0-447" name="__codelineno-0-447"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-448"><a id="__codelineno-0-448" name="__codelineno-0-448"></a>    <span class="n">com</span> <span class="o">=</span> <span class="n">input_atoms</span><span class="o">.</span><span class="n">get_center_of_mass</span><span class="p">(</span><span class="n">scaled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-0-449"><a id="__codelineno-0-449" name="__codelineno-0-449"></a>    <span class="k">if</span> <span class="s2">&quot;dipol&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_calc_params</span><span class="p">:</span>
-</span><span id="__span-0-450"><a id="__codelineno-0-450" name="__codelineno-0-450"></a>        <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;dipol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">com</span>
-</span><span id="__span-0-451"><a id="__codelineno-0-451" name="__codelineno-0-451"></a>    <span class="k">if</span> <span class="s2">&quot;idipol&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_calc_params</span><span class="p">:</span>
-</span><span id="__span-0-452"><a id="__codelineno-0-452" name="__codelineno-0-452"></a>        <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;idipol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
-</span><span id="__span-0-453"><a id="__codelineno-0-453" name="__codelineno-0-453"></a>    <span class="k">if</span> <span class="s2">&quot;ldipol&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_calc_params</span><span class="p">:</span>
-</span><span id="__span-0-454"><a id="__codelineno-0-454" name="__codelineno-0-454"></a>        <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;ldipol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="__span-0-455"><a id="__codelineno-0-455" name="__codelineno-0-455"></a>
-</span><span id="__span-0-456"><a id="__codelineno-0-456" name="__codelineno-0-456"></a>    <span class="k">return</span> <span class="n">user_calc_params</span>
+</span><span id="__span-0-436"><a id="__codelineno-0-436" name="__codelineno-0-436"></a><span class="sd">    Returns</span>
+</span><span id="__span-0-437"><a id="__codelineno-0-437" name="__codelineno-0-437"></a><span class="sd">    -------</span>
+</span><span id="__span-0-438"><a id="__codelineno-0-438" name="__codelineno-0-438"></a><span class="sd">    dict</span>
+</span><span id="__span-0-439"><a id="__codelineno-0-439" name="__codelineno-0-439"></a><span class="sd">        The updated user-provided calculator parameters.</span>
+</span><span id="__span-0-440"><a id="__codelineno-0-440" name="__codelineno-0-440"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-441"><a id="__codelineno-0-441" name="__codelineno-0-441"></a>    <span class="n">com</span> <span class="o">=</span> <span class="n">input_atoms</span><span class="o">.</span><span class="n">get_center_of_mass</span><span class="p">(</span><span class="n">scaled</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-442"><a id="__codelineno-0-442" name="__codelineno-0-442"></a>    <span class="k">if</span> <span class="s2">&quot;dipol&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_calc_params</span><span class="p">:</span>
+</span><span id="__span-0-443"><a id="__codelineno-0-443" name="__codelineno-0-443"></a>        <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;dipol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">com</span>
+</span><span id="__span-0-444"><a id="__codelineno-0-444" name="__codelineno-0-444"></a>    <span class="k">if</span> <span class="s2">&quot;idipol&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_calc_params</span><span class="p">:</span>
+</span><span id="__span-0-445"><a id="__codelineno-0-445" name="__codelineno-0-445"></a>        <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;idipol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+</span><span id="__span-0-446"><a id="__codelineno-0-446" name="__codelineno-0-446"></a>    <span class="k">if</span> <span class="s2">&quot;ldipol&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">user_calc_params</span><span class="p">:</span>
+</span><span id="__span-0-447"><a id="__codelineno-0-447" name="__codelineno-0-447"></a>        <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;ldipol&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="__span-0-448"><a id="__codelineno-0-448" name="__codelineno-0-448"></a>
+</span><span id="__span-0-449"><a id="__codelineno-0-449" name="__codelineno-0-449"></a>    <span class="k">return</span> <span class="n">user_calc_params</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -8199,7 +8185,14 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/calculators/vasp/params.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-459">459</a></span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-452">452</a></span>
+<span class="normal"><a href="#__codelineno-0-453">453</a></span>
+<span class="normal"><a href="#__codelineno-0-454">454</a></span>
+<span class="normal"><a href="#__codelineno-0-455">455</a></span>
+<span class="normal"><a href="#__codelineno-0-456">456</a></span>
+<span class="normal"><a href="#__codelineno-0-457">457</a></span>
+<span class="normal"><a href="#__codelineno-0-458">458</a></span>
+<span class="normal"><a href="#__codelineno-0-459">459</a></span>
 <span class="normal"><a href="#__codelineno-0-460">460</a></span>
 <span class="normal"><a href="#__codelineno-0-461">461</a></span>
 <span class="normal"><a href="#__codelineno-0-462">462</a></span>
@@ -8225,47 +8218,40 @@
 <span class="normal"><a href="#__codelineno-0-482">482</a></span>
 <span class="normal"><a href="#__codelineno-0-483">483</a></span>
 <span class="normal"><a href="#__codelineno-0-484">484</a></span>
-<span class="normal"><a href="#__codelineno-0-485">485</a></span>
-<span class="normal"><a href="#__codelineno-0-486">486</a></span>
-<span class="normal"><a href="#__codelineno-0-487">487</a></span>
-<span class="normal"><a href="#__codelineno-0-488">488</a></span>
-<span class="normal"><a href="#__codelineno-0-489">489</a></span>
-<span class="normal"><a href="#__codelineno-0-490">490</a></span>
-<span class="normal"><a href="#__codelineno-0-491">491</a></span>
-<span class="normal"><a href="#__codelineno-0-492">492</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-459"><a id="__codelineno-0-459" name="__codelineno-0-459"></a><span class="k">def</span><span class="w"> </span><span class="nf">set_pmg_kpts</span><span class="p">(</span>
-</span><span id="__span-0-460"><a id="__codelineno-0-460" name="__codelineno-0-460"></a>    <span class="n">user_calc_params</span><span class="p">:</span> <span class="n">PmgKpts</span><span class="p">,</span>
-</span><span id="__span-0-461"><a id="__codelineno-0-461" name="__codelineno-0-461"></a>    <span class="n">pmg_kpts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;line_density&quot;</span><span class="p">,</span> <span class="s2">&quot;kppvol&quot;</span><span class="p">,</span> <span class="s2">&quot;kppa&quot;</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
-</span><span id="__span-0-462"><a id="__codelineno-0-462" name="__codelineno-0-462"></a>    <span class="n">input_atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
-</span><span id="__span-0-463"><a id="__codelineno-0-463" name="__codelineno-0-463"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span id="__span-0-464"><a id="__codelineno-0-464" name="__codelineno-0-464"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="__span-0-465"><a id="__codelineno-0-465" name="__codelineno-0-465"></a><span class="sd">    Shortcuts for pymatgen k-point generation schemes.</span>
-</span><span id="__span-0-466"><a id="__codelineno-0-466" name="__codelineno-0-466"></a>
-</span><span id="__span-0-467"><a id="__codelineno-0-467" name="__codelineno-0-467"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-468"><a id="__codelineno-0-468" name="__codelineno-0-468"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-469"><a id="__codelineno-0-469" name="__codelineno-0-469"></a><span class="sd">    user_calc_params</span>
-</span><span id="__span-0-470"><a id="__codelineno-0-470" name="__codelineno-0-470"></a><span class="sd">        The user-provided calculator parameters.</span>
-</span><span id="__span-0-471"><a id="__codelineno-0-471" name="__codelineno-0-471"></a><span class="sd">    pmg_kpts</span>
-</span><span id="__span-0-472"><a id="__codelineno-0-472" name="__codelineno-0-472"></a><span class="sd">        The pmg_kpts kwarg.</span>
-</span><span id="__span-0-473"><a id="__codelineno-0-473" name="__codelineno-0-473"></a><span class="sd">    input_atoms</span>
-</span><span id="__span-0-474"><a id="__codelineno-0-474" name="__codelineno-0-474"></a><span class="sd">        The input atoms.</span>
-</span><span id="__span-0-475"><a id="__codelineno-0-475" name="__codelineno-0-475"></a>
-</span><span id="__span-0-476"><a id="__codelineno-0-476" name="__codelineno-0-476"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-477"><a id="__codelineno-0-477" name="__codelineno-0-477"></a><span class="sd">    -------</span>
-</span><span id="__span-0-478"><a id="__codelineno-0-478" name="__codelineno-0-478"></a><span class="sd">    dict</span>
-</span><span id="__span-0-479"><a id="__codelineno-0-479" name="__codelineno-0-479"></a><span class="sd">        The updated user-provided calculator parameters.</span>
-</span><span id="__span-0-480"><a id="__codelineno-0-480" name="__codelineno-0-480"></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="__span-0-481"><a id="__codelineno-0-481" name="__codelineno-0-481"></a>    <span class="n">kpts</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="n">convert_pmg_kpts</span><span class="p">(</span>
-</span><span id="__span-0-482"><a id="__codelineno-0-482" name="__codelineno-0-482"></a>        <span class="n">pmg_kpts</span><span class="p">,</span> <span class="n">input_atoms</span><span class="p">,</span> <span class="n">force_gamma</span><span class="o">=</span><span class="n">user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gamma&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-</span><span id="__span-0-483"><a id="__codelineno-0-483" name="__codelineno-0-483"></a>    <span class="p">)</span>
-</span><span id="__span-0-484"><a id="__codelineno-0-484" name="__codelineno-0-484"></a>    <span class="n">reciprocal</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">pmg_kpts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;line_density&quot;</span><span class="p">))</span>
-</span><span id="__span-0-485"><a id="__codelineno-0-485" name="__codelineno-0-485"></a>
-</span><span id="__span-0-486"><a id="__codelineno-0-486" name="__codelineno-0-486"></a>    <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;kpts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpts</span>
-</span><span id="__span-0-487"><a id="__codelineno-0-487" name="__codelineno-0-487"></a>    <span class="k">if</span> <span class="n">reciprocal</span> <span class="ow">and</span> <span class="n">user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reciprocal&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-488"><a id="__codelineno-0-488" name="__codelineno-0-488"></a>        <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;reciprocal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reciprocal</span>
-</span><span id="__span-0-489"><a id="__codelineno-0-489" name="__codelineno-0-489"></a>    <span class="k">if</span> <span class="n">user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gamma&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-490"><a id="__codelineno-0-490" name="__codelineno-0-490"></a>        <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;gamma&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gamma</span>
-</span><span id="__span-0-491"><a id="__codelineno-0-491" name="__codelineno-0-491"></a>
-</span><span id="__span-0-492"><a id="__codelineno-0-492" name="__codelineno-0-492"></a>    <span class="k">return</span> <span class="n">user_calc_params</span>
+<span class="normal"><a href="#__codelineno-0-485">485</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-452"><a id="__codelineno-0-452" name="__codelineno-0-452"></a><span class="k">def</span><span class="w"> </span><span class="nf">set_pmg_kpts</span><span class="p">(</span>
+</span><span id="__span-0-453"><a id="__codelineno-0-453" name="__codelineno-0-453"></a>    <span class="n">user_calc_params</span><span class="p">:</span> <span class="n">PmgKpts</span><span class="p">,</span>
+</span><span id="__span-0-454"><a id="__codelineno-0-454" name="__codelineno-0-454"></a>    <span class="n">pmg_kpts</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;line_density&quot;</span><span class="p">,</span> <span class="s2">&quot;kppvol&quot;</span><span class="p">,</span> <span class="s2">&quot;kppa&quot;</span><span class="p">],</span> <span class="nb">float</span><span class="p">],</span>
+</span><span id="__span-0-455"><a id="__codelineno-0-455" name="__codelineno-0-455"></a>    <span class="n">input_atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+</span><span id="__span-0-456"><a id="__codelineno-0-456" name="__codelineno-0-456"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span id="__span-0-457"><a id="__codelineno-0-457" name="__codelineno-0-457"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-458"><a id="__codelineno-0-458" name="__codelineno-0-458"></a><span class="sd">    Shortcuts for pymatgen k-point generation schemes.</span>
+</span><span id="__span-0-459"><a id="__codelineno-0-459" name="__codelineno-0-459"></a>
+</span><span id="__span-0-460"><a id="__codelineno-0-460" name="__codelineno-0-460"></a><span class="sd">    Parameters</span>
+</span><span id="__span-0-461"><a id="__codelineno-0-461" name="__codelineno-0-461"></a><span class="sd">    ----------</span>
+</span><span id="__span-0-462"><a id="__codelineno-0-462" name="__codelineno-0-462"></a><span class="sd">    user_calc_params</span>
+</span><span id="__span-0-463"><a id="__codelineno-0-463" name="__codelineno-0-463"></a><span class="sd">        The user-provided calculator parameters.</span>
+</span><span id="__span-0-464"><a id="__codelineno-0-464" name="__codelineno-0-464"></a><span class="sd">    pmg_kpts</span>
+</span><span id="__span-0-465"><a id="__codelineno-0-465" name="__codelineno-0-465"></a><span class="sd">        The pmg_kpts kwarg.</span>
+</span><span id="__span-0-466"><a id="__codelineno-0-466" name="__codelineno-0-466"></a><span class="sd">    input_atoms</span>
+</span><span id="__span-0-467"><a id="__codelineno-0-467" name="__codelineno-0-467"></a><span class="sd">        The input atoms.</span>
+</span><span id="__span-0-468"><a id="__codelineno-0-468" name="__codelineno-0-468"></a>
+</span><span id="__span-0-469"><a id="__codelineno-0-469" name="__codelineno-0-469"></a><span class="sd">    Returns</span>
+</span><span id="__span-0-470"><a id="__codelineno-0-470" name="__codelineno-0-470"></a><span class="sd">    -------</span>
+</span><span id="__span-0-471"><a id="__codelineno-0-471" name="__codelineno-0-471"></a><span class="sd">    dict</span>
+</span><span id="__span-0-472"><a id="__codelineno-0-472" name="__codelineno-0-472"></a><span class="sd">        The updated user-provided calculator parameters.</span>
+</span><span id="__span-0-473"><a id="__codelineno-0-473" name="__codelineno-0-473"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-474"><a id="__codelineno-0-474" name="__codelineno-0-474"></a>    <span class="n">kpts</span><span class="p">,</span> <span class="n">gamma</span> <span class="o">=</span> <span class="n">convert_pmg_kpts</span><span class="p">(</span>
+</span><span id="__span-0-475"><a id="__codelineno-0-475" name="__codelineno-0-475"></a>        <span class="n">pmg_kpts</span><span class="p">,</span> <span class="n">input_atoms</span><span class="p">,</span> <span class="n">force_gamma</span><span class="o">=</span><span class="n">user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gamma&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+</span><span id="__span-0-476"><a id="__codelineno-0-476" name="__codelineno-0-476"></a>    <span class="p">)</span>
+</span><span id="__span-0-477"><a id="__codelineno-0-477" name="__codelineno-0-477"></a>    <span class="n">reciprocal</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">pmg_kpts</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;line_density&quot;</span><span class="p">))</span>
+</span><span id="__span-0-478"><a id="__codelineno-0-478" name="__codelineno-0-478"></a>
+</span><span id="__span-0-479"><a id="__codelineno-0-479" name="__codelineno-0-479"></a>    <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;kpts&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kpts</span>
+</span><span id="__span-0-480"><a id="__codelineno-0-480" name="__codelineno-0-480"></a>    <span class="k">if</span> <span class="n">reciprocal</span> <span class="ow">and</span> <span class="n">user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;reciprocal&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-481"><a id="__codelineno-0-481" name="__codelineno-0-481"></a>        <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;reciprocal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">reciprocal</span>
+</span><span id="__span-0-482"><a id="__codelineno-0-482" name="__codelineno-0-482"></a>    <span class="k">if</span> <span class="n">user_calc_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gamma&quot;</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-483"><a id="__codelineno-0-483" name="__codelineno-0-483"></a>        <span class="n">user_calc_params</span><span class="p">[</span><span class="s2">&quot;gamma&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gamma</span>
+</span><span id="__span-0-484"><a id="__codelineno-0-484" name="__codelineno-0-484"></a>
+</span><span id="__span-0-485"><a id="__codelineno-0-485" name="__codelineno-0-485"></a>    <span class="k">return</span> <span class="n">user_calc_params</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
