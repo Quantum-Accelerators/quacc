@@ -178,9 +178,6 @@ lint.isort.required-imports = ["from __future__ import annotations"]
 lint.isort.split-on-trailing-comma=false
 extend-include = ["*.ipynb"]
 
-[tool.uv.extra-build-dependencies]
-geodesic-interpolate = ["setuptools"]
-
 [tool.ruff.format]
 docstring-code-format = true
 skip-magic-trailing-comma = true
