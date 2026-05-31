@@ -10,9 +10,9 @@ from shutil import which
 from typing import TYPE_CHECKING, Literal, Union
 
 import psutil
-from monty.serialization import loadfn
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from ruamel.yaml import YAML
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -58,9 +58,9 @@ class QuaccSettings(BaseSettings):
     # Workflow Engine
     # ---------------------------
 
-    WORKFLOW_ENGINE: Literal["dask", "parsl", "prefect", "redun", "jobflow"] | None = (
-        Field(None, description=("The workflow manager to use, if any."))
-    )
+    WORKFLOW_ENGINE: (
+        Literal["dask", "parsl", "prefect", "ray", "redun", "jobflow"] | None
+    ) = Field(None, description=("The workflow manager to use, if any."))
 
     # ---------------------------
     # General Settings
@@ -261,13 +261,14 @@ class QuaccSettings(BaseSettings):
     )
 
     # VASP Settings: General
-    VASP_INCAR_COPILOT: Literal["off", "on", "aggressive"] = Field(
-        "on",
+    VASP_INCAR_COPILOT: Literal["off", "light", "default", "aggressive"] = Field(
+        "default",
         description=(
             """
             Controls VASP co-pilot mode for automated INCAR parameter handling.
             off: Do not use co-pilot mode. INCAR parameters will be unmodified.
-            on: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
+            light: Use co-pilot mode for only a subset of swaps. This will only modify INCAR flags not already set by the user.
+            default: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
             aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
             """
         ),
@@ -481,7 +482,7 @@ class QuaccSettings(BaseSettings):
 
         new_settings = {}  # type: dict
         if config_file_path.exists() and config_file_path.stat().st_size > 0:
-            new_settings |= loadfn(config_file_path)
+            new_settings |= YAML().load(config_file_path)
 
         new_settings.update(settings)
         return new_settings

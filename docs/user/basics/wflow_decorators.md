@@ -64,6 +64,22 @@ A `#!Python @subflow` in quacc is any workflow that returns a list of job output
 
     </center>
 
+=== "Ray"
+
+    Take a moment to read the Ray documentation's [Walkthrough](https://docs.ray.io/en/latest/ray-core/walkthrough.html) to get a sense of how Ray works. Namely, you should understand the [`#!Python @ray.remote`](https://docs.ray.io/en/latest/ray-core/api/doc/ray.remote.html) decorator and how `.remote()` calls return [`ObjectRef`](https://docs.ray.io/en/latest/ray-core/objects.html) handles that can be resolved with `#!Python ray.get`.
+
+    <center>
+
+    | Quacc               | Ray                       |
+    | ------------------- | ------------------------- |
+    | `#!Python @job`     | `#!Python @ray.remote`    |
+    | `#!Python @flow`    | No effect                 |
+    | `#!Python @subflow` | `#!Python @ray.remote`    |
+
+    </center>
+
+    Quacc wraps the returned `ObjectRef` in a small `RayFuture` proxy so that recipe code which indexes into job results (e.g. `result["atoms"]`) keeps working. To resolve a future to its final value, call `future.result()`.
+
 === "Redun"
 
     Take a moment to read the Redun documentation's [Design Overview page](https://insitro.github.io/redun/design.html) to get a sense of how Redun works. Namely, you should understand the `Task` decorator and how to interface with the `Scheduler`.

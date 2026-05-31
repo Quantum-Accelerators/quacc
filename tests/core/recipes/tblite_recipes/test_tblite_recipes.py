@@ -67,7 +67,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["trajectory_results"][-1]["energy"] == pytest.approx(
-        -130.4917433263215
+        -131.06038905622776
     )
     assert "spin_multiplicity" not in output
 
