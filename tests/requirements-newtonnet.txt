@@ -1,4 +1,5 @@
 geodesic-interpolate @ git+https://github.com/virtualzx-nad/geodesic-interpolate.git
+torch_scatter @ git+https://github.com/rusty1s/pytorch_scatter.git
 newtonnet==2.0.1
 sella==2.4.2
 numpy==1.26.4
