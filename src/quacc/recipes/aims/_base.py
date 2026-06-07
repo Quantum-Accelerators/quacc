@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
+    from quacc.types import Filenames, RunSchema, SourceDirectory
 
 
 def run_and_summarize(
