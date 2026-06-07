@@ -4,18 +4,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
-from ase.optimize import BFGS
-
 from quacc import job
 from quacc.atoms.core import check_is_metal
-from quacc.recipes.aims._base import run_and_summarize, run_and_summarize_opt
+from quacc.recipes.aims._base import run_and_summarize
 
 if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, OptParams, RunSchema, SourceDirectory
+    from quacc.types import Filenames, RunSchema, SourceDirectory
 
 
 BASE_SET_METAL = {
