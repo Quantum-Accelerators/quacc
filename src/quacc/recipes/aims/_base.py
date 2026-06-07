@@ -59,50 +59,6 @@ def run_and_summarize(
     )
 
 
-def run_and_summarize_opt(
-    atoms: Atoms,
-    calc_defaults: dict[str, Any] | None = None,
-    calc_swaps: dict[str, Any] | None = None,
-    opt_defaults: dict[str, Any] | None = None,
-    opt_params: OptParams | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-) -> RunSchema:
-    """
-    Base function to carry out FHI-aims recipes with ASE optimizers.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    calc_defaults
-        The default calculator parameters.
-    calc_swaps
-        Custom kwargs for the FHI-aims calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely. For a list of available
-        keys, refer to the [ase.calculators.aims.Aims][] calculator.
-    opt_defaults
-        The default optimization parameters.
-    opt_params
-        Dictionary of custom kwargs for the optimization process. For a list
-        of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
-    additional_fields
-        Any additional fields to supply to the summarizer.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-
-    Returns
-    -------
-    RunSchema
-        Dictionary of results from [quacc.schemas.ase.Summarize.run][]
-    """
-    opt_flags = recursive_dict_merge(opt_defaults, opt_params)
-    calc = prep_calculator(atoms, calc_defaults=calc_defaults, calc_swaps=calc_swaps)
-    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
-
-    return Summarize(move_magmoms=True, additional_fields=additional_fields).opt(dyn)
-
-
 def prep_calculator(
     atoms: Atoms,
     calc_defaults: dict[str, Any] | None = None,
