@@ -122,7 +122,7 @@ def test_serve_branch_uses_name_or_path(monkeypatch, stub_serve_unit):
         method="fairchem", name_or_path="my/local/ckpt.pt", task_name="oc20"
     )
     assert stub_serve_unit["multiplexed_model_id"] == "my/local/ckpt.pt:default"
-    assert stub_serve_unit["deployment_name"] == "predict-server"
+    assert stub_serve_unit["deployment_name"] == "multiplexed-predict-server"
 
 
 @pytest.mark.usefixtures("enable_batching")
