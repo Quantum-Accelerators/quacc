@@ -160,7 +160,7 @@ def pick_calculator(
         if use_ray_serve:
             # Use Ray Serve multiplexed deployment for inference. The deployment
             # is expected to already be running on the cluster (typically started
-            # by get_local_fairchem_inference_raycluster / get_slurm_fairchem_inference_raycluster with
+            # by get_local_inference_raycluster / get_slurm_inference_raycluster with
             # setup_multiplexed_batch_predict_server). We connect by deployment
             # name and route requests to the appropriate model via the
             # multiplexed_model_id, which has the form

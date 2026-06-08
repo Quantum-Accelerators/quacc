@@ -34,7 +34,7 @@ def ray_serve_cluster():
     ``FAIRCHEM_RAY_SERVE_BATCHING`` is enabled.
     """
     import ray
-    from fairchem.core.units.mlip_unit.batch_server import (
+    from fairchem.core.components.batch_server import (
         setup_multiplexed_batch_predict_server,
     )
     from ray import serve
