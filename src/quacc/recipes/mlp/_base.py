@@ -167,7 +167,7 @@ def pick_calculator(
             # "<checkpoint_name_or_path>:<inference_settings>".
             from fairchem.core.units.mlip_unit.predict import BatchServerPredictUnit
 
-            calc_kwargs = dict(calc_kwargs)
+            calc_kwargs = calc_kwargs.copy()  # Don't modify the original kwargs
 
             # Determine model identifier: prefer name_or_path (local checkpoint)
             # over model_id/checkpoint
@@ -180,7 +180,7 @@ def pick_calculator(
                 )
 
             inference_settings = calc_kwargs.pop("inference_settings", "default")
-            task_name = calc_kwargs.pop("task_name", "omat")
+            task_name = calc_kwargs.pop("task_name")
 
             # Drop kwargs only meaningful when loading the checkpoint locally
             calc_kwargs.pop("device", None)
