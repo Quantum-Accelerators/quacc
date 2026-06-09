@@ -29,7 +29,7 @@ from quacc.recipes.mlp.elastic import elastic_tensor_flow
 def ray_serve_cluster():
     """Spin up a local Ray cluster + multiplexed fairchem serve deployment.
 
-    The deployment is named ``predict-server`` to match what
+    The deployment is named ``multiplexed-predict-server`` to match what
     ``quacc.recipes.mlp._base`` connects to when
     ``FAIRCHEM_RAY_SERVE_BATCHING`` is enabled.
     """
@@ -50,10 +50,9 @@ def ray_serve_cluster():
         started_ray = True
 
     handle = setup_multiplexed_batch_predict_server(
-        deployment_name="predict-server",
-        route_prefix="/predict-server",
-        num_replicas=1,
-        ray_actor_options={"num_cpus": 1},
+        deployment_config={"num_replicas": 1, "ray_actor_options": {"num_cpus": 1}},
+        deployment_name="multiplexed-predict-server",
+        route_prefix="/multiplex-predict",
     )
     try:
         yield handle
