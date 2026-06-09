@@ -82,10 +82,15 @@ def pick_calculator(
     """
     import torch
 
-    if not torch.cuda.is_available():
-        LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
+    from quacc import get_settings
 
+    settings = get_settings()
     method = method.lower()
+
+    # Skip CUDA warning for rayserve batching mode (inference happens on remote GPU)
+    use_ray_serve = method == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING
+    if not use_ray_serve and not torch.cuda.is_available():
+        LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if "m3gnet" in method or "chgnet" in method or "tensornet" in method:
         import matgl
@@ -132,7 +137,67 @@ def pick_calculator(
     elif method.lower() == "fairchem":
         from fairchem.core import FAIRChemCalculator, __version__
 
-        calc = FAIRChemCalculator.from_model_checkpoint(**calc_kwargs)
+        # Check if Ray Serve batching is enabled AND Ray is actually available
+        if use_ray_serve:
+            try:
+                import ray
+
+                if not ray.is_initialized():
+                    LOGGER.warning(
+                        "FAIRCHEM_RAY_SERVE_BATCHING is enabled but Ray is not initialized. "
+                        "Falling back to local inference. To use Ray Serve batching, ensure "
+                        "your flow is running with a Ray cluster (e.g., SlurmRayTaskRunner with "
+                        "start_inference_server=True)."
+                    )
+                    use_ray_serve = False
+            except ImportError:
+                LOGGER.warning(
+                    "FAIRCHEM_RAY_SERVE_BATCHING is enabled but Ray is not installed. "
+                    "Falling back to local inference."
+                )
+                use_ray_serve = False
+
+        if use_ray_serve:
+            # Use Ray Serve multiplexed deployment for inference. The deployment
+            # is expected to already be running on the cluster (typically started
+            # by get_local_inference_raycluster / get_slurm_inference_raycluster with
+            # setup_multiplexed_batch_predict_server). We connect by deployment
+            # name and route requests to the appropriate model via the
+            # multiplexed_model_id, which has the form
+            # "<checkpoint_name_or_path>:<inference_settings>".
+            from fairchem.core.units.mlip_unit.predict import BatchServerPredictUnit
+
+            calc_kwargs = calc_kwargs.copy()  # Don't modify the original kwargs
+
+            # Determine model identifier: prefer name_or_path (local checkpoint)
+            # over model_id/checkpoint
+            name_or_path = calc_kwargs.pop("name_or_path", None)
+            if name_or_path is not None:
+                checkpoint_id = str(name_or_path)
+            else:
+                checkpoint_id = calc_kwargs.pop("model_id", None) or calc_kwargs.pop(
+                    "checkpoint", "uma-s-1p1"
+                )
+
+            inference_settings = calc_kwargs.pop("inference_settings", "default")
+            task_name = calc_kwargs.pop("task_name")
+
+            # Drop kwargs only meaningful when loading the checkpoint locally
+            calc_kwargs.pop("device", None)
+            calc_kwargs.pop("overrides", None)
+            calc_kwargs.pop("seed", None)
+
+            multiplexed_model_id = f"{checkpoint_id}:{inference_settings}"
+
+            mlip_unit = BatchServerPredictUnit.from_deployment_connection_info(
+                deployment_name="multiplexed-predict-server",
+                multiplexed_model_id=multiplexed_model_id,
+            )
+
+            calc = FAIRChemCalculator(predict_unit=mlip_unit, task_name=task_name)
+        else:
+            # Use local inference
+            calc = FAIRChemCalculator.from_model_checkpoint(**calc_kwargs)
 
     else:
         raise ValueError(f"Unrecognized {method=}.")
