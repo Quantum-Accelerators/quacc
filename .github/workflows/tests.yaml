@@ -403,7 +403,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-fairchem.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-fairchem.txt -r tests/requirements-ray.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
@@ -518,7 +518,7 @@ jobs:
         uses: actions/download-artifact@v8
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v6
+        uses: codecov/codecov-action@v7
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:

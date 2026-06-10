@@ -5,14 +5,14 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "quacc"
 description="A platform to enable high-throughput, database-driven quantum chemistry and computational materials science"
-version = "1.2.8"
+version = "1.2.12"
 readme = "README.md"
 license = { text = "BSD-3" }
 authors = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
 maintainers = [{ name = "Andrew S. Rosen", email = "asrosen@princeton.edu" }]
 keywords = ["high-throughput", "automated", "workflow", "dft", "materials science"]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
@@ -43,7 +43,7 @@ dependencies = [
 [project.optional-dependencies]
 dask = ["dask[distributed]>=2023.12.1", "dask-jobqueue>=0.8.2"]
 defects = ["pymatgen-analysis-defects>=2024.10.22", "shakenbreak>=3.2.0"]
-fairchem = ["fairchem-data-omat>=0.2", "fairchem-data-oc>=1.0.2", "fairchem-core>=2.2.0"]
+fairchem = ["fairchem-data-omat>=0.2", "fairchem-data-oc>=1.0.2", "fairchem-core>=2.21.0"]
 jobflow = ["jobflow>=0.3.0", "jobflow-remote>=1.0.0"]
 orb = ["orb-models>=0.4.1"]
 mace = ["mace-torch>=0.3.3", "mace-models>=0.1.6"]

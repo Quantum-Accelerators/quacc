@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.11]
+
+### Fixed
+
+- Fixed bug with fairchem Ray serve feature
+
+## [1.2.10]
+
+### Added
+
+- Added fairchem Ray serve features
+
+## [1.2.9]
+
+### Fixed
+
+- MatPES workflows do not set `auto_ispin` by default to be consistent with original workflow
+
+## [1.2.8]
+
+### Added
+
+- Added support for the Ray workflow engine
+
 ## [1.2.7]
 
 ### Changed

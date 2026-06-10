@@ -338,14 +338,7 @@ def get_param_swaps(
         LOGGER.info(
             f"The following parameters were changed: {sort_dict(changed_parameters)}"
         )
-    if unchanged_parameters := {
-        k: new_parameters[k]
-        for k in new_parameters
-        if k not in set(new_parameters) - set(user_calc_params)
-    }:
-        LOGGER.warning(
-            f"The following parameters were NOT changed since the user specifically requested them: {sort_dict(unchanged_parameters)}"
-        )
+
     return new_parameters
 
 
