@@ -155,15 +155,6 @@ def get_param_swaps(
             )
             calc.set(lreal=False)
 
-        if not calc.parameters.get("lorbit", False) and (
-            calc.parameters.get("ispin", 1) == 2
-            or np.any(input_atoms.get_initial_magnetic_moments() != 0)
-        ):
-            LOGGER.info(
-                "Recommending LORBIT = 11 because you have a spin-polarized calculation."
-            )
-            calc.set(lorbit=11)
-
         if (
             calc.parameters.get("lhfcalc", False) is True
             and calc.parameters.get("isym", 3) < 3
@@ -190,6 +181,15 @@ def get_param_swaps(
     # Light INCAR swaps
     # ----------------------------
     if incar_copilot_mode.lower() != "off":
+        if not calc.parameters.get("lorbit", False) and (
+            calc.parameters.get("ispin", 1) == 2
+            or np.any(input_atoms.get_initial_magnetic_moments() != 0)
+        ):
+            LOGGER.info(
+                "Recommending LORBIT = 11 because you have a spin-polarized calculation."
+            )
+            calc.set(lorbit=11)
+
         if (
             calc.parameters.get("ismear", 1) == -5
             and (calc.kpts is not None and np.prod(calc.kpts) < 4)
