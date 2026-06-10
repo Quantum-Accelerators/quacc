@@ -42,7 +42,11 @@ has_fairchem_omat = (
     and util.find_spec("fairchem.data") is not None
     and util.find_spec("fairchem.data.omat") is not None
 )
-
+has_fairchem_oc = (
+    has_fairchem
+    and util.find_spec("fairchem.data") is not None
+    and util.find_spec("fairchem.data.oc") is not None
+)
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
 
@@ -1360,5 +1364,32 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
         "gamma": True,
         "isym": 0,
         "pp": "PBE",
+        "pp_version": "54",
+    }
+
+
+@pytest.mark.skipif(not has_fairchem_oc, reason="fairchem not installed")
+def test_fairchem_oc20(patch_nonmetallic_taskdoc):
+    from quacc.recipes.vasp.fairchem import oc20_static_job
+
+    atoms = bulk("Si")
+    output = oc20_static_job(atoms)
+    output["parameters"].pop("ncore")
+    assert output["parameters"] == {
+        "ibrion": 2,
+        "nsw": 2000,
+        "isif": 0,
+        "ispin": 1,
+        "isym": 0,
+        "lreal": "Auto",
+        "ediffg": -0.03,
+        "symprec": 1e-10,
+        "encut": 350.0,
+        "laechg": False,
+        "lwave": False,
+        "ncore": 4,
+        "gga": "RP",
+        "pp": "PBE",
+        "xc": "PBE",
         "pp_version": "54",
     }
