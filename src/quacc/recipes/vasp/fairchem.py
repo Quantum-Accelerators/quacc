@@ -287,7 +287,11 @@ def oc20_static_job(
     """
     from fairchem.data.oc.utils.vasp_flags import VASP_FLAGS
 
-    calc_defaults = VASP_FLAGS | {"incar_copilot": "light"}
+    calc_defaults = VASP_FLAGS | {
+        "xc": "RPBE",
+        "pp_version": "54",
+        "incar_copilot": "light",
+    }
 
     return run_and_summarize(
         atoms,
