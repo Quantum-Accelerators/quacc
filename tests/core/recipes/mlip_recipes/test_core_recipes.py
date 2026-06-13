@@ -154,3 +154,9 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())
+
+
+def test_old_imports():
+    from quacc.recipes.mlp.core import *  # noqa
+    from quacc.recipes.mlp.elastic import *  # noqa
+    from quacc.recipes.mlp.phonons import *  # noqa
