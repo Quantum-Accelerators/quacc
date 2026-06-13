@@ -94,13 +94,8 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][].
         See the type-hint for the data structure.
     """
-    job_param_defaults = {"all": {"library": library}}
     static_job_ = customize_funcs(
-        ["static_job"],
-        [static_job],
-        param_defaults=job_param_defaults,
-        param_swaps=job_params,
-        decorators=job_decorators,
+        ["static_job"], [static_job], param_swaps=job_params, decorators=job_decorators
     )
 
     return phonon_subflow(
@@ -113,5 +108,4 @@ def phonon_flow(
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
-        additional_fields={"name": f"{library} Phonons"},
     )
