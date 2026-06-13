@@ -1,4 +1,4 @@
-"""Phonon recipes for MLPs."""
+"""Phonon recipes for MLIPs."""
 
 from __future__ import annotations
 

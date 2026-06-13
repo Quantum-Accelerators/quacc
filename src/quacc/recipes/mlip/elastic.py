@@ -1,4 +1,4 @@
-"""Elastic constants recipes for MLPs."""
+"""Elastic constants recipes for MLIPs."""
 
 from __future__ import annotations
 
