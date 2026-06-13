@@ -1,5 +1,7 @@
 """Deprecated alias for quacc.recipes.mlip.core."""
 
+from __future__ import annotations
+
 import warnings
 
 warnings.warn(
@@ -8,5 +10,5 @@ warnings.warn(
     stacklevel=2,
 )
 
-from quacc.recipes.mlip.core import *  # noqa: F401, F403, E402
+from quacc.recipes.mlip.core import *  # noqa: F403, E402
 from quacc.recipes.mlip.core import relax_job, static_job  # noqa: F401, E402
