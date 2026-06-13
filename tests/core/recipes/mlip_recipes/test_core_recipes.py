@@ -9,7 +9,7 @@ from importlib.util import find_spec
 import numpy as np
 from ase.build import bulk
 
-from quacc.recipes.mlp.core import relax_job, static_job
+from quacc.recipes.mlip.core import relax_job, static_job
 
 methods = []
 if has_mace := find_spec("mace"):
@@ -154,3 +154,10 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())
+
+
+def test_old_imports():
+    from quacc.recipes.mlp import _base  # noqa: F401
+    from quacc.recipes.mlp.core import relax_job, static_job  # noqa: F401
+    from quacc.recipes.mlp.elastic import elastic_tensor_flow  # noqa: F401
+    from quacc.recipes.mlp.phonons import phonon_flow  # noqa: F401

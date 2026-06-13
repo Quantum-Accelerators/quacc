@@ -8,7 +8,7 @@ pytest.importorskip("phonopy")
 pytest.importorskip("seekpath")
 from ase.build import bulk
 
-from quacc.recipes.mlp.phonons import phonon_flow
+from quacc.recipes.mlip.phonons import phonon_flow
 
 
 def test_phonon_flow(tmp_path, monkeypatch):

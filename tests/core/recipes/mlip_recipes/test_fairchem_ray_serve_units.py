@@ -20,7 +20,7 @@ if find_spec("fairchem") is None:
     pytest.skip("fairchem not installed", allow_module_level=True)
 
 from quacc import get_settings
-from quacc.recipes.mlp._base import pick_calculator
+from quacc.recipes.mlip._base import pick_calculator
 
 
 @pytest.fixture
