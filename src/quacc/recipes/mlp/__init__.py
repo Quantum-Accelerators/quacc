@@ -1,5 +1,7 @@
 """Recipes for machine-learned interatomic potentials (deprecated alias for quacc.recipes.mlip)."""
 
+from __future__ import annotations
+
 import warnings
 
 warnings.warn(
