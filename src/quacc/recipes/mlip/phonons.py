@@ -17,7 +17,7 @@ has_seekpath = bool(find_spec("seekpath"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Any, Literal
+    from typing import Any
 
     from ase.atoms import Atoms
 
