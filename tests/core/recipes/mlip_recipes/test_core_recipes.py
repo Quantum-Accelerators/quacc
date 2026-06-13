@@ -44,13 +44,13 @@ def test_static_job(tmp_path, monkeypatch, library):
 
 
 @pytest.mark.parametrize("library", libraries)
-def test_relax_job(tmp_path, monkeypatch, method):
+def test_relax_job(tmp_path, monkeypatch, library):
     monkeypatch.chdir(tmp_path)
 
-    if method == "fairchem":
+    if library == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {"name_or_path": "uma-s-1p1", "task_name": "omat"}
-    elif method == "matcalc":
+    elif library == "matcalc":
         calc_kwargs = {"name": "TensorNet-PES-MatPES-PBE-2025.2"}
     else:
         calc_kwargs = {}
