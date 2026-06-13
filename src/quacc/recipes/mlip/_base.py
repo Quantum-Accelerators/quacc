@@ -96,9 +96,9 @@ def pick_calculator(
     if has_torch:
         import torch
 
-        cuda_available = torch.cuda.is_available()
+        cuda_is_available = torch.cuda.is_available()
     else:
-        cuda_available = False
+        cuda_is_available = False
 
     settings = get_settings()
     method = method.lower()
@@ -106,7 +106,7 @@ def pick_calculator(
     # Skip CUDA warning for rayserve batching mode (inference happens on remote GPU)
     use_ray_serve = method == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING
 
-    if not use_ray_serve and not cuda_available:
+    if not use_ray_serve and not cuda_is_available:
         LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if "m3gnet" in method or "chgnet" in method or "tensornet" in method:
