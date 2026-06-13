@@ -7,17 +7,18 @@ from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING
 
-from ase.units import GPa as _GPa_to_eV_per_A3
 from monty.dev import requires
 
 has_frozen = bool(find_spec("frozendict"))
 has_torch = bool(find_spec("torch"))
+has_matcalc = bool(find_spec("matcalc"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import Literal
 
     from ase.calculators.calculator import BaseCalculator
+
 
 LOGGER = getLogger(__name__)
 
@@ -55,35 +56,19 @@ def freezeargs(func: Callable) -> Callable:
 @freezeargs
 @lru_cache
 def pick_calculator(
-    method: Literal[
-        "mace-mp",
-        "m3gnet",
-        "chgnet",
-        "tensornet",
-        "sevennet",
-        "orb",
-        "fairchem",
-        "rootstock",
-    ],
-    **calc_kwargs,
+    library: Literal["fairchem", "matcalc", "rootstock"], **calc_kwargs
 ) -> BaseCalculator:
     """
-    !!! Note
-
-        The `orb_models` are licensed under the APACHE license as found at the following
-        link: https://github.com/orbital-materials/orb-models
 
     Parameters
     ----------
-    method
-        Name of the calculator to use. Use `"rootstock"` to use the
-        [Rootstock](https://garden-ai.github.io/rootstock/) unified MLIP
-        interface, which requires the `rootstock` package to be installed
-        (`pip install rootstock`).
+    library
+        MLIP library to use:
+        - `fairchem` passes `**calc_kwargs` to `FAIRChemCalculator.from_model_checkpoint()`
+        - `matcalc` passes `**calc_kwargs` to `matcalc.load_fp()`
+        - `rootstock` passes `**calc_kwargs` to `rootstock.RootstockCalculator()`
     **calc_kwargs
-        Custom kwargs for the underlying calculator. When `method="rootstock"`,
-        kwargs are forwarded to `rootstock.RootstockCalculator` (e.g. `cluster`,
-        `checkpoint`, `device`, `setup_kwargs`).
+        Custom kwargs for the underlying MLIP library.
 
     Returns
     -------
@@ -101,57 +86,20 @@ def pick_calculator(
         cuda_is_available = False
 
     settings = get_settings()
-    method = method.lower()
+    library = library.lower()
 
     # Skip CUDA warning for rayserve batching mode (inference happens on remote GPU)
-    use_ray_serve = method == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING
+    use_ray_serve = library == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING
 
     if not use_ray_serve and not cuda_is_available:
         LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
-    if "m3gnet" in method or "chgnet" in method or "tensornet" in method:
-        import matgl
-        from matgl import __version__
-        from matgl.ext.ase import PESCalculator
+    if library == "matcalc":
+        from matcalc import __version__, load_fp
 
-        if method == "m3gnet":
-            model = matgl.load_model("M3GNet-PES-MatPES-PBE-2025.2")
-        elif method == "chgnet":
-            model = matgl.load_model("CHGNet-PES-MatPES-PBE-2025.2.10")
-        elif method == "tensornet":
-            model = matgl.load_model("TensorNet-PES-MatPES-PBE-2025.2")
-        else:
-            model = matgl.load_model(method)
+        calc = load_fp(**calc_kwargs)
 
-        if "stress_weight" not in calc_kwargs:
-            calc_kwargs["stress_weight"] = _GPa_to_eV_per_A3
-
-        calc = PESCalculator(potential=model, **calc_kwargs)
-
-    elif method.lower() == "mace-mp":
-        from mace import __version__
-        from mace.calculators import mace_mp
-
-        if "default_dtype" not in calc_kwargs:
-            calc_kwargs["default_dtype"] = "float64"
-        calc = mace_mp(**calc_kwargs)
-
-    elif method.lower() == "sevennet":
-        from sevenn import __version__
-        from sevenn.sevennet_calculator import SevenNetCalculator
-
-        calc = SevenNetCalculator(**calc_kwargs)
-
-    elif method.lower() == "orb":
-        from orb_models import __version__
-        from orb_models.forcefield import pretrained
-        from orb_models.forcefield.calculator import ORBCalculator
-
-        orb_model = calc_kwargs.get("model", "orb_v2")
-        orbff = getattr(pretrained, orb_model)()
-        calc = ORBCalculator(model=orbff, **calc_kwargs)
-
-    elif method.lower() == "rootstock":
+    elif library == "rootstock":
         from rootstock import RootstockCalculator, __version__
 
         calc = RootstockCalculator(**calc_kwargs)
@@ -160,7 +108,7 @@ def pick_calculator(
         # unique set of kwargs, keeping the worker warm across multiple calls.
         calc.__enter__()
 
-    elif method.lower() == "fairchem":
+    elif library == "fairchem":
         from fairchem.core import FAIRChemCalculator, __version__
 
         # Check if Ray Serve batching is enabled AND Ray is actually available
@@ -226,7 +174,7 @@ def pick_calculator(
             calc = FAIRChemCalculator.from_model_checkpoint(**calc_kwargs)
 
     else:
-        raise ValueError(f"Unrecognized {method=}.")
+        raise ValueError(f"Unrecognized MLIP library {library}.")
 
     calc.parameters["version"] = __version__
 

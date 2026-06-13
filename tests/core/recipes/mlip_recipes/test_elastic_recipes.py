@@ -10,24 +10,16 @@ torch = pytest.importorskip("torch")
 
 from importlib.util import find_spec
 
-methods = []
-if has_mace := find_spec("mace"):
-    methods.append("mace-mp")
+libraries = []
+if has_matcalc := find_spec("matcalc"):
+    libraries.append("matcalc")
 
-if has_matgl := find_spec("matgl"):
-    methods.append("tensornet")
-
-if has_sevennet := find_spec("sevenn"):
-    methods.append("sevennet")
-
-if has_orb := find_spec("orb_models"):
-    methods.append("orb")
 
 if find_spec("fairchem"):
     from huggingface_hub.utils._auth import get_token
 
     if get_token():
-        methods.append("fairchem")
+        libraries.append("fairchem")
 
 
 def _set_dtype(size, type_="float"):
@@ -36,29 +28,19 @@ def _set_dtype(size, type_="float"):
     torch.set_default_dtype(getattr(torch, f"float{size}"))
 
 
-@pytest.mark.parametrize("method", methods)
+@pytest.mark.parametrize("library", libraries)
 def test_elastic_jobs(tmp_path, monkeypatch, method):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace-mp":
-        _set_dtype(64)
-    else:
-        _set_dtype(32)
-
     if method == "fairchem":
+        # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {"name_or_path": "uma-s-1p1", "task_name": "omat"}
+    elif method == "matcalc":
+        calc_kwargs = {"name": "TensorNet-PES-MatPES-PBE-2025.2"}
     else:
         calc_kwargs = {}
 
-    ref_elastic_modulus = {
-        "chgnet": 128.184,
-        "m3gnet": 126.527,
-        "tensornet": 132.925,
-        "mace-mp": 130.727,
-        "sevennet": 142.296,
-        "orb": 190.195,
-        "fairchem": 151.367,
-    }
+    ref_elastic_modulus = {"matcalc": 132.925, "fairchem": 151.367}
 
     atoms = bulk("Cu")
 

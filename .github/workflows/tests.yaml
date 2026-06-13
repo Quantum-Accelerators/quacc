@@ -302,7 +302,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-sevenn-orb-newtonnet:
+  tests-newtonnet:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -325,14 +325,14 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-sevenn.txt -r tests/requirements-orb.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
           echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
 
       - name: Run tests with pytest
-        run: pytest -k 'mlip or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
+        run: pytest -k 'newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
 
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v7
@@ -341,7 +341,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-mace-matgl:
+  tests-mlip:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -364,7 +364,7 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mace.txt -r tests/requirements-matgl.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlip.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
@@ -504,8 +504,8 @@ jobs:
       - tests-defects-phonons-espresso
       - tests-tblite-dftbplus
       - tests-qchem-sella
-      - tests-sevenn-orb-newtonnet
-      - tests-mace-matgl
+      - tests-newtonnet
+      - tests-mlip
       - tests-fairchem
       - tests-mp
       - tests-torchsim

@@ -1,2 +1,0 @@
-mace-torch==0.3.16
-mace-models==0.1.6
