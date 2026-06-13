@@ -12,19 +12,15 @@
         <meta name="author" content="Andrew S. Rosen">
       
       
-        <link rel="canonical" href="https://quantum-accelerators.github.io/quacc/user/advanced/torchsim.html">
+        <link rel="canonical" href="https://quantum-accelerators.github.io/quacc/recipes/torchsim.html">
       
       
-        <link rel="prev" href="./restarts.html">
-      
-      
-        <link rel="next" href="../../reference/quacc/atoms/core.html">
       
       
         
       
       
-      <link rel="icon" href="../../images/quacc_favicon.png">
+      <link rel="icon" href="../images/quacc_favicon.png">
       <meta name="generator" content="zensical-0.0.45">
     
     
@@ -36,12 +32,12 @@
       
         
       
-      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.fba56155.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/modern/main.fba56155.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.dfe2e883.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/modern/palette.dfe2e883.min.css">
       
       
 
@@ -62,7 +58,7 @@
       
     
     
-    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    <script>__md_scope=new URL("..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -103,9 +99,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../index.html" title="quacc" class="md-header__button md-logo" aria-label="quacc" data-md-component="logo">
+    <a href="../index.html" title="quacc" class="md-header__button md-logo" aria-label="quacc" data-md-component="logo">
       
-  <img src="../../images/quacc_logo_wide.png" alt="quacc">
+  <img src="../images/quacc_logo_wide.png" alt="quacc">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
@@ -197,9 +193,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../index.html" title="quacc" class="md-nav__button md-logo" aria-label="quacc" data-md-component="logo">
+    <a href="../index.html" title="quacc" class="md-nav__button md-logo" aria-label="quacc" data-md-component="logo">
       
-  <img src="../../images/quacc_logo_wide.png" alt="quacc">
+  <img src="../images/quacc_logo_wide.png" alt="quacc">
 
     </a>
     quacc
@@ -226,7 +222,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../index.html" class="md-nav__link">
+      <a href="../index.html" class="md-nav__link">
         
   
   
@@ -302,7 +298,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../install/install.html" class="md-nav__link">
+      <a href="../install/install.html" class="md-nav__link">
         
   
   
@@ -329,7 +325,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../install/codes.html" class="md-nav__link">
+      <a href="../install/codes.html" class="md-nav__link">
         
   
   
@@ -356,7 +352,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../install/wflow_engines.html" class="md-nav__link">
+      <a href="../install/wflow_engines.html" class="md-nav__link">
         
   
   
@@ -387,8 +383,6 @@
       
   
   
-    
-  
   
   
     
@@ -401,11 +395,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
@@ -425,7 +419,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -489,7 +483,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../recipes/recipes_intro.html" class="md-nav__link">
+      <a href="../user/recipes/recipes_intro.html" class="md-nav__link">
         
   
   
@@ -516,7 +510,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../recipes/workflows.html" class="md-nav__link">
+      <a href="../user/recipes/workflows.html" class="md-nav__link">
         
   
   
@@ -598,7 +592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../settings/settings.html" class="md-nav__link">
+      <a href="../user/settings/settings.html" class="md-nav__link">
         
   
   
@@ -625,7 +619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../settings/file_management.html" class="md-nav__link">
+      <a href="../user/settings/file_management.html" class="md-nav__link">
         
   
   
@@ -652,7 +646,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../settings/settings_list.html" class="md-nav__link">
+      <a href="../user/settings/settings_list.html" class="md-nav__link">
         
   
   
@@ -734,7 +728,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../basics/wflow_overview.html" class="md-nav__link">
+      <a href="../user/basics/wflow_overview.html" class="md-nav__link">
         
   
   
@@ -761,7 +755,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../basics/wflow_decorators.html" class="md-nav__link">
+      <a href="../user/basics/wflow_decorators.html" class="md-nav__link">
         
   
   
@@ -788,7 +782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../basics/wflow_syntax.html" class="md-nav__link">
+      <a href="../user/basics/wflow_syntax.html" class="md-nav__link">
         
   
   
@@ -870,7 +864,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wflow_engine/wflow_engines1.html" class="md-nav__link">
+      <a href="../user/wflow_engine/wflow_engines1.html" class="md-nav__link">
         
   
   
@@ -897,7 +891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wflow_engine/wflow_engines2.html" class="md-nav__link">
+      <a href="../user/wflow_engine/wflow_engines2.html" class="md-nav__link">
         
   
   
@@ -924,7 +918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../wflow_engine/executors.html" class="md-nav__link">
+      <a href="../user/wflow_engine/executors.html" class="md-nav__link">
         
   
   
@@ -1006,7 +1000,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../db/context.html" class="md-nav__link">
+      <a href="../user/db/context.html" class="md-nav__link">
         
   
   
@@ -1033,7 +1027,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../db/basics.html" class="md-nav__link">
+      <a href="../user/db/basics.html" class="md-nav__link">
         
   
   
@@ -1065,8 +1059,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1076,11 +1068,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
         
           
           <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
@@ -1100,7 +1092,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_6">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1117,14 +1109,14 @@
   
   
     <li class="md-nav__item">
-      <a href="./file_transfers.html" class="md-nav__link">
+      <a href="../user/advanced/file_transfers.md" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  Transferring Files
+  none
 
     
   </span>
@@ -1144,14 +1136,14 @@
   
   
     <li class="md-nav__item">
-      <a href="./restarts.html" class="md-nav__link">
+      <a href="../user/advanced/restarts.md" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  Restarts
+  none
 
     
   </span>
@@ -1168,43 +1160,17 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  TorchSim Recipes
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="torchsim.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../user/advanced/torchsim.md" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  TorchSim Recipes
+  none
 
     
   </span>
@@ -1212,277 +1178,6 @@
   
 
       </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#pre-requisites" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Pre-Requisites
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Overview
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#basic-geometry-optimization" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Basic Geometry Optimization
-      </span>
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Basic Geometry Optimization">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#understanding-the-output" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Understanding the Output
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#molecular-dynamics" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Molecular Dynamics
-      </span>
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Molecular Dynamics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#available-integrators" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Available Integrators
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#static-calculations" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Static Calculations
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#using-machine-learning-potentials" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Using Machine Learning Potentials
-      </span>
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Using Machine Learning Potentials">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#supported-model-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Supported Model Types
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#batch-processing-multiple-systems" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Batch Processing Multiple Systems
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#trajectory-reporting" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Trajectory Reporting
-      </span>
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Trajectory Reporting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#available-property-calculators" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Available Property Calculators
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#autobatching" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Autobatching
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#convergence-criteria" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Convergence Criteria
-      </span>
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Convergence Criteria">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#force-convergence-default" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Force Convergence (Default)
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#energy-convergence" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Energy Convergence
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cell-optimization" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Cell Optimization
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#complete-workflow-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Complete Workflow Example
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#comparison-with-torchsim-direct-api" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Comparison with TorchSim Direct API
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#conclusion" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Conclusion
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1654,7 +1349,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/atoms/core.html" class="md-nav__link">
+      <a href="../reference/quacc/atoms/core.html" class="md-nav__link">
         
   
   
@@ -1681,7 +1376,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/atoms/defects.html" class="md-nav__link">
+      <a href="../reference/quacc/atoms/defects.html" class="md-nav__link">
         
   
   
@@ -1708,7 +1403,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/atoms/deformation.html" class="md-nav__link">
+      <a href="../reference/quacc/atoms/deformation.html" class="md-nav__link">
         
   
   
@@ -1735,7 +1430,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/atoms/phonons.html" class="md-nav__link">
+      <a href="../reference/quacc/atoms/phonons.html" class="md-nav__link">
         
   
   
@@ -1762,7 +1457,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/atoms/slabs.html" class="md-nav__link">
+      <a href="../reference/quacc/atoms/slabs.html" class="md-nav__link">
         
   
   
@@ -1789,7 +1484,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/atoms/ts.html" class="md-nav__link">
+      <a href="../reference/quacc/atoms/ts.html" class="md-nav__link">
         
   
   
@@ -1918,7 +1613,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/espresso/espresso.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/espresso/espresso.html" class="md-nav__link">
         
   
   
@@ -1945,7 +1640,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/espresso/utils.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/espresso/utils.html" class="md-nav__link">
         
   
   
@@ -2027,7 +1722,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/mrcc/io.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/mrcc/io.html" class="md-nav__link">
         
   
   
@@ -2054,7 +1749,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/mrcc/mrcc.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/mrcc/mrcc.html" class="md-nav__link">
         
   
   
@@ -2136,7 +1831,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/qchem/io.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/qchem/io.html" class="md-nav__link">
         
   
   
@@ -2163,7 +1858,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/qchem/params.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/qchem/params.html" class="md-nav__link">
         
   
   
@@ -2190,7 +1885,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/qchem/qchem.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/qchem/qchem.html" class="md-nav__link">
         
   
   
@@ -2217,7 +1912,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/qchem/qchem_custodian.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/qchem/qchem_custodian.html" class="md-nav__link">
         
   
   
@@ -2299,7 +1994,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/vasp/io.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/vasp/io.html" class="md-nav__link">
         
   
   
@@ -2326,7 +2021,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/vasp/params.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/vasp/params.html" class="md-nav__link">
         
   
   
@@ -2353,7 +2048,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/vasp/vasp.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/vasp/vasp.html" class="md-nav__link">
         
   
   
@@ -2380,7 +2075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/calculators/vasp/vasp_custodian.html" class="md-nav__link">
+      <a href="../reference/quacc/calculators/vasp/vasp_custodian.html" class="md-nav__link">
         
   
   
@@ -2517,7 +2212,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/common/defects.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/common/defects.html" class="md-nav__link">
         
   
   
@@ -2544,7 +2239,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/common/elastic.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/common/elastic.html" class="md-nav__link">
         
   
   
@@ -2571,7 +2266,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/common/phonons.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/common/phonons.html" class="md-nav__link">
         
   
   
@@ -2598,7 +2293,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/common/slabs.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/common/slabs.html" class="md-nav__link">
         
   
   
@@ -2680,7 +2375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/dftb/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/dftb/_base.html" class="md-nav__link">
         
   
   
@@ -2707,7 +2402,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/dftb/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/dftb/core.html" class="md-nav__link">
         
   
   
@@ -2789,7 +2484,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/emt/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/emt/core.html" class="md-nav__link">
         
   
   
@@ -2816,7 +2511,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/emt/defects.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/emt/defects.html" class="md-nav__link">
         
   
   
@@ -2843,7 +2538,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/emt/elastic.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/emt/elastic.html" class="md-nav__link">
         
   
   
@@ -2870,7 +2565,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/emt/md.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/emt/md.html" class="md-nav__link">
         
   
   
@@ -2897,7 +2592,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/emt/phonons.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/emt/phonons.html" class="md-nav__link">
         
   
   
@@ -2924,7 +2619,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/emt/slabs.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/emt/slabs.html" class="md-nav__link">
         
   
   
@@ -3006,7 +2701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/espresso/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/espresso/_base.html" class="md-nav__link">
         
   
   
@@ -3033,7 +2728,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/espresso/bands.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/espresso/bands.html" class="md-nav__link">
         
   
   
@@ -3060,7 +2755,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/espresso/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/espresso/core.html" class="md-nav__link">
         
   
   
@@ -3087,7 +2782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/espresso/dos.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/espresso/dos.html" class="md-nav__link">
         
   
   
@@ -3114,7 +2809,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/espresso/phonons.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/espresso/phonons.html" class="md-nav__link">
         
   
   
@@ -3196,7 +2891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/gaussian/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/gaussian/_base.html" class="md-nav__link">
         
   
   
@@ -3223,7 +2918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/gaussian/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/gaussian/core.html" class="md-nav__link">
         
   
   
@@ -3305,7 +3000,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/gulp/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/gulp/_base.html" class="md-nav__link">
         
   
   
@@ -3332,7 +3027,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/gulp/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/gulp/core.html" class="md-nav__link">
         
   
   
@@ -3414,7 +3109,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/lj/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/lj/core.html" class="md-nav__link">
         
   
   
@@ -3496,7 +3191,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/mlip/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/mlip/_base.html" class="md-nav__link">
         
   
   
@@ -3523,7 +3218,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/mlip/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/mlip/core.html" class="md-nav__link">
         
   
   
@@ -3550,7 +3245,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/mlip/elastic.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/mlip/elastic.html" class="md-nav__link">
         
   
   
@@ -3577,7 +3272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/mlip/phonons.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/mlip/phonons.html" class="md-nav__link">
         
   
   
@@ -3659,7 +3354,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/mlp/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/mlp/_base.html" class="md-nav__link">
         
   
   
@@ -3686,7 +3381,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/mlp/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/mlp/core.html" class="md-nav__link">
         
   
   
@@ -3713,7 +3408,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/mlp/elastic.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/mlp/elastic.html" class="md-nav__link">
         
   
   
@@ -3740,7 +3435,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/mlp/phonons.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/mlp/phonons.html" class="md-nav__link">
         
   
   
@@ -3822,7 +3517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/mrcc/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/mrcc/_base.html" class="md-nav__link">
         
   
   
@@ -3849,7 +3544,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/mrcc/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/mrcc/core.html" class="md-nav__link">
         
   
   
@@ -3931,7 +3626,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/newtonnet/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/newtonnet/core.html" class="md-nav__link">
         
   
   
@@ -3958,7 +3653,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/newtonnet/ts.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/newtonnet/ts.html" class="md-nav__link">
         
   
   
@@ -4040,7 +3735,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/onetep/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/onetep/_base.html" class="md-nav__link">
         
   
   
@@ -4067,7 +3762,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/onetep/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/onetep/core.html" class="md-nav__link">
         
   
   
@@ -4149,7 +3844,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/orca/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/orca/_base.html" class="md-nav__link">
         
   
   
@@ -4176,7 +3871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/orca/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/orca/core.html" class="md-nav__link">
         
   
   
@@ -4258,7 +3953,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/psi4/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/psi4/_base.html" class="md-nav__link">
         
   
   
@@ -4285,7 +3980,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/psi4/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/psi4/core.html" class="md-nav__link">
         
   
   
@@ -4367,7 +4062,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/qchem/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/qchem/_base.html" class="md-nav__link">
         
   
   
@@ -4394,7 +4089,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/qchem/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/qchem/core.html" class="md-nav__link">
         
   
   
@@ -4421,7 +4116,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/qchem/ts.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/qchem/ts.html" class="md-nav__link">
         
   
   
@@ -4503,7 +4198,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/tblite/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/tblite/core.html" class="md-nav__link">
         
   
   
@@ -4530,7 +4225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/tblite/phonons.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/tblite/phonons.html" class="md-nav__link">
         
   
   
@@ -4612,7 +4307,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/torchsim/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/torchsim/_base.html" class="md-nav__link">
         
   
   
@@ -4639,7 +4334,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/torchsim/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/torchsim/core.html" class="md-nav__link">
         
   
   
@@ -4721,7 +4416,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/vasp/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/vasp/_base.html" class="md-nav__link">
         
   
   
@@ -4748,7 +4443,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/vasp/core.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/vasp/core.html" class="md-nav__link">
         
   
   
@@ -4775,7 +4470,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/vasp/fairchem.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/vasp/fairchem.html" class="md-nav__link">
         
   
   
@@ -4802,7 +4497,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/vasp/matpes.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/vasp/matpes.html" class="md-nav__link">
         
   
   
@@ -4829,7 +4524,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/vasp/mof_off.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/vasp/mof_off.html" class="md-nav__link">
         
   
   
@@ -4856,7 +4551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/vasp/mp24.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/vasp/mp24.html" class="md-nav__link">
         
   
   
@@ -4883,7 +4578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/vasp/mp_legacy.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/vasp/mp_legacy.html" class="md-nav__link">
         
   
   
@@ -4910,7 +4605,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/vasp/qmof.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/vasp/qmof.html" class="md-nav__link">
         
   
   
@@ -4937,7 +4632,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/recipes/vasp/slabs.html" class="md-nav__link">
+      <a href="../reference/quacc/recipes/vasp/slabs.html" class="md-nav__link">
         
   
   
@@ -5027,7 +4722,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/runners/_base.html" class="md-nav__link">
+      <a href="../reference/quacc/runners/_base.html" class="md-nav__link">
         
   
   
@@ -5054,7 +4749,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/runners/ase.html" class="md-nav__link">
+      <a href="../reference/quacc/runners/ase.html" class="md-nav__link">
         
   
   
@@ -5081,7 +4776,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/runners/generic.html" class="md-nav__link">
+      <a href="../reference/quacc/runners/generic.html" class="md-nav__link">
         
   
   
@@ -5108,7 +4803,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/runners/phonons.html" class="md-nav__link">
+      <a href="../reference/quacc/runners/phonons.html" class="md-nav__link">
         
   
   
@@ -5135,7 +4830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/runners/prep.html" class="md-nav__link">
+      <a href="../reference/quacc/runners/prep.html" class="md-nav__link">
         
   
   
@@ -5217,7 +4912,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/schemas/ase.html" class="md-nav__link">
+      <a href="../reference/quacc/schemas/ase.html" class="md-nav__link">
         
   
   
@@ -5244,7 +4939,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/schemas/atoms.html" class="md-nav__link">
+      <a href="../reference/quacc/schemas/atoms.html" class="md-nav__link">
         
   
   
@@ -5271,7 +4966,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/schemas/phonons.html" class="md-nav__link">
+      <a href="../reference/quacc/schemas/phonons.html" class="md-nav__link">
         
   
   
@@ -5298,7 +4993,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/schemas/prep.html" class="md-nav__link">
+      <a href="../reference/quacc/schemas/prep.html" class="md-nav__link">
         
   
   
@@ -5325,7 +5020,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/schemas/thermo.html" class="md-nav__link">
+      <a href="../reference/quacc/schemas/thermo.html" class="md-nav__link">
         
   
   
@@ -5352,7 +5047,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/schemas/torchsim.html" class="md-nav__link">
+      <a href="../reference/quacc/schemas/torchsim.html" class="md-nav__link">
         
   
   
@@ -5379,7 +5074,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/schemas/vasp.html" class="md-nav__link">
+      <a href="../reference/quacc/schemas/vasp.html" class="md-nav__link">
         
   
   
@@ -5414,7 +5109,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/settings.html" class="md-nav__link">
+      <a href="../reference/quacc/settings.html" class="md-nav__link">
         
   
   
@@ -5441,7 +5136,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/types.html" class="md-nav__link">
+      <a href="../reference/quacc/types.html" class="md-nav__link">
         
   
   
@@ -5515,7 +5210,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/utils/dicts.html" class="md-nav__link">
+      <a href="../reference/quacc/utils/dicts.html" class="md-nav__link">
         
   
   
@@ -5542,7 +5237,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/utils/files.html" class="md-nav__link">
+      <a href="../reference/quacc/utils/files.html" class="md-nav__link">
         
   
   
@@ -5569,7 +5264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/utils/kpts.html" class="md-nav__link">
+      <a href="../reference/quacc/utils/kpts.html" class="md-nav__link">
         
   
   
@@ -5596,7 +5291,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/utils/lists.html" class="md-nav__link">
+      <a href="../reference/quacc/utils/lists.html" class="md-nav__link">
         
   
   
@@ -5678,7 +5373,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/wflow_tools/context.html" class="md-nav__link">
+      <a href="../reference/quacc/wflow_tools/context.html" class="md-nav__link">
         
   
   
@@ -5705,7 +5400,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/wflow_tools/customizers.html" class="md-nav__link">
+      <a href="../reference/quacc/wflow_tools/customizers.html" class="md-nav__link">
         
   
   
@@ -5732,7 +5427,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/wflow_tools/decorators.html" class="md-nav__link">
+      <a href="../reference/quacc/wflow_tools/decorators.html" class="md-nav__link">
         
   
   
@@ -5759,7 +5454,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/wflow_tools/job_argument.html" class="md-nav__link">
+      <a href="../reference/quacc/wflow_tools/job_argument.html" class="md-nav__link">
         
   
   
@@ -5786,7 +5481,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../reference/quacc/wflow_tools/job_patterns.html" class="md-nav__link">
+      <a href="../reference/quacc/wflow_tools/job_patterns.html" class="md-nav__link">
         
   
   
@@ -5886,7 +5581,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dev/contributing.html" class="md-nav__link">
+      <a href="../dev/contributing.html" class="md-nav__link">
         
   
   
@@ -5913,7 +5608,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dev/docs.html" class="md-nav__link">
+      <a href="../dev/docs.html" class="md-nav__link">
         
   
   
@@ -5987,7 +5682,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dev/recipes/jobs.html" class="md-nav__link">
+      <a href="../dev/recipes/jobs.html" class="md-nav__link">
         
   
   
@@ -6014,7 +5709,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../dev/recipes/flows.html" class="md-nav__link">
+      <a href="../dev/recipes/flows.html" class="md-nav__link">
         
   
   
@@ -6106,7 +5801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../maintainers/internal.html" class="md-nav__link">
+      <a href="../maintainers/internal.html" class="md-nav__link">
         
   
   
@@ -6190,7 +5885,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../about/faq.html" class="md-nav__link">
+      <a href="../about/faq.html" class="md-nav__link">
         
   
   
@@ -6217,7 +5912,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../about/contributors.html" class="md-nav__link">
+      <a href="../about/contributors.html" class="md-nav__link">
         
   
   
@@ -6244,7 +5939,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../about/changelog.html" class="md-nav__link">
+      <a href="../about/changelog.html" class="md-nav__link">
         
   
   
@@ -6271,7 +5966,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../about/conduct.html" class="md-nav__link">
+      <a href="../about/conduct.html" class="md-nav__link">
         
   
   
@@ -6298,7 +5993,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../about/license.html" class="md-nav__link">
+      <a href="../about/license.html" class="md-nav__link">
         
   
   
@@ -6633,90 +6328,12 @@
   
 
 
-  <nav class="md-path" aria-label="Navigation" >
-    <ol class="md-path__list">
-      
-        
-  
-  
-    <li class="md-path__item">
-      <a href="../../index.html" class="md-path__link">
-        
-  
-  <span class="md-ellipsis">
-    Home
-  </span>
-
-      </a>
-    </li>
-  
-
-      
-      
-        
-  
-  
-    
-    
-    
-    
-    
-      
-  
-  
-    
-    
-    
-    
-    
-      <li class="md-path__item">
-        <a href="../recipes/recipes_intro.html" class="md-path__link">
-          
-  
-  <span class="md-ellipsis">
-    User Guide
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-    
-  
-
-      
-        
-  
-  
-    
-    
-    
-    
-    
-      <li class="md-path__item">
-        <a href="./file_transfers.html" class="md-path__link">
-          
-  
-  <span class="md-ellipsis">
-    Advanced
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-      
-    </ol>
-  </nav>
-
               
               <article class="md-content__inner md-typeset">
                 
                   
   
-    <a href="https://github.com/Quantum-Accelerators/quacc//blob/main/docs/user/advanced/torchsim.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/Quantum-Accelerators/quacc//blob/main/docs/recipes/torchsim.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
     </a>
@@ -6728,7 +6345,7 @@
 <p>This tutorial introduces quacc's TorchSim recipes, which provide a high-level interface for running batched molecular dynamics simulations, geometry optimizations, and static calculations using machine learning potentials. The quacc TorchSim recipes wrap <a href="https://github.com/orbital-materials/torch-sim">TorchSim's high-level API</a> while providing workflow engine compatibility, automatic trajectory handling, and standardized output schemas.</p>
 <h2 id="pre-requisites">Pre-Requisites<a class="headerlink" href="#pre-requisites" title="Permanent link">&para;</a></h2>
 <p>Before using the TorchSim recipes, you need to install TorchSim and at least one machine learning potential:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>torch-sim<span class="w"> </span>mace-torch
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>quacc<span class="o">[</span>torchsim<span class="o">]</span><span class="w"> </span>mace-torch
 </span></code></pre></div>
 <p>You should also be familiar with <a href="https://wiki.fysik.dtu.dk/ase/ase/atoms.html">ASE Atoms objects</a> and have read the <a href="recipes_intro.html">Intro to Jobs</a> tutorial.</p>
 <div class="admonition note">
@@ -7213,44 +6830,6 @@
         <footer class="md-footer">
   
     
-      
-      <nav class="md-footer__inner md-grid" aria-label="Footer" >
-        
-          
-          <a href="./restarts.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Restarts">
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
-            </div>
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              <div class="md-ellipsis">
-                Restarts
-              </div>
-            </div>
-          </a>
-        
-        
-          
-          <a href="../../reference/quacc/atoms/core.html" class="md-footer__link md-footer__link--next" aria-label="Next: core">
-            <div class="md-footer__title">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              <div class="md-ellipsis">
-                core
-              </div>
-            </div>
-            <div class="md-footer__button md-icon">
-              
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </div>
-          </a>
-        
-      </nav>
-    
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -7293,10 +6872,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["content.action.edit","content.code.copy","content.code.select","content.code.annotate","content.tabs.link","content.tooltips","navigation.footer","navigation.path","navigation.tracking","navigation.sections","navigation.top","search.highlight","search.suggest","search.share","header.autohide","toc.follow"],"search":"../../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["content.action.edit","content.code.copy","content.code.select","content.code.annotate","content.tabs.link","content.tooltips","navigation.footer","navigation.path","navigation.tracking","navigation.sections","navigation.top","search.highlight","search.suggest","search.share","header.autohide","toc.follow"],"search":"../assets/javascripts/workers/search.e2d2d235.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.6e5f0216.min.js"></script>
+      <script src="../assets/javascripts/bundle.6e5f0216.min.js"></script>
       
     
   </body>

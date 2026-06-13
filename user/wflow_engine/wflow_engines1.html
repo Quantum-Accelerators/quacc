@@ -1186,14 +1186,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../advanced/file_transfers.html" class="md-nav__link">
+      <a href="../advanced/file_transfers.md" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  Transferring Files
+  none
 
     
   </span>
@@ -1213,14 +1213,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../advanced/restarts.html" class="md-nav__link">
+      <a href="../advanced/restarts.md" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  Restarts
+  none
 
     
   </span>
@@ -1240,14 +1240,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../advanced/torchsim.html" class="md-nav__link">
+      <a href="../advanced/torchsim.md" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-  TorchSim Recipes
+  none
 
     
   </span>
@@ -6278,7 +6278,7 @@
 <p>We will now try running a job where we relax a bulk Cu structure using EMT, which is pre-defined in quacc as <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;relax_job&lt;/span&gt;" href="../../reference/quacc/recipes/emt/core.html#quacc.recipes.emt.core.relax_job">quacc.recipes.emt.core.relax_job</a>.</p>
 <pre class="mermaid"><code>graph LR
   A[Input] --&gt; B(Relax) --&gt; C[Output];</code></pre>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Dask</label><label for="__tabbed_1_2">Parsl</label><label for="__tabbed_1_3">Prefect</label><label for="__tabbed_1_4">Ray</label><label for="__tabbed_1_5">Redun</label><label for="__tabbed_1_6">Jobflow</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Dask</label><label for="__tabbed_1_2">Jobflow</label><label for="__tabbed_1_3">Parsl</label><label for="__tabbed_1_4">Prefect</label><label for="__tabbed_1_5">Ray</label><label for="__tabbed_1_6">Redun</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="admonition important">
@@ -6316,25 +6316,59 @@
 <div class="tabbed-block">
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>If you haven't done so yet, make sure you update the quacc <code>WORKFLOW_ENGINE</code> <a href="../settings/settings.html">configuration variable</a> and load the default Parsl configuration:</p>
-<div class="language-bash highlight"><span class="filename">terminal</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>quacc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>WORKFLOW_ENGINE<span class="w"> </span>parsl
-</span></code></pre></div>
-<div class="language-python highlight"><span class="filename">python</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">parsl</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">parsl</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+<p>If you haven't done so yet, make sure you update the quacc <code>WORKFLOW_ENGINE</code> <a href="../settings/settings.html">configuration variable</a>. It also helps to have <code>RESULTS_DIR</code> set to the default value so Jobflow can handle the directory management.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>quacc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>WORKFLOW_ENGINE<span class="w"> </span>jobflow
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>quacc<span class="w"> </span><span class="nb">unset</span><span class="w"> </span>RESULTS_DIR
 </span></code></pre></div>
 </div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">relax_job</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># Call the PythonApp</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="n">future</span> <span class="o">=</span> <span class="n">relax_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>  <span class="c1"># (1)!</span>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># Print result</span>
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>  <span class="c1"># (2)!</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jobflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jf</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">relax_job</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># Define the Job</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="n">job</span> <span class="o">=</span> <span class="n">relax_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>  <span class="c1"># (1)!</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c1"># Run the job locally</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="n">responses</span> <span class="o">=</span> <span class="n">jf</span><span class="o">.</span><span class="n">run_locally</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">ensure_success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">create_folders</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># (2)!</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="c1"># Get the result</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="n">result</span> <span class="o">=</span> <span class="n">responses</span><span class="p">[</span><span class="n">job</span><span class="o">.</span><span class="n">uuid</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">output</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span></code></pre></div>
+<ol>
+<li>
+<p>The <code>relax_job</code> function was pre-defined in quacc with a <code class="language-Python highlight"><span class="nd">@job</span></code> decorator, which is why we did not need to include it here.</p>
+</li>
+<li>
+<p>We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.</p>
+</li>
+</ol>
+</div>
+<div class="tabbed-block">
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>If you haven't done so yet, make sure you update the quacc <code>WORKFLOW_ENGINE</code> <a href="../settings/settings.html">configuration variable</a> and load the default Parsl configuration:</p>
+<div class="language-bash highlight"><span class="filename">terminal</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>quacc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>WORKFLOW_ENGINE<span class="w"> </span>parsl
+</span></code></pre></div>
+<div class="language-python highlight"><span class="filename">python</span><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">parsl</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">parsl</span><span class="o">.</span><span class="n">load</span><span class="p">()</span>
+</span></code></pre></div>
+</div>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">relax_job</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1"># Call the PythonApp</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="n">future</span> <span class="o">=</span> <span class="n">relax_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>  <span class="c1"># (1)!</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="c1"># Print result</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>  <span class="c1"># (2)!</span>
 </span></code></pre></div>
 <ol>
 <li>
@@ -6349,27 +6383,27 @@
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>If you haven't done so yet, make sure you update the quacc <code>WORKFLOW_ENGINE</code> <a href="../settings/settings.html">configuration variable</a>:</p>
-<div class="language-bash highlight"><span class="filename">terminal</span><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>quacc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>WORKFLOW_ENGINE<span class="w"> </span>prefect
+<div class="language-bash highlight"><span class="filename">terminal</span><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>quacc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>WORKFLOW_ENGINE<span class="w"> </span>prefect
 </span></code></pre></div>
 </div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc</span><span class="w"> </span><span class="kn">import</span> <span class="n">flow</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">relax_job</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="c1"># Define the workflow</span>
-</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="nd">@flow</span>
-</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">workflow</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
-</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>    <span class="k">return</span> <span class="n">relax_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>  <span class="c1"># (1)!</span>
-</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>
-</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>
-</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="c1"># Dispatch the workflow</span>
-</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="n">result</span> <span class="o">=</span> <span class="n">workflow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>  <span class="c1"># (2)!</span>
-</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>
-</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc</span><span class="w"> </span><span class="kn">import</span> <span class="n">flow</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">relax_job</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="c1"># Define the workflow</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="nd">@flow</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="k">def</span><span class="w"> </span><span class="nf">workflow</span><span class="p">(</span><span class="n">atoms</span><span class="p">):</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>    <span class="k">return</span> <span class="n">relax_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>  <span class="c1"># (1)!</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="c1"># Dispatch the workflow</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="n">result</span> <span class="o">=</span> <span class="n">workflow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>  <span class="c1"># (2)!</span>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </span></code></pre></div>
 <ol>
 <li>
@@ -6384,26 +6418,26 @@
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>If you haven't done so yet, make sure you update the quacc <code>WORKFLOW_ENGINE</code> <a href="../settings/settings.html">configuration variable</a> and initialize Ray:</p>
-<div class="language-bash highlight"><span class="filename">terminal</span><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>quacc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>WORKFLOW_ENGINE<span class="w"> </span>ray
+<div class="language-bash highlight"><span class="filename">terminal</span><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>quacc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>WORKFLOW_ENGINE<span class="w"> </span>ray
 </span></code></pre></div>
-<div class="language-python highlight"><span class="filename">python</span><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">ray</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+<div class="language-python highlight"><span class="filename">python</span><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">ray</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">ray</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
 </span></code></pre></div>
 </div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">ray</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">relax_job</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="c1"># Submit the job</span>
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="n">future</span> <span class="o">=</span> <span class="n">relax_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>  <span class="c1"># (1)!</span>
-</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>
-</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="c1"># Print result</span>
-</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>  <span class="c1"># (2)!</span>
-</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">ray</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">relax_job</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="c1"># Submit the job</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="n">future</span> <span class="o">=</span> <span class="n">relax_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>  <span class="c1"># (1)!</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="c1"># Print result</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="n">result</span> <span class="o">=</span> <span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">()</span>  <span class="c1"># (2)!</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </span></code></pre></div>
 <ol>
 <li>
@@ -6418,59 +6452,25 @@
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>If you haven't done so yet, make sure you update the quacc <code>WORKFLOW_ENGINE</code> <a href="../settings/settings.html">configuration variable</a>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>quacc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>WORKFLOW_ENGINE<span class="w"> </span>redun
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>quacc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>WORKFLOW_ENGINE<span class="w"> </span>redun
 </span></code></pre></div>
 </div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">redun</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scheduler</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">relax_job</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1"># Instantiate the scheduler</span>
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">()</span>
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
-</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
-</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
-</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
-</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="c1"># Dispatch the workflow</span>
-</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="n">result</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">relax_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">))</span>  <span class="c1"># (1)!</span>
-</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">redun</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scheduler</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">relax_job</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="c1"># Instantiate the scheduler</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">()</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="c1"># Dispatch the workflow</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="n">result</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">relax_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">))</span>  <span class="c1"># (1)!</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </span></code></pre></div>
 <ol>
 <li>The <code>relax_job</code> function was pre-defined in quacc with a <code class="language-Python highlight"><span class="nd">@job</span></code> decorator, which is why we did not need to include it here.</li>
-</ol>
-</div>
-<div class="tabbed-block">
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>If you haven't done so yet, make sure you update the quacc <code>WORKFLOW_ENGINE</code> <a href="../settings/settings.html">configuration variable</a>. It also helps to have <code>RESULTS_DIR</code> set to the default value so Jobflow can handle the directory management.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>quacc<span class="w"> </span><span class="nb">set</span><span class="w"> </span>WORKFLOW_ENGINE<span class="w"> </span>jobflow
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>quacc<span class="w"> </span><span class="nb">unset</span><span class="w"> </span>RESULTS_DIR
-</span></code></pre></div>
-</div>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jobflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jf</span>
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">relax_job</span>
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>
-</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
-</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
-</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
-</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="c1"># Define the Job</span>
-</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="n">job</span> <span class="o">=</span> <span class="n">relax_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>  <span class="c1"># (1)!</span>
-</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
-</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="c1"># Run the job locally</span>
-</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="n">responses</span> <span class="o">=</span> <span class="n">jf</span><span class="o">.</span><span class="n">run_locally</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">ensure_success</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">create_folders</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># (2)!</span>
-</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>
-</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="c1"># Get the result</span>
-</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="n">result</span> <span class="o">=</span> <span class="n">responses</span><span class="p">[</span><span class="n">job</span><span class="o">.</span><span class="n">uuid</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">output</span>
-</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</span></code></pre></div>
-<ol>
-<li>
-<p>The <code>relax_job</code> function was pre-defined in quacc with a <code class="language-Python highlight"><span class="nd">@job</span></code> decorator, which is why we did not need to include it here.</p>
-</li>
-<li>
-<p>We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.</p>
-</li>
 </ol>
 </div>
 </div>
@@ -6483,7 +6483,7 @@
   B --&gt; D(Slab Relax) --&gt; H(Slab Static) --&gt; K[Output]
   B --&gt; E(Slab Relax) --&gt; I(Slab Static) --&gt; K[Output]
   B --&gt; F(Slab Relax) --&gt; J(Slab Static) --&gt; K[Output];</code></pre>
-<div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Dask</label><label for="__tabbed_2_2">Parsl</label><label for="__tabbed_2_3">Prefect</label><label for="__tabbed_2_4">Ray</label><label for="__tabbed_2_5">Redun</label><label for="__tabbed_2_6">Jobflow</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Dask</label><label for="__tabbed_2_2">Jobflow</label><label for="__tabbed_2_3">Parsl</label><label for="__tabbed_2_4">Prefect</label><label for="__tabbed_2_5">Ray</label><label for="__tabbed_2_6">Redun</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
@@ -6501,17 +6501,21 @@
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.slabs</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk_to_slabs_flow</span>
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># Define the Atoms object</span>
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
-</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
-</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="c1"># Define the workflow</span>
-</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="n">future</span> <span class="o">=</span> <span class="n">bulk_to_slabs_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
-</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>
-</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="c1"># Print the results</span>
-</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jobflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jf</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.slabs</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk_to_slabs_flow</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="c1"># Define the Atoms object</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="c1"># Create the workflow with arguments</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">bulk_to_slabs_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>
+</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="c1"># Dispatch the workflow and get results</span>
+</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="n">results</span> <span class="o">=</span> <span class="n">jf</span><span class="o">.</span><span class="n">run_locally</span><span class="p">(</span><span class="n">workflow</span><span class="p">)</span>
+</span><span id="__span-16-13"><a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>
+</span><span id="__span-16-14"><a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a><span class="c1"># Print the results</span>
+</span><span id="__span-16-15"><a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
@@ -6521,66 +6525,62 @@
 </span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Define the Atoms object</span>
 </span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
 </span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>
-</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="c1"># Dispatch the workflow and get results</span>
-</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="n">results</span> <span class="o">=</span> <span class="n">bulk_to_slabs_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="c1"># Define the workflow</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="n">future</span> <span class="o">=</span> <span class="n">bulk_to_slabs_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
 </span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>
 </span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="c1"># Print the results</span>
-</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">ray</span>
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.slabs</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk_to_slabs_flow</span>
-</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>
-</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="c1"># Define the Atoms object</span>
-</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
-</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>
-</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="c1"># Define the workflow</span>
-</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="n">future</span> <span class="o">=</span> <span class="n">bulk_to_slabs_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
-</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>
-</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="c1"># Print the results</span>
-</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.slabs</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk_to_slabs_flow</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="c1"># Define the Atoms object</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="c1"># Dispatch the workflow and get results</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="n">results</span> <span class="o">=</span> <span class="n">bulk_to_slabs_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="c1"># Print the results</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">redun</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scheduler</span>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">ray</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
 </span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.slabs</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk_to_slabs_flow</span>
 </span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>
-</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="c1"># Instantiate the scheduler</span>
-</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">()</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="c1"># Define the Atoms object</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
 </span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>
-</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="c1"># Define the Atoms object</span>
-</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="c1"># Define the workflow</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="n">future</span> <span class="o">=</span> <span class="n">bulk_to_slabs_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
 </span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>
-</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="c1"># Define the workflow</span>
-</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="n">result</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bulk_to_slabs_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">))</span>  <span class="c1"># (1)!</span>
-</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>
-</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="c1"># Print the results</span>
-</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="c1"># Print the results</span>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">future</span><span class="o">.</span><span class="n">result</span><span class="p">())</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">redun</span><span class="w"> </span><span class="kn">import</span> <span class="n">Scheduler</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.slabs</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk_to_slabs_flow</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="c1"># Instantiate the scheduler</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="n">scheduler</span> <span class="o">=</span> <span class="n">Scheduler</span><span class="p">()</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="c1"># Define the Atoms object</span>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="c1"># Define the workflow</span>
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="n">result</span> <span class="o">=</span> <span class="n">scheduler</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">bulk_to_slabs_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">))</span>  <span class="c1"># (1)!</span>
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>
+</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="c1"># Print the results</span>
+</span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </span></code></pre></div>
 <ol>
 <li>We didn't need to wrap <code>bulk_to_slabs_flow</code> with a decorator because it is already pre-decorated with a <code class="language-Python highlight"><span class="nd">@flow</span></code> decorator.</li>
 </ol>
-</div>
-<div class="tabbed-block">
-<div class="language-python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jobflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jf</span>
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.emt.slabs</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk_to_slabs_flow</span>
-</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>
-</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="c1"># Define the Atoms object</span>
-</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">&quot;Cu&quot;</span><span class="p">)</span>
-</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>
-</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="c1"># Create the workflow with arguments</span>
-</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="n">workflow</span> <span class="o">=</span> <span class="n">bulk_to_slabs_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
-</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>
-</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="c1"># Dispatch the workflow and get results</span>
-</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="n">results</span> <span class="o">=</span> <span class="n">jf</span><span class="o">.</span><span class="n">run_locally</span><span class="p">(</span><span class="n">workflow</span><span class="p">)</span>
-</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>
-</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="c1"># Print the results</span>
-</span><span id="__span-20-15"><a id="__codelineno-20-15" name="__codelineno-20-15" href="#__codelineno-20-15"></a><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
-</span></code></pre></div>
 </div>
 </div>
 </div>
