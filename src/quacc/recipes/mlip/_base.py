@@ -11,7 +11,7 @@ from ase.units import GPa as _GPa_to_eV_per_A3
 from monty.dev import requires
 
 has_frozen = bool(find_spec("frozendict"))
-torch = find_spec("torch")
+has_torch = bool(find_spec("torch"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -93,12 +93,20 @@ def pick_calculator(
 
     from quacc import get_settings
 
+    if has_torch:
+        import torch
+
+        cuda_available = torch.cuda.is_available()
+    else:
+        cuda_available = False
+
     settings = get_settings()
     method = method.lower()
 
     # Skip CUDA warning for rayserve batching mode (inference happens on remote GPU)
     use_ray_serve = method == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING
-    if not use_ray_serve and (not bool(torch) or not torch.cuda.is_available()):
+
+    if not use_ray_serve and not cuda_available:
         LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if "m3gnet" in method or "chgnet" in method or "tensornet" in method:
