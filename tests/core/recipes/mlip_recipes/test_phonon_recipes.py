@@ -19,7 +19,7 @@ def test_phonon_flow(tmp_path, monkeypatch):
         atoms,
         min_lengths=5.0,
         job_params={
-            "all": {"library": "matcalc", "name": "TensorNet-PES-MatPES-PBE-2025.2",
+            "all": {"library": "matcalc", "name": "TensorNet-PES-MatPES-PBE-2025.2"}
         },
     )
     assert output["results"]["force_constants"].shape == (8, 8, 3, 3)
