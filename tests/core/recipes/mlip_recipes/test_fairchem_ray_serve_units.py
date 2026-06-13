@@ -10,14 +10,14 @@ Ray uninitialized) and the alternative model-identifier kwarg paths
 
 from __future__ import annotations
 
-from importlib.util import find_spec
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
 
-if find_spec("fairchem") is None:
-    pytest.skip("fairchem not installed", allow_module_level=True)
+pytest.importorskip("fairchem")
+pytest.importorskip("fairchem.core")
+pytest.importorskip("ray")
 
 from quacc import get_settings
 from quacc.recipes.mlip._base import pick_calculator

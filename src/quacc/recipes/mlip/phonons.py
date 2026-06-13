@@ -119,5 +119,5 @@ def phonon_flow(
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
-        additional_fields={"name": f"{method} Phonons"},
+        additional_fields={"name": f"{library} Phonons"},
     )
