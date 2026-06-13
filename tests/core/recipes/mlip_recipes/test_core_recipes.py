@@ -157,6 +157,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
 
 
 def test_old_imports():
+    from quacc.recipes.mlp import _base  # noqa: F401
     from quacc.recipes.mlp.core import relax_job, static_job  # noqa: F401
     from quacc.recipes.mlp.elastic import elastic_tensor_flow  # noqa: F401
     from quacc.recipes.mlp.phonons import phonon_flow  # noqa: F401
