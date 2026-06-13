@@ -8,7 +8,7 @@
 ![Python - Version](https://img.shields.io/pypi/pyversions/quacc)
 ![PyPI - Version](https://img.shields.io/pypi/v/quacc?color=blue&link=https%3A%2F%2Fpypi.org%2Fproject%2Fquacc%2F)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7720998.svg)](https://doi.org/10.5281/zenodo.7720998)
-![NSF-2514141](https://img.shields.io/badge/NSF-2514141-blue.svg)
+[![NSF OAC-2514141](https://img.shields.io/badge/NSF-OAC--2514141-00599C)](https://www.nsf.gov/awardsearch/show-award/?AWD_ID=2514141&HistoricalAwards=false)
 
 `quacc` is a flexible platform for computational materials science 💎 and quantum chemistry 🧪 that is built for the automation era 🔥. It is maintained by the [Rosen Research Group](https://rosen.cbe.princeton.edu/) at Princeton University.
 
@@ -39,3 +39,7 @@ If you use `quacc` in your work, please cite it as follows:
 ## License ⚖️
 
 `quacc` is released under a [BSD 3-Clause license](https://github.com/quantum-accelerators/quacc/blob/main/LICENSE.md).
+
+## Acknowledgment
+
+This material is based upon work supported by the National Science Foundation under Award No. [OAC-2514141](https://www.nsf.gov/awardsearch/show-award/?AWD_ID=2514141&HistoricalAwards=false).
