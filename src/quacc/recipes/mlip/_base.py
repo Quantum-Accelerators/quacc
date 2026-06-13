@@ -11,7 +11,6 @@ from monty.dev import requires
 
 has_frozen = bool(find_spec("frozendict"))
 has_torch = bool(find_spec("torch"))
-has_matcalc = bool(find_spec("matcalc"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable
