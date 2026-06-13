@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 import types
+from typing import ClassVar
 
 import numpy as np
 import pytest
@@ -15,7 +16,7 @@ class _StubRootstockCalculator:
 
     entered = False
     exited = False
-    call_kwargs: dict = {}
+    call_kwargs: ClassVar[dict] = {}
 
     def __init__(self, **kwargs):
         _StubRootstockCalculator.call_kwargs = kwargs
