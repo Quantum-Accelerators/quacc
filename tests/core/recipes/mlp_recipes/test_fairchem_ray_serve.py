@@ -20,9 +20,9 @@ import numpy as np
 from ase.build import bulk
 
 from quacc import get_settings
-from quacc.recipes.mlp._base import pick_calculator
-from quacc.recipes.mlp.core import relax_job, static_job
-from quacc.recipes.mlp.elastic import elastic_tensor_flow
+from quacc.recipes.mlip._base import pick_calculator
+from quacc.recipes.mlip.core import relax_job, static_job
+from quacc.recipes.mlip.elastic import elastic_tensor_flow
 
 
 @pytest.fixture(scope="module")
@@ -30,7 +30,7 @@ def ray_serve_cluster():
     """Spin up a local Ray cluster + multiplexed fairchem serve deployment.
 
     The deployment is named ``multiplexed-predict-server`` to match what
-    ``quacc.recipes.mlp._base`` connects to when
+    ``quacc.recipes.mlip._base`` connects to when
     ``FAIRCHEM_RAY_SERVE_BATCHING`` is enabled.
     """
     import ray

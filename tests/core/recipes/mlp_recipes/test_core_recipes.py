@@ -9,7 +9,7 @@ from importlib.util import find_spec
 import numpy as np
 from ase.build import bulk
 
-from quacc.recipes.mlp.core import relax_job, static_job
+from quacc.recipes.mlip.core import relax_job, static_job
 
 methods = []
 if has_mace := find_spec("mace"):
