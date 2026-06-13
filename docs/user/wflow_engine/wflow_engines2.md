@@ -75,6 +75,46 @@ graph LR
                 return relax_job(*args, **kwargs)
             ```
 
+=== "Jobflow"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md). It also helps to have `RESULTS_DIR` set to the default value so Jobflow can handle the directory management.
+
+        ```bash
+        quacc set WORKFLOW_ENGINE jobflow
+        quacc unset RESULTS_DIR
+        ```
+
+    ```python
+    import jobflow as jf
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job, static_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Define Job 1
+    job1 = relax_job(atoms)
+
+    # Define Job 2, which takes the output of Job 1 as input
+    job2 = static_job(job1.output["atoms"])  # (1)!
+
+    # Define the workflow
+    workflow = jf.Flow([job1, job2])  # (2)!
+
+    # Run the workflow locally
+    responses = jf.run_locally(workflow, ensure_success=True, create_folders=True)
+
+    # Get the result
+    result = responses[job2.uuid][1].output
+    print(result)
+    ```
+
+    1. In Jobflow, each `Job` is only a reference and so the `.output` must be explicitly passed between jobs.
+
+    2. We must stitch the individual `Job` objects together into a `jf.Flow`, which can be easily achieved by passing them as a list to the `jf.Flow()` constructor.
+
 === "Parsl"
 
     !!! Important
@@ -329,46 +369,6 @@ graph LR
                 return relax_job(*args, **kwargs)
             ```
 
-=== "Jobflow"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md). It also helps to have `RESULTS_DIR` set to the default value so Jobflow can handle the directory management.
-
-        ```bash
-        quacc set WORKFLOW_ENGINE jobflow
-        quacc unset RESULTS_DIR
-        ```
-
-    ```python
-    import jobflow as jf
-    from ase.build import bulk
-    from quacc.recipes.emt.core import relax_job, static_job
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Define Job 1
-    job1 = relax_job(atoms)
-
-    # Define Job 2, which takes the output of Job 1 as input
-    job2 = static_job(job1.output["atoms"])  # (1)!
-
-    # Define the workflow
-    workflow = jf.Flow([job1, job2])  # (2)!
-
-    # Run the workflow locally
-    responses = jf.run_locally(workflow, ensure_success=True, create_folders=True)
-
-    # Get the result
-    result = responses[job2.uuid][1].output
-    print(result)
-    ```
-
-    1. In Jobflow, each `Job` is only a reference and so the `.output` must be explicitly passed between jobs.
-
-    2. We must stitch the individual `Job` objects together into a `jf.Flow`, which can be easily achieved by passing them as a list to the `jf.Flow()` constructor.
-
 ## Running a User-Constructed Parallel Workflow
 
 Now we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, the workflow manager will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
@@ -405,6 +405,32 @@ graph LR
     # Fetch the results
     results = client.gather(client.compute(delayed))
     print(results)
+    ```
+
+=== "Jobflow"
+
+    ```python
+    import jobflow as jf
+    from ase.build import bulk, molecule
+    from quacc.recipes.emt.core import relax_job
+
+    # Define two Atoms objects
+    atoms1 = bulk("Cu")
+    atoms2 = molecule("N2")
+
+    # Define two independent relaxation jobs
+    job1 = relax_job(atoms1)
+    job2 = relax_job(atoms2)
+
+    # Define the workflow
+    workflow = jf.Flow([job1, job2])
+
+    # Run the workflow locally
+    responses = jf.run_locally(workflow, ensure_success=True, create_folders=True)
+
+    # Get the result
+    result = responses[job2.uuid][1].output
+    print(result)
     ```
 
 === "Parsl"
@@ -527,32 +553,6 @@ graph LR
     print(result)
     ```
 
-=== "Jobflow"
-
-    ```python
-    import jobflow as jf
-    from ase.build import bulk, molecule
-    from quacc.recipes.emt.core import relax_job
-
-    # Define two Atoms objects
-    atoms1 = bulk("Cu")
-    atoms2 = molecule("N2")
-
-    # Define two independent relaxation jobs
-    job1 = relax_job(atoms1)
-    job2 = relax_job(atoms2)
-
-    # Define the workflow
-    workflow = jf.Flow([job1, job2])
-
-    # Run the workflow locally
-    responses = jf.run_locally(workflow, ensure_success=True, create_folders=True)
-
-    # Get the result
-    result = responses[job2.uuid][1].output
-    print(result)
-    ```
-
 ## Running a User-Constructed Dynamic Workflow
 
 For this example, let's consider a toy scenario where we wish to relax a bulk Cu structure, carve all possible slabs, and then run a new relaxation calculation on each slab (with no static calculation at the end).
@@ -606,6 +606,38 @@ graph LR
         ```python
         bulk_to_slabs_flow(atoms, job_decorators={"all": job(name="my_custom_name")})
         ```
+
+=== "Jobflow"
+
+    ```python
+    import jobflow as jf
+    from ase.build import bulk
+    from quacc import flow
+    from quacc.recipes.emt.core import relax_job
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+
+    # Define the workflow
+    @flow
+    def relaxed_slabs_workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+
+        return relaxed_slabs
+
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Create the workflow with arguments
+    workflow = relaxed_slabs_workflow(atoms)
+
+    # Dispatch the workflow and get results
+    results = jf.run_locally(workflow)
+
+    # print the results
+    print(results)
+    ```
 
 === "Parsl"
 
@@ -776,35 +808,3 @@ graph LR
         ```python
         bulk_to_slabs_flow(atoms, job_decorators={"all": job(name="my_custom_name")})
         ```
-
-=== "Jobflow"
-
-    ```python
-    import jobflow as jf
-    from ase.build import bulk
-    from quacc import flow
-    from quacc.recipes.emt.core import relax_job
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-
-    # Define the workflow
-    @flow
-    def relaxed_slabs_workflow(atoms):
-        relaxed_bulk = relax_job(atoms)
-        relaxed_slabs = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
-
-        return relaxed_slabs
-
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Create the workflow with arguments
-    workflow = relaxed_slabs_workflow(atoms)
-
-    # Dispatch the workflow and get results
-    results = jf.run_locally(workflow)
-
-    # print the results
-    print(results)
-    ```

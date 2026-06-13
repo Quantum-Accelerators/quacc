@@ -33,9 +33,7 @@ if TYPE_CHECKING:
 )
 def phonon_flow(
     atoms: Atoms,
-    method: Literal[
-        "mace-mp-0", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"
-    ],
+    library: Literal["fairchem", "matcalc", "rootstock"],
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -69,8 +67,11 @@ def phonon_flow(
     ----------
     atoms
         Atoms object
-    method
-        Universal ML interatomic potential method to use
+    library
+        MLIP library to use:
+        - `fairchem` passes `**calc_kwargs` to `FAIRChemCalculator.from_model_checkpoint()`
+        - `matcalc` passes `**calc_kwargs` to `matcalc.load_fp()`
+        - `rootstock` passes `**calc_kwargs` to `rootstock.RootstockCalculator()`
     symprec
         Precision for symmetry detection.
     min_lengths
@@ -99,7 +100,7 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][].
         See the type-hint for the data structure.
     """
-    job_param_defaults = {"all": {"method": method}}
+    job_param_defaults = {"all": {"library": library}}
     static_job_ = customize_funcs(
         ["static_job"],
         [static_job],

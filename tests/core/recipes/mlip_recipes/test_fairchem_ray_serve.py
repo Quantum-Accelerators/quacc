@@ -6,6 +6,7 @@ import pytest
 
 torch = pytest.importorskip("torch")
 pytest.importorskip("ray")
+pytest.importorskip("fairchem")
 pytest.importorskip("fairchem.core")
 
 if find_spec("fairchem"):

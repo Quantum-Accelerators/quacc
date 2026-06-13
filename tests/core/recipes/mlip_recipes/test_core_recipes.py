@@ -12,7 +12,7 @@ from ase.build import bulk
 from quacc.recipes.mlip.core import relax_job, static_job
 
 libraries = []
-if has_matcalc := find_spec("matcalc"):
+if has_matcalc := find_spec("matcalc") and find_spec("matgl"):
     libraries.append("matcalc")
 
 

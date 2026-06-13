@@ -11,7 +11,7 @@ torch = pytest.importorskip("torch")
 from importlib.util import find_spec
 
 libraries = []
-if has_matcalc := find_spec("matcalc"):
+if has_matcalc := find_spec("matcalc") and find_spec("matgl"):
     libraries.append("matcalc")
 
 

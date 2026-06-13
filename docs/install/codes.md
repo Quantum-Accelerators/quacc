@@ -43,9 +43,9 @@ export QUACC_GULP_LIB="/path/to/gulp-#.#.#/Libraries"
 
 No setup needed!
 
-## MLIPs
+## Foundation MLIPs
 
-Several pre-trained "universal" machine-learned interatomic potentials (MLIPs) are natively supported in quacc. Quacc supports all MLIPs provided by [rootstock](https://github.com/Garden-AI/rootstock), [matcalc](https://github.com/materialyzeai/matcalc/tree/main#supported-foundation-potentials), and [FAIR-Chem](https://github.com/FAIR-Chem/fairchem).
+Several pre-trained "foundation" machine-learned interatomic potentials (MLIPs) are natively supported in quacc. Quacc supports all MLIPs provided by [rootstock](https://github.com/Garden-AI/rootstock), [matcalc](https://github.com/materialyzeai/matcalc/tree/main#supported-foundation-potentials), and [FAIR-Chem](https://github.com/FAIR-Chem/fairchem).
 
 To use these potentials, you will need to install the corresponding packages:
 
