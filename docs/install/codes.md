@@ -43,11 +43,15 @@ export QUACC_GULP_LIB="/path/to/gulp-#.#.#/Libraries"
 
 No setup needed!
 
-## MLIPs
+## Foundation MLIPs
 
-Several pre-trained "universal" machine-learned interatomic potentials (MLIPs) are natively supported in quacc, including those provided in the [MACE](https://github.com/ACEsuit/mace), [matgl](https://github.com/materialsvirtuallab/matgl), [Orb](https://github.com/orbital-materials/orb-models), and [FAIR-Chem](https://github.com/FAIR-Chem/fairchem) repositories.
+Several pre-trained "foundation" machine-learned interatomic potentials (MLIPs) are natively supported in quacc. Quacc supports all MLIPs provided by [rootstock](https://github.com/Garden-AI/rootstock), [matcalc](https://github.com/materialyzeai/matcalc/tree/main#supported-foundation-potentials), and [FAIR-Chem](https://github.com/FAIR-Chem/fairchem).
 
-To use these potentials, you will need to install the corresponding packages, which are listed in the `pyproject.toml`.
+To use these potentials, you will need to install the corresponding packages:
+
+```bash
+pip install quacc[mlip]
+```
 
 ## NewtonNet
 

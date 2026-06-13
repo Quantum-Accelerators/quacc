@@ -141,7 +141,7 @@ def test_static_job_rootstock(tmp_path, monkeypatch, rootstock_module):
     atoms = bulk("Cu")
     output = static_job(
         atoms,
-        method="rootstock",
+        library="rootstock",
         cluster="della",
         checkpoint="mace-mp-0-medium",
         device="cuda",
@@ -162,8 +162,8 @@ def test_pick_calculator_rootstock_missing_package(monkeypatch):
         pick_calculator("rootstock", cluster="della", checkpoint="mace-mp-0-medium")
 
 
-def test_pick_calculator_unknown_method():
-    """pick_calculator raises ValueError for an unrecognised method string."""
+def test_pick_calculator_unknown_library():
+    """pick_calculator raises ValueError for an unrecognised library string."""
     from quacc.recipes.mlp._base import pick_calculator
 
     with pytest.raises(ValueError, match="Unrecognized"):

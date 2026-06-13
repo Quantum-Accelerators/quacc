@@ -10,14 +10,14 @@ Ray uninitialized) and the alternative model-identifier kwarg paths
 
 from __future__ import annotations
 
-from importlib.util import find_spec
 from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
 
-if find_spec("fairchem") is None:
-    pytest.skip("fairchem not installed", allow_module_level=True)
+pytest.importorskip("fairchem")
+pytest.importorskip("fairchem.core")
+pytest.importorskip("ray")
 
 from quacc import get_settings
 from quacc.recipes.mlip._base import pick_calculator
@@ -50,7 +50,7 @@ def test_falls_back_when_ray_not_initialized(monkeypatch, caplog):
         ) as mock_local,
         caplog.at_level("WARNING"),
     ):
-        pick_calculator(method="fairchem", name_or_path="uma-s-1p1")
+        pick_calculator(library="fairchem", name_or_path="uma-s-1p1")
     mock_local.assert_called_once()
     assert "Ray is not initialized" in caplog.text
 
@@ -74,7 +74,7 @@ def test_falls_back_when_ray_not_installed(monkeypatch, caplog):
         ) as mock_local,
         caplog.at_level("WARNING"),
     ):
-        pick_calculator(method="fairchem", name_or_path="uma-s-1p1-fallback")
+        pick_calculator(library="fairchem", name_or_path="uma-s-1p1-fallback")
     mock_local.assert_called_once()
     assert "Ray is not installed" in caplog.text
 
@@ -119,7 +119,7 @@ def test_serve_branch_uses_name_or_path(monkeypatch, stub_serve_unit):
 
     monkeypatch.setattr(ray, "is_initialized", lambda: True)
     pick_calculator(
-        method="fairchem", name_or_path="my/local/ckpt.pt", task_name="oc20"
+        library="fairchem", name_or_path="my/local/ckpt.pt", task_name="oc20"
     )
     assert stub_serve_unit["multiplexed_model_id"] == "my/local/ckpt.pt:default"
     assert stub_serve_unit["deployment_name"] == "multiplexed-predict-server"
@@ -131,7 +131,7 @@ def test_serve_branch_uses_model_id(monkeypatch, stub_serve_unit):
 
     monkeypatch.setattr(ray, "is_initialized", lambda: True)
     pick_calculator(
-        method="fairchem",
+        library="fairchem",
         model_id="uma-s-2",
         inference_settings="fast",
         task_name="omat",
@@ -145,7 +145,7 @@ def test_serve_branch_default_checkpoint(monkeypatch, stub_serve_unit):
 
     monkeypatch.setattr(ray, "is_initialized", lambda: True)
     # Neither name_or_path, model_id, nor checkpoint provided → default
-    pick_calculator(method="fairchem", task_name="omat")
+    pick_calculator(library="fairchem", task_name="omat")
     assert stub_serve_unit["multiplexed_model_id"] == "uma-s-1p1:default"
 
 
@@ -162,7 +162,7 @@ def test_serve_branch_drops_local_only_kwargs(monkeypatch, stub_serve_unit):
     # fixture's _capture only collects deployment_name/multiplexed_model_id,
     # so it implicitly verifies no extra kwargs leak through.
     pick_calculator(
-        method="fairchem",
+        library="fairchem",
         name_or_path="uma-s-1p1",
         task_name="omat",
         device="cpu",

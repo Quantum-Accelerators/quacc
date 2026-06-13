@@ -49,6 +49,40 @@ graph LR
 
     2. Calling `client.compute(delayed)` dispatches the compute job to the active Dask cluster and returns a `Future`. The use of `.result()` serves to block any further calculations from running and resolves the `Future`. You could also achieve the same result by doing `#!Python delayed.compute()`, which will dispatch and resolve the `Future` as one action. This is identical to `#!Python result = dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute` always returns a tuple.
 
+=== "Jobflow"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md). It also helps to have `RESULTS_DIR` set to the default value so Jobflow can handle the directory management.
+
+        ```bash
+        quacc set WORKFLOW_ENGINE jobflow
+        quacc unset RESULTS_DIR
+        ```
+
+    ```python
+    import jobflow as jf
+    from ase.build import bulk
+    from quacc.recipes.emt.core import relax_job
+
+    # Make an Atoms object of a bulk Cu structure
+    atoms = bulk("Cu")
+
+    # Define the Job
+    job = relax_job(atoms)  # (1)!
+
+    # Run the job locally
+    responses = jf.run_locally(job, ensure_success=True, create_folders=True)  # (2)!
+
+    # Get the result
+    result = responses[job.uuid][1].output
+    print(result)
+    ```
+
+    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
+
+    2. We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
+
 === "Parsl"
 
     !!! Important
@@ -182,40 +216,6 @@ graph LR
 
     1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
 
-=== "Jobflow"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md). It also helps to have `RESULTS_DIR` set to the default value so Jobflow can handle the directory management.
-
-        ```bash
-        quacc set WORKFLOW_ENGINE jobflow
-        quacc unset RESULTS_DIR
-        ```
-
-    ```python
-    import jobflow as jf
-    from ase.build import bulk
-    from quacc.recipes.emt.core import relax_job
-
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Define the Job
-    job = relax_job(atoms)  # (1)!
-
-    # Run the job locally
-    responses = jf.run_locally(job, ensure_success=True, create_folders=True)  # (2)!
-
-    # Get the result
-    result = responses[job.uuid][1].output
-    print(result)
-    ```
-
-    1. The `relax_job` function was pre-defined in quacc with a `#!Python @job` decorator, which is why we did not need to include it here.
-
-    2. We chose to run the job locally, but other workflow managers supported by Jobflow can be imported and used.
-
 ## Running a Pre-Defined Workflow
 
 We will now try running a pre-defined workflow where we carve all possible slabs from a given structure, run a new relaxation calculation on each slab, and then a static calculation for each relaxed slab. This is implemented in [quacc.recipes.emt.slabs.bulk_to_slabs_flow][].
@@ -244,6 +244,26 @@ graph LR
     # Print the results
     result = client.compute(delayed).result()
     print(result)
+    ```
+
+=== "Jobflow"
+
+    ```python
+    import jobflow as jf
+    from ase.build import bulk
+    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Create the workflow with arguments
+    workflow = bulk_to_slabs_flow(atoms)
+
+    # Dispatch the workflow and get results
+    results = jf.run_locally(workflow)
+
+    # Print the results
+    print(results)
     ```
 
 === "Parsl"
@@ -316,23 +336,3 @@ graph LR
     ```
 
     1. We didn't need to wrap `bulk_to_slabs_flow` with a decorator because it is already pre-decorated with a `#!Python @flow` decorator.
-
-=== "Jobflow"
-
-    ```python
-    import jobflow as jf
-    from ase.build import bulk
-    from quacc.recipes.emt.slabs import bulk_to_slabs_flow
-
-    # Define the Atoms object
-    atoms = bulk("Cu")
-
-    # Create the workflow with arguments
-    workflow = bulk_to_slabs_flow(atoms)
-
-    # Dispatch the workflow and get results
-    results = jf.run_locally(workflow)
-
-    # Print the results
-    print(results)
-    ```
