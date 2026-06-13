@@ -24,21 +24,21 @@ if find_spec("fairchem"):
 
 
 @pytest.mark.parametrize("library", libraries)
-def test_static_job(tmp_path, monkeypatch, method):
+def test_static_job(tmp_path, monkeypatch, library):
     monkeypatch.chdir(tmp_path)
 
-    if method == "fairchem":
+    if library == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {"name_or_path": "uma-s-1p1", "task_name": "omat"}
-    elif method == "matcalc":
+    elif library == "matcalc":
         calc_kwargs = {"name": "TensorNet-PES-MatPES-PBE-2025.2"}
     else:
         calc_kwargs = {}
 
     ref_energy = {"matcalc": -3.7303245067596436, "fairchem": -3.7501682869643735}
     atoms = bulk("Cu")
-    output = static_job(atoms, method=method, **calc_kwargs)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
+    output = static_job(atoms, library=library, **calc_kwargs)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[library], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (1, 3)
     assert output["atoms"] == atoms
 
@@ -59,21 +59,21 @@ def test_relax_job(tmp_path, monkeypatch, method):
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method=method, **calc_kwargs)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
+    output = relax_job(atoms, library=library, **calc_kwargs)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[library], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
 @pytest.mark.parametrize("library", libraries)
-def test_relax_cell_job(tmp_path, monkeypatch, method):
+def test_relax_cell_job(tmp_path, monkeypatch, library):
     monkeypatch.chdir(tmp_path)
 
-    if method == "fairchem":
+    if library == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {"name_or_path": "uma-s-1p1", "task_name": "omat"}
-    elif method == "matcalc":
+    elif library == "matcalc":
         calc_kwargs = {"name": "TensorNet-PES-MatPES-PBE-2025.2"}
     else:
         calc_kwargs = {}
@@ -82,8 +82,8 @@ def test_relax_cell_job(tmp_path, monkeypatch, method):
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method=method, relax_cell=True, **calc_kwargs)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
+    output = relax_job(atoms, library=library, relax_cell=True, **calc_kwargs)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[library], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())

@@ -84,7 +84,7 @@ def _assert_calc_path(batching):
     from fairchem.core.units.mlip_unit.predict import BatchServerPredictUnit
 
     calc = pick_calculator(
-        method="fairchem", name_or_path="uma-s-1p1", task_name="omat"
+        library="fairchem", name_or_path="uma-s-1p1", task_name="omat"
     )
     used_batching = isinstance(getattr(calc, "predictor", None), BatchServerPredictUnit)
     assert used_batching is batching, (
@@ -100,7 +100,7 @@ def test_static_job(tmp_path, monkeypatch, _batching):
 
     atoms = bulk("Cu")
     output = static_job(
-        atoms, method="fairchem", name_or_path="uma-s-1p1", task_name="omat"
+        atoms, library="fairchem", name_or_path="uma-s-1p1", task_name="omat"
     )
     assert output["results"]["energy"] == pytest.approx(-3.7501682869643735, rel=1e-3)
     assert np.shape(output["results"]["forces"]) == (1, 3)
@@ -116,7 +116,7 @@ def test_relax_job(tmp_path, monkeypatch, _batching):
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
     output = relax_job(
-        atoms, method="fairchem", name_or_path="uma-s-1p1", task_name="omat"
+        atoms, library="fairchem", name_or_path="uma-s-1p1", task_name="omat"
     )
     assert output["results"]["energy"] == pytest.approx(-30.001143639922756, rel=1e-3)
     assert np.shape(output["results"]["forces"]) == (8, 3)
@@ -134,7 +134,7 @@ def test_relax_cell_job(tmp_path, monkeypatch, _batching):
     atoms[0].position += 0.1
     output = relax_job(
         atoms,
-        method="fairchem",
+        library="fairchem",
         relax_cell=True,
         name_or_path="uma-s-1p1",
         task_name="omat",
@@ -158,7 +158,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, _batching):
         pre_relax=True,
         job_params={
             "all": {
-                "method": "fairchem",
+                "library": "fairchem",
                 "name_or_path": "uma-s-1p1",
                 "task_name": "omat",
             },

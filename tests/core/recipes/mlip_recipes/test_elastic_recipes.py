@@ -29,13 +29,13 @@ def _set_dtype(size, type_="float"):
 
 
 @pytest.mark.parametrize("library", libraries)
-def test_elastic_jobs(tmp_path, monkeypatch, method):
+def test_elastic_jobs(tmp_path, monkeypatch, library):
     monkeypatch.chdir(tmp_path)
 
-    if method == "fairchem":
+    if library == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {"name_or_path": "uma-s-1p1", "task_name": "omat"}
-    elif method == "matcalc":
+    elif library == "matcalc":
         calc_kwargs = {"name": "TensorNet-PES-MatPES-PBE-2025.2"}
     else:
         calc_kwargs = {}
@@ -49,7 +49,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         run_static=False,
         pre_relax=True,
         job_params={
-            "all": {"method": method, **calc_kwargs},
+            "all": {"library": library, **calc_kwargs},
             "relax_job": {"opt_params": {"fmax": 0.01}},
         },
     )
@@ -60,7 +60,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         0, abs=1e-2
     )
     assert outputs["elasticity_doc"].bulk_modulus.voigt == pytest.approx(
-        ref_elastic_modulus[method], abs=2
+        ref_elastic_modulus[library], abs=2
     )
     for output in outputs["deformed_results"]:
         assert output["structure_metadata"]["nelements"] == 1
@@ -72,7 +72,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         run_static=True,
         pre_relax=True,
         job_params={
-            "all": {"method": method, **calc_kwargs},
+            "all": {"library": library, **calc_kwargs},
             "relax_job": {"opt_params": {"fmax": 0.01}},
         },
     )
@@ -90,7 +90,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         run_static=True,
         pre_relax=False,
         job_params={
-            "all": {"method": method, **calc_kwargs},
+            "all": {"library": library, **calc_kwargs},
             "relax_job": {"opt_params": {"fmax": 0.01}},
         },
     )
@@ -108,7 +108,7 @@ def test_elastic_jobs(tmp_path, monkeypatch, method):
         run_static=False,
         pre_relax=False,
         job_params={
-            "all": {"method": method, **calc_kwargs},
+            "all": {"library": library, **calc_kwargs},
             "relax_job": {"opt_params": {"fmax": 0.01}},
         },
     )
