@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from ase.build import bulk
 
-from quacc.recipes.mlip.elastic import elastic_tensor_flow
+from quacc.recipes.mlp.elastic import elastic_tensor_flow
 
 torch = pytest.importorskip("torch")
 
