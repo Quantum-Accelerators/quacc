@@ -117,7 +117,11 @@ def omc_static_job(
     """
 
     calc_defaults = _make_omc_inputs(atoms)
-    calc_defaults |= {"pp_version": "54", "incar_copilot": "light", "use_custodian": False}
+    calc_defaults |= {
+        "pp_version": "54",
+        "incar_copilot": "light",
+        "use_custodian": False,
+    }
 
     return run_and_summarize(
         atoms,
