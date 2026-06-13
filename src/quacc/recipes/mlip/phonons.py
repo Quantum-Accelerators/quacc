@@ -33,7 +33,6 @@ if TYPE_CHECKING:
 )
 def phonon_flow(
     atoms: Atoms,
-    library: Literal["fairchem", "matcalc", "rootstock"],
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -67,11 +66,6 @@ def phonon_flow(
     ----------
     atoms
         Atoms object
-    library
-        MLIP library to use:
-        - `fairchem` passes `**calc_kwargs` to `FAIRChemCalculator.from_model_checkpoint()`
-        - `matcalc` passes `**calc_kwargs` to `matcalc.load_fp()`
-        - `rootstock` passes `**calc_kwargs` to `rootstock.RootstockCalculator()`
     symprec
         Precision for symmetry detection.
     min_lengths
