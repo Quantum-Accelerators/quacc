@@ -21,7 +21,9 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
+    method: Literal[
+        "mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem", "rootstock"
+    ],
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -33,7 +35,9 @@ def static_job(
     atoms
         Atoms object
     method
-        Universal ML interatomic potential method to use
+        Universal ML interatomic potential method to use. Use `"rootstock"` to
+        route through the [Rootstock](https://garden-ai.github.io/rootstock/)
+        unified MLIP interface (requires `pip install rootstock`).
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -42,7 +46,8 @@ def static_job(
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`,
         `orb_models.forcefield.calculator.ORBCalculator`,
-        `fairchem.core.FAIRChemCalculator` calculators.
+        `fairchem.core.FAIRChemCalculator`, or `rootstock.RootstockCalculator`
+        calculators.
 
     Returns
     -------
@@ -60,7 +65,9 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    method: Literal["mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem"],
+    method: Literal[
+        "mace-mp-0", "m3gnet", "chgnet", "sevennet", "orb", "fairchem", "rootstock"
+    ],
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -74,7 +81,9 @@ def relax_job(
     atoms
         Atoms object
     method
-        Universal ML interatomic potential method to use
+        Universal ML interatomic potential method to use. Use `"rootstock"` to
+        route through the [Rootstock](https://garden-ai.github.io/rootstock/)
+        unified MLIP interface (requires `pip install rootstock`).
     relax_cell
         Whether to relax the cell.
     opt_params
@@ -88,7 +97,8 @@ def relax_job(
         keys, refer to the `mace.calculators.mace_mp`, `chgnet.model.dynamics.CHGNetCalculator`,
         `matgl.ext.ase.M3GNetCalculator`, `sevenn.sevennet_calculator.SevenNetCalculator`,
         `orb_models.forcefield.calculator.ORBCalculator`,
-        `fairchem.core.FAIRChemCalculator` calculators.
+        `fairchem.core.FAIRChemCalculator`, or `rootstock.RootstockCalculator`
+        calculators.
 
     Returns
     -------

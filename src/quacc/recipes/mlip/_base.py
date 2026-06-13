@@ -11,6 +11,7 @@ from ase.units import GPa as _GPa_to_eV_per_A3
 from monty.dev import requires
 
 has_frozen = bool(find_spec("frozendict"))
+has_torch = bool(find_spec("torch"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -55,13 +56,18 @@ def freezeargs(func: Callable) -> Callable:
 @lru_cache
 def pick_calculator(
     method: Literal[
-        "mace-mp", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"
+        "mace-mp",
+        "m3gnet",
+        "chgnet",
+        "tensornet",
+        "sevennet",
+        "orb",
+        "fairchem",
+        "rootstock",
     ],
     **calc_kwargs,
 ) -> BaseCalculator:
     """
-    Adapted from `matcalc.util.get_universal_calculator`.
-
     !!! Note
 
         The `orb_models` are licensed under the APACHE license as found at the following
@@ -70,26 +76,37 @@ def pick_calculator(
     Parameters
     ----------
     method
-        Name of the calculator to use.
+        Name of the calculator to use. Use `"rootstock"` to use the
+        [Rootstock](https://garden-ai.github.io/rootstock/) unified MLIP
+        interface, which requires the `rootstock` package to be installed
+        (`pip install rootstock`).
     **calc_kwargs
-        Custom kwargs for the underlying calculator. Set a value to
-        `quacc.Remove` to remove a pre-existing key entirely.
+        Custom kwargs for the underlying calculator. When `method="rootstock"`,
+        kwargs are forwarded to `rootstock.RootstockCalculator` (e.g. `cluster`,
+        `checkpoint`, `device`, `setup_kwargs`).
 
     Returns
     -------
     BaseCalculator
         The instantiated calculator
     """
-    import torch
 
     from quacc import get_settings
+
+    if has_torch:
+        import torch
+
+        cuda_is_available = torch.cuda.is_available()
+    else:
+        cuda_is_available = False
 
     settings = get_settings()
     method = method.lower()
 
     # Skip CUDA warning for rayserve batching mode (inference happens on remote GPU)
     use_ray_serve = method == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING
-    if not use_ray_serve and not torch.cuda.is_available():
+
+    if not use_ray_serve and not cuda_is_available:
         LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if "m3gnet" in method or "chgnet" in method or "tensornet" in method:
@@ -133,6 +150,15 @@ def pick_calculator(
         orb_model = calc_kwargs.get("model", "orb_v2")
         orbff = getattr(pretrained, orb_model)()
         calc = ORBCalculator(model=orbff, **calc_kwargs)
+
+    elif method.lower() == "rootstock":
+        from rootstock import RootstockCalculator, __version__
+
+        calc = RootstockCalculator(**calc_kwargs)
+        # Enter the context manager to spawn the worker subprocess and load the
+        # model. The lru_cache ensures __enter__ is called exactly once per
+        # unique set of kwargs, keeping the worker warm across multiple calls.
+        calc.__enter__()
 
     elif method.lower() == "fairchem":
         from fairchem.core import FAIRChemCalculator, __version__
