@@ -155,15 +155,6 @@ def get_param_swaps(
             )
             calc.set(lreal=False)
 
-        if not calc.parameters.get("lorbit", False) and (
-            calc.parameters.get("ispin", 1) == 2
-            or np.any(input_atoms.get_initial_magnetic_moments() != 0)
-        ):
-            LOGGER.info(
-                "Recommending LORBIT = 11 because you have a spin-polarized calculation."
-            )
-            calc.set(lorbit=11)
-
         if (
             calc.parameters.get("lhfcalc", False) is True
             and calc.parameters.get("isym", 3) < 3
@@ -190,6 +181,15 @@ def get_param_swaps(
     # Light INCAR swaps
     # ----------------------------
     if incar_copilot_mode.lower() != "off":
+        if not calc.parameters.get("lorbit", False) and (
+            calc.parameters.get("ispin", 1) == 2
+            or np.any(input_atoms.get_initial_magnetic_moments() != 0)
+        ):
+            LOGGER.info(
+                "Recommending LORBIT = 11 because you have a spin-polarized calculation."
+            )
+            calc.set(lorbit=11)
+
         if (
             calc.parameters.get("ismear", 1) == -5
             and (calc.kpts is not None and np.prod(calc.kpts) < 4)
@@ -338,14 +338,7 @@ def get_param_swaps(
         LOGGER.info(
             f"The following parameters were changed: {sort_dict(changed_parameters)}"
         )
-    if unchanged_parameters := {
-        k: new_parameters[k]
-        for k in new_parameters
-        if k not in set(new_parameters) - set(user_calc_params)
-    }:
-        LOGGER.warning(
-            f"The following parameters were NOT changed since the user specifically requested them: {sort_dict(unchanged_parameters)}"
-        )
+
     return new_parameters
 
 

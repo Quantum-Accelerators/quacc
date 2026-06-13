@@ -10,9 +10,9 @@ from shutil import which
 from typing import TYPE_CHECKING, Literal, Union
 
 import psutil
-from monty.serialization import loadfn
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from ruamel.yaml import YAML
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -124,6 +124,23 @@ class QuaccSettings(BaseSettings):
     PREFECT_RESOLVE_FLOW_RESULTS: bool = Field(
         True,
         description="Whether to resolve all futures in flow results to data and fail if not possible",
+    )
+
+    # ---------------------------
+    # FAIRChem Settings
+    # ---------------------------
+    FAIRCHEM_RAY_SERVE_BATCHING: bool = Field(
+        False,
+        description=(
+            """
+            Whether to use Ray Serve for batched FAIRChem inference. When True,
+            the 'fairchem' method in pick_calculator will use RayServeMLIPUnit
+            to send inference requests to a Ray Serve deployment instead of
+            running inference locally. This enables efficient batched inference
+            across multiple concurrent calculations. Requires a Ray Serve inference
+            server to be running (e.g., via SlurmRayTaskRunner with start_inference_server=True).
+            """
+        ),
     )
 
     # ---------------------------
@@ -482,7 +499,7 @@ class QuaccSettings(BaseSettings):
 
         new_settings = {}  # type: dict
         if config_file_path.exists() and config_file_path.stat().st_size > 0:
-            new_settings |= loadfn(config_file_path)
+            new_settings |= YAML().load(config_file_path)
 
         new_settings.update(settings)
         return new_settings
