@@ -1,11 +1,4 @@
-"""
-Materials Project-compatible recipes using the original MP settings.
-
-!!! Important
-
-    Make sure that you use the Materials Project-compatible pseudpotential
-    versions. The GGA workflows use the old (no version) PAW PBE potentials.
-"""
+"""Materials Project-compatible recipes using the original MP settings."""
 
 from __future__ import annotations
 
