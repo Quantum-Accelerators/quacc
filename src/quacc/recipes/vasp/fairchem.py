@@ -117,7 +117,7 @@ def omc_static_job(
     """
 
     calc_defaults = _make_omc_inputs(atoms)
-    calc_defaults |= {"pp_version": "54", "incar_copilot": "light"}
+    calc_defaults |= {"pp_version": "54", "incar_copilot": "light", "use_custodian": False}
 
     return run_and_summarize(
         atoms,
@@ -241,7 +241,7 @@ def odac_static_job(
         "isym": 0,
         "pp_version": "54",
     }
-    calc_defaults |= {"incar_copilot": "light"}
+    calc_defaults |= {"incar_copilot": "light", "use_custodian": False}
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
@@ -291,6 +291,7 @@ def oc20_static_job(
         "xc": "RPBE",
         "pp_version": "54",
         "incar_copilot": "light",
+        "use_custodian": False,
     }
 
     return run_and_summarize(
