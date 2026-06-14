@@ -1,11 +1,4 @@
-"""
-Materials Project-compatible recipes using the MP24 sets.
-
-!!! Important
-
-    Make sure that you use the Materials Project-compatible pseudpotential
-    versions (i.e. v.64)
-"""
+"""Materials Project-compatible recipes using the MP24 sets."""
 
 from __future__ import annotations
 
