@@ -11,146 +11,79 @@ from ase.build import bulk
 
 from quacc.recipes.mlip.core import relax_job, static_job
 
-methods = []
-if has_mace := find_spec("mace"):
-    methods.append("mace-mp")
+libraries = []
+if has_matcalc := find_spec("matcalc") and find_spec("matgl"):
+    libraries.append("matcalc")
 
-if find_spec("matgl"):
-    methods.append("tensornet")
-
-if has_sevennet := find_spec("sevenn"):
-    methods.append("sevennet")
-
-if find_spec("orb_models"):
-    methods.append("orb")
 
 if find_spec("fairchem"):
     from huggingface_hub.utils._auth import get_token
 
     if get_token():
-        methods.append("fairchem")
+        libraries.append("fairchem")
 
 
-def _set_dtype(size, type_="float"):
-    globals()[f"{type_}_th"] = getattr(torch, f"{type_}{size}")
-    globals()[f"{type_}_np"] = getattr(np, f"{type_}{size}")
-    torch.set_default_dtype(getattr(torch, f"float{size}"))
-
-
-@pytest.mark.parametrize("method", methods)
-def test_static_job(tmp_path, monkeypatch, method):
+@pytest.mark.parametrize("library", libraries)
+def test_static_job(tmp_path, monkeypatch, library):
     monkeypatch.chdir(tmp_path)
 
-    if method == "mace-mp":
-        _set_dtype(64)
-    else:
-        _set_dtype(32)
-
-    if method == "fairchem":
+    if library == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {"name_or_path": "uma-s-1p1", "task_name": "omat"}
+    elif library == "matcalc":
+        calc_kwargs = {"name": "TensorNet-PES-MatPES-PBE-2025.2"}
     else:
         calc_kwargs = {}
 
-    ref_energy = {
-        "tensornet": -3.7303245067596436,
-        "mace-mp": -4.097862720291976,
-        "sevennet": -4.096191883087158,
-        "orb": -4.093477725982666,
-        "fairchem": -3.7501682869643735,
-    }
+    ref_energy = {"matcalc": -3.7303245067596436, "fairchem": -3.7501682869643735}
     atoms = bulk("Cu")
-    output = static_job(atoms, method=method, **calc_kwargs)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
+    output = static_job(atoms, library=library, **calc_kwargs)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[library], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (1, 3)
     assert output["atoms"] == atoms
 
 
-@pytest.mark.skipif(has_sevennet is None, reason="sevennet not installed")
-def test_static_job_with_dict_kwargs(tmp_path, monkeypatch):
+@pytest.mark.parametrize("library", libraries)
+def test_relax_job(tmp_path, monkeypatch, library):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
-
-    # Make sure that pick_calculator works even with dictionary kwargs
-    static_job(atoms, method="sevennet", sevennet_config={"test": 1})
-
-
-@pytest.mark.parametrize("method", methods)
-def test_relax_job(tmp_path, monkeypatch, method):
-    monkeypatch.chdir(tmp_path)
-
-    if method == "mace-mp":
-        _set_dtype(64)
-    else:
-        _set_dtype(32)
-
-    if method == "fairchem":
+    if library == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {"name_or_path": "uma-s-1p1", "task_name": "omat"}
+    elif library == "matcalc":
+        calc_kwargs = {"name": "TensorNet-PES-MatPES-PBE-2025.2"}
     else:
         calc_kwargs = {}
 
-    ref_energy = {
-        "mace-mp": -32.78264569638644,
-        "tensornet": -29.842527389526367,
-        "sevennet": -32.76924133300781,
-        "orb": -32.7361946105957,
-        "fairchem": -30.001143639922756,
-    }
+    ref_energy = {"matcalc": -29.842527389526367, "fairchem": -30.001143639922756}
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method=method, **calc_kwargs)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
+    output = relax_job(atoms, library=library, **calc_kwargs)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[library], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
 
 
-@pytest.mark.skipif(has_mace is None, reason="Needs MACE")
-@pytest.mark.skipif(find_spec("torch_dftd") is None, reason="Needs torch-dftd")
-def test_relax_job_dispersion(tmp_path, monkeypatch):
+@pytest.mark.parametrize("library", libraries)
+def test_relax_cell_job(tmp_path, monkeypatch, library):
     monkeypatch.chdir(tmp_path)
 
-    _set_dtype(64)
-
-    atoms = bulk("Cu") * (2, 2, 2)
-    atoms[0].position += 0.1
-    output = relax_job(atoms, method="mace-mp", dispersion=True)
-    assert output["results"]["energy"] == pytest.approx(-37.4518034464096)
-    assert np.shape(output["results"]["forces"]) == (8, 3)
-    assert output["atoms"] != atoms
-    assert output["atoms"].get_volume() == pytest.approx(atoms.get_volume())
-
-
-@pytest.mark.parametrize("method", methods)
-def test_relax_cell_job(tmp_path, monkeypatch, method):
-    monkeypatch.chdir(tmp_path)
-
-    if method == "mace-mp":
-        _set_dtype(64)
-    else:
-        _set_dtype(32)
-
-    if method == "fairchem":
+    if library == "fairchem":
         # Note that for this to work, you need HF_TOKEN env variable set!
         calc_kwargs = {"name_or_path": "uma-s-1p1", "task_name": "omat"}
+    elif library == "matcalc":
+        calc_kwargs = {"name": "TensorNet-PES-MatPES-PBE-2025.2"}
     else:
         calc_kwargs = {}
 
-    ref_energy = {
-        "mace-mp": -32.8069374165035,
-        "tensornet": -29.87679100036621,
-        "sevennet": -32.76963806152344,
-        "orb": -32.73428726196289,
-        "fairchem": -30.005004590392726,
-    }
+    ref_energy = {"matcalc": -29.87679100036621, "fairchem": -30.005004590392726}
 
     atoms = bulk("Cu") * (2, 2, 2)
     atoms[0].position += 0.1
-    output = relax_job(atoms, method=method, relax_cell=True, **calc_kwargs)
-    assert output["results"]["energy"] == pytest.approx(ref_energy[method], rel=1e-4)
+    output = relax_job(atoms, library=library, relax_cell=True, **calc_kwargs)
+    assert output["results"]["energy"] == pytest.approx(ref_energy[library], rel=1e-4)
     assert np.shape(output["results"]["forces"]) == (8, 3)
     assert output["atoms"] != atoms
     assert output["atoms"].get_volume() != pytest.approx(atoms.get_volume())
