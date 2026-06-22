@@ -1292,7 +1292,7 @@ def test_mof_off(patch_metallic_taskdoc):
         "prec": "accurate",
         "setups": {"Al": ""},
         "sigma": 0.05,
-        "vdw_radius": 31.75063263383047
+        "vdw_radius": 31.75063263383047,
         "xc": "pbe",
     }
 
