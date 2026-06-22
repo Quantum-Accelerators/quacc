@@ -70,8 +70,9 @@ def mof_off_static_job(
         if disp == "d3bj":
             default_parameters |= {
                 "ivdw": 15,
-                "vdw_radius": 60 * Bohr, # See https://github.com/dftd3/simple-dftd3/issues/151
-            }  
+                "vdw_radius": 60
+                * Bohr,  # See https://github.com/dftd3/simple-dftd3/issues/151
+            }
         elif disp == "d4":
             default_parameters["ivdw"] = 13
     calc_flags = recursive_dict_merge(default_parameters, calc_kwargs)
