@@ -60,6 +60,7 @@ def mof_off_static_job(
     """
     default_parameters = {
         "kspacing": 0.4,
+        "incar_copilot": "light",
         "use_improvements": True,
         "write_extra_files": True,
     }
