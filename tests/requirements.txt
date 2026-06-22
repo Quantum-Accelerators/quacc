@@ -9,4 +9,3 @@ pydantic-settings==2.14.2
 pymatgen==2026.5.4
 ruamel.yaml==0.19.1
 typer==0.25.1
-maggma==0.74.0 # remove after https://github.com/materialsproject/maggma/issues/1113
