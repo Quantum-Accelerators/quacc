@@ -1292,10 +1292,6 @@ def test_mof_off(patch_metallic_taskdoc):
         "sigma": 0.05,
         "xc": "pbe",
         "ivdw": 15,
-        "vdw_s6": 1.0,
-        "vdw_s8": 0.60187490,
-        "vdw_a1": 0.51559235,
-        "vdw_a2": 5.77342911,
     }
 
 
