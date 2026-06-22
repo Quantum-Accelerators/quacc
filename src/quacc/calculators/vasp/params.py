@@ -213,7 +213,7 @@ def get_param_swaps(
             "algo", "normal"
         ) in ("all", "conjugate", "damped"):
             LOGGER.info(
-                "Recommending ALGO = Normal because your ALGO is not compatible with ISMSEAR = -5."
+                "Recommending ALGO = Normal because your ALGO is not compatible with ISMEAR = -5."
             )
             calc.set(algo="normal")
 
