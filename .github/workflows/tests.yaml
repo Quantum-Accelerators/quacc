@@ -137,12 +137,12 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: conda install psi4 -c conda-forge
+        run: conda install psi4 qcelemental=0.30.1 -c conda-forge
 
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt "quacc[dev] @ ." qcelemental==0.30.1
+          uv pip install --system -r tests/requirements.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
