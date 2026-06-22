@@ -1267,10 +1267,12 @@ def test_mof_off(patch_metallic_taskdoc):
         "ediff": 1e-05,
         "efermi": "midgap",
         "encut": 680.0,
+        "gga": "PE",
         "gga_compat": False,
         "isearch": 1,
         "ismear": 0,
         "ispin": 2,
+        "ivdw": 15,
         "kspacing": 0.4,
         "laechg": True,
         "lasph": True,
@@ -1280,7 +1282,7 @@ def test_mof_off(patch_metallic_taskdoc):
         "lmixtau": True,
         "lorbit": 11,
         "lreal": False,
-        "lwave": False,
+        "lwave": True,
         "magmom": [0.6],
         "nedos": 3001,
         "nelm": 200,
@@ -1290,8 +1292,8 @@ def test_mof_off(patch_metallic_taskdoc):
         "prec": "accurate",
         "setups": {"Al": ""},
         "sigma": 0.05,
+        "vdw_radius": 31.75063263383047
         "xc": "pbe",
-        "ivdw": 15,
     }
 
 
