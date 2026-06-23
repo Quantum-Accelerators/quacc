@@ -15,6 +15,7 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms
 from ase.io import read
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
+
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp.params import MPtoASEConverter
