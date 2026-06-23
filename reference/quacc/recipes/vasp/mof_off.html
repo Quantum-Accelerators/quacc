@@ -6539,11 +6539,7 @@ See the type-hint for the data structure.</p>
 <span class="normal"><a href="#__codelineno-0-75">75</a></span>
 <span class="normal"><a href="#__codelineno-0-76">76</a></span>
 <span class="normal"><a href="#__codelineno-0-77">77</a></span>
-<span class="normal"><a href="#__codelineno-0-78">78</a></span>
-<span class="normal"><a href="#__codelineno-0-79">79</a></span>
-<span class="normal"><a href="#__codelineno-0-80">80</a></span>
-<span class="normal"><a href="#__codelineno-0-81">81</a></span>
-<span class="normal"><a href="#__codelineno-0-82">82</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="nd">@job</span>
+<span class="normal"><a href="#__codelineno-0-78">78</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="nd">@job</span>
 </span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">&quot;atomate2 is not installed. Run `pip install quacc[mp]`&quot;</span><span class="p">)</span>
 </span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="k">def</span><span class="w"> </span><span class="nf">mof_off_static_job</span><span class="p">(</span>
 </span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
@@ -6587,18 +6583,14 @@ See the type-hint for the data structure.</p>
 </span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a>    <span class="k">if</span> <span class="n">dispersion</span><span class="p">:</span>
 </span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="n">disp</span> <span class="o">=</span> <span class="n">dispersion</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
 </span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a>        <span class="k">if</span> <span class="n">disp</span> <span class="o">==</span> <span class="s2">&quot;d3bj&quot;</span><span class="p">:</span>
-</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a>            <span class="n">default_parameters</span> <span class="o">|=</span> <span class="p">{</span>
-</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a>                <span class="s2">&quot;ivdw&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>                <span class="s2">&quot;vdw_radius&quot;</span><span class="p">:</span> <span class="mi">60</span>
-</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a>                <span class="o">*</span> <span class="n">Bohr</span><span class="p">,</span>  <span class="c1"># See https://github.com/dftd3/simple-dftd3/issues/151</span>
-</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>            <span class="p">}</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="k">elif</span> <span class="n">disp</span> <span class="o">==</span> <span class="s2">&quot;d4&quot;</span><span class="p">:</span>
-</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>            <span class="n">default_parameters</span><span class="p">[</span><span class="s2">&quot;ivdw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">13</span>
-</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>    <span class="n">calc_flags</span> <span class="o">=</span> <span class="n">recursive_dict_merge</span><span class="p">(</span><span class="n">default_parameters</span><span class="p">,</span> <span class="n">calc_kwargs</span><span class="p">)</span>
-</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>
-</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a>    <span class="k">return</span> <span class="n">matpes_static_job</span><span class="p">(</span>
-</span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a>        <span class="n">atoms</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">auto_ispin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">prev_dir</span><span class="o">=</span><span class="n">prev_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">calc_flags</span>
-</span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82"></a>    <span class="p">)</span>
+</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a>            <span class="n">default_parameters</span> <span class="o">|=</span> <span class="p">{</span><span class="s2">&quot;ivdw&quot;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s2">&quot;vdw_radius&quot;</span><span class="p">:</span> <span class="mi">95</span> <span class="o">*</span> <span class="n">Bohr</span><span class="p">}</span>
+</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a>        <span class="k">elif</span> <span class="n">disp</span> <span class="o">==</span> <span class="s2">&quot;d4&quot;</span><span class="p">:</span>
+</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="n">default_parameters</span><span class="p">[</span><span class="s2">&quot;ivdw&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">13</span>
+</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a>    <span class="n">calc_flags</span> <span class="o">=</span> <span class="n">recursive_dict_merge</span><span class="p">(</span><span class="n">default_parameters</span><span class="p">,</span> <span class="n">calc_kwargs</span><span class="p">)</span>
+</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>    <span class="k">return</span> <span class="n">matpes_static_job</span><span class="p">(</span>
+</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>        <span class="n">atoms</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">level</span><span class="p">,</span> <span class="n">auto_ispin</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">prev_dir</span><span class="o">=</span><span class="n">prev_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">calc_flags</span>
+</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>    <span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
