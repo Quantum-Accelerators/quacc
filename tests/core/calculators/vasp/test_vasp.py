@@ -1063,19 +1063,6 @@ def test_ncore_aggressive():
         assert calc.parameters.get("npar") is None
 
 
-def test_ismear():
-    atoms = bulk("Cu")
-
-    calc = Vasp(atoms, nsw=10)
-    assert calc.parameters.get("ismear") is None
-
-    calc = Vasp(atoms, nsw=0)
-    assert calc.parameters.get("ismear") is None
-
-    calc = Vasp(atoms, kpts=(10, 10, 10), nsw=0)
-    assert calc.parameters["ismear"] == -5
-
-
 def test_ismear_aggressive():
     with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
         atoms = bulk("Cu")
@@ -1103,7 +1090,7 @@ def test_ismear_aggressive():
         assert calc.parameters["ismear"] == 0
 
         calc = Vasp(atoms, kpts=(10, 10, 10), nsw=0)
-        assert calc.parameters["ismear"] == -5
+        assert calc.parameters.get("ismear") is None
 
         calc = Vasp(atoms, pmg_kpts={"line_density": 100}, ismear=1)
         assert calc.parameters["ismear"] == 0
@@ -1398,16 +1385,32 @@ def test_logging(caplog):
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
     assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending ISMEAR = -5" in caplog.text
-    assert "ismear': -5" in caplog.text
-    assert "lmaxmix': 4" in caplog.text
+    assert "Recommending NCORE" in caplog.text
+    assert "The following parameters were added" in caplog.text
+    assert "'lmaxmix': 4" in caplog.text
+    assert "'ncore':" in caplog.text
+    caplog.clear()
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
     assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending ISMEAR = -5" in caplog.text
-    assert "lmaxmix': 4" in caplog.text
-    assert "ismear: -5" not in caplog.text
+    assert "Recommending SIGMA = 0.05" in caplog.text
+    assert "Recommending NCORE" in caplog.text
+    assert "The following parameters were added" in caplog.text
+    assert "'lmaxmix': 4" in caplog.text
+    assert "'ncore':" in caplog.text
+    caplog.clear()
+
+    with caplog.at_level(INFO):
+        Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=-5, algo="all", lmaxmix=1)
+    assert "Recommending LMAXMIX = 4" in caplog.text
+    assert "Recommending NCORE" in caplog.text
+    assert "The following parameters were added" in caplog.text
+    assert "'isearch': 1" in caplog.text
+    assert "'ncore':" in caplog.text
+    assert "ALGO was changed from 'all' to 'normal'" in caplog.text
+    assert "LMAXMIX was *not* changed from 1 to 4" in caplog.text
+    caplog.clear()
 
 
 def test_bad_pmg_converter():

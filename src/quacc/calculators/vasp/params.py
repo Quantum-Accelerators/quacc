@@ -106,22 +106,6 @@ def get_param_swaps(
             calc.set(ismear=1, sigma=0.1)
 
         if (
-            calc.parameters.get("ismear", 1) != -5
-            and calc.parameters.get("nsw", 0) == 0
-            and (
-                (calc.kpts is not None and np.prod(calc.kpts) >= 4)
-                or (
-                    calc.float_params["kspacing"]
-                    and calc.float_params["kspacing"] <= 0.5
-                )
-            )
-        ):
-            LOGGER.info(
-                "Recommending ISMEAR = -5 because you have a static calculation."
-            )
-            calc.set(ismear=-5)
-
-        if (
             pmg_kpts
             and pmg_kpts.get("line_density")
             and calc.parameters.get("ismear", 1) != 0
@@ -330,11 +314,15 @@ def get_param_swaps(
                 "You are running O2 without magnetic moments, but its ground state should have 2 unpaired electrons!"
             )
 
+    # ----------------------------
+    # Finalize INCAR swaps
+    # ----------------------------
     critical_swap_changes = {
         k: v
         for k, v in calc.parameters.items()
         if not np.array_equal(pre_critical_params.get(k), v)
     }
+    recommended_params = dict(calc.parameters)
 
     if incar_copilot_mode == "aggressive":
         new_parameters = calc.parameters
@@ -358,13 +346,14 @@ def get_param_swaps(
         LOGGER.warning(f"{k.upper()} was changed from {old!r} to {new!r}.")
 
     if overridden_swaps := {
-        k: new_parameters[k]
-        for k in calc.parameters
-        if not np.array_equal(calc.parameters[k], new_parameters.get(k))
+        k: (user_calc_params.get(k), recommended_params[k])
+        for k in recommended_params
+        if not np.array_equal(recommended_params[k], new_parameters.get(k))
     }:
-        LOGGER.warning(
-            f"The following parameters were recommended but not applied so as to not override user settings: {sort_dict(overridden_swaps)}"
-        )
+        for k, (current, recommended) in overridden_swaps.items():
+            LOGGER.warning(
+                f"{k.upper()} was *not* changed from {current!r} to {recommended!r} to respect the user's decisions."
+            )
 
     return new_parameters
 
