@@ -1388,6 +1388,7 @@ def test_logging(caplog):
     assert "The following parameters were added" in caplog.text
     assert "'lmaxmix': 4" in caplog.text
     assert "'ncore':" in caplog.text
+    caplog.clear()
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
@@ -1397,6 +1398,7 @@ def test_logging(caplog):
     assert "The following parameters were added" in caplog.text
     assert "'lmaxmix': 4" in caplog.text
     assert "'ncore':" in caplog.text
+    caplog.clear()
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=-5, algo="all", lmaxmix=1)
@@ -1404,13 +1406,10 @@ def test_logging(caplog):
     assert "Recommending NCORE" in caplog.text
     assert "The following parameters were added" in caplog.text
     assert "'isearch': 1" in caplog.text
-    assert "'lmaxmix': 4" not in caplog.text
     assert "'ncore':" in caplog.text
     assert "ALGO was changed from 'all' to 'normal'" in caplog.text
-    assert (
-        "The following parameters were recommended but not applied so as to not override user settings: {'lmaxmix': 1}"
-        in caplog.text
-    )
+    assert "LMAXMIX was *not* changed from 1 to 4" in caplog.text
+    caplog.clear()
 
 
 def test_bad_pmg_converter():
