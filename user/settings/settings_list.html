@@ -6372,14 +6372,14 @@
 </span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222" href="#__codelineno-0-222"></a>    )
 </span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223" href="#__codelineno-0-223"></a>
 </span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224" href="#__codelineno-0-224"></a>    # VASP Settings: General
-</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225" href="#__codelineno-0-225"></a>    VASP_INCAR_COPILOT: Literal[&quot;off&quot;, &quot;light&quot;, &quot;default&quot;, &quot;aggressive&quot;] = Field(
-</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226" href="#__codelineno-0-226"></a>        &quot;default&quot;,
+</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225" href="#__codelineno-0-225"></a>    VASP_INCAR_COPILOT: Literal[&quot;off&quot;, &quot;critical&quot;, &quot;standard&quot;, &quot;aggressive&quot;] = Field(
+</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226" href="#__codelineno-0-226"></a>        &quot;standard&quot;,
 </span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227" href="#__codelineno-0-227"></a>        description=(
 </span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228" href="#__codelineno-0-228"></a>            &quot;&quot;&quot;
 </span><span id="__span-0-229"><a id="__codelineno-0-229" name="__codelineno-0-229" href="#__codelineno-0-229"></a>            Controls VASP co-pilot mode for automated INCAR parameter handling.
 </span><span id="__span-0-230"><a id="__codelineno-0-230" name="__codelineno-0-230" href="#__codelineno-0-230"></a>            off: Do not use co-pilot mode. INCAR parameters will be unmodified.
-</span><span id="__span-0-231"><a id="__codelineno-0-231" name="__codelineno-0-231" href="#__codelineno-0-231"></a>            light: Use co-pilot mode for only a subset of swaps. This will only modify INCAR flags not already set by the user.
-</span><span id="__span-0-232"><a id="__codelineno-0-232" name="__codelineno-0-232" href="#__codelineno-0-232"></a>            default: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
+</span><span id="__span-0-231"><a id="__codelineno-0-231" name="__codelineno-0-231" href="#__codelineno-0-231"></a>            critical: Use co-pilot mode for only critical swaps. These will always be applied regardless of user settings.
+</span><span id="__span-0-232"><a id="__codelineno-0-232" name="__codelineno-0-232" href="#__codelineno-0-232"></a>            standard: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
 </span><span id="__span-0-233"><a id="__codelineno-0-233" name="__codelineno-0-233" href="#__codelineno-0-233"></a>            aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
 </span><span id="__span-0-234"><a id="__codelineno-0-234" name="__codelineno-0-234" href="#__codelineno-0-234"></a>            &quot;&quot;&quot;
 </span><span id="__span-0-235"><a id="__codelineno-0-235" name="__codelineno-0-235" href="#__codelineno-0-235"></a>        ),
