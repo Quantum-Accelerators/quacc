@@ -331,7 +331,9 @@ def get_param_swaps(
             )
 
     critical_swap_changes = {
-        k: v for k, v in calc.parameters.items() if pre_critical_params.get(k) != v
+        k: v
+        for k, v in calc.parameters.items()
+        if not np.array_equal(pre_critical_params.get(k), v)
     }
 
     if incar_copilot_mode == "aggressive":
@@ -349,7 +351,8 @@ def get_param_swaps(
     overridden_user_params = {
         k: (user_calc_params[k], new_parameters[k])
         for k in user_calc_params
-        if k in new_parameters and new_parameters[k] != user_calc_params[k]
+        if k in new_parameters
+        and _params_differ(new_parameters[k], user_calc_params[k])
     }
     for k, (old, new) in overridden_user_params.items():
         LOGGER.warning(f"{k.upper()} was changed from {old!r} to {new!r}.")
@@ -357,7 +360,7 @@ def get_param_swaps(
     if overridden_swaps := {
         k: new_parameters[k]
         for k in calc.parameters
-        if calc.parameters[k] != new_parameters.get(k)
+        if not np.array_equal(calc.parameters[k], new_parameters.get(k))
     }:
         LOGGER.warning(
             f"The following parameters were recommended but not applied so as to not override user settings: {sort_dict(overridden_swaps)}"
@@ -648,3 +651,12 @@ class MPtoASEConverter:
             }
 
         return full_input_params
+
+
+def _params_differ(a, b) -> bool:
+    """Compare two parameter values, handling NumPy arrays."""
+    if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
+        a = np.asarray(a)
+        b = np.asarray(b)
+        return a.shape != b.shape or not np.array_equal(a, b)
+    return a != b
