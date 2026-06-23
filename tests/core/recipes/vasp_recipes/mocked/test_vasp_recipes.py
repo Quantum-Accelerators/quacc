@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from monty.shutil import copy_r
+
 from quacc import change_settings
 from quacc.recipes.vasp.core import (
     ase_relax_job,
