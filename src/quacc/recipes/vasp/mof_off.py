@@ -68,10 +68,7 @@ def mof_off_static_job(
     if dispersion:
         disp = dispersion.lower()
         if disp == "d3bj":
-            default_parameters |= {
-                "ivdw": 15,
-                "vdw_radius": 95 * Bohr,
-            }
+            default_parameters |= {"ivdw": 15, "vdw_radius": 95 * Bohr}
         elif disp == "d4":
             default_parameters["ivdw"] = 13
     calc_flags = recursive_dict_merge(default_parameters, calc_kwargs)
