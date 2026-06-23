@@ -17,7 +17,7 @@ has_seekpath = bool(find_spec("seekpath"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Any, Literal
+    from typing import Any
 
     from ase.atoms import Atoms
 
@@ -33,9 +33,6 @@ if TYPE_CHECKING:
 )
 def phonon_flow(
     atoms: Atoms,
-    method: Literal[
-        "mace-mp-0", "m3gnet", "chgnet", "tensornet", "sevennet", "orb", "fairchem"
-    ],
     symprec: float = 1e-4,
     min_lengths: float | tuple[float, float, float] | None = 20.0,
     supercell_matrix: (
@@ -69,8 +66,6 @@ def phonon_flow(
     ----------
     atoms
         Atoms object
-    method
-        Universal ML interatomic potential method to use
     symprec
         Precision for symmetry detection.
     min_lengths
@@ -99,13 +94,8 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][].
         See the type-hint for the data structure.
     """
-    job_param_defaults = {"all": {"method": method}}
     static_job_ = customize_funcs(
-        ["static_job"],
-        [static_job],
-        param_defaults=job_param_defaults,
-        param_swaps=job_params,
-        decorators=job_decorators,
+        ["static_job"], [static_job], param_swaps=job_params, decorators=job_decorators
     )
 
     return phonon_subflow(
@@ -118,5 +108,4 @@ def phonon_flow(
         t_step=t_step,
         t_min=t_min,
         t_max=t_max,
-        additional_fields={"name": f"{method} Phonons"},
     )

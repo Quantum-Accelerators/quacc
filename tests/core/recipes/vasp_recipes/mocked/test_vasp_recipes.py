@@ -1261,6 +1261,41 @@ def test_mof_off(patch_metallic_taskdoc):
         "vdw_a2": 5.77342911,
     }
 
+    output = mof_off_static_job(bulk("Al"), level="pbe", dispersion="d3bj", ncore=None)
+    assert output["parameters"] == {
+        "algo": "all",
+        "ediff": 1e-05,
+        "efermi": "midgap",
+        "encut": 680.0,
+        "gga": "PE",
+        "gga_compat": False,
+        "isearch": 1,
+        "ismear": 0,
+        "ispin": 2,
+        "ivdw": 15,
+        "kspacing": 0.4,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lelf": True,
+        "lmaxmix": 6,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": False,
+        "lwave": True,
+        "magmom": [0.6],
+        "nedos": 3001,
+        "nelm": 200,
+        "nsw": 0,
+        "pp": "PBE",
+        "pp_version": "64",
+        "prec": "accurate",
+        "setups": {"Al": ""},
+        "sigma": 0.05,
+        "vdw_radius": 31.75063263383047,
+        "xc": "pbe",
+    }
+
 
 @pytest.mark.skipif(not has_fairchem_omat, reason="fairchem not installed")
 def test_fairchem_omat(patch_metallic_taskdoc):

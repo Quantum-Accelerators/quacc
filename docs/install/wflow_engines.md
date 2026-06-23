@@ -6,8 +6,6 @@ Using a workflow engine is optional but is beneficial when scaling up quacc calc
 
     If you don't want to use a workflow engine or are just starting out, you can simply skip this section.
 
-    For a comparison of the different compatible workflow engines, refer to the [Workflow Engines Overview](../user/basics/wflow_overview.md) section.
-
 === "Dask"
 
     **Installation**
@@ -16,62 +14,6 @@ Using a workflow engine is optional but is beneficial when scaling up quacc calc
 
     ```bash
     pip install quacc[dask]
-    ```
-
-=== "Parsl"
-
-    **Installation**
-
-    To install Parsl, run the following:
-
-    ```bash
-    pip install quacc[parsl]
-    ```
-
-    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
-
-=== "Prefect"
-
-    **Installation**
-
-    To install Prefect, run the following:
-
-    ```bash
-    pip install quacc[prefect]
-    ```
-
-    To connect to Prefect Cloud, run the following as well:
-
-    ```bash
-    prefect cloud login
-    ```
-
-    Prefect has [many configuration options](https://docs.prefect.io/latest/guides/settings/). For instance, you can store the quacc logs in the UI as follows:
-
-    ```bash
-    prefect config set PREFECT_LOGGING_EXTRA_LOGGERS=quacc
-    ```
-
-=== "Ray"
-
-    **Installation**
-
-    To install Ray, run the following:
-
-    ```bash
-    pip install quacc[ray]
-    ```
-
-    Ray has [many configuration options](https://docs.ray.io/en/latest/ray-core/configure.html), including support for [running on HPC clusters](https://docs.ray.io/en/latest/cluster/getting-started.html).
-
-=== "Redun"
-
-    **Installation**
-
-    To install Redun, run the following:
-
-    ```bash
-    pip install quacc[redun]
     ```
 
 === "Jobflow"
@@ -327,3 +269,59 @@ Using a workflow engine is optional but is beneficial when scaling up quacc calc
             Running `lpad reset` will clear your FireWorks launchpad, so only use this command if you are a new user.
 
         To check that FireWorks can connect to your database, run `lpad reset` if this is your first time using FireWorks.
+
+=== "Parsl"
+
+    **Installation**
+
+    To install Parsl, run the following:
+
+    ```bash
+    pip install quacc[parsl]
+    ```
+
+    Parsl has [many configuration options](https://parsl.readthedocs.io/en/stable/userguide/configuring.html), which we will cover later in the documentation.
+
+=== "Prefect"
+
+    **Installation**
+
+    To install Prefect, run the following:
+
+    ```bash
+    pip install quacc[prefect]
+    ```
+
+    To connect to Prefect Cloud, run the following as well:
+
+    ```bash
+    prefect cloud login
+    ```
+
+    Prefect has [many configuration options](https://docs.prefect.io/latest/guides/settings/). For instance, you can store the quacc logs in the UI as follows:
+
+    ```bash
+    prefect config set PREFECT_LOGGING_EXTRA_LOGGERS=quacc
+    ```
+
+=== "Ray"
+
+    **Installation**
+
+    To install Ray, run the following:
+
+    ```bash
+    pip install quacc[ray]
+    ```
+
+    Ray has [many configuration options](https://docs.ray.io/en/latest/ray-core/configure.html), including support for [running on HPC clusters](https://docs.ray.io/en/latest/cluster/getting-started.html).
+
+=== "Redun"
+
+    **Installation**
+
+    To install Redun, run the following:
+
+    ```bash
+    pip install quacc[redun]
+    ```

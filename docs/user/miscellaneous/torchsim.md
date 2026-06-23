@@ -7,7 +7,7 @@ This tutorial introduces quacc's TorchSim recipes, which provide a high-level in
 Before using the TorchSim recipes, you need to install TorchSim and at least one machine learning potential:
 
 ```bash
-pip install torch-sim mace-torch
+pip install quacc[torchsim] mace-torch
 ```
 
 You should also be familiar with [ASE Atoms objects](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) and have read the [Intro to Jobs](recipes_intro.md) tutorial.

@@ -1,1 +1,2 @@
 sella==2.4.2
+scipy==1.17.1 # remove after https://github.com/zadorlab/sella/issues/76

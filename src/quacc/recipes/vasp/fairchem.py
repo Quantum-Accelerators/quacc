@@ -1,12 +1,4 @@
-"""
-Meta FAIR recipes
-
-!!! Important
-
-    Calculations will be use the following version of pseudopotentials:
-    - OMat: v.54
-    - OMC: v.54
-"""
+"""Meta FAIR recipes"""
 
 from __future__ import annotations
 
