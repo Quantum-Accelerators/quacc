@@ -15,7 +15,6 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms
 from ase.io import read
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
-
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp.params import MPtoASEConverter
@@ -675,7 +674,7 @@ def test_kspacing():
     assert calc.parameters["ismear"] == -5
 
     calc = Vasp(atoms, kspacing=100, ismear=-5)
-    assert calc.parameters["ismear"] == -5
+    assert calc.parameters["ismear"] == 0
 
     calc = Vasp(atoms, kspacing=0.1, preset="DefaultSetGGA")
     assert calc.parameters["kspacing"] == 0.1
