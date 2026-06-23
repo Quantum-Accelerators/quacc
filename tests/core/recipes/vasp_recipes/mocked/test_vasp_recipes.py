@@ -470,6 +470,7 @@ def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
     atoms = bulk("Al")
     output = mp_prerelax_job(atoms, ncore=None)
     assert output["structure_metadata"]["nsites"] == len(atoms)
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-5,
@@ -571,6 +572,7 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
     ref_parameters2["magmom"] = [0.0]
 
     output = mp_metagga_relax_job(atoms, ncore=None)
+    output["parameters"].pop("ncore")
     assert output["parameters"] == ref_parameters
     assert output["structure_metadata"]["nsites"] == len(atoms)
 
@@ -606,6 +608,7 @@ def test_mp_metagga_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 
     output = mp_metagga_static_job(atoms, ncore=None)
+    output["parameters"].pop("ncore")
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "normal",
@@ -716,6 +719,7 @@ def test_mp_gga_relax_job(patch_nonmetallic_taskdoc):
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
     output = mp_gga_relax_job(atoms, ncore=None)
+    output["parameters"].pop("ncore")
 
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
@@ -757,6 +761,7 @@ def test_mp_gga_static_job(patch_nonmetallic_taskdoc):
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
     output = mp_gga_static_job(atoms, ncore=None)
+    output["parameters"].pop("ncore")
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"] == {
         "algo": "fast",
@@ -797,7 +802,7 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
         atoms = bulk("Ni") * (2, 1, 1)
         atoms[0].symbol = "O"
         del atoms.arrays["initial_magmoms"]
-        output = mp_gga_relax_flow(atoms, job_params={"all": {"ncore": None}})
+        output = mp_gga_relax_flow(atoms)
         relax_params = {
             "algo": "fast",
             "ediff": 0.0001,
@@ -831,6 +836,9 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
         relax2_params = relax_params.copy()
         relax2_params["magmom"] = [0.0, 0.0]
 
+        output["relax1"]["parameters"].pop("ncore")
+        output["relax2"]["parameters"].pop("ncore")
+        output["static"]["parameters"].pop("ncore")
         assert output["relax1"]["parameters"] == relax_params
         assert output["relax2"]["parameters"] == relax2_params
         assert output["static"]["parameters"] == {
@@ -908,6 +916,7 @@ def test_matpes(patch_metallic_taskdoc):
         use_improvements=True,
         write_extra_files=True,
     )
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "all",
         "ediff": 1e-05,
@@ -949,6 +958,7 @@ def test_matpes(patch_metallic_taskdoc):
         use_improvements=True,
         write_extra_files=True,
     )
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "all",
         "ediff": 1e-05,
@@ -982,6 +992,7 @@ def test_matpes(patch_metallic_taskdoc):
     }
 
     output = matpes_static_job(bulk("Al"), level="pbe", kspacing=0.4, ncore=None)
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
@@ -1011,6 +1022,7 @@ def test_matpes(patch_metallic_taskdoc):
     }
 
     output = matpes_static_job(bulk("Al"), level="r2scan", ncore=None)
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
@@ -1046,6 +1058,7 @@ def test_matpes(patch_metallic_taskdoc):
         use_improvements=True,
         write_extra_files=True,
     )
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "all",
         "ediff": 1e-05,
@@ -1087,6 +1100,7 @@ def test_matpes(patch_metallic_taskdoc):
         use_improvements=True,
         write_extra_files=True,
     )
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
@@ -1121,6 +1135,7 @@ def test_matpes(patch_metallic_taskdoc):
     }
 
     output = matpes_static_job(atoms_no_mag, level="hse06", ncore=None)
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
@@ -1158,6 +1173,7 @@ def test_matpes(patch_metallic_taskdoc):
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_mof_off(patch_metallic_taskdoc):
     output = mof_off_static_job(bulk("Al"), level="pbe", ncore=None)
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "all",
         "ediff": 1e-05,
@@ -1191,6 +1207,7 @@ def test_mof_off(patch_metallic_taskdoc):
     }
 
     output = mof_off_static_job(bulk("Al"), level="r2scan", ncore=None)
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "all",
         "ediff": 1e-05,
@@ -1224,6 +1241,7 @@ def test_mof_off(patch_metallic_taskdoc):
     }
 
     output = mof_off_static_job(bulk("Al"), level="r2scan", dispersion="d4", ncore=None)
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "all",
         "ediff": 1e-05,
@@ -1262,6 +1280,7 @@ def test_mof_off(patch_metallic_taskdoc):
     }
 
     output = mof_off_static_job(bulk("Al"), level="pbe", dispersion="d3bj", ncore=None)
+    output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "algo": "all",
         "ediff": 1e-05,

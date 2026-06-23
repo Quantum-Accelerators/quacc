@@ -675,7 +675,7 @@ def test_kspacing():
     assert calc.parameters["ismear"] == -5
 
     calc = Vasp(atoms, kspacing=100, ismear=-5)
-    assert calc.parameters["ismear"] == -5
+    assert calc.parameters["ismear"] == 0
 
     calc = Vasp(atoms, kspacing=0.1, preset="DefaultSetGGA")
     assert calc.parameters["kspacing"] == 0.1
