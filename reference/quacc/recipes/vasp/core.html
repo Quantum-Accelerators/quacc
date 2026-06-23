@@ -6464,7 +6464,7 @@
 
 <a href="#quacc.recipes.vasp.core.ase_relax_job" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">ase_relax_job</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><span title="ase.atoms.Atoms">Atoms</span></span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">preset</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;DefaultSetGGA&quot;</span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">relax_cell</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">opt_params</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;OptParams&lt;/span&gt;" href="../../types.html#quacc.types.OptParams">OptParams</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6502,7 +6502,7 @@
     <ul>
         <li class="doc-section-item field-body">
             <b><code>atoms</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
+              (<code><span title="ase.atoms.Atoms">Atoms</span></code>)
           –
           <div class="doc-md-description">
             <p>Atoms object</p>
@@ -6717,7 +6717,7 @@ keys, refer to the <a class="autorefs autorefs-internal" title="&lt;span class=&
 
 <a href="#quacc.recipes.vasp.core.double_relax_flow" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">double_relax_flow</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><span title="ase.atoms.Atoms">Atoms</span></span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">preset</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;DefaultSetGGA&quot;</span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">relax_cell</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">relax1_kwargs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6747,7 +6747,7 @@ can require a second relaxation to resolve forces.</p>
     <ul>
         <li class="doc-section-item field-body">
             <b><code>atoms</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
+              (<code><span title="ase.atoms.Atoms">Atoms</span></code>)
           –
           <div class="doc-md-description">
             <p>Atoms object</p>
@@ -6933,7 +6933,7 @@ only the positions (ISIF = 2) should be updated.</p>
 
 <a href="#quacc.recipes.vasp.core.freq_job" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">freq_job</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><span title="ase.atoms.Atoms">Atoms</span></span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">preset</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;DefaultSetGGA&quot;</span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">energy</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">temperature</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span> <span class="o">=</span> <span class="mf">298.15</span><span class="p">,</span>
@@ -6975,7 +6975,7 @@ only the positions (ISIF = 2) should be updated.</p>
     <ul>
         <li class="doc-section-item field-body">
             <b><code>atoms</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
+              (<code><span title="ase.atoms.Atoms">Atoms</span></code>)
           –
           <div class="doc-md-description">
             <p>Atoms object</p>
@@ -7038,7 +7038,7 @@ only the positions (ISIF = 2) should be updated.</p>
 )
           –
           <div class="doc-md-description">
-            <p>Dictionary of kwargs for the <a class="autorefs autorefs-external" href="https://ase-lib.org/ase/vibrations/modes.html#ase.vibrations.Vibrations">ase.vibrations.Vibrations</a> class.</p>
+            <p>Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -7227,7 +7227,7 @@ Vasp calculator keyword arguments are supported.</p>
 
 <a href="#quacc.recipes.vasp.core.non_scf_job" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">non_scf_job</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><span title="ase.atoms.Atoms">Atoms</span></span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">prev_dir</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;SourceDirectory&lt;/span&gt;
 
 
@@ -7254,7 +7254,7 @@ Vasp calculator keyword arguments are supported.</p>
     <ul>
         <li class="doc-section-item field-body">
             <b><code>atoms</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
+              (<code><span title="ase.atoms.Atoms">Atoms</span></code>)
           –
           <div class="doc-md-description">
             <p>Atoms object.</p>
@@ -7570,7 +7570,7 @@ See the type-hint for the data structure.</p>
 
 <a href="#quacc.recipes.vasp.core.relax_job" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">relax_job</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><span title="ase.atoms.Atoms">Atoms</span></span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">preset</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;DefaultSetGGA&quot;</span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">relax_cell</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">copy_files</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;SourceDirectory&lt;/span&gt;
@@ -7593,7 +7593,7 @@ See the type-hint for the data structure.</p>
     <ul>
         <li class="doc-section-item field-body">
             <b><code>atoms</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
+              (<code><span title="ase.atoms.Atoms">Atoms</span></code>)
           –
           <div class="doc-md-description">
             <p>Atoms object</p>
@@ -7794,7 +7794,7 @@ See the type-hint for the data structure.</p>
 
 <a href="#quacc.recipes.vasp.core.static_job" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">static_job</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><span title="ase.atoms.Atoms">Atoms</span></span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">preset</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="s2">&quot;DefaultSetGGA&quot;</span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">copy_files</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;SourceDirectory&lt;/span&gt;
 
@@ -7818,7 +7818,7 @@ metals).</p>
     <ul>
         <li class="doc-section-item field-body">
             <b><code>atoms</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
+              (<code><span title="ase.atoms.Atoms">Atoms</span></code>)
           –
           <div class="doc-md-description">
             <p>Atoms object</p>

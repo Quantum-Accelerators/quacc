@@ -6385,8 +6385,8 @@
 
 <a href="#quacc.schemas.prep.prep_next_run" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">prep_next_run</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span> <span class="n">move_magmoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><span title="ase.atoms.Atoms">Atoms</span></span><span class="p">,</span> <span class="n">move_magmoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="ase.atoms.Atoms">Atoms</span></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6399,7 +6399,7 @@ assigning a unique ID.</p>
     <ul>
         <li class="doc-section-item field-body">
             <b><code>atoms</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
+              (<code><span title="ase.atoms.Atoms">Atoms</span></code>)
           –
           <div class="doc-md-description">
             <p>Atoms object</p>
@@ -6422,7 +6422,7 @@ initial magnetic moments.</p>
 <p><span class="doc-section-title">Returns:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>
+              <code><span title="ase.atoms.Atoms">Atoms</span></code>
           –
           <div class="doc-md-description">
             <p>Updated Atoms object.</p>
@@ -6537,12 +6537,12 @@ initial magnetic moments.</p>
 
 <a href="#quacc.schemas.prep.set_magmoms" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">set_magmoms</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><span title="ase.atoms.Atoms">Atoms</span></span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">elemental_mags_dict</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">elemental_mags_default</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">copy_magmoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">mag_cutoff</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#float">float</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="ase.atoms.Atoms">Atoms</span></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6565,7 +6565,7 @@ mag_cutoff, then they are all set to 0 (no spin polarization).</p>
     <ul>
         <li class="doc-section-item field-body">
             <b><code>atoms</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
+              (<code><span title="ase.atoms.Atoms">Atoms</span></code>)
           –
           <div class="doc-md-description">
             <p>Atoms object</p>
@@ -6623,7 +6623,7 @@ None, no cutoff will be applied</p>
 <p><span class="doc-section-title">Returns:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>
+              <code><span title="ase.atoms.Atoms">Atoms</span></code>
           –
           <div class="doc-md-description">
             <p>Atoms object</p>
