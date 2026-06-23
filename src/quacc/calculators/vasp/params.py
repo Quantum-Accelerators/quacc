@@ -104,22 +104,6 @@ def get_param_swaps(
             calc.set(ismear=1, sigma=0.1)
 
         if (
-            calc.parameters.get("ismear", 1) != -5
-            and calc.parameters.get("nsw", 0) == 0
-            and (
-                (calc.kpts is not None and np.prod(calc.kpts) >= 4)
-                or (
-                    calc.float_params["kspacing"]
-                    and calc.float_params["kspacing"] <= 0.5
-                )
-            )
-        ):
-            LOGGER.info(
-                "Recommending ISMEAR = -5 because you have a static calculation."
-            )
-            calc.set(ismear=-5)
-
-        if (
             pmg_kpts
             and pmg_kpts.get("line_density")
             and calc.parameters.get("ismear", 1) != 0
