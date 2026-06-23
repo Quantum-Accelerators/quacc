@@ -15,7 +15,6 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms
 from ase.io import read
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
-
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp.params import MPtoASEConverter
@@ -1063,19 +1062,6 @@ def test_ncore_aggressive():
         assert calc.parameters.get("npar") is None
 
 
-def test_ismear():
-    atoms = bulk("Cu")
-
-    calc = Vasp(atoms, nsw=10)
-    assert calc.parameters.get("ismear") is None
-
-    calc = Vasp(atoms, nsw=0)
-    assert calc.parameters.get("ismear") is None
-
-    calc = Vasp(atoms, kpts=(10, 10, 10), nsw=0)
-    assert calc.parameters["ismear"] == -5
-
-
 def test_ismear_aggressive():
     with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
         atoms = bulk("Cu")
@@ -1103,7 +1089,7 @@ def test_ismear_aggressive():
         assert calc.parameters["ismear"] == 0
 
         calc = Vasp(atoms, kpts=(10, 10, 10), nsw=0)
-        assert calc.parameters["ismear"] == -5
+        assert calc.parameters.get("ismear") is None
 
         calc = Vasp(atoms, pmg_kpts={"line_density": 100}, ismear=1)
         assert calc.parameters["ismear"] == 0
@@ -1398,16 +1384,30 @@ def test_logging(caplog):
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
     assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending ISMEAR = -5" in caplog.text
-    assert "ismear': -5" in caplog.text
-    assert "lmaxmix': 4" in caplog.text
+    assert "Recommending NCORE" in caplog.text
+    assert "The following parameters were added" in caplog.text
+    assert "'lmaxmix': 4" in caplog.text
+    assert "'ncore':" in caplog.text
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
     assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending ISMEAR = -5" in caplog.text
-    assert "lmaxmix': 4" in caplog.text
-    assert "ismear: -5" not in caplog.text
+    assert "Recommending SIGMA = 0.05" in caplog.text
+    assert "Recommending NCORE" in caplog.text
+    assert "The following parameters were added" in caplog.text
+    assert "'lmaxmix': 4" in caplog.text
+    assert "'ncore':" in caplog.text
+
+    with caplog.at_level(INFO):
+        Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=-5, algo="all", lmaxmix=1)
+    assert "Recommending LMAXMIX = 4" in caplog.text
+    assert "Recommending NCORE" in caplog.text
+    assert "The following parameters were added" in caplog.text
+    assert "'isearch': 1" in caplog.text
+    assert "'lmaxmix': 4" not in caplog.text
+    assert "'ncore':" in caplog.text
+    assert "ALGO was changed from 'all' to 'normal'" in caplog.text
+    assert "The following parameters were recommended but not applied so as to not override user settings: {'lmaxmix': 1}"
 
 
 def test_bad_pmg_converter():
