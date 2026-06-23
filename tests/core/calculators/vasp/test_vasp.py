@@ -15,7 +15,6 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms
 from ase.io import read
 from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
-
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp.params import MPtoASEConverter
@@ -1408,7 +1407,10 @@ def test_logging(caplog):
     assert "'lmaxmix': 4" not in caplog.text
     assert "'ncore':" in caplog.text
     assert "ALGO was changed from 'all' to 'normal'" in caplog.text
-    assert "The following parameters were recommended but not applied so as to not override user settings: {'lmaxmix': 1}"
+    assert (
+        "The following parameters were recommended but not applied so as to not override user settings: {'lmaxmix': 1}"
+        in caplog.text
+    )
 
 
 def test_bad_pmg_converter():
