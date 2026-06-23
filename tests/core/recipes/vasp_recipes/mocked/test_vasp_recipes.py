@@ -576,7 +576,6 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
     assert output["structure_metadata"]["nsites"] == len(atoms)
 
     output = mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
-    output["parameters"].pop("ncore")
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -592,7 +591,6 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
 def test_mp_metagga_relax_job_nonmetallic(patch_nonmetallic_taskdoc):
     atoms = bulk("Si")
     output = mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
-    output["parameters"].pop("ncore")
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["metagga"].lower() == "r2scan"
     assert output["parameters"]["ediffg"] == -0.02
@@ -649,7 +647,6 @@ def test_mp_metagga_relax_flow_metallic(tmp_path, patch_metallic_taskdoc):
         copy_r(MOCKED_DIR / "metallic", tmp_path)
         atoms = bulk("Al")
         output = mp_metagga_relax_flow(atoms)
-        output["parameters"].pop("ncore")
         assert output["static"]["structure_metadata"]["nsites"] == len(atoms)
         assert output["prerelax"]["parameters"]["gga"] == "ps"
         assert output["prerelax"]["parameters"]["ismear"] == 0
@@ -675,7 +672,6 @@ def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
         atoms = bulk("Si")
         atoms.set_initial_magnetic_moments([0.0, 0.0])
         output = mp_metagga_relax_flow(atoms)
-        output["parameters"].pop("ncore")
         assert output["prerelax"]["parameters"]["ismear"] == 0
         assert output["prerelax"]["parameters"]["pp"] == "pbe"
         assert output["prerelax"]["parameters"]["magmom"] == [0.0, 0.0]
@@ -696,7 +692,6 @@ def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
         atoms.center(vacuum=10)
         atoms.pbc = True
         output = mp_metagga_relax_flow(atoms)
-        output["parameters"].pop("ncore")
         assert output["prerelax"]["parameters"]["ismear"] == 0
         assert output["prerelax"]["parameters"]["pp"] == "pbe"
         assert output["prerelax"]["parameters"]["magmom"] == [1.0, 0.0]
@@ -807,7 +802,6 @@ def test_mp_gga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
         atoms[0].symbol = "O"
         del atoms.arrays["initial_magmoms"]
         output = mp_gga_relax_flow(atoms)
-        output["parameters"].pop("ncore")
         relax_params = {
             "algo": "fast",
             "ediff": 0.0001,
