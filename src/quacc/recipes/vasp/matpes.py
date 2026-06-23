@@ -86,7 +86,7 @@ def matpes_static_job(
     )
 
     # Set the user-defined KSPACING
-    calc_defaults |= {"kspacing": kspacing, "incar_copilot": "light"}
+    calc_defaults |= {"kspacing": kspacing, "incar_copilot": "critical"}
 
     # Set some parameters that we think are improvements to MatPES
     if use_improvements:

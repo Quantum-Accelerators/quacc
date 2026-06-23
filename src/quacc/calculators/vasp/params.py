@@ -37,7 +37,9 @@ def get_param_swaps(
     user_calc_params: dict[str, Any],
     input_atoms: Atoms,
     pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float] | None = None,
-    incar_copilot_mode: Literal["off", "light", "default", "aggressive"] = "default",
+    incar_copilot_mode: Literal[
+        "off", "critical", "standard", "aggressive"
+    ] = "standard",
 ) -> dict[str, Any]:
     """
     Swaps out bad INCAR flags.
@@ -65,7 +67,7 @@ def get_param_swaps(
     # ----------------------------
     # General INCAR swaps
     # ----------------------------
-    if incar_copilot_mode.lower() not in {"off", "light"}:
+    if incar_copilot_mode.lower() not in {"off", "critical"}:
         if calc.parameters.get("lmaxmix", 2) < 6 and max_Z > 56:
             LOGGER.info("Recommending LMAXMIX = 6 because you have f electrons.")
             calc.set(lmaxmix=6)
@@ -178,8 +180,9 @@ def get_param_swaps(
             calc.set(isearch=1)
 
     # ----------------------------
-    # Light INCAR swaps
+    # Critical INCAR swaps
     # ----------------------------
+    pre_critical_params = dict(calc.parameters)
     if incar_copilot_mode.lower() != "off":
         if not calc.parameters.get("lorbit", False) and (
             calc.parameters.get("ispin", 1) == 2
@@ -327,16 +330,40 @@ def get_param_swaps(
                 "You are running O2 without magnetic moments, but its ground state should have 2 unpaired electrons!"
             )
 
+    critical_swap_changes = {
+        k: v
+        for k, v in calc.parameters.items()
+        if not np.array_equal(pre_critical_params.get(k), v)
+    }
+
     if incar_copilot_mode == "aggressive":
         new_parameters = calc.parameters
     else:
-        new_parameters = calc.parameters | user_calc_params
+        new_parameters = (calc.parameters | user_calc_params) | critical_swap_changes
 
-    if changed_parameters := {
+    if added_parameters := {
         k: new_parameters[k] for k in set(new_parameters) - set(user_calc_params)
     }:
         LOGGER.info(
-            f"The following parameters were changed: {sort_dict(changed_parameters)}"
+            f"The following parameters were added: {sort_dict(added_parameters)}"
+        )
+
+    overridden_user_params = {
+        k: (user_calc_params[k], new_parameters[k])
+        for k in user_calc_params
+        if k in new_parameters
+        and _params_differ(new_parameters[k], user_calc_params[k])
+    }
+    for k, (old, new) in overridden_user_params.items():
+        LOGGER.warning(f"{k.upper()} was changed from {old!r} to {new!r}.")
+
+    if overridden_swaps := {
+        k: new_parameters[k]
+        for k in calc.parameters
+        if not np.array_equal(calc.parameters[k], new_parameters.get(k))
+    }:
+        LOGGER.warning(
+            f"The following parameters were recommended but not applied so as to not override user settings: {sort_dict(overridden_swaps)}"
         )
 
     return new_parameters
@@ -624,3 +651,12 @@ class MPtoASEConverter:
             }
 
         return full_input_params
+
+
+def _params_differ(a, b) -> bool:
+    """Compare two parameter values, handling NumPy arrays."""
+    if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
+        a = np.asarray(a)
+        b = np.asarray(b)
+        return a.shape != b.shape or not np.array_equal(a, b)
+    return a != b
