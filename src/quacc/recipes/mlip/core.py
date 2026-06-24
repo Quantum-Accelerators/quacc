@@ -92,7 +92,7 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
     """
-    opt_defaults = {"fmax": 0.05}
+    opt_defaults = {"fmax": 0.01}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     calc = pick_calculator(library, **calc_kwargs)
