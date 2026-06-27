@@ -1,2 +1,2 @@
 ray==2.55.1
-protobuf==6.33.6
+protobuf==7.35.1
