@@ -47,7 +47,7 @@ class Vasp(Vasp_):
         input_atoms: Atoms,
         preset: None | str | Path = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
-        incar_copilot: Literal["off", "light", "default", "aggressive"]
+        incar_copilot: Literal["off", "critical", "standard", "aggressive"]
         | DefaultSetting = QuaccDefault,
         copy_magmoms: bool | DefaultSetting = QuaccDefault,
         preset_mag_default: float | DefaultSetting = QuaccDefault,
@@ -82,9 +82,9 @@ class Vasp(Vasp_):
 
             Options include:
                 off: Do not use co-pilot mode.
-                light: Use co-pilot mode for a subset of swaps. This will only modify INCAR
-                flags not already set by the user.
-                default: Use co-pilot mode. This will only modify INCAR flags not already set
+                critical: Use co-pilot mode for only critical swaps. These will always be
+                applied regardless of user settings.
+                standard: Use co-pilot mode. This will only modify INCAR flags not already set
                     by the user.
                 aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR
                     flags even if they are already set by the user.

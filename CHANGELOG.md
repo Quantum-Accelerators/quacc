@@ -4,6 +4,35 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2]
+
+### Added
+
+- More comprehensive logging with regards to VASP input parameter swaps and recommendations
+
+### Changed
+
+- The VASP INCAR co-pilot will no longer automatically set ISMEAR = -5 for all static calculations
+- A subset of critical VASP INCAR swaps will override user inputs by default
+
+## [1.3.1]
+
+### Documentation
+
+- Slight cleanup
+
+## [1.3.0]
+
+### Added
+
+- Added support for rootstock-based MLIPs
+
+### Changed
+
+- Overhauled the MLIP recipes to provide access to fairchem, matcalc, and rootstock libraries. This ensures broader MLIP coverage than what can be hard-coded in to quacc
+- Moved MLIPs from `quacc.recipes.mlp` to `quacc.recipes.mlip`
+- Disabled Custodian by default for VASP recipes that are meant to mimic MLIP databases where Custodian was not used
+
 ## [1.2.12]
 
 ### Added

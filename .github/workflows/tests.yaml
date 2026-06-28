@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -71,12 +71,12 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
         with:
-          python-version: 3.12
+          python-version: 3.13
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -121,7 +121,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -169,7 +169,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -217,7 +217,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -265,7 +265,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -302,7 +302,7 @@ jobs:
           path: "coverage.xml"
           retention-days: 1
 
-  tests-sevenn-orb-newtonnet:
+  tests-newtonnet:
     strategy:
       fail-fast: true
     runs-on: ubuntu-latest
@@ -313,46 +313,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
-
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version: "3.12"
-          cache: pip
-          cache-dependency-path: tests/requirements**.txt
-
-      - name: Install pip packages
-        run: |
-          pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-sevenn.txt -r tests/requirements-orb.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
-
-      - name: Set coverage core
-        run: |
-          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
-
-      - name: Run tests with pytest
-        run: pytest -k 'mlip or newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
-
-      - name: Upload code coverage report to Artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: ${{ github.job }} coverage report
-          path: "coverage.xml"
-          retention-days: 1
-
-  tests-mace-matgl:
-    strategy:
-      fail-fast: true
-    runs-on: ubuntu-latest
-
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    steps:
-      - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -364,7 +325,46 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system -r tests/requirements.txt -r tests/requirements-mace.txt -r tests/requirements-matgl.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-newtonnet.txt -r tests/requirements-sella.txt "quacc[dev] @ ."
+
+      - name: Set coverage core
+        run: |
+          echo "COVERAGE_CORE=sysmon" >> $GITHUB_ENV
+
+      - name: Run tests with pytest
+        run: pytest -k 'newtonnet or geodesic' --durations=10 --cov=quacc --cov-report=xml
+
+      - name: Upload code coverage report to Artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ github.job }} coverage report
+          path: "coverage.xml"
+          retention-days: 1
+
+  tests-mlip:
+    strategy:
+      fail-fast: true
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: tests/requirements**.txt
+
+      - name: Install pip packages
+        run: |
+          pip install uv
+          uv pip install --system -r tests/requirements.txt -r tests/requirements-mlip.txt -r tests/requirements-phonons.txt "quacc[dev] @ ."
 
       - name: Set coverage core
         run: |
@@ -391,7 +391,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -414,6 +414,7 @@ jobs:
           HF_TOKEN: ${{ secrets.HUGGING_FACE_TOKEN }}
         run: |
           if [ -n "$HF_TOKEN" ]; then
+            hf update || true
             hf auth login --token "$HF_TOKEN"
           else
             echo "HF_TOKEN is not set. Skipping login."
@@ -440,7 +441,7 @@ jobs:
 
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -472,7 +473,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python
         uses: actions/setup-python@v6
@@ -504,15 +505,15 @@ jobs:
       - tests-defects-phonons-espresso
       - tests-tblite-dftbplus
       - tests-qchem-sella
-      - tests-sevenn-orb-newtonnet
-      - tests-mace-matgl
+      - tests-newtonnet
+      - tests-mlip
       - tests-fairchem
       - tests-mp
       - tests-torchsim
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Download coverage artifacts
         uses: actions/download-artifact@v8

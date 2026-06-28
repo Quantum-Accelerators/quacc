@@ -1,12 +1,4 @@
-"""
-Meta FAIR recipes
-
-!!! Important
-
-    Calculations will be use the following version of pseudopotentials:
-    - OMat: v.54
-    - OMC: v.54
-"""
+"""Meta FAIR recipes"""
 
 from __future__ import annotations
 
@@ -73,7 +65,7 @@ def omat_static_job(
     from fairchem.data.omat.vasp.sets import OMat24StaticSet
 
     calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(OMat24StaticSet())
-    calc_defaults |= {"pp_version": "54", "incar_copilot": "light"}
+    calc_defaults |= {"pp_version": "54", "incar_copilot": "critical"}
 
     return run_and_summarize(
         atoms,
@@ -119,7 +111,7 @@ def omc_static_job(
     calc_defaults = _make_omc_inputs(atoms)
     calc_defaults |= {
         "pp_version": "54",
-        "incar_copilot": "light",
+        "incar_copilot": "critical",
         "use_custodian": False,
     }
 
@@ -245,7 +237,7 @@ def odac_static_job(
         "isym": 0,
         "pp_version": "54",
     }
-    calc_defaults |= {"incar_copilot": "light", "use_custodian": False}
+    calc_defaults |= {"incar_copilot": "critical", "use_custodian": False}
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
@@ -294,7 +286,7 @@ def oc20_static_job(
     calc_defaults = VASP_FLAGS | {
         "xc": "RPBE",
         "pp_version": "54",
-        "incar_copilot": "light",
+        "incar_copilot": "critical",
         "use_custodian": False,
     }
 

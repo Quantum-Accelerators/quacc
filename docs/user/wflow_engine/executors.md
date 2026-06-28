@@ -1,6 +1,6 @@
 # Deploying Calculations
 
-In the previous examples, we have been running calculations on the local machine. However, in practice, you will probably want to run your calculations on one or more HPC machines. This section will describe how to set up your workflows to run on HPC machines using your desired workflow engine to scale up your calculations.
+In the previous examples, we have been running calculations on the local machine. However, in practice, you will probably want to run your calculations on one or more HPC machines. You can do this manually using a typical job submission script, but for high-throughput calculations, you may wish to use a workflow engine. This section will describe how to set up your workflows to run on HPC machines using one of several workflow engines.
 
 !!! Note "A Note on Terminology"
 
@@ -11,30 +11,6 @@ In the previous examples, we have been running calculations on the local machine
 === "Dask"
 
     A Dask cluster can be set up to be used with a queueing system like that found on most HPC machines. This is most easily done via [Dask Jobqueue](https://jobqueue.dask.org/en/latest/index.html). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the Dask Jobqueue documentation.
-
-=== "Parsl"
-
-    Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
-
-    To configure Parsl for the high-performance computing environment of your choice, refer to the [executor configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples. Additional details can be found in the ["Execution" section](https://parsl.readthedocs.io/en/stable/userguide/execution.html) of the Parsl documentation. Most users of quacc will probably want to the [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor).
-
-    !!! Note "Pilot Jobs"
-
-        Unlike most other workflow engines, Parsl is built for the [pilot job model](https://en.wikipedia.org/wiki/Pilot_job) where the allocated nodes continually pull in new jobs to run. This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient from a queuing perspective.
-
-    !!! Tip "Globus Compute"
-
-        If you want to run Parsl workflows on remote, distributed computing resources, check out [Globus Compute](https://github.com/globus/globus-compute) and the corresponding [tutorial](https://globus-compute.readthedocs.io/en/latest/tutorial.html#running-parsl-workflows).
-
-=== "Prefect"
-
-    To scale up calculations, read about the concept of a Prefect [task runner](https://docs.prefect.io/latest/concepts/task-runners/). By default, `quacc` automatically submits all `#!Python @job`-decorated functions to the specified task runner and so concurrency is achieved by default.
-
-    To use Prefect in a job scheduler environment, you can create a [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/usage_guide/) that can be used in conjunction with [dask-jobqueue](https://jobqueue.dask.org/en/latest). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the `dask-jobqueue` documentation.
-
-=== "Ray"
-
-    A Ray cluster can be deployed across multiple nodes of an HPC machine and used to schedule quacc `#!Python @job`-decorated tasks concurrently. The recommended approach for HPC machines with a job scheduler is documented in the Ray ["Deploying on Slurm"](https://docs.ray.io/en/latest/cluster/vms/user-guides/community/slurm.html) guide. Once a Ray head and worker nodes have been started inside a Slurm allocation, calls to `#!Python ray.init(address="auto")` will connect to the cluster and any quacc `#!Python @job` will be scheduled across all available cores.
 
 === "Jobflow"
 
@@ -85,6 +61,30 @@ In the previous examples, we have been running calculations on the local machine
         lpad = LaunchPad.auto_load()
         lpad.add_wf(wf)
         ```
+=== "Parsl"
+
+    Out-of-the-box, Parsl will run on your local machine. However, in practice you will probably want to run your Parsl workflows on HPC machines.
+
+    To configure Parsl for the high-performance computing environment of your choice, refer to the [executor configuration page in the Parsl documentation](https://parsl.readthedocs.io/en/stable/userguide/configuring.html) for many examples. Additional details can be found in the ["Execution" section](https://parsl.readthedocs.io/en/stable/userguide/execution.html) of the Parsl documentation. Most users of quacc will probably want to the [`HighThroughputExecutor`](https://parsl.readthedocs.io/en/stable/stubs/parsl.executors.HighThroughputExecutor.html#parsl.executors.HighThroughputExecutor).
+
+    !!! Note "Pilot Jobs"
+
+        Unlike most other workflow engines, Parsl is built for the [pilot job model](https://en.wikipedia.org/wiki/Pilot_job) where the allocated nodes continually pull in new jobs to run. This makes it possible to avoid submitting a large number of small jobs to the scheduler, which can be inefficient from a queuing perspective.
+
+    !!! Tip "Globus Compute"
+
+        If you want to run Parsl workflows on remote, distributed computing resources, check out [Globus Compute](https://github.com/globus/globus-compute) and the corresponding [tutorial](https://globus-compute.readthedocs.io/en/latest/tutorial.html#running-parsl-workflows).
+
+=== "Prefect"
+
+    To scale up calculations, read about the concept of a Prefect [task runner](https://docs.prefect.io/latest/concepts/task-runners/). By default, `quacc` automatically submits all `#!Python @job`-decorated functions to the specified task runner and so concurrency is achieved by default.
+
+    To use Prefect in a job scheduler environment, you can create a [`DaskTaskRunner`](https://prefecthq.github.io/prefect-dask/usage_guide/) that can be used in conjunction with [dask-jobqueue](https://jobqueue.dask.org/en/latest). Example configurations for various queuing systems can be found in the ["Example Deployments"](https://jobqueue.dask.org/en/latest/examples.html) section of the `dask-jobqueue` documentation.
+
+=== "Ray"
+
+    A Ray cluster can be deployed across multiple nodes of an HPC machine and used to schedule quacc `#!Python @job`-decorated tasks concurrently. The recommended approach for HPC machines with a job scheduler is documented in the Ray ["Deploying on Slurm"](https://docs.ray.io/en/latest/cluster/vms/user-guides/community/slurm.html) guide. Once a Ray head and worker nodes have been started inside a Slurm allocation, calls to `#!Python ray.init(address="auto")` will connect to the cluster and any quacc `#!Python @job` will be scheduled across all available cores.
+
 
 ## Worked Examples
 
@@ -111,6 +111,29 @@ If you haven't done so already:
 
         If using Perlmutter at NERSC, Dask should be run from the `$SCRATCH` directory. This is because the `$SCRATCH` directory is the only directory that supports file locking mechanisms, which Dask relies on.
 
+=== "Jobflow"
+
+    === "Jobflow Remote"
+
+        On both the local and remote machines:
+
+        ```bash
+        pip install quacc[jobflow]
+        ```
+
+        When you are ready to run, make sure the daemon is live in the background with
+
+        ```bash
+        jf runner start
+        ```
+
+    === "Fireworks"
+
+        On both the remote machine:
+
+        ```bash
+        pip install quacc[jobflow] fireworks
+        ```
 === "Parsl"
 
     On the remote machine:
@@ -148,29 +171,6 @@ If you haven't done so already:
     quacc set WORKFLOW_ENGINE ray
     ```
 
-=== "Jobflow"
-
-    === "Jobflow Remote"
-
-        On both the local and remote machines:
-
-        ```bash
-        pip install quacc[jobflow]
-        ```
-
-        When you are ready to run, make sure the daemon is live in the background with
-
-        ```bash
-        jf runner start
-        ```
-
-    === "Fireworks"
-
-        On both the remote machine:
-
-        ```bash
-        pip install quacc[jobflow] fireworks
-        ```
 
 ### Concurrent Non-MPI Jobs
 
@@ -250,6 +250,78 @@ If you haven't done so already:
             result["dir_name"],
         )
     ```
+
+=== "Jobflow"
+
+    === "Jobflow Remote"
+
+        From the login node of the remote machine, run the following:
+
+        ```python
+        from ase.build import bulk
+        from jobflow import Flow
+        from jobflow_remote import submit_flow
+        from quacc.recipes.emt.core import relax_job, static_job
+
+        atoms_list = [bulk("Si"), bulk("Al")]
+        for atoms in atoms_list:
+            job1 = relax_job(atoms, relax_cell=True)
+            job2 = static_job(job1.output["atoms"])
+            flow = Flow([job1, job2])
+
+            submit_flow(flow, worker="basic_python")
+        ```
+
+    === "Fireworks"
+
+        From the login node of the remote machine, run the following:
+
+        ```python
+        import jobflow as jf
+        from ase.build import bulk
+        from fireworks import LaunchPad
+        from jobflow.managers.fireworks import flow_to_workflow
+        from quacc.recipes.emt.core import relax_job, static_job
+
+        lpad = LaunchPad.auto_load()
+
+        atoms_list = [bulk("Si"), bulk("Al")]
+        for atoms in atoms_list:
+            job1 = relax_job(atoms, relax_cell=True)
+            job2 = static_job(job1.output["atoms"])
+            flow = Flow([job1, job2])
+
+            wf = flow_to_workflow(flow)
+            lpad.add_wf(wf)
+        ```
+
+        **Dispatching Calculations**
+
+        With a workflow added to your launch pad, on the login node of the desired machine of choice, you can "launch fireworks" (i.e. submit jobs to the queue) via several ways:
+
+        - `qlaunch rapidfire --nlaunches <N>` to submit <N> jobs to the job scheduler.
+        - `qlaunch rapidfire -m <N>` to submit enough jobs such that you only have a maximum of <N> total jobs in the queue.
+        - `qlaunch rapidfire -m <N> --nlaunches infinite` to have this this run as a light-weight background process that continually ensures you have a maximum of <N> total jobs in the queue.
+
+        To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
+
+        By default, `qlaunch` will launch Slurm jobs that each poll for a single FireWork to run. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
+
+        **Monitoring the Launchpad**
+
+        The easiest way to monitor the state of your launched FireWorks and workflows is through the GUI, which can be viewed with `lpad webgui`. If you are using a NERSC machine, follow the instructions in the [NERSC documentation](https://docs.nersc.gov/jobs/workflow/fireworks/#display-the-fireworks-dashboard) for accessing the GUI.
+
+        To get the status of running fireworks from the command line, you can run `lpad get_fws -s RUNNING`. Other statuses can also be provided as well as individual FireWorks IDs.
+
+        To rerun a specific FireWork, one can use the `rerun_fws` command like so: `lpad rerun_fws -i <FWID>` where `<FWID>` is the FireWork ID. Similarly, one can rerun all fizzled jobs via `lpad rerun_fws -s FIZZLED`. More complicated Mongo-style queries can also be carried out. Cancelling a workflow can be done with `lpad delete_wflows -i <FWID>`. Refer to the `lpad -h` help menu for more details.
+
+        **Setting Where Jobs are Dispatched**
+
+        The `my_qadapter.yaml` file you made in the [installation instructions](../../install/install.md) specifies how FireWorks will submit jobs added to your launch pad. Additional details can be found in the [Jobflow Documentation](https://materialsproject.github.io/jobflow/tutorials/8-fireworks.html#setting-where-jobs-are-dispatched) for how to dynamically set where and how Jobflow `Job` and `Flow` objects can be dispatched.
+
+        ??? Tip "Continuous Job Submission"
+
+            To ensure that jobs are continually submitted to the queue, you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running jobs on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
 
 === "Parsl"
 
@@ -514,78 +586,6 @@ If you haven't done so already:
     results = [f.result() for f in futures]
     ```
 
-=== "Jobflow"
-
-    === "Jobflow Remote"
-
-        From the login node of the remote machine, run the following:
-
-        ```python
-        from ase.build import bulk
-        from jobflow import Flow
-        from jobflow_remote import submit_flow
-        from quacc.recipes.emt.core import relax_job, static_job
-
-        atoms_list = [bulk("Si"), bulk("Al")]
-        for atoms in atoms_list:
-            job1 = relax_job(atoms, relax_cell=True)
-            job2 = static_job(job1.output["atoms"])
-            flow = Flow([job1, job2])
-
-            submit_flow(flow, worker="basic_python")
-        ```
-
-    === "Fireworks"
-
-        From the login node of the remote machine, run the following:
-
-        ```python
-        import jobflow as jf
-        from ase.build import bulk
-        from fireworks import LaunchPad
-        from jobflow.managers.fireworks import flow_to_workflow
-        from quacc.recipes.emt.core import relax_job, static_job
-
-        lpad = LaunchPad.auto_load()
-
-        atoms_list = [bulk("Si"), bulk("Al")]
-        for atoms in atoms_list:
-            job1 = relax_job(atoms, relax_cell=True)
-            job2 = static_job(job1.output["atoms"])
-            flow = Flow([job1, job2])
-
-            wf = flow_to_workflow(flow)
-            lpad.add_wf(wf)
-        ```
-
-        **Dispatching Calculations**
-
-        With a workflow added to your launch pad, on the login node of the desired machine of choice, you can "launch fireworks" (i.e. submit jobs to the queue) via several ways:
-
-        - `qlaunch rapidfire --nlaunches <N>` to submit <N> jobs to the job scheduler.
-        - `qlaunch rapidfire -m <N>` to submit enough jobs such that you only have a maximum of <N> total jobs in the queue.
-        - `qlaunch rapidfire -m <N> --nlaunches infinite` to have this this run as a light-weight background process that continually ensures you have a maximum of <N> total jobs in the queue.
-
-        To modify the order in which jobs are run, a priority can be set via `lpad set_priority <priority> -i <FWID>` where `<priority>` is a number.
-
-        By default, `qlaunch` will launch Slurm jobs that each poll for a single FireWork to run. This means that more Slurm jobs may be submitted than there are jobs to run. To modify the behavior of `qlaunch` to only submit a Slurm job for each "READY" FireWork in the launchpad, use the `-r` ("reserved") flag.
-
-        **Monitoring the Launchpad**
-
-        The easiest way to monitor the state of your launched FireWorks and workflows is through the GUI, which can be viewed with `lpad webgui`. If you are using a NERSC machine, follow the instructions in the [NERSC documentation](https://docs.nersc.gov/jobs/workflow/fireworks/#display-the-fireworks-dashboard) for accessing the GUI.
-
-        To get the status of running fireworks from the command line, you can run `lpad get_fws -s RUNNING`. Other statuses can also be provided as well as individual FireWorks IDs.
-
-        To rerun a specific FireWork, one can use the `rerun_fws` command like so: `lpad rerun_fws -i <FWID>` where `<FWID>` is the FireWork ID. Similarly, one can rerun all fizzled jobs via `lpad rerun_fws -s FIZZLED`. More complicated Mongo-style queries can also be carried out. Cancelling a workflow can be done with `lpad delete_wflows -i <FWID>`. Refer to the `lpad -h` help menu for more details.
-
-        **Setting Where Jobs are Dispatched**
-
-        The `my_qadapter.yaml` file you made in the [installation instructions](../../install/install.md) specifies how FireWorks will submit jobs added to your launch pad. Additional details can be found in the [Jobflow Documentation](https://materialsproject.github.io/jobflow/tutorials/8-fireworks.html#setting-where-jobs-are-dispatched) for how to dynamically set where and how Jobflow `Job` and `Flow` objects can be dispatched.
-
-        ??? Tip "Continuous Job Submission"
-
-            To ensure that jobs are continually submitted to the queue, you can use `tmux` to preserve the job submission process even when the SSH session is terminated. For example, running `tmux new -s launcher` will create a new `tmux` session named `launcher`. To exit the `tmux` session while still preserving any running jobs on the login node, press `ctrl+b` followed by `d`. To re-enter the tmux session, run `tmux attach -t launcher`. Additional `tmux` commands can be found on the [tmux cheatsheet](https://tmuxcheatsheet.com/).
-
 ### Concurrent MPI Jobs
 
 Here we will run a sample VASP recipe that will highlight the use of a more complicated MPI-based configuration. This example can only be run if you are a licensed VASP user, but the same fundamental principles apply to many other DFT codes with recipes in quacc.
@@ -651,6 +651,112 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
     !!! Warning "Limitations"
 
         Unfortunately, `dask-jobqueue` is somewhat limited in terms of its flexibility. Most notably, there is no mechanism to distribute `#!Python @job`s over multiple nodes on a single Slurm allocation. Users interested in such functionality should consider using other tools in the Dask suite or other workflow engines (e.g. Parsl).
+
+=== "Jobflow"
+
+    === "Jobflow Remote"
+
+        From the login node of the remote machine, run the following:
+
+        ```python
+        from ase.build import bulk
+        from jobflow import Flow
+        from jobflow_remote import submit_flow
+        from quacc.recipes.vasp.core import relax_job, static_job
+
+        atoms_list = [bulk("Si"), bulk("Al")]
+        for atoms in atoms_list:
+            atoms.set_initial_magnetic_moments([0.0] * len(atoms))
+            job1 = relax_job(atoms, relax_cell=True)
+            job2 = static_job(job1.output["atoms"])
+            flow = Flow([job1, job2])
+
+            submit_flow(flow, worker="basic_vasp")
+        ```
+
+        Then monitor the progress with `jf job list`.
+
+    === "Fireworks"
+
+        You will need to update your `my_qadapter.yaml` file that you made when setting up FireWorks. Specifically, ensure that the following parameters are set:
+
+        ```yaml title="my_qadapter.yaml"
+        _fw_name: CommonAdapter
+        _fw_q_type: SLURM
+        rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
+        nodes: 1
+        walltime: 00:30:00
+        account: MySlurmAccountName
+        job_name: quacc_firework
+        qos: debug
+        constraint: gpu
+        signal: SIGINT@60
+        pre_rocket: |
+                    conda activate cms
+                    module load vasp/6.5.1_gpu
+                    export OMP_NUM_THREADS=8
+                    export OMP_PLACES=threads
+                    export OMP_PROC_BIND=spread
+                    export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
+                    export QUACC_WORKFLOW_ENGINE=jobflow
+        post_rocket: null
+        ```
+
+        From the login node of the remote machine, run the following:
+
+        ```python
+        import jobflow as jf
+        from ase.build import bulk
+        from fireworks import LaunchPad
+        from jobflow.managers.fireworks import flow_to_workflow
+        from quacc.recipes.vasp.core import relax_job, static_job
+
+        lpad = LaunchPad.auto_load()
+
+        atoms_list = [bulk("Si"), bulk("Al")]
+        for atoms in atoms_list:
+            atoms.set_initial_magnetic_moments([0.0] * len(atoms))
+            job1 = relax_job(atoms, relax_cell=True)
+            job2 = static_job(job1.output["atoms"])
+            flow = Flow([job1, job2])
+
+            wf = flow_to_workflow(flow)
+            lpad.add_wf(wf)
+        ```
+
+        Then run the following on the remote machine:
+
+        ```bash
+        qlaunch rapidfire -m 1
+        ```
+
+        ??? Tip "Job Packing"
+
+            FireWorks allows you to do something called "job packing" (also known as a pilot job model in Parsl or parallel batch mode in Jobflow-Remote) where you can request a relatively large allocation and run many concurrent jobs on that allocation. If you wanted to have each Slurm allocation request 5 nodes and have each VASP job run on one of those four nodes, you can do that as follows:
+
+            ```yaml title="my_qadapter.yaml"
+            _fw_name: CommonAdapter
+            _fw_q_type: SLURM
+            rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> multi 5 --nlaunches 0
+            nodes: 5
+            walltime: 00:30:00
+            account: MySlurmAccountName
+            job_name: quacc_firework
+            qos: debug
+            constraint: gpu
+            signal: SIGINT@60
+            pre_rocket: |
+                        conda activate cms
+                        module load vasp/6.5.1_gpu
+                        export OMP_NUM_THREADS=8
+                        export OMP_PLACES=threads
+                        export OMP_PROC_BIND=spread
+                        export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
+                        export QUACC_WORKFLOW_ENGINE=jobflow
+            post_rocket: null
+            ```
+
+            Then you can do `rlaunch multi 5` to launch 5 jobs across 5 nodes for 1 job/node. Maybe. Please test and report back.
 
 === "Parsl"
 
@@ -840,109 +946,3 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
     ```
 
     1. We use `redecorate` to request the full set of cores for each VASP job so that Ray only schedules one MPI VASP job per node at a time.
-
-=== "Jobflow"
-
-    === "Jobflow Remote"
-
-        From the login node of the remote machine, run the following:
-
-        ```python
-        from ase.build import bulk
-        from jobflow import Flow
-        from jobflow_remote import submit_flow
-        from quacc.recipes.vasp.core import relax_job, static_job
-
-        atoms_list = [bulk("Si"), bulk("Al")]
-        for atoms in atoms_list:
-            atoms.set_initial_magnetic_moments([0.0] * len(atoms))
-            job1 = relax_job(atoms, relax_cell=True)
-            job2 = static_job(job1.output["atoms"])
-            flow = Flow([job1, job2])
-
-            submit_flow(flow, worker="basic_vasp")
-        ```
-
-        Then monitor the progress with `jf job list`.
-
-    === "Fireworks"
-
-        You will need to update your `my_qadapter.yaml` file that you made when setting up FireWorks. Specifically, ensure that the following parameters are set:
-
-        ```yaml title="my_qadapter.yaml"
-        _fw_name: CommonAdapter
-        _fw_q_type: SLURM
-        rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> singleshot
-        nodes: 1
-        walltime: 00:30:00
-        account: MySlurmAccountName
-        job_name: quacc_firework
-        qos: debug
-        constraint: gpu
-        signal: SIGINT@60
-        pre_rocket: |
-                    conda activate cms
-                    module load vasp/6.5.1_gpu
-                    export OMP_NUM_THREADS=8
-                    export OMP_PLACES=threads
-                    export OMP_PROC_BIND=spread
-                    export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
-                    export QUACC_WORKFLOW_ENGINE=jobflow
-        post_rocket: null
-        ```
-
-        From the login node of the remote machine, run the following:
-
-        ```python
-        import jobflow as jf
-        from ase.build import bulk
-        from fireworks import LaunchPad
-        from jobflow.managers.fireworks import flow_to_workflow
-        from quacc.recipes.vasp.core import relax_job, static_job
-
-        lpad = LaunchPad.auto_load()
-
-        atoms_list = [bulk("Si"), bulk("Al")]
-        for atoms in atoms_list:
-            atoms.set_initial_magnetic_moments([0.0] * len(atoms))
-            job1 = relax_job(atoms, relax_cell=True)
-            job2 = static_job(job1.output["atoms"])
-            flow = Flow([job1, job2])
-
-            wf = flow_to_workflow(flow)
-            lpad.add_wf(wf)
-        ```
-
-        Then run the following on the remote machine:
-
-        ```bash
-        qlaunch rapidfire -m 1
-        ```
-
-        ??? Tip "Job Packing"
-
-            FireWorks allows you to do something called "job packing" (also known as a pilot job model in Parsl or parallel batch mode in Jobflow-Remote) where you can request a relatively large allocation and run many concurrent jobs on that allocation. If you wanted to have each Slurm allocation request 5 nodes and have each VASP job run on one of those four nodes, you can do that as follows:
-
-            ```yaml title="my_qadapter.yaml"
-            _fw_name: CommonAdapter
-            _fw_q_type: SLURM
-            rocket_launch: rlaunch -w </path/to/fw_config/my_fworker.yaml> multi 5 --nlaunches 0
-            nodes: 5
-            walltime: 00:30:00
-            account: MySlurmAccountName
-            job_name: quacc_firework
-            qos: debug
-            constraint: gpu
-            signal: SIGINT@60
-            pre_rocket: |
-                        conda activate cms
-                        module load vasp/6.5.1_gpu
-                        export OMP_NUM_THREADS=8
-                        export OMP_PLACES=threads
-                        export OMP_PROC_BIND=spread
-                        export QUACC_VASP_PARALLEL_CMD="srun -N 1 -n 4 -c 32 --cpu_bind=cores -G 4 --gpu-bind=none"
-                        export QUACC_WORKFLOW_ENGINE=jobflow
-            post_rocket: null
-            ```
-
-            Then you can do `rlaunch multi 5` to launch 5 jobs across 5 nodes for 1 job/node. Maybe. Please test and report back.
