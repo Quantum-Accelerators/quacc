@@ -348,7 +348,7 @@ def get_param_swaps(
     if overridden_swaps := {
         k: (user_calc_params.get(k), recommended_params[k])
         for k in recommended_params
-        if not np.array_equal(recommended_params[k], new_parameters.get(k))
+        if not _params_differ(recommended_params[k], new_parameters.get(k))
     }:
         for k, (current, recommended) in overridden_swaps.items():
             LOGGER.warning(
@@ -648,4 +648,6 @@ def _params_differ(a, b) -> bool:
         a = np.asarray(a)
         b = np.asarray(b)
         return a.shape != b.shape or not np.array_equal(a, b)
+    elif isinstance(a, str) and isinstance(b, str):
+        return a.lower() != b.lower()
     return a != b
