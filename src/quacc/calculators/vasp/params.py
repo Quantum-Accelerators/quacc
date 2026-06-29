@@ -348,7 +348,7 @@ def get_param_swaps(
     if overridden_swaps := {
         k: (user_calc_params.get(k), recommended_params[k])
         for k in recommended_params
-        if not _params_differ(recommended_params[k], new_parameters.get(k))
+        if _params_differ(recommended_params[k], new_parameters.get(k))
     }:
         for k, (current, recommended) in overridden_swaps.items():
             LOGGER.warning(
