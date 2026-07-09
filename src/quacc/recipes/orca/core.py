@@ -233,7 +233,7 @@ def ase_relax_job(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    xc: str = "wb97x-d3bj",
+    xc: str = "wb97m-d4rev",
     basis: str = "def2-tzvp",
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
