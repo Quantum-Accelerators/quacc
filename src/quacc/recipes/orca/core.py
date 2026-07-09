@@ -305,7 +305,7 @@ def ase_quasi_irc_job(
     direction: Literal["forward", "reverse"] = "forward",
     charge: int = 0,
     spin_multiplicity: int = 1,
-    xc: str = "wb97m-d4",
+    xc: str = "wb97m-d4rev",
     basis: str = "def2-tzvp",
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
