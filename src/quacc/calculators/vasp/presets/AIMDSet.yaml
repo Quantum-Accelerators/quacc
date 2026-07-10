@@ -1,0 +1,8 @@
+inputs:
+    PREC: Normal
+    ALGO: VeryFast
+    NELMIN: 4
+    LREAL: Auto
+    LWAVE: false
+    LCHARG: false
+

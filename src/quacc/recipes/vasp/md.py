@@ -67,7 +67,7 @@ def md_job(
     user_incar_settings.update(kwargs)
 
     # Setup VASP calculator
-    calc = Vasp(atoms, incar_copier=False, **user_incar_settings)
+    calc = Vasp(atoms, preset="AIMDSet", incar_copier=False, **user_incar_settings)
     atoms.calc = calc
 
     # Run calculation and return summary

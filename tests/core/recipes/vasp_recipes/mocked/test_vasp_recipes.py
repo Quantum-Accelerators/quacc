@@ -34,6 +34,7 @@ from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
+from quacc.recipes.vasp.md import md_job
 
 has_atomate2 = util.find_spec("atomate2") is not None
 has_fairchem = util.find_spec("fairchem") is not None
@@ -1447,13 +1448,8 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
         "pp_version": "54",
     }
 def test_md_job(monkeypatch):
-    from ase.build import bulk
-    from quacc.recipes.vasp.md import md_job
 
-    atoms = bulk("Cu")
-
-    # Short-circuit run_and_summarize to pass down the actual parameters dict
-    # This precisely reflects what quacc's Vasp calculator processes under the hood
+    atoms = bulk("Al")
     def mock_run_and_summarize(atoms_obj, *args, **kwargs):
         lowercased = {k.lower(): v for k, v in atoms_obj.calc.parameters.items()}
         return {"parameters": lowercased}
@@ -1463,8 +1459,8 @@ def test_md_job(monkeypatch):
     )
 
     # Test NVT ensemble default settings
-    output = md_job(atoms, timestep=2.0, ensemble="NVT", temperature=500.0)
-    assert output["parameters"]["tebeg"] == 500.0
+    output = md_job(atoms, timestep=1.0, ensemble="NVT", temperature=300.0)
+    assert output["parameters"]["tebeg"] == 300.0
     assert output["parameters"]["mdalgo"] == 2
     assert output["parameters"]["isif"] == 2
 
