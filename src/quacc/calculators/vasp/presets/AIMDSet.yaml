@@ -1,8 +1,12 @@
 inputs:
-    PREC: Normal
-    ALGO: VeryFast
-    NELMIN: 4
-    LREAL: Auto
-    LWAVE: false
-    LCHARG: false
+  PREC: Normal
+  ALGO: VeryFast
+  NELM: 100
+  NELMIN: 4
+  MAXMIX: 40
+  LREAL: Auto
+  LWAVE: false
+  LCHARG: false
+  SMASS: 0          # Nose-Hoover canonical thermostat
+  NBLOCK: 10
 
