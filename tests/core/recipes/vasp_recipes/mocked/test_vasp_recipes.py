@@ -1446,3 +1446,31 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
         "xc": "rpbe",
         "pp_version": "54",
     }
+def test_md_job(monkeypatch):
+    from ase.build import bulk
+    from quacc.recipes.vasp.md import md_job
+
+    atoms = bulk("Cu")
+
+    # Short-circuit run_and_summarize to pass down the actual parameters dict
+    # This precisely reflects what quacc's Vasp calculator processes under the hood
+    def mock_run_and_summarize(atoms_obj, *args, **kwargs):
+        lowercased = {k.lower(): v for k, v in atoms_obj.calc.parameters.items()}
+        return {"parameters": lowercased}
+
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.md.run_and_summarize", mock_run_and_summarize
+    )
+
+    # Test NVT ensemble default settings
+    output = md_job(atoms, timestep=2.0, ensemble="NVT", temperature=500.0)
+    assert output["parameters"]["tebeg"] == 500.0
+    assert output["parameters"]["mdalgo"] == 2
+    assert output["parameters"]["isif"] == 2
+
+    # Test NPT ensemble settings
+    output = md_job(atoms, ensemble="NPT", pressure=10.0)
+    assert output["parameters"]["mdalgo"] == 3
+    assert output["parameters"]["isif"] == 3
+    assert output["parameters"]["pstress"] == 10.0
+
