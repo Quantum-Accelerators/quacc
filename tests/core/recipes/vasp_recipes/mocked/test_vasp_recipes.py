@@ -1447,26 +1447,85 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
         "xc": "rpbe",
         "pp_version": "54",
     }
-def test_md_job(monkeypatch):
 
-    atoms = bulk("Al")
-    def mock_run_and_summarize(atoms_obj, *args, **kwargs):
-        lowercased = {k.lower(): v for k, v in atoms_obj.calc.parameters.items()}
-        return {"parameters": lowercased}
+from ase.build import bulk
 
+from quacc.recipes.vasp.md import md_job
+
+
+def mock_run_and_summarize(atoms, *args, **kwargs):
+    return {"parameters": kwargs["calc_defaults"]}
+
+
+def test_md_job_nvt(monkeypatch):
     monkeypatch.setattr(
-        "quacc.recipes.vasp.md.run_and_summarize", mock_run_and_summarize
+        "quacc.recipes.vasp.md.run_and_summarize",
+        mock_run_and_summarize,
     )
 
-    # Test NVT ensemble default settings
-    output = md_job(atoms, timestep=1.0, ensemble="NVT", temperature=300.0)
-    assert output["parameters"]["tebeg"] == 300.0
-    assert output["parameters"]["mdalgo"] == 2
-    assert output["parameters"]["isif"] == 2
+    atoms = bulk("Al")
 
-    # Test NPT ensemble settings
-    output = md_job(atoms, ensemble="NPT", pressure=10.0)
-    assert output["parameters"]["mdalgo"] == 3
-    assert output["parameters"]["isif"] == 3
-    assert output["parameters"]["pstress"] == 10.0
+    output = md_job(
+        atoms,
+        ensemble="NVT",
+        temperature=300.0,
+        timestep=1.0,
+        nsteps=1000,
+    )
 
+    parameters = output["parameters"]
+
+    assert parameters["ibrion"] == 0
+    assert parameters["potim"] == 1.0
+    assert parameters["nsw"] == 1000
+    assert parameters["tebeg"] == 300.0
+    assert parameters["teend"] == 300.0
+    assert parameters["mdalgo"] == 2
+    assert parameters["smass"] == 0
+    assert parameters["isif"] == 2
+
+
+def test_md_job_npt(monkeypatch):
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.md.run_and_summarize",
+        mock_run_and_summarize,
+    )
+
+    atoms = bulk("Al")
+
+    output = md_job(
+        atoms,
+        ensemble="NPT",
+        temperature=300.0,
+        pressure=10.0,
+    )
+
+    parameters = output["parameters"]
+
+    assert parameters["mdalgo"] == 3
+    assert parameters["isif"] == 3
+    assert parameters["pstress"] == 10.0
+    assert parameters["langevin_gamma"] == [10.0]
+    assert parameters["langevin_gamma_l"] == 1.0
+    assert parameters["pmass"] == 1000.0
+
+
+def test_md_job_nve(monkeypatch):
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.md.run_and_summarize",
+        mock_run_and_summarize,
+    )
+
+    atoms = bulk("Al")
+
+    output = md_job(
+        atoms,
+        ensemble="NVE",
+        temperature=300.0,
+    )
+
+    parameters = output["parameters"]
+
+    assert parameters["mdalgo"] == 1
+    assert parameters["andersen_prob"] == 0.0
+    assert parameters["isif"] == 2

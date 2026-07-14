@@ -1,75 +1,117 @@
+"""Molecular dynamics recipes for VASP."""
+
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from quacc import job
-from quacc.calculators.vasp import Vasp
 from quacc.recipes.vasp._base import run_and_summarize
+from quacc.wflow_tools.job_argument import Copy
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
-    from quacc.types import VaspSchema
+
+    from quacc.types import SourceDirectory, VaspSchema
+
 
 @job
 def md_job(
     atoms: Atoms,
+    preset: str | None = "DefaultSetGGA",
     timestep: float = 1.0,
-    ensemble: str = "NVT",
+    nsteps: int = 1000,
+    ensemble: Literal["nve", "nvt", "npt"] = "nvt",
     temperature: float = 300.0,
     pressure: float = 0.0,
-    copy_files: list[str] | None = None,
-    **kwargs,
+    copy_files: SourceDirectory | Copy | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    **calc_kwargs,
 ) -> VaspSchema:
     """
-    VASP Ab Initio Molecular Dynamics (AIMD) job.
+    Run a VASP ab initio molecular dynamics calculation.
 
     Parameters
     ----------
     atoms
-        Atoms object
+        Atoms object.
+    preset
+        Preset to use from ``quacc.calculators.vasp.presets``.
     timestep
-        Timestep in femtoseconds (POTIM).
+        Molecular dynamics timestep in femtoseconds, corresponding to POTIM.
+    nsteps
+        Number of molecular dynamics steps, corresponding to NSW.
     ensemble
-        Thermodynamic ensemble: "NVT", "NPT", or "NVE".
+        Thermodynamic ensemble. Supported values are ``"nve"``, ``"nvt"``,
+        and ``"npt"``. The value is case-insensitive.
     temperature
-        Target temperature in Kelvin (TEBEG).
+        Target temperature in K. For NVE calculations, this temperature is
+        used to initialize velocities when velocities are not already present.
     pressure
-        Target pressure in kB (PSTRESS). Only used if ensemble is NPT.
+        External pressure in kB, corresponding to PSTRESS. Only used for NPT.
     copy_files
-        Files to copy to the runtime directory.
-    **kwargs
-        Custom kwargs for the Vasp calculator.
-
-    Returns
-    -------
-    VaspSchema
-        Dictionary of results from quacc.schemas.vasp.vasp_summarize_run
+        Files to copy and decompress into the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
+    **calc_kwargs
+        Custom keyword arguments for the VASP calculator. These values
+        override the recipe defaults. Set a value to ``None`` to remove a
+        pre-existing key entirely.
     """
-    # Core AIMD parameters
-    user_incar_settings = {
-        "IBRION": 0,
-        "POTIM": timestep,
-        "TEBEG": temperature,
+    ensemble = ensemble.lower()
+
+    calc_defaults: dict[str, Any] = {
+        "ibrion": 0,
+        "isym": 0,
+        "lcharg": False,
+        "lwave": False,
+        "nsw": nsteps,
+        "potim": timestep,
+        "tebeg": temperature,
+        "teend": temperature,
     }
 
-    # Set ensemble-specific parameters
-    ens = ensemble.upper()
-    if ens == "NVT":
-        user_incar_settings.update({"MDALGO": 2, "ISIF": 2})
-    elif ens == "NPT":
-        user_incar_settings.update({"MDALGO": 3, "ISIF": 3, "PSTRESS": pressure})
-    elif ens == "NVE":
-        user_incar_settings.update({"MDALGO": 0, "ISIF": 2})
+    if ensemble == "nvt":
+        calc_defaults |= {
+            "isif": 2,
+            "mdalgo": 2,
+            "smass": 0,
+        }
+
+    elif ensemble == "npt":
+        n_species = len(set(atoms.get_chemical_symbols()))
+
+        calc_defaults |= {
+            "isif": 3,
+            "mdalgo": 3,
+            "langevin_gamma": [10.0] * n_species,
+            "langevin_gamma_l": 1.0,
+            "pmass": 1000.0,
+            "pstress": pressure,
+        }
+
+    elif ensemble == "nve":
+        calc_defaults |= {
+            "isif": 2,
+            "mdalgo": 1,
+            "andersen_prob": 0.0,
+        }
+
     else:
-        raise ValueError(f"Unknown ensemble: {ensemble}. Choose from NVT, NPT, or NVE.")
+        raise ValueError(
+            f"Unsupported ensemble: {ensemble}. "
+            "Supported ensembles are 'nve', 'nvt', and 'npt'."
+        )
 
-    # Merge custom user kwargs
-    user_incar_settings.update(kwargs)
-
-    # Setup VASP calculator
-    calc = Vasp(atoms, preset="AIMDSet", incar_copier=False, **user_incar_settings)
-    atoms.calc = calc
-
-    # Run calculation and return summary
-    return run_and_summarize(atoms, copy_files=copy_files)
-
+    return run_and_summarize(
+        atoms,
+        preset=preset,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={
+            "name": f"VASP {ensemble.upper()} Molecular Dynamics"
+        }
+        | (additional_fields or {}),
+        copy_files=copy_files,
+    )
