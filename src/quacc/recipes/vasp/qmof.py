@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
-from quacc import change_settings, job
+from quacc import job
 from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
