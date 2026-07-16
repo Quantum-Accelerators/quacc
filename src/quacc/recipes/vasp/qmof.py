@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
 
-from quacc import change_settings, job
+from quacc import job
 from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
@@ -294,18 +294,17 @@ def _double_relax(
         "lreal": "auto",
         "lwave": True,
         "nsw": 500 if relax_cell else 250,
+        "use_custodian": True,
     }
 
-    # To ensure vasp_gam --> vasp_std issues are auto-fixed
-    with change_settings({"VASP_USE_CUSTODIAN": True}):
-        summary1 = run_and_summarize(
-            atoms,
-            preset="QMOFSet",
-            calc_defaults=calc_defaults,
-            calc_swaps=calc_kwargs,
-            additional_fields={"name": "QMOF DoubleRelax 1"},
-            copy_files=copy_files,
-        )
+    summary1 = run_and_summarize(
+        atoms,
+        preset="QMOFSet",
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "QMOF DoubleRelax 1"},
+        copy_files=copy_files,
+    )
 
     # Update atoms for Relaxation 2
     atoms = summary1["atoms"]
