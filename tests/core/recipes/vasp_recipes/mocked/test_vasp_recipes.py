@@ -1506,11 +1506,9 @@ def test_md_job_nve(monkeypatch):
     assert parameters["andersen_prob"] == 0.0
     assert parameters["isif"] == 2
 
+
 def test_md_job_error():
     atoms = bulk("Al")
 
     with pytest.raises(ValueError, match="Unsupported ensemble"):
-        md_job(
-            atoms,
-            ensemble="NNT",
-        )
+        md_job(atoms, ensemble="NNT")

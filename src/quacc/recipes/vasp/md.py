@@ -67,8 +67,8 @@ def md_job(
         "nsw": nsteps,
         "potim": timestep,
         "tebeg": temperature,
-        "ediffg": None, 
-        }
+        "ediffg": None,
+    }
 
     if ensemble == "nvt":
         calc_defaults |= {"isif": 2, "mdalgo": 2, "smass": 0}
@@ -97,4 +97,3 @@ def md_job(
         | (additional_fields or {}),
         copy_files=copy_files,
     )
-
