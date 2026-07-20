@@ -24,7 +24,7 @@ def md_job(
     nsteps: int = 2000,
     ensemble: Literal["nve", "nvt", "npt"] = "nvt",
     temperature: float = 300.0,
-    pressure: float = 0.0,
+    pressure: float = 1.0,
     copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
