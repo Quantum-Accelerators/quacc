@@ -326,16 +326,16 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 54
-    assert outputs[3]["structure_metadata"]["nsites"] == 42
+    assert outputs[2]["structure_metadata"]["nsites"] == 42
+    assert outputs[3]["structure_metadata"]["nsites"] == 54
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
     outputs = bulk_to_slabs_flow(atoms)
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 54
-    assert outputs[3]["structure_metadata"]["nsites"] == 42
+    assert outputs[2]["structure_metadata"]["nsites"] == 42
+    assert outputs[3]["structure_metadata"]["nsites"] == 54
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
@@ -346,8 +346,8 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 54
-    assert outputs[3]["structure_metadata"]["nsites"] == 42
+    assert outputs[2]["structure_metadata"]["nsites"] == 42
+    assert outputs[3]["structure_metadata"]["nsites"] == 54
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 520 for output in outputs]
@@ -358,8 +358,8 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 54
-    assert outputs[3]["structure_metadata"]["nsites"] == 42
+    assert outputs[2]["structure_metadata"]["nsites"] == 42
+    assert outputs[3]["structure_metadata"]["nsites"] == 54
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 520 for output in outputs]
