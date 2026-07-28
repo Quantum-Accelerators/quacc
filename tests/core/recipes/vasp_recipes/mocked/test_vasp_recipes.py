@@ -1313,6 +1313,7 @@ def test_mof_off(patch_metallic_taskdoc):
         "setups": {"Al": ""},
         "sigma": 0.05,
         "vdw_radius": 50.27183500356491,
+        "sdftd3_damping": "rational",
         "xc": "pbe",
     }
 
