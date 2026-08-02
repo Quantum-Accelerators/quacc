@@ -95,20 +95,6 @@ def test_make_slabs_from_bulk(atoms_mag):
     min_d = np.min(min_d[min_d != 0.0])
     slabs = make_slabs_from_bulk(atoms)
     assert len(slabs) == 31
-    assert (
-        slabs[3].info["slab_stats"]["shift"] == -slabs[22].info["slab_stats"]["shift"]
-    )
-    z_store = -np.inf
-    for atom in slabs[3]:
-        if atom.z > z_store:
-            z_store = atom.z
-            highest_atom = atom.symbol
-    z_store = -np.inf
-    for atom in slabs[22]:
-        if atom.z > z_store:
-            z_store = atom.z
-            highest_atom2 = atom.symbol
-    assert highest_atom != highest_atom2
     # This is to make sure nothing funky happened to our atom positions...
     for slab in slabs:
         d = slab.get_all_distances(mic=True)

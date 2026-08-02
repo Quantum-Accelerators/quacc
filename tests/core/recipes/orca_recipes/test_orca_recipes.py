@@ -26,7 +26,7 @@ def test_static_job(tmp_path, monkeypatch):
     assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-tzvp engrad normalprint wb97x-d3bj xyzfile"
+        == "def2-tzvp engrad normalprint wb97m-d4rev xyzfile"
     )
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
@@ -51,7 +51,7 @@ def test_static_job_parallel(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 3
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-svp engrad normalprint wb97x-d3bj xyzfile"
+        == "def2-svp engrad normalprint wb97m-d4rev xyzfile"
     )
     assert "%scf maxiter 300 end" in output["parameters"]["orcablocks"]
 
@@ -68,14 +68,14 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-tzvp normalprint opt wb97x-d3bj xyzfile"
+        == "def2-tzvp normalprint opt wb97m-d4rev xyzfile"
     )
 
     output = relax_job(
         atoms,
         charge=-2,
         spin_multiplicity=3,
-        orcasimpleinput=["def2-svp", "#def2-tzvp", "#wb97x-d3bj", "hf"],
+        orcasimpleinput=["def2-svp", "#def2-tzvp", "#wb97m-d4rev", "hf"],
         orcablocks=["%scf maxiter 300 end"],
         nprocs=2,
     )
@@ -122,7 +122,7 @@ def test_ase_relax_job(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "def2-tzvp engrad normalprint wb97x-d3bj xyzfile"
+        == "def2-tzvp engrad normalprint wb97m-d4rev xyzfile"
     )
     assert output["parameters_opt"]["fmax"] == 0.1
     assert output.get("trajectory")
