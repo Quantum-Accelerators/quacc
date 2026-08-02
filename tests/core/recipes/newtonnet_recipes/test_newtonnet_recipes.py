@@ -33,7 +33,7 @@ def setup_module():
     _internally_set_settings(
         {
             "NEWTONNET_CONFIG_PATH": current_file_path / "config0.yml",
-            "NEWTONNET_MODEL_PATH": current_file_path / "best_model_state.tar",
+            "NEWTONNET_MODEL_PATH": "t1x",
             "CHECK_CONVERGENCE": False,
         }
     )
