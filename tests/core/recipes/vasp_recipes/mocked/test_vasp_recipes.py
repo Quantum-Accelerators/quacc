@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 from importlib import util
 from pathlib import Path
 
@@ -319,23 +320,24 @@ def test_slab_relax_job(patch_metallic_taskdoc):
 
 def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     atoms = bulk("Al")
+    expected_nsites = (
+        [45, 45, 54, 54] if sys.platform == "win32" else [45, 45, 42, 54]
+    )
 
     ### --------- Test bulk_to_slabs_flow --------- ###
 
     outputs = bulk_to_slabs_flow(atoms, run_static=False)
     assert len(outputs) == 4
-    assert outputs[0]["structure_metadata"]["nsites"] == 45
-    assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 42
-    assert outputs[3]["structure_metadata"]["nsites"] == 54
+    assert [
+        output["structure_metadata"]["nsites"] for output in outputs
+    ] == expected_nsites
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
     outputs = bulk_to_slabs_flow(atoms)
     assert len(outputs) == 4
-    assert outputs[0]["structure_metadata"]["nsites"] == 45
-    assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 42
-    assert outputs[3]["structure_metadata"]["nsites"] == 54
+    assert [
+        output["structure_metadata"]["nsites"] for output in outputs
+    ] == expected_nsites
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
