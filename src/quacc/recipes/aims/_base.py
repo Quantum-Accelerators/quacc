@@ -97,7 +97,7 @@ def prep_calculator(
         and "k_grid_density" not in calc_flags
     ):
         kspacing = calc_flags.pop("kspacing")
-        calc_flags["k_grid"] = kspacing_to_kpts(atoms, kspacing)
+        calc_flags["k_grid"] = kspacing_to_kpts(kspacing, atoms)
 
     if "spin" not in calc_flags and hasattr(atoms, "get_initial_magnetic_moments"):
         magmoms = atoms.get_initial_magnetic_moments()
