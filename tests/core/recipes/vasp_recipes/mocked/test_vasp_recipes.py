@@ -476,7 +476,6 @@ def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
         "algo": "normal",
         "ediff": 1e-5,
         "ediffg": -0.02,
-        "enaug": 1360,
         "encut": 680.0,
         "gga": "ps",
         "gga_compat": False,
@@ -541,7 +540,6 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
         "algo": "normal",
         "ediff": 1e-5,
         "ediffg": -0.02,
-        "enaug": 1360,
         "encut": 680.0,
         "gga_compat": False,
         "ibrion": 2,
@@ -614,7 +612,6 @@ def test_mp_metagga_static_job(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "gga_compat": False,
         "ismear": -5,
@@ -997,7 +994,6 @@ def test_matpes(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "gga": "PE",
         "ismear": 0,
@@ -1027,7 +1023,6 @@ def test_matpes(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "ismear": 0,
         "ispin": 2,
@@ -1140,7 +1135,6 @@ def test_matpes(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "gga": "PE",
         "hfscreen": 0.2,
@@ -1357,7 +1351,6 @@ def test_fairchem_omc(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-06,
-        "enaug": 1360,
         "encut": 520.0,
         "isif": 0,
         "ismear": 0,
