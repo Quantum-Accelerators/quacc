@@ -197,3 +197,4 @@ disable_error_code = "annotation-unchecked"
 
 [tool.uv.extra-build-dependencies]
 torch-scatter = ["torch"]
+torch-cluster = ["torch"]
