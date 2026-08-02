@@ -18,6 +18,7 @@ from quacc.recipes.vasp.core import (
     static_job,
 )
 from quacc.recipes.vasp.matpes import matpes_static_job
+from quacc.recipes.vasp.md import md_job
 from quacc.recipes.vasp.mof_off import mof_off_static_job
 from quacc.recipes.vasp.mp24 import (
     mp_metagga_relax_flow,
@@ -325,16 +326,16 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 54
-    assert outputs[3]["structure_metadata"]["nsites"] == 42
+    assert outputs[2]["structure_metadata"]["nsites"] == 42
+    assert outputs[3]["structure_metadata"]["nsites"] == 54
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
     outputs = bulk_to_slabs_flow(atoms)
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 54
-    assert outputs[3]["structure_metadata"]["nsites"] == 42
+    assert outputs[2]["structure_metadata"]["nsites"] == 42
+    assert outputs[3]["structure_metadata"]["nsites"] == 54
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
@@ -345,8 +346,8 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 54
-    assert outputs[3]["structure_metadata"]["nsites"] == 42
+    assert outputs[2]["structure_metadata"]["nsites"] == 42
+    assert outputs[3]["structure_metadata"]["nsites"] == 54
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 520 for output in outputs]
@@ -357,8 +358,8 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 45
     assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 54
-    assert outputs[3]["structure_metadata"]["nsites"] == 42
+    assert outputs[2]["structure_metadata"]["nsites"] == 42
+    assert outputs[3]["structure_metadata"]["nsites"] == 54
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 520 for output in outputs]
@@ -475,7 +476,6 @@ def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
         "algo": "normal",
         "ediff": 1e-5,
         "ediffg": -0.02,
-        "enaug": 1360,
         "encut": 680.0,
         "gga": "ps",
         "gga_compat": False,
@@ -540,7 +540,6 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
         "algo": "normal",
         "ediff": 1e-5,
         "ediffg": -0.02,
-        "enaug": 1360,
         "encut": 680.0,
         "gga_compat": False,
         "ibrion": 2,
@@ -613,7 +612,6 @@ def test_mp_metagga_static_job(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "gga_compat": False,
         "ismear": -5,
@@ -996,7 +994,6 @@ def test_matpes(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "gga": "PE",
         "ismear": 0,
@@ -1026,7 +1023,6 @@ def test_matpes(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "ismear": 0,
         "ispin": 2,
@@ -1139,7 +1135,6 @@ def test_matpes(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "gga": "PE",
         "hfscreen": 0.2,
@@ -1312,6 +1307,7 @@ def test_mof_off(patch_metallic_taskdoc):
         "setups": {"Al": ""},
         "sigma": 0.05,
         "vdw_radius": 50.27183500356491,
+        "sdftd3_damping": "rational",
         "xc": "pbe",
     }
 
@@ -1355,7 +1351,6 @@ def test_fairchem_omc(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-06,
-        "enaug": 1360,
         "encut": 520.0,
         "isif": 0,
         "ismear": 0,
@@ -1446,3 +1441,68 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
         "xc": "rpbe",
         "pp_version": "54",
     }
+
+
+def mock_run_and_summarize(atoms, *args, **kwargs):
+    return {"parameters": kwargs["calc_defaults"]}
+
+
+def test_md_job_nvt(monkeypatch):
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.md.run_and_summarize", mock_run_and_summarize
+    )
+
+    atoms = bulk("Al")
+
+    output = md_job(atoms, ensemble="NVT", temperature=300.0, timestep=1.0, nsteps=1000)
+
+    parameters = output["parameters"]
+
+    assert parameters["ibrion"] == 0
+    assert parameters["potim"] == 1.0
+    assert parameters["nsw"] == 1000
+    assert parameters["tebeg"] == 300.0
+    assert parameters["mdalgo"] == 2
+    assert parameters["smass"] == 0
+    assert parameters["isif"] == 2
+
+
+def test_md_job_npt(monkeypatch):
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.md.run_and_summarize", mock_run_and_summarize
+    )
+
+    atoms = bulk("Al")
+
+    output = md_job(atoms, ensemble="NPT", temperature=300.0, pressure=10.0)
+
+    parameters = output["parameters"]
+
+    assert parameters["mdalgo"] == 3
+    assert parameters["isif"] == 3
+    assert parameters["pstress"] == 0.01
+    assert parameters["langevin_gamma"] == [10.0]
+    assert parameters["langevin_gamma_l"] == 1.0
+
+
+def test_md_job_nve(monkeypatch):
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.md.run_and_summarize", mock_run_and_summarize
+    )
+
+    atoms = bulk("Al")
+
+    output = md_job(atoms, ensemble="NVE", temperature=300.0)
+
+    parameters = output["parameters"]
+
+    assert parameters["mdalgo"] == 1
+    assert parameters["andersen_prob"] == 0.0
+    assert parameters["isif"] == 2
+
+
+def test_md_job_error():
+    atoms = bulk("Al")
+
+    with pytest.raises(ValueError, match="Unsupported ensemble"):
+        md_job(atoms, ensemble="NNT")

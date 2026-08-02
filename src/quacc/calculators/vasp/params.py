@@ -320,7 +320,7 @@ def get_param_swaps(
     critical_swap_changes = {
         k: v
         for k, v in calc.parameters.items()
-        if not np.array_equal(pre_critical_params.get(k), v)
+        if _params_differ(pre_critical_params.get(k), v)
     }
     recommended_params = dict(calc.parameters)
 
@@ -348,7 +348,7 @@ def get_param_swaps(
     if overridden_swaps := {
         k: (user_calc_params.get(k), recommended_params[k])
         for k in recommended_params
-        if not np.array_equal(recommended_params[k], new_parameters.get(k))
+        if _params_differ(recommended_params[k], new_parameters.get(k))
     }:
         for k, (current, recommended) in overridden_swaps.items():
             LOGGER.warning(
@@ -645,7 +645,7 @@ class MPtoASEConverter:
 def _params_differ(a, b) -> bool:
     """Compare two parameter values, handling NumPy arrays."""
     if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
-        a = np.asarray(a)
-        b = np.asarray(b)
-        return a.shape != b.shape or not np.array_equal(a, b)
+        return not np.array_equal(a, b)
+    elif isinstance(a, str) and isinstance(b, str):
+        return a.lower() != b.lower()
     return a != b
