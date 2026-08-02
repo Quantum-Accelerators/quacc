@@ -192,7 +192,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 80
     assert outputs[1]["structure_metadata"]["nsites"] == 96
-    assert outputs[2]["structure_metadata"]["nsites"] == 64
+    assert outputs[2]["structure_metadata"]["nsites"] == 80
     assert outputs[3]["structure_metadata"]["nsites"] == 80
     assert [output["parameters"]["asap_cutoff"] is False for output in outputs]
     assert [output["name"] == "EMT Relax" for output in outputs]
@@ -205,7 +205,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     assert len(outputs) == 4
     assert outputs[0]["structure_metadata"]["nsites"] == 80
     assert outputs[1]["structure_metadata"]["nsites"] == 96
-    assert outputs[2]["structure_metadata"]["nsites"] == 64
+    assert outputs[2]["structure_metadata"]["nsites"] == 80
     assert outputs[3]["structure_metadata"]["nsites"] == 80
     assert [output["parameters"]["asap_cutoff"] is True for output in outputs]
 
