@@ -320,9 +320,7 @@ def test_slab_relax_job(patch_metallic_taskdoc):
 
 def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     atoms = bulk("Al")
-    expected_nsites = (
-        [45, 45, 54, 54] if sys.platform == "win32" else [45, 45, 42, 54]
-    )
+    expected_nsites = [45, 45, 54, 54] if sys.platform == "win32" else [45, 45, 42, 54]
 
     ### --------- Test bulk_to_slabs_flow --------- ###
 

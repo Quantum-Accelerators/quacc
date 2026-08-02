@@ -188,9 +188,7 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
-    expected_nsites = (
-        [80, 96, 80, 80] if sys.platform == "win32" else [80, 96, 64, 80]
-    )
+    expected_nsites = [80, 96, 80, 80] if sys.platform == "win32" else [80, 96, 64, 80]
 
     outputs = bulk_to_slabs_flow(atoms, run_static=False)
     assert len(outputs) == 4
