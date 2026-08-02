@@ -325,16 +325,18 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
 
     outputs = bulk_to_slabs_flow(atoms, run_static=False)
     assert len(outputs) == 4
-    assert sorted(
-        output["structure_metadata"]["nsites"] for output in outputs
-    ) == expected_nsites
+    assert (
+        sorted(output["structure_metadata"]["nsites"] for output in outputs)
+        == expected_nsites
+    )
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
     outputs = bulk_to_slabs_flow(atoms)
     assert len(outputs) == 4
-    assert sorted(
-        output["structure_metadata"]["nsites"] for output in outputs
-    ) == expected_nsites
+    assert (
+        sorted(output["structure_metadata"]["nsites"] for output in outputs)
+        == expected_nsites
+    )
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
