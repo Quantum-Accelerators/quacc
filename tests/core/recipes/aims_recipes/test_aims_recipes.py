@@ -1,13 +1,21 @@
 from __future__ import annotations
 
-from unittest.mock import MagicMock
-
 from ase import Atoms
 from ase.build import bulk, molecule
 
 from quacc import Remove, change_settings
 from quacc.recipes.aims import _base, core
 from quacc.utils.kpts import kspacing_to_kpts
+
+
+def _record_calls(result):
+    calls = []
+
+    def recorder(*args, **kwargs):
+        calls.append((args, kwargs))
+        return result
+
+    return recorder, calls
 
 
 def test_prep_calculator_periodic(tmp_path):
@@ -67,19 +75,33 @@ def test_prep_calculator_respects_explicit_spin_and_k_grid():
 def test_run_and_summarize(monkeypatch):
     atoms = molecule("H2")
     final_atoms = atoms.copy()
-    calc = MagicMock()
-    runner = MagicMock()
-    runner.run_calc.return_value = final_atoms
+    calc = object()
     summary = {"energy": -1.0}
+    calls = {}
 
-    prep_calculator = MagicMock(return_value=calc)
-    runner_cls = MagicMock(return_value=runner)
-    summarizer = MagicMock()
-    summarizer.run.return_value = summary
-    summarize_cls = MagicMock(return_value=summarizer)
+    def prep_calculator(*args, **kwargs):
+        calls["prep_calculator"] = (args, kwargs)
+        return calc
+
+    class FakeRunner:
+        def __init__(self, *args, **kwargs):
+            calls["runner_init"] = (args, kwargs)
+
+        def run_calc(self):
+            calls["run_calc"] = True
+            return final_atoms
+
+    class FakeSummarize:
+        def __init__(self, *args, **kwargs):
+            calls["summarize_init"] = (args, kwargs)
+
+        def run(self, *args, **kwargs):
+            calls["summarize_run"] = (args, kwargs)
+            return summary
+
     monkeypatch.setattr(_base, "prep_calculator", prep_calculator)
-    monkeypatch.setattr(_base, "Runner", runner_cls)
-    monkeypatch.setattr(_base, "Summarize", summarize_cls)
+    monkeypatch.setattr(_base, "Runner", FakeRunner)
+    monkeypatch.setattr(_base, "Summarize", FakeSummarize)
 
     result = _base.run_and_summarize(
         atoms,
@@ -90,19 +112,22 @@ def test_run_and_summarize(monkeypatch):
     )
 
     assert result == summary
-    prep_calculator.assert_called_once_with(
-        atoms, calc_defaults={"xc": "pbe"}, calc_swaps={"spin": "none"}
+    assert calls["prep_calculator"] == (
+        (atoms,),
+        {"calc_defaults": {"xc": "pbe"}, "calc_swaps": {"spin": "none"}},
     )
-    runner_cls.assert_called_once_with(atoms, calc, copy_files="source")
-    summarize_cls.assert_called_once_with(
-        move_magmoms=True, additional_fields={"name": "test"}
+    assert calls["runner_init"] == ((atoms, calc), {"copy_files": "source"})
+    assert calls["run_calc"] is True
+    assert calls["summarize_init"] == (
+        (),
+        {"move_magmoms": True, "additional_fields": {"name": "test"}},
     )
-    summarizer.run.assert_called_once_with(final_atoms, atoms)
+    assert calls["summarize_run"] == ((final_atoms, atoms), {})
 
 
 def test_static_job_defaults_and_overrides(monkeypatch):
     atoms = bulk("Cu")
-    run_and_summarize = MagicMock(return_value={"done": True})
+    run_and_summarize, calls = _record_calls({"done": True})
     monkeypatch.setattr(core, "run_and_summarize", run_and_summarize)
     monkeypatch.setattr(core, "check_is_metal", lambda _atoms: True)
 
@@ -117,7 +142,8 @@ def test_static_job_defaults_and_overrides(monkeypatch):
     )
 
     assert result == {"done": True}
-    kwargs = run_and_summarize.call_args.kwargs
+    assert len(calls) == 1
+    kwargs = calls[0][1]
     assert kwargs["calc_defaults"] == core.BASE_SET_METAL | {
         "species_dir": "tight",
         "kspacing": 0.05,
@@ -130,18 +156,18 @@ def test_static_job_defaults_and_overrides(monkeypatch):
 
 def test_static_job_nonmetal_and_agnostic(monkeypatch):
     atoms = bulk("Si")
-    run_and_summarize = MagicMock(return_value={})
+    run_and_summarize, calls = _record_calls({})
     monkeypatch.setattr(core, "run_and_summarize", run_and_summarize)
     monkeypatch.setattr(core, "check_is_metal", lambda _atoms: False)
 
     core.static_job(atoms)
-    assert run_and_summarize.call_args.kwargs["calc_defaults"] == (
+    assert calls[-1][1]["calc_defaults"] == (
         core.BASE_SET_NON_METAL
         | {"species_dir": "intermediate", "kspacing": core.KSPACING_NON_METAL}
     )
 
     core.static_job(atoms, agnostic_params=True)
-    assert run_and_summarize.call_args.kwargs["calc_defaults"] == (
+    assert calls[-1][1]["calc_defaults"] == (
         core.BASE_SET_AGNOSTIC
         | {"species_dir": "intermediate", "kspacing": core.KSPACING_AGNOSTIC}
     )
@@ -149,7 +175,7 @@ def test_static_job_nonmetal_and_agnostic(monkeypatch):
 
 def test_relax_job_defaults_and_cell_relaxation(monkeypatch):
     atoms = Atoms("H", cell=[8, 8, 8], pbc=True)
-    run_and_summarize = MagicMock(return_value={"done": True})
+    run_and_summarize, calls = _record_calls({"done": True})
     monkeypatch.setattr(core, "run_and_summarize", run_and_summarize)
     monkeypatch.setattr(core, "check_is_metal", lambda _atoms: False)
 
@@ -161,7 +187,8 @@ def test_relax_job_defaults_and_cell_relaxation(monkeypatch):
     )
 
     assert result == {"done": True}
-    kwargs = run_and_summarize.call_args.kwargs
+    assert len(calls) == 1
+    kwargs = calls[0][1]
     assert kwargs["calc_defaults"] == core.BASE_SET_NON_METAL | {
         "species_dir": "light",
         "kspacing": core.KSPACING_NON_METAL,
@@ -174,12 +201,12 @@ def test_relax_job_defaults_and_cell_relaxation(monkeypatch):
 
 def test_relax_job_agnostic_without_cell_relaxation(monkeypatch):
     atoms = molecule("H2")
-    run_and_summarize = MagicMock(return_value={})
+    run_and_summarize, calls = _record_calls({})
     monkeypatch.setattr(core, "run_and_summarize", run_and_summarize)
 
     core.relax_job(atoms, agnostic_params=True, kspacing=0.08, spin="collinear")
 
-    defaults = run_and_summarize.call_args.kwargs["calc_defaults"]
+    defaults = calls[0][1]["calc_defaults"]
     assert defaults == core.BASE_SET_AGNOSTIC | {
         "species_dir": "light",
         "kspacing": 0.08,
