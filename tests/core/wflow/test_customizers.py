@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+from types import SimpleNamespace
+
 import pytest
 
 from quacc import job
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_funcs, update_parameters
 
 
 def test_basic_customizers():
@@ -58,3 +60,24 @@ def test_basic_customizers():
         ValueError, match="Invalid function name: 'all' is a reserved name"
     ):
         customize_funcs("all", [add], param_swaps={"all": {"b": 2}})
+
+    with pytest.raises(ValueError, match="Invalid decorator keys"):
+        customize_funcs("add", add, decorators={"bad": job})
+
+    assert customize_funcs("add", add)(1) == 4
+
+
+def test_update_parameters_edge_cases(monkeypatch):
+    class CallableWithoutName:
+        def __call__(self, value=1):
+            return value
+
+    updated = update_parameters(CallableWithoutName(), {}, decorator=None)
+    assert updated.__name__ == ""
+    assert updated() == 1
+
+    monkeypatch.setattr(
+        "quacc.get_settings", lambda: SimpleNamespace(WORKFLOW_ENGINE="dask")
+    )
+    with pytest.raises(ValueError, match="Invalid decorator name: invalid"):
+        update_parameters(lambda: None, {}, decorator="invalid")
