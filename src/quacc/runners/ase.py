@@ -404,7 +404,17 @@ class Runner(BaseRunner):
         -------
         Dynamics
             The ASE Dynamics object following an NEB calculation.
+
+        Raises
+        ------
+        ValueError
+            If cell relaxation is requested because ASE NEB images do not support
+            cell filters.
         """
+        if relax_cell:
+            msg = "Cell relaxation is not supported for NEB calculations."
+            raise ValueError(msg)
+
         images = self.atoms
         run_kwargs = run_kwargs or {}
         neb_kwargs = neb_kwargs or {}
@@ -441,12 +451,6 @@ class Runner(BaseRunner):
         # Define the Trajectory object
         traj_file = neb_tmpdir / traj_filename
         traj = Trajectory(traj_file, "w", atoms=neb)
-
-        # Set volume relaxation constraints, if relevant
-        if relax_cell:
-            for i in range(len(images)):
-                if images[i].pbc.any():
-                    images[i] = FrechetCellFilter(images[i])
 
         dyn = optimizer(neb, **optimizer_kwargs)
         dyn.attach(traj.write)
