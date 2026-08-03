@@ -73,9 +73,6 @@
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/atoms/slabs.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/atoms/ts.html</loc>
-      </url>
-      <url>
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/calculators/espresso/espresso.html</loc>
       </url>
       <url>
@@ -212,12 +209,6 @@
       </url>
       <url>
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/mrcc/core.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/newtonnet/core.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/newtonnet/ts.html</loc>
       </url>
       <url>
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/onetep/_base.html</loc>
