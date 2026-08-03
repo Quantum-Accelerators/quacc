@@ -208,6 +208,15 @@ jobs:
       - name: Run tests with pytest
         run: pytest -k 'defects or phonon or espresso' --durations=10 --cov=quacc --cov-report=xml
 
+      - name: Upload failed Espresso calculation directories
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: failed-espresso-calculations
+          path: tests/core/_test_scratch/failed-quacc-*/
+          if-no-files-found: warn
+          retention-days: 3
+
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v7
         with:
