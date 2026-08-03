@@ -19,6 +19,7 @@ from ase import Atoms
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
+from ase.filters import FrechetCellFilter
 from ase.io import read, write
 from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
@@ -362,6 +363,33 @@ def test_run_neb(monkeypatch, tmp_path):
 
     assert traj[-1].calc.results is not None
     assert not os.path.exists(tmp_path / "opt.log")
+
+
+def test_run_neb_relax_cell(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+
+    class NoOpOptimizer:
+        def __init__(self, atoms, **kwargs):
+            self.atoms = atoms
+
+        def attach(self, *args):
+            pass
+
+        def run(self, *args):
+            pass
+
+    images = read(test_files_path / "neb_path.xyz", index=":")
+    for image in images:
+        image.set_cell([20, 20, 20])
+        image.set_pbc(True)
+
+    dyn = Runner(images, EMT()).run_neb(
+        relax_cell=True,
+        optimizer=NoOpOptimizer,
+        neb_kwargs={"method": "aseneb", "precon": None},
+    )
+
+    assert all(isinstance(image, FrechetCellFilter) for image in dyn.atoms.images)
 
 
 def test_run_neb2():
