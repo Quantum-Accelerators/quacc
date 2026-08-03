@@ -6,9 +6,47 @@ import pytest
 from ase.atoms import Atoms
 
 from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
-from quacc.calculators.espresso.utils import prepare_copy_files
+from quacc.calculators.espresso.utils import grid_copy_files, prepare_copy_files
 from quacc.recipes.espresso._base import prepare_copy
 from quacc.wflow_tools.job_argument import Copy
+
+
+def test_grid_copy_files_non_gamma():
+    directory = Path("previous")
+
+    files = grid_copy_files({"inputph": {}}, directory, 1, (0.5, 0.0, 0.0))[directory]
+
+    assert Path("_ph0", "pwscf.wfc*") in files
+
+
+@pytest.mark.parametrize("binary", ["dos", "fs"])
+def test_prepare_copy_files_density_only(binary):
+    to_copy = prepare_copy_files({}, binary=binary)
+
+    assert Path("pwscf.save", "charge-density.*") in to_copy
+
+
+@pytest.mark.parametrize("binary", ["projwfc", "bands"])
+def test_prepare_copy_files_with_wavefunctions(binary):
+    to_copy = prepare_copy_files({}, binary=binary)
+
+    assert Path("pwscf.save", "wfc*.*") in to_copy
+
+
+def test_prepare_copy_files_pp_wavefunctions():
+    to_copy = prepare_copy_files({"input_data": {"plot_num": 3}}, binary="pp")
+
+    assert Path("pwscf.save", "wfc*.*") in to_copy
+
+
+def test_prepare_copy_files_ph_interpolation():
+    parameters = {
+        "input_data": {"inputph": {"lqdir": True, "ldvscf_interpolate": True}}
+    }
+
+    to_copy = prepare_copy_files(parameters, binary="ph")
+
+    assert Path("_ph*", "pwscf.q_*", "pwscf.dvscf*") in to_copy
 
 
 def test_prepare_copy_files_postahc():
