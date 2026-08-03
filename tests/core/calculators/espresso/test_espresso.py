@@ -179,6 +179,39 @@ def test_output_handler(tmp_path, monkeypatch):
     assert str(new_parameters["input_data"]["control"]["outdir"]) != test_path
 
 
+def test_search_keyword_missing():
+    assert EspressoTemplate._search_keyword({"input_data": {}}, "prefix") is None
+
+
+def test_ph_grid_recovery_directory(tmp_path):
+    template = EspressoTemplate(binary="ph")
+    parameters = {
+        "input_data": {
+            "inputph": {
+                "qplot": True,
+                "lqdir": True,
+                "recover": True,
+                "start_q": 2,
+                "prefix": "test",
+                "outdir": str(tmp_path),
+            }
+        }
+    }
+
+    template._sanity_checks(parameters)
+
+    assert (tmp_path / "_ph0" / "test.q_1").is_dir()
+
+
+def test_espresso_preset_without_pseudopotentials(tmp_path):
+    preset = tmp_path / "preset.yaml"
+    preset.write_text("input_data:\n  system:\n    occupations: fixed\n")
+
+    calc = Espresso(preset=preset, kpts=None)
+
+    assert calc.parameters["input_data"]["system"]["occupations"] == "fixed"
+
+
 def test_bad_calculator_params():
     atoms = Atoms(symbols="LiLaOZr")
 
