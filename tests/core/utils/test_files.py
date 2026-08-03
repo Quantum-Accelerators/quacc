@@ -3,7 +3,7 @@ from __future__ import annotations
 import gzip
 import os
 import time
-from logging import WARNING, getLogger
+from logging import DEBUG, WARNING, getLogger
 from pathlib import Path
 
 import pytest
@@ -12,7 +12,9 @@ from quacc.utils.files import (
     check_logfile,
     copy_decompress_files,
     find_recent_logfile,
+    load_yaml_calc,
     make_unique_dir,
+    safe_decompress_dir,
 )
 
 LOGGER = getLogger(__name__)
@@ -247,3 +249,29 @@ def test_find_recent_logfile_only_checks_files_matching_the_extension_when_file_
 
     actual = find_recent_logfile(tmp_path, logfile_extensions=".log")
     assert actual is None
+
+
+def test_load_yaml_calc_with_explicit_parent_path(tmp_path):
+    parent = tmp_path / "parent.yaml"
+    parent.write_text("settings:\n  inherited: true\n")
+    child = tmp_path / "child.yaml"
+    child.write_text(f'parent: "{parent.as_posix()}"\nsettings:\n  child: true\n')
+
+    config = load_yaml_calc(child)
+
+    assert config == {"settings": {"child": True, "inherited": True}}
+
+
+def test_safe_decompress_dir_skips_disappearing_files(tmp_path, monkeypatch, caplog):
+    disappearing_file = tmp_path / "output.gz"
+    disappearing_file.touch()
+
+    def raise_file_not_found(_path):
+        raise FileNotFoundError
+
+    monkeypatch.setattr("quacc.utils.files.decompress_file", raise_file_not_found)
+
+    with caplog.at_level(DEBUG):
+        safe_decompress_dir(tmp_path)
+
+    assert f"Cannot find {disappearing_file.name}" in caplog.text
