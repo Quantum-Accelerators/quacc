@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import os
+import sys
 from pathlib import Path
+from types import ModuleType, SimpleNamespace
 from typing import TYPE_CHECKING
 
 import pytest
@@ -14,6 +16,13 @@ mace = pytest.importorskip("mace")
 
 from mace.calculators.foundations_models import download_mace_mp_checkpoint
 
+from quacc.recipes.torchsim import _base
+from quacc.recipes.torchsim._base import (
+    pick_model,
+    process_binning_autobatcher_dict,
+    process_in_flight_autobatcher_dict,
+    process_trajectory_reporter_dict,
+)
 from quacc.recipes.torchsim.core import md_job, relax_job, static_job
 from quacc.schemas.torchsim import TSModelType
 
@@ -37,6 +46,91 @@ def ar_atoms() -> Atoms:
 def fe_atoms() -> Atoms:
     """Create crystalline iron using ASE."""
     return bulk("Fe", "fcc", a=5.26, cubic=True)
+
+
+def test_autobatcher_helpers(monkeypatch, ar_atoms):
+    class FakeAutoBatcher:
+        memory_scales_with = "n_atoms"
+        max_memory_scaler = 1
+        max_atoms_to_try = 2
+        memory_scaling_factor = 3
+        max_iterations = 4
+        max_memory_padding = 5
+
+    model = SimpleNamespace(device="cpu", dtype="float64")
+    monkeypatch.setattr(_base, "InFlightAutoBatcher", FakeAutoBatcher)
+    monkeypatch.setattr(_base.ts, "initialize_state", lambda *args: object())
+    monkeypatch.setattr(
+        _base.ts.runners,
+        "_configure_in_flight_autobatcher",
+        lambda *args, **kwargs: FakeAutoBatcher(),
+    )
+
+    autobatcher, details = process_in_flight_autobatcher_dict(
+        [ar_atoms], model, True, 4
+    )
+    assert isinstance(autobatcher, FakeAutoBatcher)
+    assert details["max_iterations"] == 4
+
+    monkeypatch.setattr(
+        _base.ts.runners, "_configure_batches_iterator", lambda *args, **kwargs: []
+    )
+    assert process_binning_autobatcher_dict([ar_atoms], model, True) == (False, None)
+
+
+def test_custom_trajectory_filenames(monkeypatch, tmp_path):
+    class FakeReporter:
+        def __init__(self, **kwargs):
+            self.state_frequency = kwargs.get("state_frequency", 1)
+            self.trajectory_kwargs = {}
+            self.state_kwargs = {}
+            self.metadata = None
+            self.filenames = kwargs["filenames"]
+
+    monkeypatch.setattr(_base.ts, "TrajectoryReporter", FakeReporter)
+    runner = SimpleNamespace(tmpdir=tmp_path)
+
+    _, details = process_trajectory_reporter_dict(
+        {"filenames": ["custom.h5md"]}, runner, 1
+    )
+
+    assert details["filenames"] == [tmp_path / "custom.h5md"]
+
+
+@pytest.mark.parametrize(
+    ("model_type", "module_name", "class_name"),
+    [
+        (TSModelType.FAIRCHEMV1, "fairchem_legacy", "FairChemV1Model"),
+        (TSModelType.FAIRCHEM, "fairchem", "FairChemModel"),
+        (TSModelType.GRAPHPESWRAPPER, "graphpes", "GraphPESWrapper"),
+        (TSModelType.MACE, "mace", "MaceModel"),
+        (TSModelType.MATTERSIM, "mattersim", "MatterSimModel"),
+        (TSModelType.METATOMIC, "metatomic", "MetatomicModel"),
+        (TSModelType.NEQUIPFRAMEWORK, "nequip_framework", "NequIPFrameworkModel"),
+        (TSModelType.ORB, "orb", "OrbModel"),
+        (TSModelType.SEVENNET, "sevennet", "SevenNetModel"),
+        (TSModelType.LENNARD_JONES, "lennard_jones", "LennardJonesModel"),
+    ],
+)
+def test_pick_model(monkeypatch, model_type, module_name, class_name):
+    class FakeModel:
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+    module = ModuleType(f"torch_sim.models.{module_name}")
+    setattr(module, class_name, FakeModel)
+    monkeypatch.setitem(sys.modules, module.__name__, module)
+
+    model = pick_model(model_type, "model.pt", device="cpu")
+
+    assert model.kwargs["device"] == "cpu"
+    if model_type != TSModelType.LENNARD_JONES:
+        assert model.kwargs["model"] == "model.pt"
+
+
+def test_pick_model_invalid():
+    with pytest.raises(ValueError, match="Invalid model type"):
+        pick_model("invalid", "model.pt")
 
 
 @pytest.fixture
