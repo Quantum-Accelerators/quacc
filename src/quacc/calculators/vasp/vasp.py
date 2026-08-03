@@ -33,6 +33,17 @@ if TYPE_CHECKING:
     from quacc.types import DefaultSetting
 
 
+AIMD_CUSTODIAN_HANDLERS = [
+    "VaspErrorHandler",
+    "MeshSymmetryErrorHandler",
+    "PositiveEnergyErrorHandler",
+    "FrozenJobErrorHandler",
+    "StdErrHandler",
+    "LargeSigmaHandler",
+    "IncorrectSmearingHandler",
+]
+
+
 class Vasp(Vasp_):
     """This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters
     on-the-fly, allows for ASE to run VASP via Custodian, and supports several automatic
@@ -337,7 +348,10 @@ class Vasp(Vasp_):
             directory = self.directory
 
         if self.use_custodian:
-            run_custodian(directory=directory)
+            custodian_kwargs = {"directory": directory}
+            if self.int_params.get("ibrion") == 0 and self.int_params.get("nsw", 0) > 0:
+                custodian_kwargs["vasp_custodian_handlers"] = AIMD_CUSTODIAN_HANDLERS
+            run_custodian(**custodian_kwargs)
             return 0, None
 
         result = subprocess.run(
