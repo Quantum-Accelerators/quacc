@@ -194,6 +194,22 @@ def test_qchem_write_input_freq(tmp_path, monkeypatch, test_atoms):
     assert qcinp.as_dict() == ref_qcinp.as_dict()
 
 
+def test_qchem_execute(tmp_path, monkeypatch, test_atoms):
+    monkeypatch.chdir(tmp_path)
+    called = {}
+
+    def mock_run_custodian(*, directory):
+        called["directory"] = directory
+
+    monkeypatch.setattr(
+        "quacc.calculators.qchem.qchem.run_custodian", mock_run_custodian
+    )
+    calc = QChem(test_atoms)
+
+    assert calc.execute() == 0
+    assert Path(called["directory"]).resolve() == tmp_path.resolve()
+
+
 @pytest.mark.skipif(has_obabel is False, reason="openbabel needed")
 def test_qchem_read_results_basic_and_write_53(tmp_path, monkeypatch, test_atoms):
     calc = QChem(
