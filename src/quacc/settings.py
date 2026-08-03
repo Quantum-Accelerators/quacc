@@ -446,16 +446,6 @@ class QuaccSettings(BaseSettings):
     )
 
     # ---------------------------
-    # NewtonNet Settings
-    # ---------------------------
-    NEWTONNET_MODEL_PATH: Union[Path, list[Path]] = Field(
-        Path("best_model_state.tar"), description="Path to NewtonNet .tar model"
-    )
-    NEWTONNET_CONFIG_PATH: Union[Path, list[Path]] = Field(
-        Path("config.yml"), description="Path to NewtonNet YAML settings file"
-    )
-
-    # ---------------------------
     # Logger Settings
     # ---------------------------
     LOG_FILENAME: Path | None = Field(None, description="Path to store the log file.")
@@ -472,7 +462,6 @@ class QuaccSettings(BaseSettings):
         "ESPRESSO_PSEUDO",
         "GULP_LIB",
         "QCHEM_LOCAL_SCRATCH",
-        "NEWTONNET_MODEL_PATH",
         "VASP_PRESET_DIR",
         "VASP_PP_PATH",
         "VASP_VDW",
