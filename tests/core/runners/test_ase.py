@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import glob
 import os
-from importlib.util import find_spec
 from logging import WARNING, getLogger
 from pathlib import Path
 from shutil import rmtree
@@ -30,7 +29,6 @@ from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner
 from quacc.wflow_tools.job_argument import Copy
 
-has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 test_files_path = Path(__file__).parent / "test_files"
 
 LOGGER = getLogger(__name__)
@@ -315,8 +313,8 @@ def test_fn_hook(tmp_path, monkeypatch):
 
 def test_run_neb(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
-    geodesic_path = test_files_path / "geodesic_path.xyz"
-    images = read(geodesic_path, index=":")
+    neb_path = test_files_path / "neb_path.xyz"
+    images = read(neb_path, index=":")
 
     neb_kwargs = {"method": "aseneb", "precon": None}
     dyn = Runner(images, EMT()).run_neb(optimizer=NEBOptimizer, neb_kwargs=neb_kwargs)
@@ -327,9 +325,9 @@ def test_run_neb(monkeypatch, tmp_path):
 
 
 def test_run_neb2():
-    geodesic_path = test_files_path / "geodesic_path.xyz"
+    neb_path = test_files_path / "neb_path.xyz"
 
-    images = read(geodesic_path, index=":")
+    images = read(neb_path, index=":")
 
     with pytest.raises(
         ValueError, match="BFGSLineSearch is not allowed as optimizer with NEB"
