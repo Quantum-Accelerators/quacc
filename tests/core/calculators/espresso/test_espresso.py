@@ -6,6 +6,13 @@ import pytest
 from ase.atoms import Atoms
 
 from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
+from quacc.calculators.espresso.utils import prepare_copy_files
+
+
+def test_prepare_copy_files_postahc():
+    to_copy = prepare_copy_files({}, binary="postahc")
+
+    assert Path("pwscf.save", "data-file-schema.*") in to_copy
 
 
 def test_espresso_kwargs_handler():
