@@ -1580,7 +1580,11 @@ def test_run_backends(monkeypatch, tmp_path):
     atoms = bulk("Cu")
     calc = Vasp(atoms, xc="PBE", use_custodian=True)
     calls = []
-    monkeypatch.setattr(vasp_module, "run_custodian", calls.append)
+
+    def mock_run_custodian(*, directory):
+        calls.append(directory)
+
+    monkeypatch.setattr(vasp_module, "run_custodian", mock_run_custodian)
 
     assert calc._run(directory=tmp_path) == (0, None)
     assert calls == [tmp_path]
