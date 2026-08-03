@@ -251,6 +251,17 @@ def test_find_recent_logfile_only_checks_files_matching_the_extension_when_file_
     assert actual is None
 
 
+def test_find_recent_logfile_ignores_directories(tmp_path):
+    logfile = tmp_path / "output.log"
+    logfile.write_text("done")
+    time.sleep(0.01)
+    (tmp_path / "newer.log").mkdir()
+
+    actual = find_recent_logfile(tmp_path, logfile_extensions=".log")
+
+    assert actual == logfile.resolve()
+
+
 def test_load_yaml_calc_with_explicit_parent_path(tmp_path):
     parent = tmp_path / "parent.yaml"
     parent.write_text("settings:\n  inherited: true\n")

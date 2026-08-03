@@ -70,6 +70,15 @@ def test_recursive_dict_merge2():
     }
 
 
+def test_recursive_dict_merge_single_dict():
+    original = {"a": 1, "b": {"c": 2}, "remove": Remove}
+
+    merged = recursive_dict_merge(original)
+
+    assert merged == {"a": 1, "b": {"c": 2}}
+    assert merged["b"] is not original["b"]
+
+
 def test_recursive_dict_merge_verbose(caplog):
     defaults = {"a": 1, "b": {"a": 1, "b": 2}}
     calc_swaps = {"a": Remove, "b": {"b": 3, "d": 1}}
