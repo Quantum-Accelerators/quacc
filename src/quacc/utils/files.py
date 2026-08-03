@@ -288,7 +288,11 @@ def find_recent_logfile(
     for f in Path(directory).expanduser().iterdir():
         f_path = Path(directory, f)
         for ext in logfile_extensions:
-            if f.is_file() and ext in "".join(f.suffixes) and f_path.stat().st_mtime > mod_time:
+            if (
+                f.is_file()
+                and ext in "".join(f.suffixes)
+                and f_path.stat().st_mtime > mod_time
+            ):
                 mod_time = f_path.stat().st_mtime
                 logfile = f_path.resolve()
     return logfile
