@@ -33,6 +33,7 @@ def test_run_vasp_custodian(monkeypatch):
     run_custodian()
 
     run_custodian(vasp_custodian_wall_time=1)
+    run_custodian(vasp_custodian_handlers=None, vasp_custodian_validators=None)
 
     with pytest.raises(ValueError, match="Unknown VASP error handler"):
         run_custodian(vasp_custodian_handlers="cow")

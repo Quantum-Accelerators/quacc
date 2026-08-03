@@ -3,9 +3,12 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+import pytest
 from ase.build import bulk, molecule
+from ase.calculators.gulp import GULP
 
 from quacc import change_settings
+from quacc.recipes.gulp._base import run_and_summarize
 from quacc.recipes.gulp.core import relax_job, static_job
 
 
@@ -145,3 +148,14 @@ def test_envvars(tmp_path, monkeypatch):
     with change_settings({"GULP_LIB": str(Path("/path/to/lib"))}):
         assert static_job(atoms)
         assert os.environ.get("GULP_LIB") == str(Path("/path/to/lib"))
+
+
+def test_unconverged_optimization(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(GULP, "get_opt_state", lambda self: False)
+
+    with (
+        change_settings({"CHECK_CONVERGENCE": True}),
+        pytest.raises(RuntimeError, match="Optimization did not converge"),
+    ):
+        run_and_summarize(molecule("H2O"), keyword_defaults=["opti"])

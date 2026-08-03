@@ -1417,6 +1417,9 @@ def test_bad_pmg_converter():
     with pytest.raises(ValueError, match="Either atoms or prev_dir must be provided"):
         MPtoASEConverter()
 
+    converter = MPtoASEConverter(prev_dir="previous-run")
+    assert converter.structure is None
+
 
 def test_pmg_input_set():
     atoms = bulk("Cu")
@@ -1568,3 +1571,28 @@ def test_run(monkeypatch, tmp_path):
     calc = Vasp(atoms, xc="PBE", use_custodian=True)
     with pytest.raises(FileNotFoundError):
         calc._run()
+
+
+def test_run_aimd_custodian_handlers(monkeypatch, tmp_path):
+    custodian_kwargs = {}
+
+    def mock_run_custodian(**kwargs):
+        custodian_kwargs.update(kwargs)
+
+    monkeypatch.setattr("quacc.calculators.vasp.vasp.run_custodian", mock_run_custodian)
+
+    calc = Vasp(bulk("Cu"), ibrion=0, nsw=10)
+    calc._run(directory=tmp_path)
+
+    assert custodian_kwargs == {
+        "directory": tmp_path,
+        "vasp_custodian_handlers": [
+            "VaspErrorHandler",
+            "MeshSymmetryErrorHandler",
+            "PositiveEnergyErrorHandler",
+            "FrozenJobErrorHandler",
+            "StdErrHandler",
+            "LargeSigmaHandler",
+            "IncorrectSmearingHandler",
+        ],
+    }
