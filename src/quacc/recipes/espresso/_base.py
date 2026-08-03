@@ -244,9 +244,6 @@ def prepare_copy(
     dict
         Dictionary of files to copy.
     """
-    if isinstance(copy_files, Copy):
-        return copy_files
-
     if isinstance(copy_files, str | Path):
         copy_files = [copy_files]
 
