@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import os
 from copy import deepcopy
+from io import StringIO
 from logging import INFO, WARNING, getLogger
 from pathlib import Path
 from shutil import which
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -18,6 +20,7 @@ from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
+from quacc.calculators.vasp import vasp as vasp_module
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.schemas.prep import prep_next_run
 
@@ -1571,3 +1574,26 @@ def test_run(monkeypatch, tmp_path):
     calc = Vasp(atoms, xc="PBE", use_custodian=True)
     with pytest.raises(FileNotFoundError):
         calc._run()
+
+
+def test_run_backends(monkeypatch, tmp_path):
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, xc="PBE", use_custodian=True)
+    calls = []
+    monkeypatch.setattr(vasp_module, "run_custodian", calls.append)
+
+    assert calc._run(directory=tmp_path) == (0, None)
+    assert calls == [tmp_path]
+
+    calc.use_custodian = False
+    monkeypatch.setattr(
+        vasp_module.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(
+            stdout="VASP output", stderr=None, returncode=0
+        ),
+    )
+    output = StringIO()
+
+    assert calc._run(command="vasp", directory=tmp_path, out=output) == (0, None)
+    assert output.getvalue() == "VASP output"
