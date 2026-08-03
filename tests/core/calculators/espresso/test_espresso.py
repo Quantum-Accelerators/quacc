@@ -203,6 +203,7 @@ def test_espresso_preset_without_pseudopotentials(tmp_path):
 
     assert calc.parameters["input_data"]["system"]["occupations"] == "fixed"
 
+
 def test_bad_calculator_params():
     atoms = Atoms(symbols="LiLaOZr")
 
