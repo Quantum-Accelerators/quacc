@@ -36,7 +36,6 @@ from quacc.utils.dicts import recursive_dict_merge
 LOGGER = getLogger(__name__)
 
 has_sella = bool(find_spec("sella"))
-has_geodesic_interpolate = bool(find_spec("geodesic_interpolate"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable

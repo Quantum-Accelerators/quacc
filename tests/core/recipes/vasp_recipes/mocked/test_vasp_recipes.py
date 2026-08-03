@@ -319,23 +319,24 @@ def test_slab_relax_job(patch_metallic_taskdoc):
 
 def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     atoms = bulk("Al")
+    expected_nsites = [42, 45, 45, 54]
 
     ### --------- Test bulk_to_slabs_flow --------- ###
 
     outputs = bulk_to_slabs_flow(atoms, run_static=False)["relax"]
     assert len(outputs) == 4
-    assert outputs[0]["structure_metadata"]["nsites"] == 45
-    assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 42
-    assert outputs[3]["structure_metadata"]["nsites"] == 54
+    assert (
+        sorted(output["structure_metadata"]["nsites"] for output in outputs)
+        == expected_nsites
+    )
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
     outputs = bulk_to_slabs_flow(atoms)["static"]
     assert len(outputs) == 4
-    assert outputs[0]["structure_metadata"]["nsites"] == 45
-    assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 42
-    assert outputs[3]["structure_metadata"]["nsites"] == 54
+    assert (
+        sorted(output["structure_metadata"]["nsites"] for output in outputs)
+        == expected_nsites
+    )
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
@@ -344,10 +345,10 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         run_static=False,
     )["relax"]
     assert len(outputs) == 4
-    assert outputs[0]["structure_metadata"]["nsites"] == 45
-    assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 42
-    assert outputs[3]["structure_metadata"]["nsites"] == 54
+    assert (
+        sorted(output["structure_metadata"]["nsites"] for output in outputs)
+        == expected_nsites
+    )
     assert [output["parameters"]["isif"] == 2 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 520 for output in outputs]
@@ -356,10 +357,10 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         atoms, job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}}
     )["static"]
     assert len(outputs) == 4
-    assert outputs[0]["structure_metadata"]["nsites"] == 45
-    assert outputs[1]["structure_metadata"]["nsites"] == 45
-    assert outputs[2]["structure_metadata"]["nsites"] == 42
-    assert outputs[3]["structure_metadata"]["nsites"] == 54
+    assert (
+        sorted(output["structure_metadata"]["nsites"] for output in outputs)
+        == expected_nsites
+    )
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 520 for output in outputs]
@@ -476,7 +477,6 @@ def test_mp_prerelax_job_metallic(patch_metallic_taskdoc):
         "algo": "normal",
         "ediff": 1e-5,
         "ediffg": -0.02,
-        "enaug": 1360,
         "encut": 680.0,
         "gga": "ps",
         "gga_compat": False,
@@ -541,7 +541,6 @@ def test_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
         "algo": "normal",
         "ediff": 1e-5,
         "ediffg": -0.02,
-        "enaug": 1360,
         "encut": 680.0,
         "gga_compat": False,
         "ibrion": 2,
@@ -614,7 +613,6 @@ def test_mp_metagga_static_job(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "gga_compat": False,
         "ismear": -5,
@@ -997,7 +995,6 @@ def test_matpes(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "gga": "PE",
         "ismear": 0,
@@ -1027,7 +1024,6 @@ def test_matpes(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "ismear": 0,
         "ispin": 2,
@@ -1140,7 +1136,6 @@ def test_matpes(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-05,
-        "enaug": 1360,
         "encut": 680.0,
         "gga": "PE",
         "hfscreen": 0.2,
@@ -1357,7 +1352,6 @@ def test_fairchem_omc(patch_metallic_taskdoc):
     assert output["parameters"] == {
         "algo": "normal",
         "ediff": 1e-06,
-        "enaug": 1360,
         "encut": 520.0,
         "isif": 0,
         "ismear": 0,

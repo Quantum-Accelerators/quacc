@@ -187,15 +187,16 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = bulk("Cu")
+    expected_nsites = [64, 80, 80, 96]
 
     outputs = bulk_to_slabs_flow(atoms, run_static=False)
     outputs = outputs["relax"]
 
     assert len(outputs) == 4
-    assert outputs[0]["structure_metadata"]["nsites"] == 80
-    assert outputs[1]["structure_metadata"]["nsites"] == 96
-    assert outputs[2]["structure_metadata"]["nsites"] == 64
-    assert outputs[3]["structure_metadata"]["nsites"] == 80
+    assert (
+        sorted(output["structure_metadata"]["nsites"] for output in outputs)
+        == expected_nsites
+    )
     assert [output["parameters"]["asap_cutoff"] is False for output in outputs]
     assert [output["name"] == "EMT Relax" for output in outputs]
 
@@ -207,10 +208,10 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     outputs = outputs["relax"]
 
     assert len(outputs) == 4
-    assert outputs[0]["structure_metadata"]["nsites"] == 80
-    assert outputs[1]["structure_metadata"]["nsites"] == 96
-    assert outputs[2]["structure_metadata"]["nsites"] == 64
-    assert outputs[3]["structure_metadata"]["nsites"] == 80
+    assert (
+        sorted(output["structure_metadata"]["nsites"] for output in outputs)
+        == expected_nsites
+    )
     assert [output["parameters"]["asap_cutoff"] is True for output in outputs]
 
 

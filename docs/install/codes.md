@@ -53,14 +53,6 @@ To use these potentials, you will need to install the corresponding packages:
 pip install quacc[mlip]
 ```
 
-## NewtonNet
-
-If you plan to use NewtonNet with Quacc, you will need to install it prior to use. This can be done as follows:
-
-```bash
-pip install quacc[newtonnet]
-```
-
 ## ONETEP
 
 If you plan on using ONETEP with quacc, you will need to obtain and install ONETEP. This can be done as described in the [How to Get Onetep](https://onetep.org/code/) section of the software documentation.

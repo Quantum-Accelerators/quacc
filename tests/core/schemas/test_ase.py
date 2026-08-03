@@ -385,7 +385,7 @@ def test_summarize_neb(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
 
     # Read initial and final states:
-    images = read(FILE_DIR / "test_files" / "geodesic_path.xyz", index=":")
+    images = read(FILE_DIR / "test_files" / "neb_path.xyz", index=":")
     neb = NEB(images)
     for image in images:
         image.calc = EMT()
