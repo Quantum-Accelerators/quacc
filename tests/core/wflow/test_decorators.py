@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import asyncio
+
 from quacc import flow, job, subflow
+from quacc.wflow_tools.context import NodeType, tracked
 
 
 def test_decorators(tmp_path, monkeypatch):
@@ -100,3 +103,11 @@ def test_decorators_v3(tmp_path, monkeypatch):
     assert job(mult)(1, 2) == 2
     assert flow(workflow)(1, 2, 3) == 9
     assert flow(dynamic_workflow)(1, 2, 3) == [6, 6, 6]
+
+
+def test_tracked_async_function():
+    @tracked(NodeType.JOB)
+    async def add(a, b):
+        return a + b
+
+    assert asyncio.run(add(1, 2)) == 3
