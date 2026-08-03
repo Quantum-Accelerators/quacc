@@ -18,6 +18,7 @@ from pathlib import Path
 
 from ase.build import bulk
 from ase.io.espresso import read_fortran_namelist
+from ase.units import Rydberg
 from monty.io import zopen
 from monty.shutil import decompress_file
 from numpy.testing import assert_allclose, assert_array_equal
@@ -651,8 +652,8 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
                     "flvec": "diam.modes_coarse",
                     "ahc_nbnd": 8,
                     "ahc_nbndskip": 0,
-                    "eta_eV": 0.01,
-                    "efermi_eV": 0.4766,
+                    "eta_eV": 0.01 * Rydberg,
+                    "efermi_eV": 0.4766 * Rydberg,
                     "temp_kelvin": 300.0,
                     "amass_amu(1)": 12.01078,
                     "amass_amu(2)": 12.01078,
