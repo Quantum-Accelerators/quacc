@@ -300,3 +300,19 @@ async def test_prefect_decorators3_async(tmp_path, monkeypatch):
         return await add_distributed(result2, c)
 
     assert (await dynamic_workflow(1, 2, 3)) == [6, 6, 6]
+
+
+@pytest.mark.asyncio
+async def test_prefect_flow_without_result_resolution():
+    with change_settings({"PREFECT_RESOLVE_FLOW_RESULTS": False}):
+
+        @flow
+        def sync_flow(value):
+            return value + 1
+
+        @flow
+        async def async_flow(value):
+            return value + 1
+
+        assert sync_flow(1) == 2
+        assert await async_flow(1) == 2

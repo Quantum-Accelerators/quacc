@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import asyncio
+import sys
+from types import ModuleType, SimpleNamespace
 
 from quacc import flow, job, subflow
 from quacc.wflow_tools.context import NodeType, tracked
@@ -111,3 +113,27 @@ def test_tracked_async_function():
         return a + b
 
     assert asyncio.run(add(1, 2)) == 3
+
+
+def test_ray_subflow_target_resolves_result(monkeypatch):
+    class FakeRemote:
+        def __init__(self, func):
+            self.func = func
+
+        def remote(self, *args, **kwargs):
+            return self.func(*args, **kwargs)
+
+    fake_ray = ModuleType("ray")
+    fake_ray.ObjectRef = type("ObjectRef", (), {})
+    fake_ray.get = lambda value: value
+    fake_ray.remote = FakeRemote
+    monkeypatch.setitem(sys.modules, "ray", fake_ray)
+    monkeypatch.setattr(
+        "quacc.get_settings", lambda: SimpleNamespace(WORKFLOW_ENGINE="ray")
+    )
+
+    @subflow
+    def increment(value):
+        return value + 1
+
+    assert increment(1).result() == 2
