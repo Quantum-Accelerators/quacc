@@ -4,6 +4,7 @@ import os
 from copy import deepcopy
 from pathlib import Path
 
+import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
@@ -11,6 +12,7 @@ from ase.io import read
 from ase.mep import NEB
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
+from ase.vibrations.data import VibrationsData
 from monty.json import MontyDecoder, jsanitize
 
 from quacc.schemas.ase import Summarize, VibSummarize
@@ -288,6 +290,17 @@ def test_summarize_vib_and_thermo_run2(tmp_path, monkeypatch):
     MontyDecoder().process_decoded(d)
 
 
+def test_summarize_vibrations_data(tmp_path):
+    atoms = molecule("H2")
+    vib_data = VibrationsData(atoms, np.zeros((2, 3, 2, 3)))
+
+    results = VibSummarize(vib_data, directory=tmp_path).vib(is_molecule=True)
+
+    assert results["atoms"] == atoms
+    assert results["dir_name"] == tmp_path
+    assert len(results["results"]["vib_freqs_raw"]) == 6
+
+
 def test_summarize_vib_and_thermo_run3(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -402,3 +415,8 @@ def test_summarize_neb(monkeypatch, tmp_path):
     ts_atoms = neb_summary["ts_atoms"]
     ts_atoms.calc = EMT()
     assert ts_atoms.get_potential_energy() == pytest.approx(1.1603536513693768, 1e-4)
+
+    final_iteration = Summarize().neb(
+        optimizer, len(images), n_iter_return=-1, trajectory=read("opt.traj", index=":")
+    )
+    assert len(final_iteration["trajectory"]) == len(images)
