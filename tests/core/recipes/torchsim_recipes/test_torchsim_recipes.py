@@ -77,6 +77,28 @@ def test_autobatcher_helpers(monkeypatch, ar_atoms):
     )
     assert process_binning_autobatcher_dict([ar_atoms], model, True) == (False, None)
 
+    class FakeBinningAutoBatcher:
+        memory_scales_with = "n_atoms"
+        max_memory_scaler = 1
+        max_atoms_to_try = 2
+        memory_scaling_factor = 3
+        max_memory_padding = 5
+
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+
+    model.memory_scales_with = "n_atoms"
+    monkeypatch.setattr(_base, "BinningAutoBatcher", FakeBinningAutoBatcher)
+    autobatcher_dict = {"max_iterations": 4}
+
+    autobatcher, details = process_binning_autobatcher_dict(
+        [ar_atoms], model, autobatcher_dict
+    )
+
+    assert isinstance(autobatcher, FakeBinningAutoBatcher)
+    assert details["autobatcher"] == "FakeBinningAutoBatcher"
+    assert "max_iterations" not in autobatcher_dict
+
 
 def test_custom_trajectory_filenames(monkeypatch, tmp_path):
     class FakeReporter:
