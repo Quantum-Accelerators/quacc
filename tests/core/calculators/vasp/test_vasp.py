@@ -1417,6 +1417,9 @@ def test_bad_pmg_converter():
     with pytest.raises(ValueError, match="Either atoms or prev_dir must be provided"):
         MPtoASEConverter()
 
+    converter = MPtoASEConverter(prev_dir="previous-run")
+    assert converter.structure is None
+
 
 def test_pmg_input_set():
     atoms = bulk("Cu")
