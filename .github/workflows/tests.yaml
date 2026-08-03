@@ -103,6 +103,15 @@ jobs:
       - name: Run tests with pytest
         run: pytest --durations=10 tests/${{ matrix.wflow_engine }} --cov=quacc --cov-report=xml
 
+      - name: Upload failed Dask calculation directories
+        if: failure() && matrix.wflow_engine == 'dask'
+        uses: actions/upload-artifact@v7
+        with:
+          name: failed-dask-calculations
+          path: tests/dask/_test_scratch/failed-quacc-*/
+          if-no-files-found: warn
+          retention-days: 3
+
       - name: Upload code coverage report to Artifact
         uses: actions/upload-artifact@v7
         with:
