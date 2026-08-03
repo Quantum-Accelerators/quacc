@@ -76,7 +76,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: 3.13
+          python-version: 3.14
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -84,7 +84,7 @@ jobs:
         if: matrix.wflow_engine == 'dask'
         uses: conda-incubator/setup-miniconda@v4
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           activate-environment: quacc-env
 
       - name: Install conda packages
@@ -135,7 +135,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -183,7 +183,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -240,7 +240,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -288,7 +288,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -336,7 +336,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -375,7 +375,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -425,7 +425,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
@@ -457,7 +457,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.14"
           cache: pip
           cache-dependency-path: tests/requirements**.txt
 
