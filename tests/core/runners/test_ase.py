@@ -19,7 +19,7 @@ from ase import Atoms
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
-from ase.io import read
+from ase.io import read, write
 from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
@@ -169,6 +169,17 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch, copy_files):
         assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
 
+def test_run_calc_rejects_mismatched_geom_file(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    runner = Runner(molecule("H2"), LennardJones())
+    write(runner.tmpdir / "final.xyz", molecule("O2"))
+
+    with pytest.raises(
+        ValueError, match="Atomic numbers do not match between atoms and geom_file"
+    ):
+        runner.run_calc(geom_file="final.xyz")
+
+
 @pytest.mark.parametrize(
     "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
 )
@@ -242,6 +253,19 @@ def test_run_vib(tmp_path, monkeypatch, copy_files):
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
 
+def test_run_vib_failure(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def raise_error(_self):
+        raise RuntimeError("vibration failed")
+
+    monkeypatch.setattr("quacc.runners.ase.Vibrations.run", raise_error)
+
+    with pytest.raises(JobFailure, match="Calculation failed") as err:
+        Runner(molecule("H2"), LennardJones()).run_vib()
+    assert isinstance(err.value.parent_error, RuntimeError)
+
+
 @pytest.mark.parametrize(
     "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
 )
@@ -309,6 +333,22 @@ def test_fn_hook(tmp_path, monkeypatch):
         Runner(bulk("Cu"), EMT()).run_opt(fn_hook=fn_hook)
     with pytest.raises(ValueError, match="Test error"):
         raise err.value.parent_error
+
+
+def test_copy_intermediate_files_copies_files_and_directories(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    runner = Runner(molecule("H2"), LennardJones())
+    (runner.tmpdir / "output.txt").write_text("output")
+    nested_dir = runner.tmpdir / "nested"
+    nested_dir.mkdir()
+    (nested_dir / "output.txt").write_text("nested output")
+
+    runner._copy_intermediate_files(0)
+
+    assert (runner.tmpdir / "step0" / "output.txt").read_text() == "output"
+    assert (
+        runner.tmpdir / "step0" / "nested" / "output.txt"
+    ).read_text() == "nested output"
 
 
 def test_run_neb(monkeypatch, tmp_path):
