@@ -56,7 +56,7 @@ class Vasp(Vasp_):
     def __init__(
         self,
         input_atoms: Atoms,
-        preset: None | str | Path = None,
+        preset: str | Path | None = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
         incar_copilot: Literal["off", "critical", "standard", "aggressive"]
         | DefaultSetting = QuaccDefault,
