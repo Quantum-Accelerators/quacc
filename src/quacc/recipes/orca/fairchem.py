@@ -7,7 +7,7 @@ from importlib.util import find_spec
 if TYPE_CHECKING:
   from ase.atoms import Atoms
   from fairchem.data.omol.orca.calc import Vertical
-  
+
 has_fairchem = bool(find_spec("fairchem"))
 has_fairchem_omol = (
     has_fairchem
