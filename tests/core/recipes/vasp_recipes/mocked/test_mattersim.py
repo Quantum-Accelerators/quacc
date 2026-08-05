@@ -7,38 +7,41 @@ from ase.build import bulk
 from quacc.recipes.vasp.mattersim import mattersim_static_job
 
 
-def test_mattersim_static_job(monkeypatch):
-    atoms = bulk("Al")
+def test_mattersim_static_job(patch_nonmetallic_taskdoc):
+    atoms = bulk("Ni") * (2, 1, 1)
+    atoms[0].symbol = "O"
+    del atoms.arrays["initial_magmoms"]
 
-    monkeypatch.setattr(
-        "quacc.recipes.vasp.mattersim.run_and_summarize",
-        lambda atoms, **kwargs: {"atoms": atoms, **kwargs},
-    )
+    output = mattersim_static_job(atoms, ncore=1)
 
-    output = mattersim_static_job(atoms, encut=600)
-
-    assert output["calc_defaults"] == {
-        "algo": "Fast",
-        "ediff": 5e-05,
-        "encut": 520.0,
+    assert output["parameters"] == {
+        "algo": "fast",
+        "ediff": 0.0001,
+        "encut": 520,
         "gamma": True,
-        "ibrion": 2,
         "isif": 3,
         "ismear": -5,
         "ispin": 2,
-        "kpts": (9, 9, 9),
+        "kpts": (5, 11, 11),
         "lasph": True,
+        "ldau": True,
+        "ldauj": [0, 0],
+        "ldaul": [0, 2],
+        "ldauprint": 1,
+        "ldautype": 2,
+        "ldauu": [0, 6.2],
+        "lmaxmix": 4,
         "lorbit": 11,
-        "lreal": "Auto",
+        "lreal": "auto",
         "lwave": False,
-        "magmom": [0.6],
+        "magmom": [0.6, 5],
         "nelm": 100,
+        "ncore": 1,
         "nsw": 0,
-        "pp": "PBE",
+        "pp": "pbe",
         "pp_version": "original",
-        "prec": "Accurate",
-        "setups": {"Al": ""},
+        "prec": "accurate",
+        "setups": {"Ni": "_pv", "O": ""},
         "sigma": 0.05,
     }
-    assert output["calc_swaps"] == {"encut": 600}
-    assert output["additional_fields"] == {"name": "MatterSim Static"}
+    assert output["name"] == "MatterSim Static"
