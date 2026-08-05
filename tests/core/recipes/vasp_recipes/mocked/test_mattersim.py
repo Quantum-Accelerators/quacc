@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from ase.build import bulk
 
-from quacc.recipes.vasp.mattersim import mattersim_relax_job
+from quacc.recipes.vasp.mattersim import mattersim_static_job
 
 
-def test_mattersim_relax_job(monkeypatch):
+def test_mattersim_static_job(monkeypatch):
     atoms = bulk("Al")
 
     monkeypatch.setattr(
@@ -15,7 +15,7 @@ def test_mattersim_relax_job(monkeypatch):
         lambda atoms, **kwargs: {"atoms": atoms, **kwargs},
     )
 
-    output = mattersim_relax_job(atoms, encut=600)
+    output = mattersim_static_job(atoms, encut=600)
 
     assert output["calc_defaults"] == {
         "algo": "Fast",
@@ -33,7 +33,7 @@ def test_mattersim_relax_job(monkeypatch):
         "lwave": False,
         "magmom": [0.6],
         "nelm": 100,
-        "nsw": 99,
+        "nsw": 0,
         "pp": "PBE",
         "pp_version": "original",
         "prec": "Accurate",
@@ -41,4 +41,4 @@ def test_mattersim_relax_job(monkeypatch):
         "sigma": 0.05,
     }
     assert output["calc_swaps"] == {"encut": 600}
-    assert output["additional_fields"] == {"name": "MatterSim Relax"}
+    assert output["additional_fields"] == {"name": "MatterSim Static"}

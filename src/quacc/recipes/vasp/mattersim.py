@@ -20,14 +20,14 @@ if TYPE_CHECKING:
 
 
 @job
-def mattersim_relax_job(
+def mattersim_static_job(
     atoms: Atoms,
     copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
     """
-    Relax a structure with the VASP settings used for MatterSim.
+    Run a static calculation with the VASP settings used for MatterSim.
 
     Parameters
     ----------
@@ -48,11 +48,12 @@ def mattersim_relax_job(
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
     """
     calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(MPRelaxSet())
+    calc_defaults["nsw"] = 0
 
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "MatterSim Relax"} | (additional_fields or {}),
+        additional_fields={"name": "MatterSim Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
