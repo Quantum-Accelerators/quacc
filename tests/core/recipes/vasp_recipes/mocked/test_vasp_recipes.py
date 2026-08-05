@@ -20,13 +20,13 @@ from quacc.recipes.vasp.core import (
 from quacc.recipes.vasp.matpes import matpes_static_job
 from quacc.recipes.vasp.md import md_job
 from quacc.recipes.vasp.mof_off import mof_off_static_job
-from quacc.recipes.vasp.mp_aloe import mp_aloe_relax_job
 from quacc.recipes.vasp.mp24 import (
     mp_metagga_relax_flow,
     mp_metagga_relax_job,
     mp_metagga_static_job,
     mp_prerelax_job,
 )
+from quacc.recipes.vasp.mp_aloe import mp_aloe_relax_job
 from quacc.recipes.vasp.mp_legacy import (
     mp_gga_relax_flow,
     mp_gga_relax_job,
