@@ -20,6 +20,7 @@ from quacc.recipes.vasp.core import (
 from quacc.recipes.vasp.matpes import matpes_static_job
 from quacc.recipes.vasp.md import md_job
 from quacc.recipes.vasp.mof_off import mof_off_static_job
+from quacc.recipes.vasp.mp_aloe import mp_aloe_relax_job
 from quacc.recipes.vasp.mp24 import (
     mp_metagga_relax_flow,
     mp_metagga_relax_job,
@@ -50,6 +51,21 @@ has_fairchem_oc = (
 )
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 is not installed")
+def test_mp_aloe_relax_job(patch_metallic_taskdoc):
+    atoms = bulk("Al")
+
+    output = mp_aloe_relax_job(atoms)
+    assert output["structure_metadata"]["nsites"] == len(atoms)
+    assert output["parameters"]["encut"] == 680
+    assert output["parameters"]["kspacing"] == 0.2
+    assert output["parameters"]["nsw"] > 0
+
+    output = mp_aloe_relax_job(atoms, encut=700, kspacing=0.25)
+    assert output["parameters"]["encut"] == 700
+    assert output["parameters"]["kspacing"] == 0.25
 
 
 def test_static_job(patch_metallic_taskdoc):
