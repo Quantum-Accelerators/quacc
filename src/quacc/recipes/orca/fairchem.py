@@ -29,6 +29,6 @@ def omol_static_job(
   orcablocks: list[str] | None = None,
   copy_files: SourceDirectory | Copy | None = None,
   additional_fields: dict[str, Any] | None = None,
-)
+):
 
   return single_point_calculation(atoms, charge, spin_multiplicity, vertical=vertical, orcasimpleinput=orcasimpleinput, orcablocks=orcablocks,copy_files=copy_files,additional_fields=additional_fields)
