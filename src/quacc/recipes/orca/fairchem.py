@@ -3,16 +3,18 @@
 from __future__ import annotations
 
 from importlib.util import find_spec
-from typing import TYPE_CHECKING
-from quacc import job
-from monty.dev import requires
-from quacc.types import SourceDirectory, Copy
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
 from fairchem.data.omol.orca.calc import Vertical
 from fairchem.data.omol.orca.recipes import single_point_calculation
+from monty.dev import requires
+
+from quacc import job
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
+
+    from quacc.types import Copy, SourceDirectory
 
 has_fairchem = bool(find_spec("fairchem"))
 has_fairchem_omol = (
