@@ -2,16 +2,11 @@
 
 from __future__ import annotations
 
-from importlib.util import find_spec
 from typing import TYPE_CHECKING
-
-from monty.dev import requires
 
 from quacc import job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
-
-has_atomate2 = bool(find_spec("atomate2"))
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
@@ -20,7 +15,6 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_aloe_static_job(
     atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
 ) -> VaspSchema:
@@ -46,13 +40,12 @@ def mp_aloe_static_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
     """
-    from atomate2.vasp.jobs.mp import MP24RelaxMaker
+    from pymatgen.io.vasp.sets import MP24RelaxSet
 
-    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
-        MP24RelaxMaker()
+    calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_input_set(
+        MP24RelaxSet()
     )
     calc_defaults |= {
-        "encut": 680,
         "kspacing": 0.2,
         "nsw": 0,
         "incar_copilot": "critical",

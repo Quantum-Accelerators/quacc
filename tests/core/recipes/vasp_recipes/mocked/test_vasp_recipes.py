@@ -53,7 +53,6 @@ FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
 
 
-@pytest.mark.skipif(not has_atomate2, reason="atomate2 is not installed")
 def test_mp_aloe_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
     ref_parameters = {
@@ -74,7 +73,7 @@ def test_mp_aloe_static_job(patch_metallic_taskdoc):
         "lorbit": 11,
         "lreal": False,
         "lvtot": True,
-        "lwave": True,
+        "lwave": False,
         "magmom": [0.6],
         "metagga": "r2scan",
         "nelm": 200,
