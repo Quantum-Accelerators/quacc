@@ -101,6 +101,22 @@ def test_freq_job_v1(tmp_path, monkeypatch):
     assert output["results"]["gibbs_energy"] == pytest.approx(0.05367081893346437)
 
 
+def test_freq_job_harmonic(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H2O")
+    output = freq_job(atoms, thermo_method="harmonic")
+
+    assert "sigma" not in output["parameters_thermo"]
+    assert "pressure" not in output["parameters_thermo"]
+    assert len(output["parameters_thermo"]["vib_freqs"]) == 3
+    assert output["results"]["energy"] == 0.0
+    assert output["results"]["helmholtz_energy"] == pytest.approx(
+        output["results"]["internal_energy"]
+        - 298.15 * output["results"]["entropy"]
+    )
+
+
 def test_freq_job_v2(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 

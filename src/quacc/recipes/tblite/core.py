@@ -122,6 +122,7 @@ def freq_job(
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
+    thermo_method: Literal["harmonic", "ideal_gas"] = "ideal_gas",
     vib_kwargs: VibKwargs | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -141,6 +142,8 @@ def freq_job(
         Temperature in Kelvins.
     pressure
         Pressure in bar.
+    thermo_method
+        Method to use for thermochemistry. Options are "harmonic" or "ideal_gas".
     vib_kwargs
         Dictionary of kwargs for [quacc.runners.ase.Runner.run_vib][].
     additional_fields
@@ -169,5 +172,5 @@ def freq_job(
         additional_fields={"name": "TBLite Frequency and Thermo"}
         | (additional_fields or {}),
     ).vib_and_thermo(
-        "ideal_gas", energy=energy, temperature=temperature, pressure=pressure
+        thermo_method, energy=energy, temperature=temperature, pressure=pressure
     )
