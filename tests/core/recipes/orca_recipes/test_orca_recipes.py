@@ -1,8 +1,8 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 from importlib import util
+from pathlib import Path
 
 import pytest
 from ase.build import molecule
@@ -197,9 +197,9 @@ def test_ase_quasi_irc_job(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert output["parameters"]["orcasimpleinput"] == "def2-svp engrad hf xyzfile"
 
+
 @pytest.mark.skipif(not has_fairchem_omol, reason="fairchem not installed")
 def test_fairchem_omol():
-    from quacc.recipes.orca.fairchem import omol_static_job
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
