@@ -146,7 +146,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: conda install psi4 -c conda-forge libx=7.0.0
+        run: conda install psi4 -c conda-forge libxc-c=7.0.0
 
       - name: Install pip packages
         run: |
