@@ -200,6 +200,7 @@ def test_ase_quasi_irc_job(tmp_path, monkeypatch):
 
 @pytest.mark.skipif(not has_fairchem_omol, reason="fairchem not installed")
 def test_fairchem_omol(tmp_path, monkeypatch):
+    from quacc.recipes.orca.fairchem import omol_static_job
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
