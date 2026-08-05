@@ -26,7 +26,7 @@ from quacc.recipes.vasp.mp24 import (
     mp_metagga_static_job,
     mp_prerelax_job,
 )
-from quacc.recipes.vasp.mp_aloe import mp_aloe_relax_job
+from quacc.recipes.vasp.mp_aloe import mp_aloe_static_job
 from quacc.recipes.vasp.mp_legacy import (
     mp_gga_relax_flow,
     mp_gga_relax_job,
@@ -54,18 +54,54 @@ MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 is not installed")
-def test_mp_aloe_relax_job(patch_metallic_taskdoc):
+def test_mp_aloe_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
+    ref_parameters = {
+        "algo": "normal",
+        "ediff": 1e-5,
+        "encut": 680.0,
+        "gga_compat": False,
+        "isif": 3,
+        "ismear": 0,
+        "ispin": 2,
+        "kspacing": 0.2,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lelf": False,
+        "lmaxmix": 6,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": False,
+        "lvtot": True,
+        "lwave": True,
+        "magmom": [0.6],
+        "metagga": "r2scan",
+        "nelm": 200,
+        "nsw": 0,
+        "prec": "accurate",
+        "sigma": 0.05,
+        "pp": "pbe",
+        "pp_version": "64",
+        "setups": {"Al": ""},
+    }
 
-    output = mp_aloe_relax_job(atoms)
+    output = mp_aloe_static_job(atoms, ncore=None)
     assert output["structure_metadata"]["nsites"] == len(atoms)
-    assert output["parameters"]["encut"] == 680
-    assert output["parameters"]["kspacing"] == 0.2
-    assert output["parameters"]["nsw"] > 0
+    assert isinstance(output["parameters"].pop("ncore"), int)
+    assert output["parameters"] == ref_parameters
 
-    output = mp_aloe_relax_job(atoms, encut=700, kspacing=0.25)
-    assert output["parameters"]["encut"] == 700
-    assert output["parameters"]["kspacing"] == 0.25
+    output = mp_aloe_static_job(
+        atoms, encut=700, kspacing=0.25, ncore=None, nsw=1
+    )
+    assert isinstance(output["parameters"].pop("ncore"), int)
+    assert output["parameters"] == ref_parameters | {
+        "ediffg": -0.02,
+        "encut": 700,
+        "ibrion": 2,
+        "kspacing": 0.25,
+        "nsw": 1,
+    }
 
 
 def test_static_job(patch_metallic_taskdoc):

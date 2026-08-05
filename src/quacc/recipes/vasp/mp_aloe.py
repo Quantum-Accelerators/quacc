@@ -1,4 +1,4 @@
-"""Materials Project ALOE-compatible VASP recipes."""
+"""MP-ALOE-compatible VASP recipes."""
 
 from __future__ import annotations
 
@@ -21,11 +21,11 @@ if TYPE_CHECKING:
 
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
-def mp_aloe_relax_job(
+def mp_aloe_static_job(
     atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
 ) -> VaspSchema:
     """
-    Relax a structure with Materials Project ALOE settings.
+    Run a static calculation with MP-ALOE settings.
 
     The recipe uses the pymatgen MP24 relaxation settings with a plane-wave
     cutoff of 680 eV and ``KSPACING = 0.2``.
@@ -39,7 +39,7 @@ def mp_aloe_relax_job(
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to ``None`` to
         remove a pre-existing key entirely. User values take precedence over
-        the MP ALOE defaults.
+        the MP-ALOE defaults.
 
     Returns
     -------
@@ -51,13 +51,18 @@ def mp_aloe_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24RelaxMaker()
     )
-    calc_defaults |= {"encut": 680, "kspacing": 0.2, "incar_copilot": "critical"}
+    calc_defaults |= {
+        "encut": 680,
+        "kspacing": 0.2,
+        "nsw": 0,
+        "incar_copilot": "critical",
+    }
 
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
-        additional_fields={"name": "MP ALOE Relax"},
+        additional_fields={"name": "MP-ALOE Static"},
         copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]} if prev_dir else None,
     )
