@@ -91,9 +91,7 @@ def test_mp_aloe_static_job(patch_metallic_taskdoc):
     assert isinstance(output["parameters"].pop("ncore"), int)
     assert output["parameters"] == ref_parameters
 
-    output = mp_aloe_static_job(
-        atoms, encut=700, kspacing=0.25, ncore=None, nsw=1
-    )
+    output = mp_aloe_static_job(atoms, encut=700, kspacing=0.25, ncore=None, nsw=1)
     assert isinstance(output["parameters"].pop("ncore"), int)
     assert output["parameters"] == ref_parameters | {
         "ediffg": -0.02,
