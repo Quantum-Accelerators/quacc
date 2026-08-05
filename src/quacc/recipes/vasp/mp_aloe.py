@@ -45,11 +45,7 @@ def mp_aloe_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_input_set(
         MP24RelaxSet()
     )
-    calc_defaults |= {
-        "kspacing": 0.2,
-        "nsw": 0,
-        "incar_copilot": "critical",
-    }
+    calc_defaults |= {"kspacing": 0.2, "nsw": 0, "incar_copilot": "critical"}
 
     return run_and_summarize(
         atoms,
