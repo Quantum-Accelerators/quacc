@@ -139,7 +139,7 @@ def tracked(node_type: NodeType):
 
             @wraps(func)
             async def wrapper(*args, **kwargs):
-                return await _tracked_call(func, node_type, args, kwargs)
+                return await _tracked_call_async(func, node_type, args, kwargs)
 
         else:
 
@@ -155,10 +155,7 @@ def tracked(node_type: NodeType):
 
 
 def _tracked_call(func, node_type, args, kwargs):
-    """Shared tracking logic for both sync and async tracked wrappers.
-
-    For async functions, the caller must ``await`` the return value.
-    """
+    """Track a synchronous function call."""
     from quacc import get_settings
 
     settings = get_settings()
@@ -192,3 +189,31 @@ def _tracked_call(func, node_type, args, kwargs):
         # node onto the existing stack.
         with _push_context(name, node_type):
             return func(*args, **kwargs)
+
+
+async def _tracked_call_async(func, node_type, args, kwargs):
+    """Track an async call while its coroutine body is executing."""
+    from quacc import get_settings
+
+    settings = get_settings()
+
+    if not settings.NESTED_RESULTS:
+        return await func(*args, **kwargs)
+
+    name = make_unique_name(prefix=f"{func.__name__}-")
+
+    if is_top_level():
+        job_results_dir = settings.RESULTS_DIR.resolve()
+
+        with directory_context(str(job_results_dir)), _push_context(name, node_type):
+            return_value = await func(*args, **kwargs)
+
+            tmpdir_base = (settings.SCRATCH_DIR or settings.RESULTS_DIR).resolve()
+            tmpdir = tmpdir_base / Path("tmp-" + name)
+            if tmpdir.exists():
+                shutil.rmtree(tmpdir)
+
+            return return_value
+
+    with _push_context(name, node_type):
+        return await func(*args, **kwargs)

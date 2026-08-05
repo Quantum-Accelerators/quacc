@@ -55,11 +55,9 @@ def recursive_dict_merge(
     Mapping[str, Any]
         Merged dictionary
     """
-    old_dict = dicts[0]
-    merged = {}
-    for i in range(len(dicts) - 1):
-        merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1], verbose=verbose)
-        old_dict = deepcopy(merged)
+    merged = deepcopy(dicts[0]) if dicts[0] is not None else {}
+    for dict_ in dicts[1:]:
+        merged = _recursive_dict_pair_merge(merged, dict_, verbose=verbose)
     return remove_dict_entries(merged, remove_trigger=remove_trigger)
 
 

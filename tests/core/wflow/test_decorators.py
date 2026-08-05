@@ -4,8 +4,8 @@ import asyncio
 import sys
 from types import ModuleType, SimpleNamespace
 
-from quacc import flow, job, subflow
-from quacc.wflow_tools.context import NodeType, tracked
+from quacc import change_settings, flow, job, subflow
+from quacc.wflow_tools.context import NodeType, get_context_path, tracked
 
 
 def test_decorators(tmp_path, monkeypatch):
@@ -113,6 +113,24 @@ def test_tracked_async_function():
         return a + b
 
     assert asyncio.run(add(1, 2)) == 3
+
+
+def test_tracked_async_function_context(tmp_path):
+    @tracked(NodeType.JOB)
+    async def inner():
+        await asyncio.sleep(0)
+        return get_context_path()
+
+    @tracked(NodeType.FLOW)
+    async def outer():
+        await asyncio.sleep(0)
+        return await inner()
+
+    with change_settings({"NESTED_RESULTS": True, "RESULTS_DIR": tmp_path}):
+        context_path = asyncio.run(outer())
+
+    assert context_path.startswith("outer-")
+    assert "/inner-" in context_path
 
 
 def test_ray_subflow_target_resolves_result(monkeypatch):
