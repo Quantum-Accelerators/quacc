@@ -112,8 +112,7 @@ def test_freq_job_harmonic(tmp_path, monkeypatch):
     assert len(output["parameters_thermo"]["vib_freqs"]) == 3
     assert output["results"]["energy"] == 0.0
     assert output["results"]["helmholtz_energy"] == pytest.approx(
-        output["results"]["internal_energy"]
-        - 298.15 * output["results"]["entropy"]
+        output["results"]["internal_energy"] - 298.15 * output["results"]["entropy"]
     )
 
 
