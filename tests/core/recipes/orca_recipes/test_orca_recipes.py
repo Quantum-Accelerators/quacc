@@ -203,7 +203,7 @@ def test_fairchem_omol():
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
-    output = omat_static_job(atoms)
+    output = omol_static_job(atoms)
     assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
