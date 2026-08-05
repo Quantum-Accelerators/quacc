@@ -199,7 +199,7 @@ def test_ase_quasi_irc_job(tmp_path, monkeypatch):
 
 
 @pytest.mark.skipif(not has_fairchem_omol, reason="fairchem not installed")
-def test_fairchem_omol():
+def test_fairchem_omol(monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     atoms = molecule("H2")
