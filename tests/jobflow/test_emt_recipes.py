@@ -63,13 +63,14 @@ def test_relax_flow(tmp_path, monkeypatch):
     jf.run_locally(relax_flow(atoms), ensure_success=True)
 
 
-def test_relaxed_slabs(tmp_path, monkeypatch):
+@pytest.mark.parametrize("run_static", [True, False])
+def test_relaxed_slabs(tmp_path, monkeypatch, run_static):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
 
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=run_static)
 
     jf.run_locally(workflow(atoms), ensure_success=True)

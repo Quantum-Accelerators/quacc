@@ -190,6 +190,8 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
     expected_nsites = [64, 80, 80, 96]
 
     outputs = bulk_to_slabs_flow(atoms, run_static=False)
+    outputs = outputs["relax"]
+
     assert len(outputs) == 4
     assert (
         sorted(output["structure_metadata"]["nsites"] for output in outputs)
@@ -203,6 +205,8 @@ def test_slab_dynamic_jobs(tmp_path, monkeypatch):
         run_static=False,
         job_params={"relax_job": {"opt_params": {"fmax": 1.0}, "asap_cutoff": True}},
     )
+    outputs = outputs["relax"]
+
     assert len(outputs) == 4
     assert (
         sorted(output["structure_metadata"]["nsites"] for output in outputs)
@@ -216,22 +220,23 @@ def test_customizer():
     results = bulk_to_slabs_flow(
         atoms, job_params={"static_job": {"asap_cutoff": True}}
     )
-    for result in results:
+    for result in results["static"]:
         assert result["parameters"]["asap_cutoff"] is True
 
 
 def test_customizer_v2():
     atoms = bulk("Cu")
     results = bulk_to_slabs_flow(atoms, job_params={"relax_job": {"asap_cutoff": True}})
-    for result in results:
+    for result in results["static"]:
         assert result["parameters"]["asap_cutoff"] is False
 
 
 def test_all_customizers():
     atoms = bulk("Cu")
     results = bulk_to_slabs_flow(atoms, job_params={"all": {"asap_cutoff": True}})
-    for result in results:
-        assert result["parameters"]["asap_cutoff"] is True
+    for result in results.values():
+        for _result in result:
+            assert _result["parameters"]["asap_cutoff"] is True
 
 
 def test_all_customizers_v2():
@@ -240,5 +245,7 @@ def test_all_customizers_v2():
         atoms,
         job_params={"all": {"asap_cutoff": True}, "static_job": {"asap_cutoff": False}},
     )
-    for result in results:
+    for result in results["static"]:
         assert result["parameters"]["asap_cutoff"] is False
+    for result in results["relax"]:
+        assert result["parameters"]["asap_cutoff"] is True
