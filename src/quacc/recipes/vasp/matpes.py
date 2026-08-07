@@ -14,18 +14,26 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import job
+from quacc import flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
+from quacc.wflow_tools.customizers import customize_funcs
 
 has_atomate2 = bool(find_spec("atomate2"))
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from collections.abc import Callable
+    from typing import Any, Literal, TypedDict
 
     from ase.atoms import Atoms
 
     from quacc.types import SourceDirectory, VaspSchema
+
+    class MatPESStaticFlowSchema(TypedDict):
+        """Type hint associated with the MatPES static flow."""
+
+        pbe: VaspSchema
+        r2scan: VaspSchema
 
 
 @job
@@ -121,3 +129,47 @@ def matpes_static_job(
         additional_fields={"name": f"MatPES {level} Static"},
         copy_files={prev_dir: ["WAVECAR*"]} if prev_dir else None,
     )
+
+
+@flow
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+def matpes_static_flow(
+    atoms: Atoms,
+    job_params: dict[str, dict[str, Any]] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
+) -> MatPESStaticFlowSchema:
+    """Run consecutive MatPES-compatible PBE and r2SCAN static calculations.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object.
+    job_params
+        Custom parameters for the ``pbe_static_job`` and ``r2scan_static_job``
+        steps. Use the ``all`` key to customize both steps.
+    job_decorators
+        Custom decorators for the ``pbe_static_job`` and ``r2scan_static_job``
+        steps. Use the ``all`` key to customize both steps.
+
+    Returns
+    -------
+    MatPESStaticFlowSchema
+        Dictionary containing the PBE and r2SCAN results.
+    """
+    pbe_static_job, r2scan_static_job = customize_funcs(
+        ["pbe_static_job", "r2scan_static_job"],
+        [matpes_static_job, matpes_static_job],
+        param_defaults={
+            "pbe_static_job": {"level": "PBE"},
+            "r2scan_static_job": {"level": "r2SCAN"},
+        },
+        param_swaps=job_params,
+        decorators=job_decorators,
+    )
+
+    pbe_results = pbe_static_job(atoms)
+    r2scan_results = r2scan_static_job(
+        pbe_results["atoms"], prev_dir=pbe_results["dir_name"]
+    )
+
+    return {"pbe": pbe_results, "r2scan": r2scan_results}
