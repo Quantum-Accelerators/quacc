@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from importlib import util
 from pathlib import Path
 
 import pytest
@@ -14,6 +15,12 @@ from quacc.recipes.orca.core import (
     static_job,
 )
 
+has_fairchem = util.find_spec("fairchem") is not None
+has_fairchem_omol = (
+    has_fairchem
+    and util.find_spec("fairchem.data") is not None
+    and util.find_spec("fairchem.data.omol") is not None
+)
 FILE_DIR = Path(__file__).parent
 
 
@@ -189,3 +196,17 @@ def test_ase_quasi_irc_job(tmp_path, monkeypatch):
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
     assert output["parameters"]["orcasimpleinput"] == "def2-svp engrad hf xyzfile"
+
+
+@pytest.mark.skipif(not has_fairchem_omol, reason="fairchem not installed")
+def test_fairchem_omol(tmp_path, monkeypatch):
+    from quacc.recipes.orca.fairchem import omol_static_job
+
+    monkeypatch.chdir(tmp_path)
+
+    atoms = molecule("H2")
+    output = omol_static_job(atoms)
+    assert output["molecule_metadata"]["natoms"] == len(atoms)
+    assert output["parameters"]["charge"] == 0
+    assert output["parameters"]["mult"] == 1
+    assert output["parameters"]["orcasimpleinput"] == "def2-tzvpd freq hf xyzfile"
