@@ -1216,10 +1216,12 @@ def test_matpes(patch_metallic_taskdoc):
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
-def test_matpes_static_flow(patch_metallic_taskdoc):
-    output = matpes_static_flow(
-        bulk("Al"), job_params={"all": {"ncore": None, "kspacing": 0.4}}
-    )
+def test_matpes_static_flow(tmp_path, patch_metallic_taskdoc):
+    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
+        copy_r(MOCKED_DIR / "metallic", tmp_path)
+        output = matpes_static_flow(
+            bulk("Al"), job_params={"all": {"ncore": None, "kspacing": 0.4}}
+        )
     assert output["pbe"]["parameters"]["xc"] == "pbe"
     assert output["pbe"]["parameters"]["lwave"] is True
     assert output["r2scan"]["parameters"]["xc"] == "r2scan"
@@ -1375,10 +1377,12 @@ def test_mof_off(patch_metallic_taskdoc):
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
-def test_mof_off_static_flow(patch_metallic_taskdoc):
-    output = mof_off_static_flow(
-        bulk("Al"), job_params={"all": {"dispersion": "D4", "ncore": None}}
-    )
+def test_mof_off_static_flow(tmp_path, patch_metallic_taskdoc):
+    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
+        copy_r(MOCKED_DIR / "metallic", tmp_path)
+        output = mof_off_static_flow(
+            bulk("Al"), job_params={"all": {"dispersion": "D4", "ncore": None}}
+        )
     assert output["pbe"]["parameters"]["xc"] == "pbe"
     assert output["pbe"]["parameters"]["lwave"] is True
     assert output["pbe"]["parameters"]["ivdw"] == 13
