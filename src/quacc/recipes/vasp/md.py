@@ -21,7 +21,7 @@ def md_job(
     atoms: Atoms,
     preset: str | None = "DefaultSetGGA",
     timestep: float = 0.5,
-    nsteps: int = 2000,
+    nsteps: int = 20000,
     ensemble: Literal["nve", "nvt", "npt"] = "nvt",
     temperature: float = 300.0,
     pressure: float = 1.0,
