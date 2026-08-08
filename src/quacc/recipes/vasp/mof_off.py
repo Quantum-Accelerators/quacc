@@ -94,6 +94,7 @@ def mof_off_static_job(
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mof_off_static_flow(
     atoms: Atoms,
+    dispersion: Literal["D3BJ", "D4"] | None = None,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
 ) -> MOFOffStaticFlowSchema:
@@ -103,6 +104,9 @@ def mof_off_static_flow(
     ----------
     atoms
         Atoms object.
+    dispersion
+        Dispersion correction to apply to both static calculations: None,
+        "D3BJ", or "D4".
     job_params
         Custom parameters for the ``pbe_static_job`` and ``r2scan_static_job``
         steps. Use the ``all`` key to customize both steps.
@@ -119,8 +123,8 @@ def mof_off_static_flow(
         ["pbe_static_job", "r2scan_static_job"],
         [mof_off_static_job, mof_off_static_job],
         param_defaults={
-            "pbe_static_job": {"level": "PBE"},
-            "r2scan_static_job": {"level": "r2SCAN"},
+            "pbe_static_job": {"level": "PBE", "dispersion": dispersion},
+            "r2scan_static_job": {"level": "r2SCAN", "dispersion": dispersion},
         },
         param_swaps=job_params,
         decorators=job_decorators,

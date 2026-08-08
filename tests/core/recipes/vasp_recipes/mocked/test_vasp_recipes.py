@@ -1381,7 +1381,7 @@ def test_mof_off_static_flow(tmp_path, patch_metallic_taskdoc):
     with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
         copy_r(MOCKED_DIR / "metallic", tmp_path)
         output = mof_off_static_flow(
-            bulk("Al"), job_params={"all": {"dispersion": "D4", "ncore": None}}
+            bulk("Al"), dispersion="D4", job_params={"all": {"ncore": None}}
         )
     assert output["pbe"]["parameters"]["xc"] == "pbe"
     assert output["pbe"]["parameters"]["lwave"] is True
