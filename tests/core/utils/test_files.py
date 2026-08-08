@@ -262,6 +262,36 @@ def test_load_yaml_calc_with_explicit_parent_path(tmp_path):
     assert config == {"settings": {"child": True, "inherited": True}}
 
 
+@pytest.mark.parametrize(
+    ("parent_ref", "parent_name"),
+    [("parent.yaml", "parent.yaml"), ("parent.1", "parent.1.yaml")],
+)
+def test_load_yaml_calc_with_relative_parent_path(
+    tmp_path, monkeypatch, parent_ref, parent_name
+):
+    preset_dir = tmp_path / "presets"
+    preset_dir.mkdir()
+    (preset_dir / parent_name).write_text("settings:\n  inherited: true\n")
+    child = preset_dir / "child.yaml"
+    child.write_text(f"parent: {parent_ref}\nsettings:\n  child: true\n")
+    monkeypatch.chdir(tmp_path)
+
+    config = load_yaml_calc(child)
+
+    assert config == {"settings": {"child": True, "inherited": True}}
+
+
+def test_load_yaml_calc_child_scalar_overrides_parent(tmp_path):
+    parent = tmp_path / "parent.yaml"
+    parent.write_text("method: parent\n")
+    child = tmp_path / "child.yaml"
+    child.write_text("parent: parent.yaml\nmethod: child\n")
+
+    config = load_yaml_calc(child)
+
+    assert config == {"method": "child"}
+
+
 def test_safe_decompress_dir_skips_disappearing_files(tmp_path, monkeypatch, caplog):
     disappearing_file = tmp_path / "output.gz"
     disappearing_file.touch()

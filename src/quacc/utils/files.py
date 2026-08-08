@@ -238,18 +238,18 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
     # the child file.
     for config_arg in deepcopy(config):
         if "parent" in config_arg.lower():
-            if Path(config[config_arg]).suffix in (".yml", ".yaml"):
-                yaml_parent_path = config[config_arg]
-            else:
-                yaml_parent_path = yaml_path.parent / f"{config[config_arg]}.yaml"
+            yaml_parent_path = Path(config[config_arg]).expanduser()
+            if yaml_parent_path.suffix not in (".yml", ".yaml"):
+                yaml_parent_path = Path(f"{yaml_parent_path}.yaml")
+            if not yaml_parent_path.is_absolute():
+                yaml_parent_path = yaml_path.parent / yaml_parent_path
             parent_config = load_yaml_calc(yaml_parent_path)
 
             for k, v in parent_config.items():
                 if k not in config:
                     config[k] = v
-                else:
-                    v_new = parent_config.get(k, {})
-                    for kk, vv in v_new.items():
+                elif isinstance(config[k], dict) and isinstance(v, dict):
+                    for kk, vv in v.items():
                         if kk not in config[k]:
                             config[k][kk] = vv
 
