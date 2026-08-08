@@ -364,6 +364,21 @@ def test_run_neb(monkeypatch, tmp_path):
     assert not os.path.exists(tmp_path / "opt.log")
 
 
+@pytest.mark.parametrize(
+    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+)
+def test_run_neb_copy_files(monkeypatch, tmp_path, copy_files):
+    monkeypatch.chdir(tmp_path)
+    prep_files()
+    images = read(test_files_path / "neb_path.xyz", index=":")
+
+    with change_settings({"RESULTS_DIR": tmp_path, "GZIP_FILES": False}):
+        Runner(images, EMT(), copy_files=copy_files).run_neb()
+        results_dir = _find_results_dir()
+
+    assert (Path(results_dir) / "test_file.txt").exists()
+
+
 def test_run_neb_relax_cell():
     images = read(test_files_path / "neb_path.xyz", index=":")
 
