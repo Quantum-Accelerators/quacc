@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0]
+
+### Added
+
+- Added recipes for MatterSim, MatPES, MP-ALOE
+
+### Changed
+
+- Changed default number of steps to 20k from 2k in VASP MD job
+
+### Removed
+
+- Removed NewtonNet recipes due to lack of maintenance in upstream packages
+
 ## [1.4.1]
 
 ### Fixed
