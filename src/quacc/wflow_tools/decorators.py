@@ -527,7 +527,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "jobflow":
-        return _get_jobflow_wrapped_func(_func, **kwargs)
+        return _get_jobflow_wrapped_subflow(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
@@ -682,6 +682,13 @@ def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
         return _jobflow_value_to_output(_func(*args, **kwargs))
 
     return jf_flow(wrapper)
+
+
+def _get_jobflow_wrapped_subflow(_func: Callable, **job_kwargs) -> Callable:
+    """Wrap a dynamic Jobflow subflow while retaining every job it creates."""
+    from jobflow import flow as jf_flow
+
+    return _get_jobflow_wrapped_func(jf_flow(_func), **job_kwargs)
 
 
 class Delayed_:

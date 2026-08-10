@@ -32,6 +32,20 @@ def test_functools(tmp_path, monkeypatch, job_decorators):
     assert results
 
 
+def test_bulk_to_slabs_with_static_jobs(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    workflow = bulk_to_slabs_flow(bulk("Cu"))
+
+    responses = jf.run_locally(workflow, ensure_success=True)
+    results = [
+        response.output
+        for indexed_responses in responses.values()
+        for response in indexed_responses.values()
+        if isinstance(response.output, dict) and "atoms" in response.output
+    ]
+    assert len(results) == 8
+
+
 def test_copy_files(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
