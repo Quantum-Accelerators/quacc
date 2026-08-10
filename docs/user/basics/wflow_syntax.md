@@ -287,26 +287,27 @@ graph LR
 
     @flow  #  (2)!
     def workflow(a, b, c):
-        return mult(add(a, b), c)
+        job1 = add(a, b)
+        job2 = mult(job1.output, c)
+        return job2.output
 
 
     workflow_flow = workflow(1, 2, 3)  #  (3)!
 
     responses = jf.run_locally(workflow_flow, ensure_success=True)  #  (4)!
-    final_job = workflow_flow.jobs[-1]
-    result = responses[final_job.uuid][1].output  #  (5)!
+    result = responses[workflow_flow.output.uuid][1].output  #  (5)!
     print(result)  # 9
     ```
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
 
-    2. The `#!Python @flow` decorator will create a Jobflow `#!Python Flow` from the jobs returned by the decorated function.
+    2. The `#!Python @flow` decorator will create a Jobflow `#!Python Flow` from the jobs created by the decorated function and use the returned output reference as the flow output.
 
     3. Calling the decorated function returns the Jobflow `#!Python Flow` that represents the workflow.
 
     4. The workflow is run locally and the responses are returned in a dictionary.
 
-    5. The result is extracted from the dictionary by using the UUID of the final job in the workflow.
+    5. The result is extracted from the dictionary by using the UUID of the job referenced by the flow output.
 
 ??? Tip "Stripping the Decorator from a Job"
 
