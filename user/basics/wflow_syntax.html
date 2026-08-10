@@ -6595,7 +6595,7 @@
 <p>The <code class="language-Python highlight"><span class="nd">@job</span></code> decorator will be transformed into <code class="language-Python highlight"><span class="nd">@jf</span><span class="o">.</span><span class="n">job</span></code>.</p>
 </li>
 <li>
-<p>The <code class="language-Python highlight"><span class="nd">@flow</span></code> decorator will create a Jobflow <code class="language-Python highlight"><span class="n">Flow</span></code> from the jobs returned by the decorated function.</p>
+<p>The <code class="language-Python highlight"><span class="nd">@flow</span></code> decorator will create a Jobflow <code class="language-Python highlight"><span class="n">Flow</span></code> from the jobs returned by the decorated function. When a quacc-decorated job is passed to another quacc-decorated job, quacc automatically passes its output reference to Jobflow.</p>
 </li>
 <li>
 <p>Calling the decorated function returns the Jobflow <code class="language-Python highlight"><span class="n">Flow</span></code> that represents the workflow.</p>
