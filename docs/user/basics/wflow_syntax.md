@@ -46,8 +46,8 @@ graph LR
         return a * b
 
 
-    @flow
-    def workflow(a, b, c):  #  (2)!
+    @flow  #  (2)!
+    def workflow(a, b, c):
         output1 = add(a, b)
         output2 = mult(output1, c)
         return output2
@@ -98,8 +98,8 @@ graph LR
         return a * b
 
 
-    @flow
-    def workflow(a, b, c):  #  (2)!
+    @flow  #  (2)!
+    def workflow(a, b, c):
         output1 = add(a, b)
         output2 = mult(output1, c)
         return output2
@@ -142,8 +142,8 @@ graph LR
         return a * b
 
 
-    @flow
-    def workflow(a, b, c):  #  (2)!
+    @flow  #  (2)!
+    def workflow(a, b, c):
         output1 = add(a, b)
         output2 = mult(output1, c)
         return output2
@@ -191,8 +191,8 @@ graph LR
         return a * b
 
 
-    @flow
-    def workflow(a, b, c):  #  (2)!
+    @flow  #  (2)!
+    def workflow(a, b, c):
         output1 = add(a, b)
         output2 = mult(output1, c)
         return output2
