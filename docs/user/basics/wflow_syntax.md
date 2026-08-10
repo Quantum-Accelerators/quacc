@@ -176,7 +176,6 @@ graph LR
         1. It is necessary to initialize Ray before submitting calculations. This command starts (or connects to) a local Ray cluster and only needs to be done once.
 
     ```python
-    import ray
     from quacc import job
 
 
