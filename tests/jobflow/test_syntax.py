@@ -24,7 +24,7 @@ def test_jobflow_decorators(tmp_path, monkeypatch):
 
     @flow
     def workflow(a, b, c):
-        return mult(add(a, b), c).output
+        return mult(add(a, b), c)
 
     assert not isinstance(add, jf.Job)
     assert not isinstance(mult, jf.Job)
@@ -35,7 +35,7 @@ def test_jobflow_decorators(tmp_path, monkeypatch):
     workflow_flow = workflow(1, 2, 3)
     assert isinstance(workflow_flow, jf.Flow)
     responses = jf.run_locally(workflow_flow, ensure_success=True)
-    assert responses[workflow_flow.output.uuid][1].output == 9
+    assert responses[workflow_flow.jobs[-1].uuid][1].output == 9
     assert isinstance(add_distributed([1, 2, 3], 4), jf.Job)
 
 
@@ -56,7 +56,7 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch):
 
     @flow()
     def workflow(a, b, c):
-        return mult(add(a, b), c).output
+        return mult(add(a, b), c)
 
     assert not isinstance(add, jf.Job)
     assert not isinstance(mult, jf.Job)
@@ -67,5 +67,5 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch):
     workflow_flow = workflow(1, 2, 3)
     assert isinstance(workflow_flow, jf.Flow)
     responses = jf.run_locally(workflow_flow, ensure_success=True)
-    assert responses[workflow_flow.output.uuid][1].output == 9
+    assert responses[workflow_flow.jobs[-1].uuid][1].output == 9
     assert isinstance(add_distributed([1, 2, 3], 4), jf.Job)

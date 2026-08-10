@@ -631,7 +631,15 @@ def _get_prefect_wrapped_flow(
 def _get_jobflow_wrapped_func(method=None, **job_kwargs):
     from jobflow import job as jf_job
 
-    return jf_job(method, **job_kwargs)
+    wrapped = jf_job(method, **job_kwargs)
+
+    @wraps(wrapped)
+    def wrapper(*args, **kwargs):
+        args = tuple(_jobflow_job_to_output(arg) for arg in args)
+        kwargs = {key: _jobflow_job_to_output(val) for key, val in kwargs.items()}
+        return wrapped(*args, **kwargs)
+
+    return wrapper
 
 
 def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
@@ -698,6 +706,22 @@ def _unwrap_ray_future(value: Any) -> Any:
         return tuple(_unwrap_ray_future(v) for v in value)
     if type(value) is dict:
         return {k: _unwrap_ray_future(v) for k, v in value.items()}
+    return value
+
+
+def _jobflow_job_to_output(value: Any) -> Any:
+    """Convert Jobflow jobs used as inputs to their output references."""
+    from jobflow import Flow as JobflowFlow
+    from jobflow import Job as JobflowJob
+
+    if isinstance(value, (JobflowJob, JobflowFlow)):
+        return value.output
+    if type(value) is list:
+        return [_jobflow_job_to_output(v) for v in value]
+    if type(value) is tuple:
+        return tuple(_jobflow_job_to_output(v) for v in value)
+    if type(value) is dict:
+        return {k: _jobflow_job_to_output(v) for k, v in value.items()}
     return value
 
 
