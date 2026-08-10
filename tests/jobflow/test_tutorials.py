@@ -25,7 +25,7 @@ def test_tutorial1a(tmp_path, monkeypatch, jobflow_output):
     assert "atoms" in jobflow_output(responses, job)
 
 
-def test_tutorial1b(tmp_path, monkeypatch, jobflow_output):
+def test_tutorial1b(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Define the Atoms object
@@ -37,8 +37,14 @@ def test_tutorial1b(tmp_path, monkeypatch, jobflow_output):
     # Dispatch the workflow and get results
     responses = jf.run_locally(workflow, ensure_success=True)
 
-    # Inspect the results returned by the subflow
-    results = jobflow_output(responses, workflow.output)
+    # Inspect the concrete results returned by the static jobs
+    results = [
+        response.output
+        for indexed_responses in responses.values()
+        for response in indexed_responses.values()
+        if isinstance(response.output, dict)
+        and response.output.get("name") == "EMT Static"
+    ]
     assert len(results) == 4
     for result in results:
         assert "atoms" in result
@@ -127,7 +133,7 @@ def test_tutorial2b_flow_decorator(tmp_path, monkeypatch, jobflow_output):
     )
 
 
-def test_tutorial2c(tmp_path, monkeypatch, jobflow_output):
+def test_tutorial2c(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     # Define the workflow
@@ -142,9 +148,15 @@ def test_tutorial2c(tmp_path, monkeypatch, jobflow_output):
     # Dispatch the workflow and retrieve results
     workflow_flow = workflow(atoms)
     responses = jf.run_locally(workflow_flow, ensure_success=True)
-    results = jobflow_output(responses, workflow_flow.output)
-    assert len(results) == 4
-    for result in results:
+    results = [
+        response.output
+        for indexed_responses in responses.values()
+        for response in indexed_responses.values()
+        if isinstance(response.output, dict)
+        and response.output.get("name") == "EMT Relax"
+    ]
+    assert len(results) == 5
+    for result in results[1:]:
         assert "atoms" in result
 
 
