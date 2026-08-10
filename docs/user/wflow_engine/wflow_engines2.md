@@ -92,6 +92,7 @@ graph LR
     from quacc import flow
     from quacc.recipes.emt.core import relax_job, static_job
 
+
     # Define the workflow
     @flow
     def workflow(atoms):
@@ -107,9 +108,7 @@ graph LR
 
     # Run the workflow locally
     workflow_flow = workflow(atoms)
-    responses = jf.run_locally(
-        workflow_flow, ensure_success=True, create_folders=True
-    )
+    responses = jf.run_locally(workflow_flow, ensure_success=True, create_folders=True)
 
     # Get the result
     final_job = workflow_flow.jobs[-1]
@@ -419,6 +418,7 @@ graph LR
     from quacc import flow
     from quacc.recipes.emt.core import relax_job
 
+
     # Define the workflow
     @flow
     def workflow(atoms1, atoms2):
@@ -434,9 +434,7 @@ graph LR
 
     # Run the workflow locally
     workflow_flow = workflow(atoms1, atoms2)
-    responses = jf.run_locally(
-        workflow_flow, ensure_success=True, create_folders=True
-    )
+    responses = jf.run_locally(workflow_flow, ensure_success=True, create_folders=True)
 
     # Get the results
     job1, job2 = workflow_flow.jobs
