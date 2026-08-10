@@ -63,3 +63,23 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch):
     assert isinstance(mult(1, 2), jf.Job)
     assert isinstance(workflow(1, 2, 3), jf.Flow)
     assert isinstance(add_distributed([1, 2, 3], 4), jf.Job)
+
+
+def test_jobflow_tuple_argument(tmp_path, monkeypatch, jobflow_output):
+    monkeypatch.chdir(tmp_path)
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def sum_values(values):
+        return sum(values)
+
+    job1 = add(1, 2)
+    job2 = add(3, 4)
+    final_job = sum_values((job1, job2))
+    workflow = jf.Flow([job1, job2, final_job])
+
+    responses = jf.run_locally(workflow, ensure_success=True)
+    assert jobflow_output(responses, final_job) == 10
