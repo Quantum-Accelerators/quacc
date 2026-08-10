@@ -30,7 +30,7 @@ def test_change_settings_redecorate_job(tmp_path_factory, jobflow_output):
     write_file_job = redecorate(
         write_file_job, job(settings_swap={"SCRATCH_DIR": tmp_dir1})
     )
-    job = write_file_job()
-    responses = jf.run_locally(job, ensure_success=True, create_folders=False)
-    assert Path(jobflow_output(responses, job)) == tmp_dir1 / "job.txt"
+    write_job = write_file_job()
+    responses = jf.run_locally(write_job, ensure_success=True, create_folders=False)
+    assert Path(jobflow_output(responses, write_job)) == tmp_dir1 / "job.txt"
     assert Path(tmp_dir1 / "job.txt").exists()
