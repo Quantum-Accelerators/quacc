@@ -638,6 +638,8 @@ def _get_jobflow_wrapped_func(method=None, **job_kwargs):
 
     @wraps(wrapped)
     def wrapper(*args, **kwargs):
+        args = tuple(_jobflow_value_to_output(arg) for arg in args)
+        kwargs = {key: _jobflow_value_to_output(value) for key, value in kwargs.items()}
         copy_files = kwargs.get("copy_files")
         if (
             copy_files
@@ -651,10 +653,35 @@ def _get_jobflow_wrapped_func(method=None, **job_kwargs):
     return wrapper
 
 
+def _jobflow_value_to_output(value):
+    """Convert Jobflow jobs to references inside ordinary Python containers."""
+    from jobflow import Flow as JobflowFlow
+    from jobflow import Job as JobflowJob
+
+    while isinstance(value, (JobflowFlow, JobflowJob)):
+        value = value.output
+
+    if type(value) is list:
+        return [_jobflow_value_to_output(item) for item in value]
+    if type(value) is tuple:
+        return tuple(_jobflow_value_to_output(item) for item in value)
+    if type(value) is dict:
+        return {
+            _jobflow_value_to_output(key): _jobflow_value_to_output(item)
+            for key, item in value.items()
+        }
+
+    return value
+
+
 def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
     from jobflow import flow as jf_flow
 
-    return jf_flow(_func)
+    @wraps(_func)
+    def wrapper(*args, **kwargs):
+        return _jobflow_value_to_output(_func(*args, **kwargs))
+
+    return jf_flow(wrapper)
 
 
 class Delayed_:

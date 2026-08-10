@@ -126,8 +126,7 @@ def test_job_getitem():
     @flow
     def greet(s):
         job1 = greetings(s)
-        job2 = upper(job1["hello"])  # No need for `job1.output["hello"]`
-        return job2.output
+        return upper(job1["hello"])  # No need for `job1.output["hello"]`
 
     workflow = greet("World")
     response = jf.run_locally(workflow)
@@ -146,7 +145,7 @@ def test_comparison1(tmp_path, monkeypatch):
         return a * b
 
     job1 = add(1, 2)
-    job2 = mult(job1.output, 3)
+    job2 = mult(job1, 3)
     flow = jf.Flow([job1, job2])  # (2)!
 
     responses = jf.run_locally(flow, ensure_success=True)
@@ -167,8 +166,7 @@ def test_comparison1_flow_decorator(tmp_path, monkeypatch):
     @flow
     def workflow():
         job1 = add(1, 2)
-        job2 = mult(job1.output, 3)
-        return job2.output  # or `return job`
+        return mult(job1, 3)
 
     f = workflow()
     response = jf.run_locally(f, ensure_success=True)
@@ -255,7 +253,7 @@ def test_comparison3(tmp_path, monkeypatch, jobflow_output):
         return a * b
 
     job1 = add(1, 2)
-    job2 = mult(job1.output, 3)
+    job2 = mult(job1, 3)
     flow = jf.Flow([job1, job2])
 
     responses = jf.run_locally(flow, ensure_success=True)
@@ -276,7 +274,7 @@ def test_comparison3_flow_decorator(tmp_path, monkeypatch, jobflow_output):
     @flow
     def workflow():
         job1 = add(1, 2)
-        return mult(job1.output, 3)
+        return mult(job1, 3)
 
     workflow_flow = workflow()
     responses = jf.run_locally(workflow_flow, ensure_success=True)
