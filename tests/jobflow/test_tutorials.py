@@ -47,21 +47,16 @@ def test_tutorial1b(tmp_path, monkeypatch, jobflow_output):
 def test_tutorial2a(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
-    # Make an Atoms object of a bulk Cu structure
-    atoms = bulk("Cu")
-
-    # Define Job 1
-    job1 = relax_job(atoms)  # (1)!
-
-    # Define Job 2, which takes the output of Job 1 as input
-    job2 = static_job(job1["atoms"])  # (2)!
-
     # Define the workflow
-    workflow = jf.Flow([job1, job2])
+    @flow
+    def workflow(atoms):
+        job1 = relax_job(atoms)
+        return static_job(job1["atoms"])
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow, create_folders=True, ensure_success=True)
-    result = jobflow_output(responses, job2)
+    workflow_flow = workflow(bulk("Cu"))
+    responses = jf.run_locally(workflow_flow, create_folders=True, ensure_success=True)
+    result = jobflow_output(responses, workflow_flow.jobs[-1])
     assert "atoms" in result
     assert result["results"]["energy"] == pytest.approx(-0.005681511358581748)
 
@@ -91,19 +86,17 @@ def test_tutorial2a_flow_decorator(tmp_path, monkeypatch, jobflow_output):
 def test_tutorial2b(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
-    # Define two Atoms objects
-    atoms1 = bulk("Cu")
-    atoms2 = molecule("N2")
-
-    # Define two independent relaxation jobs
-    job1 = relax_job(atoms1)
-    job2 = relax_job(atoms2)
-
     # Define the workflow
-    workflow = jf.Flow([job1, job2])
+    @flow
+    def workflow(atoms1, atoms2):
+        job1 = relax_job(atoms1)
+        job2 = relax_job(atoms2)
+        return [job1, job2]
 
     # Run the workflow locally
-    responses = jf.run_locally(workflow, create_folders=True, ensure_success=True)
+    workflow_flow = workflow(bulk("Cu"), molecule("N2"))
+    responses = jf.run_locally(workflow_flow, create_folders=True, ensure_success=True)
+    job1, job2 = workflow_flow.jobs
     assert str(jobflow_output(responses, job1)["atoms"].symbols) == "Cu"
     assert str(jobflow_output(responses, job2)["atoms"].symbols) == "N2"
 
@@ -185,12 +178,14 @@ def test_comparison1(tmp_path, monkeypatch):
     def mult(a, b):
         return a * b
 
-    job1 = add(1, 2)
-    job2 = mult(job1, 3)
-    flow = jf.Flow([job1, job2])  # (2)!
+    @flow
+    def workflow():
+        job1 = add(1, 2)
+        return mult(job1, 3)
 
-    responses = jf.run_locally(flow, ensure_success=True)
-    assert responses[job2.uuid][1].output == 9
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    assert responses[workflow_flow.jobs[-1].uuid][1].output == 9
 
 
 def test_comparison1_flow_decorator(tmp_path, monkeypatch):
@@ -230,19 +225,21 @@ def test_comparison2(tmp_path, monkeypatch):
         jobs = []
         jobs = [add(val, c) for val in vals]
 
-        flow = jf.Flow(jobs)
-        return jf.Response(replace=flow)
+        return jf.Response(replace=jobs)
 
-    job1 = add(1, 2)
-    job2 = make_more(job1.output)
-    job3 = add_distributed(job2.output, 3)
-    flow = jf.Flow([job1, job2, job3])
+    @flow
+    def workflow():
+        job1 = add(1, 2)
+        job2 = make_more(job1.output)
+        return add_distributed(job2.output, 3)
 
-    responses = jf.run_locally(flow, ensure_success=True)
+    workflow_flow = workflow()
+    original_uuids = {job.uuid for job in workflow_flow.jobs}
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
     assert [
         response.output
         for uuid, indexed_responses in responses.items()
-        if uuid not in {job1.uuid, job2.uuid, job3.uuid}
+        if uuid not in original_uuids
         for response in indexed_responses.values()
     ] == [6, 6, 6]
 
@@ -262,10 +259,9 @@ def test_comparison2_flow_decorator(tmp_path, monkeypatch):
     def add_distributed(vals, c):
         jobs = [add(val, c) for val in vals]
 
-        flow = jf.Flow(jobs)
-        return jf.Response(replace=flow)
+        return jf.Response(replace=jobs)
 
-    @jf.flow
+    @flow
     def workflow():
         job1 = add(1, 2)
         job2 = make_more(job1.output)
@@ -293,12 +289,14 @@ def test_comparison3(tmp_path, monkeypatch, jobflow_output):
     def mult(a, b):
         return a * b
 
-    job1 = add(1, 2)
-    job2 = mult(job1, 3)
-    flow = jf.Flow([job1, job2])
+    @flow
+    def workflow():
+        job1 = add(1, 2)
+        return mult(job1, 3)
 
-    responses = jf.run_locally(flow, ensure_success=True)
-    assert jobflow_output(responses, job2) == 9
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    assert jobflow_output(responses, workflow_flow.jobs[-1]) == 9
 
 
 def test_comparison3_flow_decorator(tmp_path, monkeypatch, jobflow_output):

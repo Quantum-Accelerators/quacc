@@ -76,10 +76,12 @@ def test_jobflow_tuple_argument(tmp_path, monkeypatch, jobflow_output):
     def sum_values(values):
         return sum(values)
 
-    job1 = add(1, 2)
-    job2 = add(3, 4)
-    final_job = sum_values((job1, job2))
-    workflow = jf.Flow([job1, job2, final_job])
+    @flow
+    def workflow():
+        job1 = add(1, 2)
+        job2 = add(3, 4)
+        return sum_values((job1, job2))
 
-    responses = jf.run_locally(workflow, ensure_success=True)
-    assert jobflow_output(responses, final_job) == 10
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    assert jobflow_output(responses, workflow_flow.jobs[-1]) == 10
