@@ -69,3 +69,28 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch):
     responses = jf.run_locally(workflow_flow, ensure_success=True)
     assert responses[workflow_flow.jobs[-1].uuid][1].output == 9
     assert isinstance(add_distributed([1, 2, 3], 4), jf.Job)
+
+
+def test_jobflow_nested_job_arguments(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def combine(values, factor):
+        return sum(values["items"]) * factor
+
+    @flow
+    def inner_workflow():
+        return add(5, 6)
+
+    @flow
+    def workflow():
+        values = {"items": [add(1, 2), add(3, 4), inner_workflow()]}
+        return combine(values, factor=add(2, 4))
+
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    assert responses[workflow_flow.jobs[-1].uuid][1].output == 126

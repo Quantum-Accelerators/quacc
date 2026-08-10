@@ -199,7 +199,7 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
 
     | Quacc  | Parsl     | Dask      | Prefect | Redun  | Jobflow   |
     | ------ | --------- | --------- | ------- | ------ | --------- |
-    | `flow` | No effect | No effect | `flow`  | `task` | No effect |
+    | `flow` | No effect | No effect | `flow`  | `task` | `flow`    |
 
     All `#!Python @flow`-decorated functions are transformed into their corresponding
     decorator.
@@ -299,9 +299,23 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
 
     === "Jobflow"
 
-        !!! Warning
+        ```python
+        import jobflow as jf
 
-            This decorator is not meant to be used with Jobflow at this time.
+
+        @jf.job
+        def add(a, b):
+            return a + b
+
+
+        @jf.flow
+        def workflow(a, b, c):
+            job1 = add(a, b)
+            return add(job1.output, c)
+
+
+        workflow(1, 2, 3)
+        ```
 
     Parameters
     ----------
@@ -329,7 +343,7 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     elif settings.WORKFLOW_ENGINE == "jobflow":
-        return _get_jobflow_wrapped_flow(_func)
+        return _get_jobflow_wrapped_flow(_func, **kwargs)
     else:
         return tracked(NodeType.FLOW)(_func)
 
@@ -340,7 +354,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
     | Quacc     | Parsl      | Dask      | Prefect | Redun  | Jobflow   |
     | --------- | ---------- | --------- | ------- |------- | --------- |
-    | `subflow` | `join_app` | `delayed` | `flow`  | `task` | No effect |
+    | `subflow` | `join_app` | `delayed` | `flow`  | `task` | `job`     |
 
     All `#!Python @subflow`-decorated functions are transformed into their corresponding
     decorator.
@@ -478,9 +492,9 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
     === "Jobflow"
 
-        !!! Warning
-
-            This decorator is not meant to be used with Jobflow at this time.
+        Jobflow implements dynamic workflows by returning jobs or flows from a job.
+        Accordingly, quacc transforms `#!Python @subflow` into a Jobflow
+        `#!Python @job`.
 
     Parameters
     ----------
@@ -628,7 +642,7 @@ def _get_prefect_wrapped_flow(
             return prefect_flow(_func, validate_parameters=False, **kwargs)
 
 
-def _get_jobflow_wrapped_func(method=None, **job_kwargs):
+def _get_jobflow_wrapped_func(method: Callable, **job_kwargs) -> Callable:
     from jobflow import job as jf_job
 
     wrapped = jf_job(method, **job_kwargs)
@@ -642,10 +656,10 @@ def _get_jobflow_wrapped_func(method=None, **job_kwargs):
     return wrapper
 
 
-def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
+def _get_jobflow_wrapped_flow(_func: Callable, **flow_kwargs) -> Callable:
     from jobflow import flow as jf_flow
 
-    return jf_flow(_func)
+    return jf_flow(_func, **flow_kwargs)
 
 
 class Delayed_:
@@ -698,15 +712,9 @@ def _unwrap_ray_future(value: Any) -> Any:
     ``tuple`` and ``dict`` containers are traversed; subclasses pass through
     unchanged so engine-specific objects (e.g. ``DictCopy``) keep their type.
     """
-    if isinstance(value, RayFuture):
-        return value._ref
-    if type(value) is list:
-        return [_unwrap_ray_future(v) for v in value]
-    if type(value) is tuple:
-        return tuple(_unwrap_ray_future(v) for v in value)
-    if type(value) is dict:
-        return {k: _unwrap_ray_future(v) for k, v in value.items()}
-    return value
+    return _transform_nested_plain_containers(
+        value, lambda item: item._ref if isinstance(item, RayFuture) else item
+    )
 
 
 def _jobflow_job_to_output(value: Any) -> Any:
@@ -714,15 +722,28 @@ def _jobflow_job_to_output(value: Any) -> Any:
     from jobflow import Flow as JobflowFlow
     from jobflow import Job as JobflowJob
 
-    if isinstance(value, (JobflowJob, JobflowFlow)):
-        return value.output
+    return _transform_nested_plain_containers(
+        value,
+        lambda item: (
+            item.output if isinstance(item, (JobflowJob, JobflowFlow)) else item
+        ),
+    )
+
+
+def _transform_nested_plain_containers(
+    value: Any, transform: Callable[[Any], Any]
+) -> Any:
+    """Apply a leaf transform recursively without changing container subclasses."""
     if type(value) is list:
-        return [_jobflow_job_to_output(v) for v in value]
+        return [_transform_nested_plain_containers(v, transform) for v in value]
     if type(value) is tuple:
-        return tuple(_jobflow_job_to_output(v) for v in value)
+        return tuple(_transform_nested_plain_containers(v, transform) for v in value)
     if type(value) is dict:
-        return {k: _jobflow_job_to_output(v) for k, v in value.items()}
-    return value
+        return {
+            k: _transform_nested_plain_containers(v, transform)
+            for k, v in value.items()
+        }
+    return transform(value)
 
 
 def _wrap_partial_for_ray(func: Callable) -> Callable:
@@ -755,10 +776,6 @@ def _resolve_ray_value(value: Any, ray_mod: Any) -> Any:
 
 def _resolve_ray_subflow_result(result: Any, ray_mod: Any) -> Any:
     """Recursively resolve futures returned from a ray subflow body."""
-    if type(result) is list:
-        return [_resolve_ray_value(r, ray_mod) for r in result]
-    if type(result) is tuple:
-        return tuple(_resolve_ray_value(r, ray_mod) for r in result)
-    if type(result) is dict:
-        return {k: _resolve_ray_value(v, ray_mod) for k, v in result.items()}
-    return _resolve_ray_value(result, ray_mod)
+    return _transform_nested_plain_containers(
+        result, lambda value: _resolve_ray_value(value, ray_mod)
+    )
