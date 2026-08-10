@@ -6562,7 +6562,7 @@
 </span></code></pre></div>
 </div>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">jobflow</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">jf</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc</span><span class="w"> </span><span class="kn">import</span> <span class="n">job</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc</span><span class="w"> </span><span class="kn">import</span> <span class="n">flow</span><span class="p">,</span> <span class="n">job</span>
 </span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
 </span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>
 </span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="nd">@job</span>  <span class="c1">#  (1)!</span>
@@ -6575,26 +6575,33 @@
 </span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>    <span class="k">return</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>
 </span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>
 </span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>
-</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a><span class="n">job1</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a><span class="n">job2</span> <span class="o">=</span> <span class="n">mult</span><span class="p">(</span><span class="n">job1</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="n">flow</span> <span class="o">=</span> <span class="n">jf</span><span class="o">.</span><span class="n">Flow</span><span class="p">([</span><span class="n">job1</span><span class="p">,</span> <span class="n">job2</span><span class="p">])</span>  <span class="c1">#  (2)!</span>
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a><span class="nd">@flow</span>  <span class="c1">#  (2)!</span>
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a><span class="k">def</span><span class="w"> </span><span class="nf">workflow</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>    <span class="k">return</span> <span class="n">mult</span><span class="p">(</span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">c</span><span class="p">)</span>
 </span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>
-</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a><span class="n">responses</span> <span class="o">=</span> <span class="n">jf</span><span class="o">.</span><span class="n">run_locally</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">ensure_success</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1">#  (3)!</span>
-</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="n">result</span> <span class="o">=</span> <span class="n">responses</span><span class="p">[</span><span class="n">job2</span><span class="o">.</span><span class="n">uuid</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">output</span>  <span class="c1">#  (4)!</span>
-</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># 9</span>
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="n">workflow_flow</span> <span class="o">=</span> <span class="n">workflow</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>  <span class="c1">#  (3)!</span>
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a><span class="n">responses</span> <span class="o">=</span> <span class="n">jf</span><span class="o">.</span><span class="n">run_locally</span><span class="p">(</span><span class="n">workflow_flow</span><span class="p">,</span> <span class="n">ensure_success</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1">#  (4)!</span>
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a><span class="n">final_job</span> <span class="o">=</span> <span class="n">workflow_flow</span><span class="o">.</span><span class="n">jobs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a><span class="n">result</span> <span class="o">=</span> <span class="n">responses</span><span class="p">[</span><span class="n">final_job</span><span class="o">.</span><span class="n">uuid</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">output</span>  <span class="c1">#  (5)!</span>
+</span><span id="__span-15-25"><a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>  <span class="c1"># 9</span>
 </span></code></pre></div>
 <ol>
 <li>
 <p>The <code class="language-Python highlight"><span class="nd">@job</span></code> decorator will be transformed into <code class="language-Python highlight"><span class="nd">@jf</span><span class="o">.</span><span class="n">job</span></code>.</p>
 </li>
 <li>
-<p>A <code class="language-Python highlight"><span class="nd">@jf</span><span class="o">.</span><span class="n">Flow</span></code> object is created to represent the workflow.</p>
+<p>The <code class="language-Python highlight"><span class="nd">@flow</span></code> decorator will create a Jobflow <code class="language-Python highlight"><span class="n">Flow</span></code> from the jobs returned by the decorated function.</p>
 </li>
 <li>
-<p>The workflow is run locally and the result is returned in a dictionary.</p>
+<p>Calling the decorated function returns the Jobflow <code class="language-Python highlight"><span class="n">Flow</span></code> that represents the workflow.</p>
 </li>
 <li>
-<p>The result is extracted from the dictionary by using the UUID of the second job in the workflow.</p>
+<p>The workflow is run locally and the responses are returned in a dictionary.</p>
+</li>
+<li>
+<p>The result is extracted from the dictionary by using the UUID of the final job in the workflow.</p>
 </li>
 </ol>
 </div>
