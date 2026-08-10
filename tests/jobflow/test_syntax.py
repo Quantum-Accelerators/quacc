@@ -85,3 +85,19 @@ def test_jobflow_tuple_argument(tmp_path, monkeypatch, jobflow_output):
     workflow_flow = workflow()
     responses = jf.run_locally(workflow_flow, ensure_success=True)
     assert jobflow_output(responses, workflow_flow.output[0]) == 10
+
+
+def test_jobflow_dict_output(tmp_path, monkeypatch, jobflow_output):
+    monkeypatch.chdir(tmp_path)
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @flow
+    def workflow():
+        return {"sum": add(1, 2)}
+
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    assert jobflow_output(responses, workflow_flow.output["sum"]) == 3
