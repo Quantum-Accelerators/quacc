@@ -66,6 +66,54 @@ graph LR
 
     4. There are multiple ways to resolve a `Delayed` object. Here, `#!Python client.compute(delayed)` will return a `Future` object, which can be resolved with `.result()`. The `.result()` call will block until the workflow is complete and return the result. As an alternative, you could also use `#!Python delayed.compute()` to dispatch and resolve the `Delayed` object in one command. Similarly, you could use `#!Python dask.compute(delayed)[0]`, where the `[0]` indexing is needed because `#!Python dask.compute()` always returns a tuple.
 
+=== "Jobflow"
+
+    !!! Important
+
+        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
+
+        ```bash
+        quacc set WORKFLOW_ENGINE jobflow
+        ```
+
+    ```python
+    import jobflow as jf
+    from quacc import flow, job
+
+
+    @job  #  (1)!
+    def add(a, b):
+        return a + b
+
+
+    @job
+    def mult(a, b):
+        return a * b
+
+
+    @flow  #  (2)!
+    def workflow(a, b, c):
+        return mult(add(a, b), c)
+
+
+    workflow_flow = workflow(1, 2, 3)  #  (3)!
+
+    responses = jf.run_locally(workflow_flow, ensure_success=True)  #  (4)!
+    final_job = workflow_flow.jobs[-1]
+    result = responses[final_job.uuid][1].output  #  (5)!
+    print(result)  # 9
+    ```
+
+    1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
+
+    2. The `#!Python @flow` decorator will create a Jobflow `#!Python Flow` from the jobs returned by the decorated function. When a quacc-decorated job is passed to another quacc-decorated job, quacc automatically passes its output reference to Jobflow.
+
+    3. Calling the decorated function returns the Jobflow `#!Python Flow` that represents the workflow.
+
+    4. The workflow is run locally and the responses are returned in a dictionary.
+
+    5. The result is extracted from the dictionary by using the UUID of the final job in the workflow.
+
 === "Parsl"
 
     !!! Important
@@ -260,54 +308,6 @@ graph LR
 
     3. This command will submit the workflow to the Redun scheduler.
 
-=== "Jobflow"
-
-    !!! Important
-
-        If you haven't done so yet, make sure you update the quacc `WORKFLOW_ENGINE` [configuration variable](../settings/settings.md):
-
-        ```bash
-        quacc set WORKFLOW_ENGINE jobflow
-        ```
-
-    ```python
-    import jobflow as jf
-    from quacc import flow, job
-
-
-    @job  #  (1)!
-    def add(a, b):
-        return a + b
-
-
-    @job
-    def mult(a, b):
-        return a * b
-
-
-    @flow  #  (2)!
-    def workflow(a, b, c):
-        return mult(add(a, b), c)
-
-
-    workflow_flow = workflow(1, 2, 3)  #  (3)!
-
-    responses = jf.run_locally(workflow_flow, ensure_success=True)  #  (4)!
-    final_job = workflow_flow.jobs[-1]
-    result = responses[final_job.uuid][1].output  #  (5)!
-    print(result)  # 9
-    ```
-
-    1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
-
-    2. The `#!Python @flow` decorator will create a Jobflow `#!Python Flow` from the jobs returned by the decorated function. When a quacc-decorated job is passed to another quacc-decorated job, quacc automatically passes its output reference to Jobflow.
-
-    3. Calling the decorated function returns the Jobflow `#!Python Flow` that represents the workflow.
-
-    4. The workflow is run locally and the responses are returned in a dictionary.
-
-    5. The result is extracted from the dictionary by using the UUID of the final job in the workflow.
-
 ??? Tip "Stripping the Decorator from a Job"
 
     If you ever want to strip the decorator from a pre-decorated `#!Python @job` (e.g. to test out a calculation locally without changing your quacc settings), you can do so with [quacc.wflow_tools.customizers.strip_decorator][] as follows:
@@ -331,6 +331,9 @@ graph LR
 
     If you want to learn more about Dask, you can read the [Dask Delayed documentation](https://docs.dask.org/en/stable/delayed.html) to read more about the decorators and the [Dask Distributed documentation](https://distributed.dask.org/en/stable/) to read more about the distributed Dask cluster. Please refer to the [Dask Discourse page](https://discourse.dask.org/) for Dask-specific questions.
 
+=== "Jobflow"
+
+    If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/). Please refer to the [Jobflow Discussions Board](https://github.com/materialsproject/jobflow/discussions) for Jobflow-specific questions.
 === "Parsl"
 
     If you want to learn more about Parsl, you can read the [Parsl Documentation](https://parsl.readthedocs.io/en/stable/#). Please refer to the [Parsl Slack Channel](http://parsl-project.org/support.html) for any Parsl-specific questions.
@@ -346,7 +349,3 @@ graph LR
 === "Redun"
 
     If you want to learn more about Redun, you can read the [Redun documentation](https://insitro.github.io/redun/index.html).
-
-=== "Jobflow"
-
-    If you want to learn more about Jobflow, you can read the [Jobflow Documentation](https://materialsproject.github.io/jobflow/). Please refer to the [Jobflow Discussions Board](https://github.com/materialsproject/jobflow/discussions) for Jobflow-specific questions.
