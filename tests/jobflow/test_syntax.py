@@ -22,6 +22,10 @@ def test_jobflow_decorators(tmp_path, monkeypatch, jobflow_output):
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
+    @job
+    def collect(values):
+        return values
+
     @flow
     def workflow(a, b, c):
         return mult(add(a, b), c)
@@ -37,10 +41,16 @@ def test_jobflow_decorators(tmp_path, monkeypatch, jobflow_output):
     assert isinstance(workflow_flow, jf.Flow)
     responses = jf.run_locally(workflow_flow, ensure_success=True)
     assert jobflow_output(responses, workflow_flow.jobs[-1]) == 9
-    subflow_job = add_distributed([1, 2, 3], 4)
+
+    @flow
+    def distributed_workflow():
+        return collect(add_distributed([1, 2, 3], 4))
+
+    distributed_flow = distributed_workflow()
+    subflow_job = distributed_flow.jobs[0]
     assert isinstance(subflow_job, jf.Job)
-    responses = jf.run_locally(subflow_job, ensure_success=True)
-    assert jobflow_output(responses, subflow_job) == [5, 6, 7]
+    responses = jf.run_locally(distributed_flow, ensure_success=True)
+    assert jobflow_output(responses, distributed_flow.jobs[-1]) == [5, 6, 7]
 
 
 def test_jobflow_decorators_args(tmp_path, monkeypatch, jobflow_output):
@@ -58,6 +68,10 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch, jobflow_output):
     def add_distributed(vals, c):
         return [add(val, c) for val in vals]
 
+    @job()
+    def collect(values):
+        return values
+
     @flow()
     def workflow(a, b, c):
         return mult(add(a, b), c)
@@ -73,10 +87,16 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch, jobflow_output):
     assert isinstance(workflow_flow, jf.Flow)
     responses = jf.run_locally(workflow_flow, ensure_success=True)
     assert jobflow_output(responses, workflow_flow.jobs[-1]) == 9
-    subflow_job = add_distributed([1, 2, 3], 4)
+
+    @flow()
+    def distributed_workflow():
+        return collect(add_distributed([1, 2, 3], 4))
+
+    distributed_flow = distributed_workflow()
+    subflow_job = distributed_flow.jobs[0]
     assert isinstance(subflow_job, jf.Job)
-    responses = jf.run_locally(subflow_job, ensure_success=True)
-    assert jobflow_output(responses, subflow_job) == [5, 6, 7]
+    responses = jf.run_locally(distributed_flow, ensure_success=True)
+    assert jobflow_output(responses, distributed_flow.jobs[-1]) == [5, 6, 7]
 
 
 def test_jobflow_nested_job_arguments(tmp_path, monkeypatch, jobflow_output):

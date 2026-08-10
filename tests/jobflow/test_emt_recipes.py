@@ -12,20 +12,33 @@ from quacc.recipes.emt.core import relax_job
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
+@job
+def validate_results(results, *, require_energy=False):
+    assert results
+    assert all("atoms" in result for result in results)
+    if require_energy:
+        assert all("energy" in result for result in results)
+    return results
+
+
 @pytest.mark.parametrize("job_decorators", [None, {"relax_job": job()}])
 def test_functools(tmp_path, monkeypatch, job_decorators, jobflow_output):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
-    flow = bulk_to_slabs_flow(
-        atoms,
-        run_static=False,
-        job_params={"relax_job": {"opt_params": {"fmax": 0.1}}},
-        job_decorators=job_decorators,
-    )
-    responses = jf.run_locally(flow, ensure_success=True)
-    output = jobflow_output(responses, flow.jobs[-1])
-    assert output
-    assert all("atoms" in result for result in output)
+
+    @flow
+    def workflow():
+        results = bulk_to_slabs_flow(
+            atoms,
+            run_static=False,
+            job_params={"relax_job": {"opt_params": {"fmax": 0.1}}},
+            job_decorators=job_decorators,
+        )
+        return validate_results(results)
+
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    assert jobflow_output(responses, workflow_flow.jobs[-1])
 
 
 def test_copy_files(tmp_path, monkeypatch, jobflow_output):
@@ -76,21 +89,22 @@ def test_relaxed_slabs(tmp_path, monkeypatch, jobflow_output):
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+        results = bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+        return validate_results(results)
 
     slab_workflow = workflow(atoms)
     responses = jf.run_locally(slab_workflow, ensure_success=True)
-    output = jobflow_output(responses, slab_workflow.jobs[-1].jobs[-1])
-    assert output
-    assert all("atoms" in result for result in output)
+    assert jobflow_output(responses, slab_workflow.jobs[-1])
 
 
 def test_bulk_to_slabs_flow_with_static(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
-    workflow = bulk_to_slabs_flow(bulk("Cu"))
 
-    responses = jf.run_locally(workflow, ensure_success=True)
+    @flow
+    def workflow():
+        return validate_results(bulk_to_slabs_flow(bulk("Cu")), require_energy=True)
 
-    output = jobflow_output(responses, workflow.jobs[-1])
-    assert output
-    assert all("atoms" in result and "energy" in result for result in output)
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+
+    assert jobflow_output(responses, workflow_flow.jobs[-1])
