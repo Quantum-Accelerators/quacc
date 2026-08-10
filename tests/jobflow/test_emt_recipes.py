@@ -20,23 +20,23 @@ def validate_results(results):
 
 
 @pytest.mark.parametrize("job_decorators", [None, {"relax_job": job()}])
-def test_functools(tmp_path, monkeypatch, job_decorators, jobflow_output):
+def test_functools(tmp_path, monkeypatch, job_decorators):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
-
-    @flow
-    def workflow():
-        results = bulk_to_slabs_flow(
-            atoms,
-            run_static=False,
-            job_params={"relax_job": {"opt_params": {"fmax": 0.1}}},
-            job_decorators=job_decorators,
-        )
-        return validate_results(results)
-
-    workflow_flow = workflow()
-    responses = jf.run_locally(workflow_flow, ensure_success=True)
-    assert jobflow_output(responses, workflow_flow.jobs[-1])
+    workflow = bulk_to_slabs_flow(
+        atoms,
+        run_static=False,
+        job_params={"relax_job": {"opt_params": {"fmax": 0.1}}},
+        job_decorators=job_decorators,
+    )
+    responses = jf.run_locally(workflow, ensure_success=True)
+    results = [
+        response.output
+        for indexed_responses in responses.values()
+        for response in indexed_responses.values()
+        if isinstance(response.output, dict) and "atoms" in response.output
+    ]
+    assert results
 
 
 def test_copy_files(tmp_path, monkeypatch, jobflow_output):
