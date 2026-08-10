@@ -686,9 +686,7 @@ def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
 
 def _get_jobflow_wrapped_subflow(_func: Callable, **job_kwargs) -> Callable:
     """Wrap a dynamic Jobflow subflow while retaining every job it creates."""
-    from jobflow import flow as jf_flow
-
-    return _get_jobflow_wrapped_func(jf_flow(_func), **job_kwargs)
+    return _get_jobflow_wrapped_func(_get_jobflow_wrapped_flow(_func), **job_kwargs)
 
 
 class Delayed_:

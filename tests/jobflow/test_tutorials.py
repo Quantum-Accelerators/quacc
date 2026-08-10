@@ -8,6 +8,7 @@ from ase.build import bulk, molecule
 
 from quacc import flow, job
 from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
+from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
 def test_tutorial1a(tmp_path, monkeypatch, jobflow_output):
@@ -22,6 +23,25 @@ def test_tutorial1a(tmp_path, monkeypatch, jobflow_output):
     # Run the job locally
     responses = jf.run_locally(job, create_folders=True, ensure_success=True)
     assert "atoms" in jobflow_output(responses, job)
+
+
+def test_tutorial1b(tmp_path, monkeypatch, jobflow_output):
+    monkeypatch.chdir(tmp_path)
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Create the workflow with arguments
+    workflow = bulk_to_slabs_flow(atoms)
+
+    # Dispatch the workflow and get results
+    responses = jf.run_locally(workflow, ensure_success=True)
+
+    # Inspect the results returned by the subflow
+    results = jobflow_output(responses, workflow.output)
+    assert len(results) == 4
+    for result in results:
+        assert "atoms" in result
 
 
 def test_tutorial2a(tmp_path, monkeypatch, jobflow_output):
@@ -112,6 +132,27 @@ def test_tutorial2b_flow_decorator(tmp_path, monkeypatch, jobflow_output):
     assert (
         str(jobflow_output(responses, workflow_flow.jobs[1])["atoms"].symbols) == "N2"
     )
+
+
+def test_tutorial2c(tmp_path, monkeypatch, jobflow_output):
+    monkeypatch.chdir(tmp_path)
+
+    # Define the workflow
+    @flow
+    def workflow(atoms):
+        relaxed_bulk = relax_job(atoms)
+        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)  # (1)!
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Dispatch the workflow and retrieve results
+    workflow_flow = workflow(atoms)
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    results = jobflow_output(responses, workflow_flow.output)
+    assert len(results) == 4
+    for result in results:
+        assert "atoms" in result
 
 
 def test_job_getitem():
