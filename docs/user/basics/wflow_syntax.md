@@ -300,7 +300,7 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into `#!Python @jf.job`.
 
-    2. The `#!Python @flow` decorator will create a Jobflow `#!Python Flow` from the jobs returned by the decorated function.
+    2. The `#!Python @flow` decorator will create a Jobflow `#!Python Flow` from the jobs returned by the decorated function. When a quacc-decorated job is passed to another quacc-decorated job, quacc automatically passes its output reference to Jobflow.
 
     3. Calling the decorated function returns the Jobflow `#!Python Flow` that represents the workflow.
 
