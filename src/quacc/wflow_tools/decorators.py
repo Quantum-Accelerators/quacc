@@ -651,8 +651,8 @@ def _get_jobflow_wrapped_func(method=None, **job_kwargs):
     return wrapper
 
 
-def _jobflow_value_to_output(value):
-    """Convert Jobflow jobs to references inside ordinary Python containers."""
+def _jobflow_flow_output(value):
+    """Normalize nested outputs returned by a Jobflow-decorated flow."""
     from jobflow import Flow as JobflowFlow
     from jobflow import Job as JobflowJob
 
@@ -660,12 +660,12 @@ def _jobflow_value_to_output(value):
         value = value.output
 
     if type(value) is list:
-        return [_jobflow_value_to_output(item) for item in value]
+        return [_jobflow_flow_output(item) for item in value]
     if type(value) is tuple:
-        return tuple(_jobflow_value_to_output(item) for item in value)
+        return tuple(_jobflow_flow_output(item) for item in value)
     if type(value) is dict:
         return {
-            _jobflow_value_to_output(key): _jobflow_value_to_output(item)
+            _jobflow_flow_output(key): _jobflow_flow_output(item)
             for key, item in value.items()
         }
 
@@ -677,7 +677,7 @@ def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
 
     @wraps(_func)
     def wrapper(*args, **kwargs):
-        return _jobflow_value_to_output(_func(*args, **kwargs))
+        return _jobflow_flow_output(_func(*args, **kwargs))
 
     return jf_flow(wrapper)
 
