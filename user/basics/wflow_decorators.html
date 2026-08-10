@@ -6384,7 +6384,7 @@
 <p>A <code class="language-Python highlight"><span class="nd">@flow</span></code> in quacc is a collection of one or more jobs. It defines the logic of the workflow, connecting the output of one job to the inputs of one or more other jobs. As a general guideline, the flow should not contain computations beyond those of the underlying jobs or subflows.</p>
 <h3 id="subflow"><code>@subflow</code><a class="headerlink" href="#subflow" title="Permanent link">&para;</a></h3>
 <p>A <code class="language-Python highlight"><span class="nd">@subflow</span></code> in quacc is any workflow that returns a list of job outputs and where the number of jobs to be called is not necessarily known until runtime.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Dask</label><label for="__tabbed_1_2">Parsl</label><label for="__tabbed_1_3">Prefect</label><label for="__tabbed_1_4">Ray</label><label for="__tabbed_1_5">Redun</label><label for="__tabbed_1_6">Jobflow</label></div>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:6"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><input id="__tabbed_1_4" name="__tabbed_1" type="radio" /><input id="__tabbed_1_5" name="__tabbed_1" type="radio" /><input id="__tabbed_1_6" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Dask</label><label for="__tabbed_1_2">Jobflow</label><label for="__tabbed_1_3">Parsl</label><label for="__tabbed_1_4">Prefect</label><label for="__tabbed_1_5">Ray</label><label for="__tabbed_1_6">Redun</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>Take a moment to read the Dask Delayed documentation <a href="https://docs.dask.org/en/stable/delayed.html">overview page</a> to get a sense of how the Dask decorators works and the Dask Distributed <a href="https://distributed.dask.org/en/stable/quickstart.html">quickstart page</a> to understand how to submit tasks to a Dask cluster. Namely, you should understand the <code class="language-Python highlight"><span class="nd">@delayed</span></code> decorator and how to interface with the <code>Client</code>.</p>
@@ -6413,6 +6413,33 @@
 </table>
 </center>
 <p>Technically, there are some subtle differences between the <code class="language-Python highlight"><span class="nd">@delayed</span></code> decorator and the <code>quacc</code> equivalents, but for the purposes of this tutorial, you can think of them as similar.</p>
+</div>
+<div class="tabbed-block">
+<p>Take a moment to read the Jobflow documentation's <a href="https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html">Quick Start</a> to get a sense of how Jobflow works. Namely, you should understand the concept of a <code class="language-Python highlight"><span class="nd">@job</span></code> and a <code class="language-Python highlight"><span class="nd">@flow</span></code>, which describe individual compute tasks and workflows, respectively.</p>
+<center>
+<table>
+<thead>
+<tr>
+<th>Quacc</th>
+<th>Jobflow</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code class="language-Python highlight"><span class="nd">@job</span></code></td>
+<td><code class="language-Python highlight"><span class="nd">@job</span></code></td>
+</tr>
+<tr>
+<td><code class="language-Python highlight"><span class="nd">@flow</span></code></td>
+<td><code class="language-Python highlight"><span class="nd">@flow</span></code></td>
+</tr>
+<tr>
+<td><code class="language-Python highlight"><span class="nd">@subflow</span></code></td>
+<td><code class="language-Python highlight"><span class="nd">@job</span></code></td>
+</tr>
+</tbody>
+</table>
+</center>
 </div>
 <div class="tabbed-block">
 <p>Take a moment to read the Parsl documentation's <a href="https://parsl.readthedocs.io/en/stable/quickstart.html">"Quick Start"</a> to get a sense of how Parsl works. Namely, you should understand the concept of a <a href="https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps"><code class="language-Python highlight"><span class="n">python_app</span></code></a> and <a href="https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps"><code class="language-Python highlight"><span class="n">join_app</span></code></a>, which describe individual compute tasks and dynamic job tasks, respectively.</p>
@@ -6518,33 +6545,6 @@
 <tr>
 <td><code class="language-Python highlight"><span class="nd">@subflow</span></code></td>
 <td><code class="language-Python highlight"><span class="nd">@task</span></code></td>
-</tr>
-</tbody>
-</table>
-</center>
-</div>
-<div class="tabbed-block">
-<p>Take a moment to read the Jobflow documentation's <a href="https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html">Quick Start</a> to get a sense of how Jobflow works. Namely, you should understand the concept of a <code class="language-Python highlight"><span class="nd">@job</span></code> and a <code class="language-Python highlight"><span class="nd">@flow</span></code>, which describe individual compute tasks and workflows, respectively.</p>
-<center>
-<table>
-<thead>
-<tr>
-<th>Quacc</th>
-<th>Jobflow</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code class="language-Python highlight"><span class="nd">@job</span></code></td>
-<td><code class="language-Python highlight"><span class="nd">@job</span></code></td>
-</tr>
-<tr>
-<td><code class="language-Python highlight"><span class="nd">@flow</span></code></td>
-<td><code class="language-Python highlight"><span class="nd">@flow</span></code></td>
-</tr>
-<tr>
-<td><code class="language-Python highlight"><span class="nd">@subflow</span></code></td>
-<td><code class="language-Python highlight"><span class="nd">@job</span></code></td>
 </tr>
 </tbody>
 </table>
