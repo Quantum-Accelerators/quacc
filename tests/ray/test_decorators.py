@@ -14,7 +14,7 @@ from quacc.wflow_tools.decorators import (
     _resolve_ray_subflow_result,
     _resolve_ray_value,
     _unwrap_ray_future,
-    _wrap_partial_for_ray,
+    _wrap_partial,
 )
 
 
@@ -65,19 +65,19 @@ def test_unwrap_ray_future_subclasses_passthrough():
     assert _unwrap_ray_future(md) is md
 
 
-def test_wrap_partial_for_ray_noop_for_plain():
+def test_wrap_partial_noop_for_plain():
     def f(a, b):
         return a + b
 
-    assert _wrap_partial_for_ray(f) is f
+    assert _wrap_partial(f) is f
 
 
-def test_wrap_partial_for_ray_with_partial():
+def test_wrap_partial_with_partial():
     def f(a, b):
         return a + b
 
     p = partial(f, 10)
-    wrapped = _wrap_partial_for_ray(p)
+    wrapped = _wrap_partial(p)
     assert wrapped is not p
     assert callable(wrapped)
     assert wrapped(5) == 15

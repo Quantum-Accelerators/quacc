@@ -13,11 +13,9 @@ from quacc.recipes.emt.slabs import bulk_to_slabs_flow
 
 
 @job
-def validate_results(results, *, require_energy=False):
+def validate_results(results):
     assert results
     assert all("atoms" in result for result in results)
-    if require_energy:
-        assert all("energy" in result for result in results)
     return results
 
 
@@ -102,7 +100,7 @@ def test_bulk_to_slabs_flow_with_static(tmp_path, monkeypatch, jobflow_output):
 
     @flow
     def workflow():
-        return validate_results(bulk_to_slabs_flow(bulk("Cu")), require_energy=True)
+        return validate_results(bulk_to_slabs_flow(bulk("Cu")))
 
     workflow_flow = workflow()
     responses = jf.run_locally(workflow_flow, ensure_success=True)

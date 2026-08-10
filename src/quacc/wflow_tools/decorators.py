@@ -173,7 +173,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
-        _ray_target = _wrap_partial_for_ray(_func)
+        _ray_target = _wrap_partial(_func)
 
         remote_func = (
             ray.remote(**kwargs)(_ray_target) if kwargs else ray.remote(_ray_target)
@@ -543,7 +543,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
-        target_func = _wrap_partial_for_ray(_func)
+        target_func = _wrap_partial(_func)
 
         @wraps(target_func)
         def _ray_subflow_target(*f_args, **f_kwargs):
@@ -641,7 +641,7 @@ def _get_jobflow_wrapped_func(method: Callable, **job_kwargs) -> Callable:
     from jobflow import OutputReference
     from jobflow import job as jf_job
 
-    wrapped = jf_job(method, **job_kwargs)
+    wrapped = jf_job(_wrap_partial(method), **job_kwargs)
 
     @wraps(wrapped)
     def wrapper(*args, **kwargs):
@@ -769,8 +769,8 @@ def _transform_call_args(
     )
 
 
-def _wrap_partial_for_ray(func: Callable) -> Callable:
-    """Wrap a ``functools.partial`` in a real function so Ray accepts it."""
+def _wrap_partial(func: Callable) -> Callable:
+    """Wrap a ``functools.partial`` in a metadata-preserving function."""
     if not isinstance(func, partial):
         return func
 
