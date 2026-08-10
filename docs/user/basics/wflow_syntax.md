@@ -143,7 +143,6 @@ graph LR
 
 
     @flow
-    @flow
     def workflow(a, b, c):  #  (2)!
         output1 = add(a, b)
         output2 = mult(output1, c)
@@ -273,7 +272,7 @@ graph LR
 
     ```python
     import jobflow as jf
-    from quacc import flow, job
+    from quacc import job
 
 
     @job  #  (1)!
