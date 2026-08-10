@@ -166,7 +166,7 @@ default_handler = "python"
 [project.plugins.mkdocstrings.handlers.python]
 inventories = [
     "https://docs.python.org/3/objects.inv",
-    "https://ase-lib.org/objects.inv",
+    "https://docs.ase-lib.org/objects.inv",
     "https://pymatgen.org/objects.inv",
     "https://materialsproject.github.io/pymatgen-analysis-defects/objects.inv",
     "https://materialsproject.github.io/emmet/objects.inv",
