@@ -43,7 +43,7 @@ def test_tutorial2a(tmp_path, monkeypatch, jobflow_output):
     responses = jf.run_locally(workflow, create_folders=True, ensure_success=True)
     result = jobflow_output(responses, job2)
     assert "atoms" in result
-    assert "energy" in result
+    assert result["results"]["energy"] == pytest.approx(-0.005681511358581748)
 
 
 def test_tutorial2a_flow_decorator(tmp_path, monkeypatch, jobflow_output):
@@ -65,7 +65,7 @@ def test_tutorial2a_flow_decorator(tmp_path, monkeypatch, jobflow_output):
     responses = jf.run_locally(workflow_flow, create_folders=True, ensure_success=True)
     result = jobflow_output(responses, workflow_flow.jobs[-1])
     assert "atoms" in result
-    assert "energy" in result
+    assert result["results"]["energy"] == pytest.approx(-0.005681511358581748)
 
 
 def test_tutorial2b(tmp_path, monkeypatch, jobflow_output):
@@ -84,8 +84,8 @@ def test_tutorial2b(tmp_path, monkeypatch, jobflow_output):
 
     # Run the workflow locally
     responses = jf.run_locally(workflow, create_folders=True, ensure_success=True)
-    assert jobflow_output(responses, job1)["atoms"].symbols == "Cu"
-    assert jobflow_output(responses, job2)["atoms"].symbols == "N2"
+    assert str(jobflow_output(responses, job1)["atoms"].symbols) == "Cu"
+    assert str(jobflow_output(responses, job2)["atoms"].symbols) == "N2"
 
 
 def test_tutorial2b_flow_decorator(tmp_path, monkeypatch, jobflow_output):
@@ -106,8 +106,12 @@ def test_tutorial2b_flow_decorator(tmp_path, monkeypatch, jobflow_output):
     # Run the workflow locally
     workflow_flow = workflow(atoms1, atoms2)
     responses = jf.run_locally(workflow_flow, create_folders=True, ensure_success=True)
-    assert jobflow_output(responses, workflow_flow.jobs[0])["atoms"].symbols == "Cu"
-    assert jobflow_output(responses, workflow_flow.jobs[1])["atoms"].symbols == "N2"
+    assert (
+        str(jobflow_output(responses, workflow_flow.jobs[0])["atoms"].symbols) == "Cu"
+    )
+    assert (
+        str(jobflow_output(responses, workflow_flow.jobs[1])["atoms"].symbols) == "N2"
+    )
 
 
 def test_job_getitem():
