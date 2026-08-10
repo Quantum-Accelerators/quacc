@@ -648,9 +648,7 @@ def _get_jobflow_wrapped_func(method: Callable, **job_kwargs) -> Callable:
         return _transform_nested_plain_containers(
             value,
             lambda item: (
-                item.output
-                if isinstance(item, (JobflowJob, JobflowFlow))
-                else item
+                item.output if isinstance(item, (JobflowJob, JobflowFlow)) else item
             ),
         )
 
@@ -740,9 +738,7 @@ def _transform_nested_plain_containers(
 
 
 def _transform_call_args(
-    args: tuple[Any, ...],
-    kwargs: dict[str, Any],
-    transform: Callable[[Any], Any],
+    args: tuple[Any, ...], kwargs: dict[str, Any], transform: Callable[[Any], Any]
 ) -> tuple[tuple[Any, ...], dict[str, Any]]:
     """Apply an engine-specific transform to positional and keyword arguments."""
     return (
