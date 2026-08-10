@@ -33,7 +33,7 @@ graph LR
         1. It is necessary to instantiate a Dask client before running Dask workflows. This command loads the default (local) client and only needs to be done once.
 
     ```python
-    from quacc import job
+    from quacc import flow, job
 
 
     @job  #  (1)!
@@ -46,7 +46,8 @@ graph LR
         return a * b
 
 
-    def workflow(a, b, c):  #  (2)!
+    @flow  #  (2)!
+    def workflow(a, b, c):
         output1 = add(a, b)
         output2 = mult(output1, c)
         return output2
@@ -59,7 +60,7 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into a Dask `#!Python @delayed`.
 
-    2. The `#!Python @flow` decorator doesn't actually do anything when using Dask, so we chose to not include it here for brevity.
+    2. The `#!Python @flow` decorator doesn't actually do anything when using Dask, but it is included here to make the workflow boundary explicit.
 
     3. This returns a `Delayed` object. A reference is returned.
 
@@ -84,7 +85,7 @@ graph LR
         1. It is necessary to instantiate a Parsl configuration before running Parsl workflows. This command loads the default (local) configuration and only needs to be done once.
 
     ```python
-    from quacc import job
+    from quacc import flow, job
 
 
     @job  #  (1)!
@@ -97,7 +98,8 @@ graph LR
         return a * b
 
 
-    def workflow(a, b, c):  #  (2)!
+    @flow  #  (2)!
+    def workflow(a, b, c):
         output1 = add(a, b)
         output2 = mult(output1, c)
         return output2
@@ -110,7 +112,7 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into a Parsl `#!Python @python_app`.
 
-    2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, so we chose to not include it here for brevity.
+    2. The `#!Python @flow` decorator doesn't actually do anything when using Parsl, but it is included here to make the workflow boundary explicit.
 
     3. This will create a `PythonApp` object that represents the workflow. At this point, the workflow has been dispatched, but only a reference is returned.
 
@@ -140,8 +142,8 @@ graph LR
         return a * b
 
 
-    @flow
-    def workflow(a, b, c):  #  (2)!
+    @flow  #  (2)!
+    def workflow(a, b, c):
         output1 = add(a, b)
         output2 = mult(output1, c)
         return output2
@@ -176,7 +178,7 @@ graph LR
         1. It is necessary to initialize Ray before submitting calculations. This command starts (or connects to) a local Ray cluster and only needs to be done once.
 
     ```python
-    from quacc import job
+    from quacc import flow, job
 
 
     @job  #  (1)!
@@ -189,7 +191,8 @@ graph LR
         return a * b
 
 
-    def workflow(a, b, c):  #  (2)!
+    @flow  #  (2)!
+    def workflow(a, b, c):
         output1 = add(a, b)
         output2 = mult(output1, c)
         return output2
@@ -202,7 +205,7 @@ graph LR
 
     1. The `#!Python @job` decorator will be transformed into a Ray `#!Python @ray.remote`.
 
-    2. The `#!Python @flow` decorator doesn't actually do anything when using Ray, so we chose to not include it here for brevity.
+    2. The `#!Python @flow` decorator doesn't actually do anything when using Ray, but it is included here to make the workflow boundary explicit.
 
     3. This returns a `RayFuture` proxy wrapping a Ray `ObjectRef`. A reference is returned without blocking.
 
