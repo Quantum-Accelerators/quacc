@@ -638,8 +638,6 @@ def _get_jobflow_wrapped_func(method=None, **job_kwargs):
 
     @wraps(wrapped)
     def wrapper(*args, **kwargs):
-        args = tuple(_jobflow_value_to_output(arg) for arg in args)
-        kwargs = {key: _jobflow_value_to_output(value) for key, value in kwargs.items()}
         copy_files = kwargs.get("copy_files")
         if (
             copy_files

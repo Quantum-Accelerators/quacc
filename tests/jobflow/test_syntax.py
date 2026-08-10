@@ -80,8 +80,8 @@ def test_jobflow_tuple_argument(tmp_path, monkeypatch, jobflow_output):
     def workflow():
         job1 = add(1, 2)
         job2 = add(3, 4)
-        return sum_values((job1, job2))
+        return (sum_values((job1, job2)),)
 
     workflow_flow = workflow()
     responses = jf.run_locally(workflow_flow, ensure_success=True)
-    assert jobflow_output(responses, workflow_flow.jobs[-1]) == 10
+    assert jobflow_output(responses, workflow_flow.output[0]) == 10
