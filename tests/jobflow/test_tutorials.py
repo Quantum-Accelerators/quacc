@@ -60,9 +60,7 @@ def test_tutorial2a_flow_decorator(tmp_path, monkeypatch, jobflow_output):
 
     # Run the workflow locally
     workflow_flow = workflow(atoms)
-    responses = jf.run_locally(
-        workflow_flow, create_folders=True, ensure_success=True
-    )
+    responses = jf.run_locally(workflow_flow, create_folders=True, ensure_success=True)
     assert "atoms" in jobflow_output(responses, workflow_flow.jobs[-1])
 
 
@@ -102,12 +100,8 @@ def test_tutorial2b_flow_decorator(tmp_path, monkeypatch, jobflow_output):
 
     # Run the workflow locally
     workflow_flow = workflow(atoms1, atoms2)
-    responses = jf.run_locally(
-        workflow_flow, create_folders=True, ensure_success=True
-    )
-    assert all(
-        "atoms" in jobflow_output(responses, job) for job in workflow_flow.jobs
-    )
+    responses = jf.run_locally(workflow_flow, create_folders=True, ensure_success=True)
+    assert all("atoms" in jobflow_output(responses, job) for job in workflow_flow.jobs)
 
 
 def test_job_getitem(jobflow_output):
@@ -122,8 +116,7 @@ def test_job_getitem(jobflow_output):
     @flow
     def greet(s):
         job1 = greetings(s)
-        job2 = upper(job1["hello"])  # No need for `job1.output["hello"]`
-        return job2
+        return upper(job1["hello"])  # No need for `job1.output["hello"]`
 
     workflow = greet("World")
     responses = jf.run_locally(workflow, ensure_success=True)

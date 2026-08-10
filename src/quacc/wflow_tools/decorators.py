@@ -644,9 +644,7 @@ def _get_jobflow_wrapped_func(method: Callable, **job_kwargs) -> Callable:
 
     @wraps(wrapped)
     def wrapper(*args, **kwargs):
-        args, kwargs = _transform_call_args(
-            args, kwargs, _jobflow_value_to_output
-        )
+        args, kwargs = _transform_call_args(args, kwargs, _jobflow_value_to_output)
         return wrapped(*args, **kwargs)
 
     return wrapper
@@ -664,9 +662,7 @@ def _get_jobflow_wrapped_flow(_func: Callable, **flow_kwargs) -> Callable:
 
 def _get_jobflow_wrapped_subflow(_func: Callable, **job_kwargs) -> Callable:
     """Wrap a dynamic subflow in a job that replaces itself with a captured flow."""
-    wrapped = _get_jobflow_wrapped_func(
-        _get_jobflow_wrapped_flow(_func), **job_kwargs
-    )
+    wrapped = _get_jobflow_wrapped_func(_get_jobflow_wrapped_flow(_func), **job_kwargs)
     wrapped.original = _func  # type: ignore[attr-defined]
     return wrapped
 
