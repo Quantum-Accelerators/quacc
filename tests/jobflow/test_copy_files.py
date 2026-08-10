@@ -10,7 +10,7 @@ from quacc import flow, job
 from quacc.wflow_tools.job_argument import Copy
 
 
-def test_copy_files(tmp_path, monkeypatch):
+def test_copy_files(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     @job
@@ -32,7 +32,8 @@ def test_copy_files(tmp_path, monkeypatch):
 
     workflow = create_files()
     assert str(workflow.graph) == "DiGraph with 2 nodes and 1 edges"
-    jf.run_locally(workflow, ensure_success=True, create_folders=True)
+    responses = jf.run_locally(workflow, ensure_success=True, create_folders=True)
+    assert jobflow_output(responses, workflow.jobs[-1])["dir_name"] == tmp_path / "job2"
 
     # Individual job folders/files should exist, and the job1 file should be
     # copied over to the job2 folder.

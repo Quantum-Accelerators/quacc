@@ -7,7 +7,7 @@ jf = pytest.importorskip("jobflow")
 from quacc import flow, job, subflow
 
 
-def test_jobflow_decorators(tmp_path, monkeypatch):
+def test_jobflow_decorators(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     @job
@@ -30,16 +30,20 @@ def test_jobflow_decorators(tmp_path, monkeypatch):
     assert not isinstance(mult, jf.Job)
     assert hasattr(add, "original")
     assert hasattr(mult, "original")
+    assert hasattr(add_distributed, "original")
     assert isinstance(add(1, 2), jf.Job)
     assert isinstance(mult(1, 2), jf.Job)
     workflow_flow = workflow(1, 2, 3)
     assert isinstance(workflow_flow, jf.Flow)
     responses = jf.run_locally(workflow_flow, ensure_success=True)
-    assert responses[workflow_flow.jobs[-1].uuid][1].output == 9
-    assert isinstance(add_distributed([1, 2, 3], 4), jf.Job)
+    assert jobflow_output(responses, workflow_flow.jobs[-1]) == 9
+    subflow_job = add_distributed([1, 2, 3], 4)
+    assert isinstance(subflow_job, jf.Job)
+    responses = jf.run_locally(subflow_job, ensure_success=True)
+    assert jobflow_output(responses, subflow_job) == [5, 6, 7]
 
 
-def test_jobflow_decorators_args(tmp_path, monkeypatch):
+def test_jobflow_decorators_args(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     @job()
@@ -62,16 +66,20 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch):
     assert not isinstance(mult, jf.Job)
     assert hasattr(add, "original")
     assert hasattr(mult, "original")
+    assert hasattr(add_distributed, "original")
     assert isinstance(add(1, 2), jf.Job)
     assert isinstance(mult(1, 2), jf.Job)
     workflow_flow = workflow(1, 2, 3)
     assert isinstance(workflow_flow, jf.Flow)
     responses = jf.run_locally(workflow_flow, ensure_success=True)
-    assert responses[workflow_flow.jobs[-1].uuid][1].output == 9
-    assert isinstance(add_distributed([1, 2, 3], 4), jf.Job)
+    assert jobflow_output(responses, workflow_flow.jobs[-1]) == 9
+    subflow_job = add_distributed([1, 2, 3], 4)
+    assert isinstance(subflow_job, jf.Job)
+    responses = jf.run_locally(subflow_job, ensure_success=True)
+    assert jobflow_output(responses, subflow_job) == [5, 6, 7]
 
 
-def test_jobflow_nested_job_arguments(tmp_path, monkeypatch):
+def test_jobflow_nested_job_arguments(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     @job
@@ -93,4 +101,4 @@ def test_jobflow_nested_job_arguments(tmp_path, monkeypatch):
 
     workflow_flow = workflow()
     responses = jf.run_locally(workflow_flow, ensure_success=True)
-    assert responses[workflow_flow.jobs[-1].uuid][1].output == 126
+    assert jobflow_output(responses, workflow_flow.jobs[-1]) == 126

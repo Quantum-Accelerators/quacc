@@ -539,7 +539,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "jobflow":
-        return _get_jobflow_wrapped_func(_func, **kwargs)
+        return _get_jobflow_wrapped_subflow(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
@@ -638,23 +638,15 @@ def _get_prefect_wrapped_flow(
 
 
 def _get_jobflow_wrapped_func(method: Callable, **job_kwargs) -> Callable:
-    from jobflow import Flow as JobflowFlow
-    from jobflow import Job as JobflowJob
     from jobflow import job as jf_job
 
     wrapped = jf_job(method, **job_kwargs)
 
-    def job_to_output(value: Any) -> Any:
-        return _transform_nested_plain_containers(
-            value,
-            lambda item: (
-                item.output if isinstance(item, (JobflowJob, JobflowFlow)) else item
-            ),
-        )
-
     @wraps(wrapped)
     def wrapper(*args, **kwargs):
-        args, kwargs = _transform_call_args(args, kwargs, job_to_output)
+        args, kwargs = _transform_call_args(
+            args, kwargs, _jobflow_value_to_output
+        )
         return wrapped(*args, **kwargs)
 
     return wrapper
@@ -663,7 +655,20 @@ def _get_jobflow_wrapped_func(method: Callable, **job_kwargs) -> Callable:
 def _get_jobflow_wrapped_flow(_func: Callable, **flow_kwargs) -> Callable:
     from jobflow import flow as jf_flow
 
-    return jf_flow(_func, **flow_kwargs)
+    @wraps(_func)
+    def wrapper(*args, **kwargs):
+        return _jobflow_value_to_output(_func(*args, **kwargs))
+
+    return jf_flow(wrapper, **flow_kwargs)
+
+
+def _get_jobflow_wrapped_subflow(_func: Callable, **job_kwargs) -> Callable:
+    """Wrap a dynamic subflow in a job that replaces itself with a captured flow."""
+    wrapped = _get_jobflow_wrapped_func(
+        _get_jobflow_wrapped_flow(_func), **job_kwargs
+    )
+    wrapped.original = _func  # type: ignore[attr-defined]
+    return wrapped
 
 
 class Delayed_:
@@ -735,6 +740,19 @@ def _transform_nested_plain_containers(
             for k, v in value.items()
         }
     return transform(value)
+
+
+def _jobflow_value_to_output(value: Any) -> Any:
+    """Recursively replace Jobflow jobs and flows with their output references."""
+    from jobflow import Flow as JobflowFlow
+    from jobflow import Job as JobflowJob
+
+    def get_output(item: Any) -> Any:
+        while isinstance(item, (JobflowJob, JobflowFlow)):
+            item = item.output
+        return item
+
+    return _transform_nested_plain_containers(value, get_output)
 
 
 def _transform_call_args(

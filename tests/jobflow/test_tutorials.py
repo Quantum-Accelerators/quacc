@@ -10,7 +10,7 @@ from quacc import flow, job
 from quacc.recipes.emt.core import relax_job, static_job  # skipcq: PYL-C0412
 
 
-def test_tutorial1a(tmp_path, monkeypatch):
+def test_tutorial1a(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
@@ -20,10 +20,11 @@ def test_tutorial1a(tmp_path, monkeypatch):
     job = relax_job(atoms)  # (1)!
 
     # Run the job locally
-    jf.run_locally(job, create_folders=True, ensure_success=True)
+    responses = jf.run_locally(job, create_folders=True, ensure_success=True)
+    assert "atoms" in jobflow_output(responses, job)
 
 
-def test_tutorial2a(tmp_path, monkeypatch):
+def test_tutorial2a(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
@@ -39,10 +40,11 @@ def test_tutorial2a(tmp_path, monkeypatch):
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    jf.run_locally(workflow, create_folders=True, ensure_success=True)
+    responses = jf.run_locally(workflow, create_folders=True, ensure_success=True)
+    assert "atoms" in jobflow_output(responses, job2)
 
 
-def test_tutorial2a_flow_decorator(tmp_path, monkeypatch):
+def test_tutorial2a_flow_decorator(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     # Make an Atoms object of a bulk Cu structure
@@ -57,10 +59,14 @@ def test_tutorial2a_flow_decorator(tmp_path, monkeypatch):
         static_job(job1["atoms"])
 
     # Run the workflow locally
-    jf.run_locally(workflow(atoms), create_folders=True, ensure_success=True)
+    workflow_flow = workflow(atoms)
+    responses = jf.run_locally(
+        workflow_flow, create_folders=True, ensure_success=True
+    )
+    assert "atoms" in jobflow_output(responses, workflow_flow.jobs[-1])
 
 
-def test_tutorial2b(tmp_path, monkeypatch):
+def test_tutorial2b(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     # Define two Atoms objects
@@ -75,10 +81,12 @@ def test_tutorial2b(tmp_path, monkeypatch):
     workflow = jf.Flow([job1, job2])
 
     # Run the workflow locally
-    jf.run_locally(workflow, create_folders=True, ensure_success=True)
+    responses = jf.run_locally(workflow, create_folders=True, ensure_success=True)
+    assert "atoms" in jobflow_output(responses, job1)
+    assert "atoms" in jobflow_output(responses, job2)
 
 
-def test_tutorial2b_flow_decorator(tmp_path, monkeypatch):
+def test_tutorial2b_flow_decorator(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     # Define two Atoms objects
@@ -93,10 +101,16 @@ def test_tutorial2b_flow_decorator(tmp_path, monkeypatch):
         relax_job(atoms2)
 
     # Run the workflow locally
-    jf.run_locally(workflow(atoms1, atoms2), create_folders=True, ensure_success=True)
+    workflow_flow = workflow(atoms1, atoms2)
+    responses = jf.run_locally(
+        workflow_flow, create_folders=True, ensure_success=True
+    )
+    assert all(
+        "atoms" in jobflow_output(responses, job) for job in workflow_flow.jobs
+    )
 
 
-def test_job_getitem():
+def test_job_getitem(jobflow_output):
     @job
     def greetings(s):
         return {"hello": f"Hello {s}", "bye": f"Goodbye {s}"}
@@ -109,11 +123,11 @@ def test_job_getitem():
     def greet(s):
         job1 = greetings(s)
         job2 = upper(job1["hello"])  # No need for `job1.output["hello"]`
-        return job2.output
+        return job2
 
     workflow = greet("World")
-    response = jf.run_locally(workflow)
-    assert response[workflow.output.uuid][1].output == "HELLO WORLD"
+    responses = jf.run_locally(workflow, ensure_success=True)
+    assert jobflow_output(responses, workflow.jobs[-1]) == "HELLO WORLD"
 
 
 def test_comparison1(tmp_path, monkeypatch):
@@ -128,14 +142,14 @@ def test_comparison1(tmp_path, monkeypatch):
         return a * b
 
     job1 = add(1, 2)
-    job2 = mult(job1.output, 3)
+    job2 = mult(job1, 3)
     flow = jf.Flow([job1, job2])  # (2)!
 
     responses = jf.run_locally(flow, ensure_success=True)
     assert responses[job2.uuid][1].output == 9
 
 
-def test_comparison1_flow_decorator(tmp_path, monkeypatch):
+def test_comparison1_flow_decorator(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     @job  # (1)!
@@ -149,12 +163,11 @@ def test_comparison1_flow_decorator(tmp_path, monkeypatch):
     @flow
     def workflow():
         job1 = add(1, 2)
-        job2 = mult(job1.output, 3)
-        return job2.output  # or `return job`
+        return mult(job1, 3)
 
-    f = workflow()
-    response = jf.run_locally(f, ensure_success=True)
-    assert response[f.output.uuid][1].output == 9
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    assert jobflow_output(responses, workflow_flow.jobs[-1]) == 9
 
 
 def test_comparison2(tmp_path, monkeypatch):
@@ -181,7 +194,13 @@ def test_comparison2(tmp_path, monkeypatch):
     job3 = add_distributed(job2.output, 3)
     flow = jf.Flow([job1, job2, job3])
 
-    jf.run_locally(flow, ensure_success=True)  # [6, 6, 6] in final 3 jobs
+    responses = jf.run_locally(flow, ensure_success=True)
+    outputs = [
+        response.output
+        for indexed_responses in responses.values()
+        for response in indexed_responses.values()
+    ]
+    assert outputs.count(6) == 3
 
 
 def test_comparison2_flow_decorator(tmp_path, monkeypatch):
@@ -208,10 +227,16 @@ def test_comparison2_flow_decorator(tmp_path, monkeypatch):
         job2 = make_more(job1.output)
         add_distributed(job2.output, 3)
 
-    jf.run_locally(workflow(), ensure_success=True)  # [6, 6, 6] in final 3 jobs
+    responses = jf.run_locally(workflow(), ensure_success=True)
+    outputs = [
+        response.output
+        for indexed_responses in responses.values()
+        for response in indexed_responses.values()
+    ]
+    assert outputs.count(6) == 3
 
 
-def test_comparison3(tmp_path, monkeypatch):
+def test_comparison3(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     @job  #  (1)!
@@ -223,13 +248,14 @@ def test_comparison3(tmp_path, monkeypatch):
         return a * b
 
     job1 = add(1, 2)
-    job2 = mult(job1.output, 3)
+    job2 = mult(job1, 3)
     flow = jf.Flow([job1, job2])
 
-    jf.run_locally(flow, ensure_success=True)
+    responses = jf.run_locally(flow, ensure_success=True)
+    assert jobflow_output(responses, job2) == 9
 
 
-def test_comparison3_flow_decorator(tmp_path, monkeypatch):
+def test_comparison3_flow_decorator(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
     @job  #  (1)!
@@ -243,6 +269,8 @@ def test_comparison3_flow_decorator(tmp_path, monkeypatch):
     @flow
     def workflow():
         job1 = add(1, 2)
-        mult(job1.output, 3)
+        mult(job1, 3)
 
-    jf.run_locally(workflow(), ensure_success=True)
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    assert jobflow_output(responses, workflow_flow.jobs[-1]) == 9
