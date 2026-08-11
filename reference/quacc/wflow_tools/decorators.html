@@ -18,7 +18,7 @@
         <link rel="prev" href="./customizers.html">
       
       
-        <link rel="next" href="./job_argument.html">
+        <link rel="next" href="./job_patterns.html">
       
       
         
@@ -5733,33 +5733,6 @@
   
   
     <li class="md-nav__item">
-      <a href="./job_argument.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  job_argument
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="./job_patterns.html" class="md-nav__link">
         
   
@@ -8060,7 +8033,7 @@ decorator.</p>
 </span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a>    <span class="k">elif</span> <span class="n">settings</span><span class="o">.</span><span class="n">WORKFLOW_ENGINE</span> <span class="o">==</span> <span class="s2">&quot;ray&quot;</span><span class="p">:</span>
 </span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a>        <span class="kn">import</span><span class="w"> </span><span class="nn">ray</span>
 </span><span id="__span-0-176"><a id="__codelineno-0-176" name="__codelineno-0-176"></a>
-</span><span id="__span-0-177"><a id="__codelineno-0-177" name="__codelineno-0-177"></a>        <span class="n">_ray_target</span> <span class="o">=</span> <span class="n">_wrap_partial_for_ray</span><span class="p">(</span><span class="n">_func</span><span class="p">)</span>
+</span><span id="__span-0-177"><a id="__codelineno-0-177" name="__codelineno-0-177"></a>        <span class="n">_ray_target</span> <span class="o">=</span> <span class="n">_wrap_ray_target</span><span class="p">(</span><span class="n">_wrap_partial_for_ray</span><span class="p">(</span><span class="n">_func</span><span class="p">),</span> <span class="n">ray</span><span class="p">)</span>
 </span><span id="__span-0-178"><a id="__codelineno-0-178" name="__codelineno-0-178"></a>
 </span><span id="__span-0-179"><a id="__codelineno-0-179" name="__codelineno-0-179"></a>        <span class="n">remote_func</span> <span class="o">=</span> <span class="p">(</span>
 </span><span id="__span-0-180"><a id="__codelineno-0-180" name="__codelineno-0-180"></a>            <span class="n">ray</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)(</span><span class="n">_ray_target</span><span class="p">)</span> <span class="k">if</span> <span class="n">kwargs</span> <span class="k">else</span> <span class="n">ray</span><span class="o">.</span><span class="n">remote</span><span class="p">(</span><span class="n">_ray_target</span><span class="p">)</span>
@@ -8711,7 +8684,7 @@ decorator.</p>
 </span><span id="__span-0-531"><a id="__codelineno-0-531" name="__codelineno-0-531"></a>    <span class="k">elif</span> <span class="n">settings</span><span class="o">.</span><span class="n">WORKFLOW_ENGINE</span> <span class="o">==</span> <span class="s2">&quot;ray&quot;</span><span class="p">:</span>
 </span><span id="__span-0-532"><a id="__codelineno-0-532" name="__codelineno-0-532"></a>        <span class="kn">import</span><span class="w"> </span><span class="nn">ray</span>
 </span><span id="__span-0-533"><a id="__codelineno-0-533" name="__codelineno-0-533"></a>
-</span><span id="__span-0-534"><a id="__codelineno-0-534" name="__codelineno-0-534"></a>        <span class="n">target_func</span> <span class="o">=</span> <span class="n">_wrap_partial_for_ray</span><span class="p">(</span><span class="n">_func</span><span class="p">)</span>
+</span><span id="__span-0-534"><a id="__codelineno-0-534" name="__codelineno-0-534"></a>        <span class="n">target_func</span> <span class="o">=</span> <span class="n">_wrap_ray_target</span><span class="p">(</span><span class="n">_wrap_partial_for_ray</span><span class="p">(</span><span class="n">_func</span><span class="p">),</span> <span class="n">ray</span><span class="p">)</span>
 </span><span id="__span-0-535"><a id="__codelineno-0-535" name="__codelineno-0-535"></a>
 </span><span id="__span-0-536"><a id="__codelineno-0-536" name="__codelineno-0-536"></a>        <span class="nd">@wraps</span><span class="p">(</span><span class="n">target_func</span><span class="p">)</span>
 </span><span id="__span-0-537"><a id="__codelineno-0-537" name="__codelineno-0-537"></a>        <span class="k">def</span><span class="w"> </span><span class="nf">_ray_subflow_target</span><span class="p">(</span><span class="o">*</span><span class="n">f_args</span><span class="p">,</span> <span class="o">**</span><span class="n">f_kwargs</span><span class="p">):</span>
@@ -8802,13 +8775,13 @@ decorator.</p>
         
         
           
-          <a href="./job_argument.html" class="md-footer__link md-footer__link--next" aria-label="Next: job_argument">
+          <a href="./job_patterns.html" class="md-footer__link md-footer__link--next" aria-label="Next: job_patterns">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                job_argument
+                job_patterns
               </div>
             </div>
             <div class="md-footer__button md-icon">

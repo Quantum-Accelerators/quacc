@@ -5558,33 +5558,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wflow_tools/job_argument.html" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  job_argument
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../wflow_tools/job_patterns.html" class="md-nav__link">
         
   
@@ -6517,7 +6490,9 @@ the MP-ALOE defaults.</p>
 <span class="normal"><a href="#__codelineno-0-54">54</a></span>
 <span class="normal"><a href="#__codelineno-0-55">55</a></span>
 <span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="nd">@job</span>
+<span class="normal"><a href="#__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#__codelineno-0-59">59</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="nd">@job</span>
 </span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="k">def</span><span class="w"> </span><span class="nf">mp_aloe_static_job</span><span class="p">(</span>
 </span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">prev_dir</span><span class="p">:</span> <span class="n">SourceDirectory</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">calc_kwargs</span>
 </span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VaspSchema</span><span class="p">:</span>
@@ -6556,8 +6531,10 @@ the MP-ALOE defaults.</p>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a>        <span class="n">calc_swaps</span><span class="o">=</span><span class="n">calc_kwargs</span><span class="p">,</span>
 </span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a>        <span class="n">report_mp_corrections</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 </span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>        <span class="n">additional_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MP-ALOE Static&quot;</span><span class="p">},</span>
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>        <span class="n">copy_files</span><span class="o">=</span><span class="p">{</span><span class="n">prev_dir</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CHGCAR*&quot;</span><span class="p">,</span> <span class="s2">&quot;WAVECAR*&quot;</span><span class="p">]}</span> <span class="k">if</span> <span class="n">prev_dir</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>    <span class="p">)</span>
+</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>        <span class="n">copy_files</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">prev_dir</span><span class="p">,</span> <span class="s2">&quot;filenames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CHGCAR*&quot;</span><span class="p">,</span> <span class="s2">&quot;WAVECAR*&quot;</span><span class="p">]}]</span>
+</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="k">if</span> <span class="n">prev_dir</span>
+</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>        <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>    <span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
