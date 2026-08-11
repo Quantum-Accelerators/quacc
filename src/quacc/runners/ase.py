@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from contextlib import nullcontext
 from copy import deepcopy
 from importlib.util import find_spec
 from logging import getLogger
@@ -168,6 +169,7 @@ class Runner(BaseRunner):
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
         filter_kwargs: dict[str, Any] | None = None,
+        write_files: bool = True,
     ) -> Optimizer:
         """
         This is a wrapper around the optimizers in ASE.
@@ -198,6 +200,8 @@ class Runner(BaseRunner):
             Dictionary of kwargs for the `run()` method of the optimizer.
         filter_kwargs
             Dictionary of kwargs for the `FrechetCellFilter` if relax_cell is True.
+        write_files
+            Whether to write the optimizer log, restart, and trajectory files.
 
         Returns
         -------
@@ -207,8 +211,8 @@ class Runner(BaseRunner):
         # Set defaults
         merged_optimizer_kwargs = recursive_dict_merge(
             {
-                "logfile": self.tmpdir / "opt.log",
-                "restart": str(self.tmpdir / "opt.json"),
+                "logfile": self.tmpdir / "opt.log" if write_files else None,
+                "restart": str(self.tmpdir / "opt.json") if write_files else None,
             },
             optimizer_kwargs,
         )
@@ -233,8 +237,8 @@ class Runner(BaseRunner):
             self._set_sella_kwargs(merged_optimizer_kwargs)
 
         # Define the Trajectory object
-        traj_file = self.tmpdir / traj_filename
-        traj = Trajectory(traj_file, "w", atoms=self.atoms)
+        traj_file = self.tmpdir / traj_filename if write_files else None
+        traj = Trajectory(traj_file, "w", atoms=self.atoms) if traj_file else None
         merged_optimizer_kwargs["trajectory"] = traj
 
         # Set volume relaxation constraints, if relevant
@@ -248,7 +252,10 @@ class Runner(BaseRunner):
 
         # Run optimization
         try:
-            with traj, optimizer(self.atoms, **merged_optimizer_kwargs) as dyn:
+            with (
+                traj if traj is not None else nullcontext(),
+                optimizer(self.atoms, **merged_optimizer_kwargs) as dyn,
+            ):
                 if issubclass(optimizer, SciPyOptimizer):
                     # https://gitlab.com/ase/ase/-/issues/1475
                     dyn.run(**full_run_kwargs)
@@ -270,7 +277,8 @@ class Runner(BaseRunner):
 
         # Perform cleanup operations
         self.cleanup()
-        traj.filename = zpath(str(self.job_results_dir / traj_filename))
+        if traj is not None:
+            traj.filename = zpath(str(self.job_results_dir / traj_filename))
         dyn.trajectory = traj
 
         return dyn
