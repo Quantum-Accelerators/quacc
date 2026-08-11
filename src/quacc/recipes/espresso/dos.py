@@ -18,17 +18,17 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import (
+        CopyFiles,
         EspressoDosSchema,
         EspressoProjwfcSchema,
         RunSchema,
         SourceDirectory,
     )
-    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
 def dos_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -43,11 +43,8 @@ def dos_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -80,7 +77,7 @@ def dos_job(
 
 @job
 def projwfc_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -95,11 +92,8 @@ def projwfc_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need

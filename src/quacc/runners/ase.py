@@ -46,12 +46,7 @@ if TYPE_CHECKING:
     from ase.calculators.calculator import BaseCalculator
     from ase.optimize.optimize import Dynamics, Optimizer
 
-    from quacc.types import (
-        MaxwellBoltzmanDistributionKwargs,
-        SourceDirectory,
-        VibKwargs,
-    )
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, MaxwellBoltzmanDistributionKwargs, VibKwargs
 
 
 class Runner(BaseRunner):
@@ -64,7 +59,7 @@ class Runner(BaseRunner):
         self,
         atoms: Atoms | list[Atoms],
         calculator: BaseCalculator,
-        copy_files: SourceDirectory | Copy | None = None,
+        copy_files: CopyFiles | None = None,
     ) -> None:
         """
         Initialize the Runner object.

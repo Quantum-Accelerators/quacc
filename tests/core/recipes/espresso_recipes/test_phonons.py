@@ -716,7 +716,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch):
 
         dvscf_q2r_results = dvscf_q2r_job(
             prev_outdir=c_scf_results["dir_name"],
-            copy_files=c_ph_results["dir_name"],
+            copy_files=[{"source": c_ph_results["dir_name"], "filenames": "*"}],
             **dvscf_q2r_params,
         )
 

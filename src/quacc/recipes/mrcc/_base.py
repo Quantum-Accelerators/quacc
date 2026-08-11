@@ -15,8 +15,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import RunSchema, SourceDirectory
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, RunSchema
 
 
 def run_and_summarize(
@@ -26,7 +25,7 @@ def run_and_summarize(
     default_inputs: dict[str, str] | None = None,
     input_swaps: dict[str, str] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
 ) -> RunSchema:
     """
     Base job function for MRCC recipes.

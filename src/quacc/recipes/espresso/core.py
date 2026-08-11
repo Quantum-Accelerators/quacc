@@ -17,8 +17,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from src.quacc.types import EspressoBaseSet
 
-    from quacc.types import OptParams, RunSchema, SourceDirectory
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, OptParams, RunSchema, SourceDirectory
 
 
 BASE_SET_METAL: EspressoBaseSet = {
@@ -44,7 +43,7 @@ def static_job(
     atoms: Atoms,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     test_run: bool = False,
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -64,11 +63,8 @@ def static_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -106,7 +102,7 @@ def relax_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     relax_cell: bool = False,
     test_run: bool = False,
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -128,11 +124,8 @@ def relax_job(
         If True, a test run is performed to check that the calculation input_data is correct or
         to generate some files/info if needed.
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -173,7 +166,7 @@ def ase_relax_job(
     autorestart: bool = True,
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -200,11 +193,8 @@ def ase_relax_job(
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -246,7 +236,7 @@ def ase_relax_job(
 
 @job
 def post_processing_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -261,11 +251,8 @@ def post_processing_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -309,7 +296,7 @@ def post_processing_job(
 @job
 def non_scf_job(
     atoms: Atoms,
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     test_run: bool = False,
@@ -324,11 +311,8 @@ def non_scf_job(
     atoms
         The Atoms object.
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need

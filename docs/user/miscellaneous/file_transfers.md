@@ -6,29 +6,43 @@
 
 Sometimes, you may want to transfer files between jobs. Many recipes within quacc take an optional keyword argument, `copy_files` for this purpose.
 
-The `copy_files` keyword argument takes two forms. The first form is simply a `SourceDirectory`, which is a `str` or `Path` object that points to the directory containing the files you wish to copy (and decompress) to the runtime directory. For instance, if you have gzipped files from a previous run in `/my/folder` that you want to copy and decompress to your new runtime directory, then you could ensure that this is achieved as follows:
+The `copy_files` keyword argument takes a list of file-transfer specifications. Each specification contains a `source` directory and the `filenames` to copy and decompress into the runtime directory:
 
 ```python
 from ase.build import bulk
 from quacc.recipes.vasp.core import relax_job
 
-relax_job(atoms, copy_files="/my/folder")
+relax_job(
+    atoms,
+    copy_files=[{"source": "/my/folder", "filenames": "*"}],
+)
 ```
 
-The second form is a dictionary where the keys are the source folders and the values are the names of the files you wish to have copied to the directory where the calculation is ultimately run. For instance, if you have the files `CHGCAR.gz` and `WAVECAR.gz` stored in `/my/folder`, then you could ensure that they are present (and decompressed) in the calculation's working directory as follows:
+For instance, if you have the files `CHGCAR.gz` and `WAVECAR.gz` stored in `/my/folder`, you can select them as follows:
 
 ```python
 from ase.build import bulk
 from quacc.recipes.vasp.core import relax_job
 
 atoms = bulk("Cu")
-relax_job(atoms, copy_files={"/my/folder": ["CHGCAR.gz", "WAVECAR.gz"]})
+relax_job(
+    atoms,
+    copy_files=[
+        {
+            "source": "/my/folder",
+            "filenames": ["CHGCAR.gz", "WAVECAR.gz"],
+        }
+    ],
+)
 ```
 
 You can also copy a specific file from a directory while retaining the directory structure. For instance, if you have the file `/my/folder/WAVECAR.gz` and you want to copy it to the calculation's working directory as `folder/WAVECAR.gz`, you can do so as follows:
 
 ```python
-relax_job(atoms, copy_files={"/my": ["folder/WAVECAR.gz"]})
+relax_job(
+    atoms,
+    copy_files=[{"source": "/my", "filenames": ["folder/WAVECAR.gz"]}],
+)
 ```
 
 !!! Tip "Glob Patterns"
@@ -46,7 +60,12 @@ from quacc.recipes.vasp.core import relax_job, static_job
 
 atoms = bulk("Cu")
 results1 = relax_job(atoms)
-static_job(results1["atoms"], copy_files={results1["dir_name"]: ["WAVECAR.gz"]})
+static_job(
+    results1["atoms"],
+    copy_files=[
+        {"source": results1["dir_name"], "filenames": ["WAVECAR.gz"]}
+    ],
+)
 ```
 
 ## Non-Local File Transfers

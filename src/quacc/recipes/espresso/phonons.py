@@ -27,17 +27,16 @@ if TYPE_CHECKING:
     from typing import Any
 
     from quacc.types import (
+        CopyFiles,
         EspressoPhononDosSchema,
-        Filenames,
         RunSchema,
         SourceDirectory,
     )
-    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
 def phonon_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     use_phcg: bool = False,
@@ -67,11 +66,8 @@ def phonon_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -115,7 +111,7 @@ def phonon_job(
 
 @job
 def q2r_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy),
+    copy_files: (CopyFiles),
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -130,11 +126,8 @@ def q2r_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -159,7 +152,7 @@ def q2r_job(
 
 @job
 def matdyn_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy),
+    copy_files: (CopyFiles),
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -175,11 +168,8 @@ def matdyn_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -204,12 +194,7 @@ def matdyn_job(
 
 @flow
 def phonon_dos_flow(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
@@ -246,11 +231,8 @@ def phonon_dos_flow(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -305,12 +287,7 @@ def phonon_dos_flow(
 
 @flow
 def grid_phonon_flow(
-    copy_files: (
-        SourceDirectory
-        | list[SourceDirectory]
-        | dict[SourceDirectory, Filenames]
-        | None
-    ) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     nblocks: int = 1,
     job_params: dict[str, Any] | None = None,
@@ -369,11 +346,8 @@ def grid_phonon_flow(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -399,15 +373,19 @@ def grid_phonon_flow(
 
     @subflow
     def _ph_recover_subflow(grid_results: list[RunSchema]) -> RunSchema:
-        prev_dirs = {}
-        for result in grid_results:
-            prev_dirs[result["dir_name"]] = [
-                Path("**", "*.xml.*"),
-                Path("**", "data-file-schema.xml.*"),
-                Path("**", "charge-density.*"),
-                Path("**", "wfc*.*"),
-                Path("**", "paw.txt.*"),
-            ]
+        prev_dirs = [
+            {
+                "source": result["dir_name"],
+                "filenames": [
+                    Path("**", "*.xml.*"),
+                    Path("**", "data-file-schema.xml.*"),
+                    Path("**", "charge-density.*"),
+                    Path("**", "wfc*.*"),
+                    Path("**", "paw.txt.*"),
+                ],
+            }
+            for result in grid_results
+        ]
         return ph_recover_job(copy_files=prev_dirs)
 
     @subflow
@@ -452,12 +430,15 @@ def grid_phonon_flow(
             files_to_copy = grid_copy_files(
                 ph_input_data, prev_outdir, qnum, qdata["qpoint"]
             )
+            copy_specs = [
+                {"source": source, "filenames": filenames}
+                for source, filenames in files_to_copy.items()
+            ]
             for representation in repr_to_do:
                 ph_input_data["inputph"]["start_irr"] = int(representation[0])
                 ph_input_data["inputph"]["last_irr"] = int(representation[-1])
                 ph_job_results = ph_job(
-                    copy_files=deepcopy(files_to_copy),
-                    input_data=deepcopy(ph_input_data),
+                    copy_files=deepcopy(copy_specs), input_data=deepcopy(ph_input_data)
                 )
                 grid_results.append(ph_job_results)
 
@@ -497,7 +478,7 @@ def grid_phonon_flow(
 
 @job
 def dvscf_q2r_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -536,11 +517,8 @@ def dvscf_q2r_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -569,7 +547,7 @@ def dvscf_q2r_job(
 
 @job
 def postahc_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -593,11 +571,8 @@ def postahc_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need

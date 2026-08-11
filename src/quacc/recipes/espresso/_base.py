@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.atoms import Atoms
@@ -14,19 +13,15 @@ from quacc.calculators.espresso.espresso import (
     EspressoProfile,
     EspressoTemplate,
 )
-from quacc.calculators.espresso.utils import (
-    prepare_copy_files,
-    remove_conflicting_kpts_kspacing,
-)
+from quacc.calculators.espresso.utils import remove_conflicting_kpts_kspacing
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.job_argument import Copy
 
 if TYPE_CHECKING:
     from typing import Any
 
-    from quacc.types import OptParams, RunSchema, SourceDirectory
+    from quacc.types import CopyFiles, OptParams, RunSchema
 
 
 def run_and_summarize(
@@ -37,7 +32,7 @@ def run_and_summarize(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -78,15 +73,9 @@ def run_and_summarize(
         calc_swaps=calc_swaps,
     )
 
-    updated_copy_files = prepare_copy(
-        copy_files=copy_files,
-        calc_params=calc.user_calc_params,
-        binary=calc.template.binary,
-    )
-
     geom_file = template.outputname if template and template.binary == "pw" else None
 
-    final_atoms = Runner(atoms, calc, copy_files=updated_copy_files).run_calc(
+    final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc(
         geom_file=geom_file
     )
 
@@ -105,7 +94,7 @@ def run_and_summarize_opt(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: (CopyFiles | None) = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes with ASE optimizers.
@@ -151,15 +140,9 @@ def run_and_summarize_opt(
         calc_swaps=calc_swaps,
     )
 
-    updated_copy_files = prepare_copy(
-        copy_files=copy_files,
-        calc_params=calc.user_calc_params,
-        binary=calc.template.binary,
-    )
-
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    dyn = Runner(atoms, calc, copy_files=updated_copy_files).run_opt(**opt_flags)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return Summarize(move_magmoms=True, additional_fields=additional_fields).opt(dyn)
 
@@ -220,35 +203,3 @@ def prepare_calc(
         profile=profile,
         **calc_flags,
     )
-
-
-def prepare_copy(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
-    calc_params: dict[str, Any] | None = None,
-    binary: str = "pw",
-) -> Copy | None:
-    """
-    Function that will prepare the files to copy.
-
-    Parameters
-    ----------
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-    calc_params
-        The calculator parameters.
-    binary
-        The binary to use.
-
-    Returns
-    -------
-    dict
-        Dictionary of files to copy.
-    """
-    if isinstance(copy_files, str | Path):
-        copy_files = [copy_files]
-
-    if isinstance(copy_files, list):
-        exact_files_to_copy = prepare_copy_files(calc_params, binary=binary)
-        return Copy(dict.fromkeys(copy_files, exact_files_to_copy))
-
-    return copy_files
