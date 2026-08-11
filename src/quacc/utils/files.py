@@ -286,6 +286,8 @@ def find_recent_logfile(
     if isinstance(logfile_extensions, str):
         logfile_extensions = [logfile_extensions]
     for f in Path(directory).expanduser().iterdir():
+        if not f.is_file():
+            continue
         f_path = Path(directory, f)
         for ext in logfile_extensions:
             if (
