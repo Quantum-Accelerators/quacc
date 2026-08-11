@@ -174,7 +174,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
-        _ray_target = _wrap_partial_for_ray(_func)
+        _ray_target = _wrap_ray_target(_wrap_partial_for_ray(_func), ray)
 
         remote_func = (
             ray.remote(**kwargs)(_ray_target) if kwargs else ray.remote(_ray_target)
@@ -531,7 +531,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
-        target_func = _wrap_partial_for_ray(_func)
+        target_func = _wrap_ray_target(_wrap_partial_for_ray(_func), ray)
 
         @wraps(target_func)
         def _ray_subflow_target(*f_args, **f_kwargs):
@@ -721,20 +721,32 @@ def _ray_getitem(obj: Any, k: Any) -> Any:
 
 
 def _resolve_ray_value(value: Any, ray_mod: Any) -> Any:
-    """Resolve a single ``RayFuture``/``ObjectRef`` to its concrete value."""
+    """Recursively resolve ``RayFuture``/``ObjectRef`` values."""
     if isinstance(value, RayFuture):
         return ray_mod.get(value._ref)
     if isinstance(value, ray_mod.ObjectRef):
         return ray_mod.get(value)
+    if type(value) is list:
+        return [_resolve_ray_value(v, ray_mod) for v in value]
+    if type(value) is tuple:
+        return tuple(_resolve_ray_value(v, ray_mod) for v in value)
+    if type(value) is dict:
+        return {k: _resolve_ray_value(v, ray_mod) for k, v in value.items()}
     return value
+
+
+def _wrap_ray_target(func: Callable, ray_mod: Any) -> Callable:
+    """Resolve nested Ray references before invoking a remote function."""
+
+    @wraps(func)
+    def wrapper(*f_args, **f_kwargs):
+        f_args = tuple(_resolve_ray_value(a, ray_mod) for a in f_args)
+        f_kwargs = {k: _resolve_ray_value(v, ray_mod) for k, v in f_kwargs.items()}
+        return func(*f_args, **f_kwargs)
+
+    return wrapper
 
 
 def _resolve_ray_subflow_result(result: Any, ray_mod: Any) -> Any:
     """Recursively resolve futures returned from a ray subflow body."""
-    if type(result) is list:
-        return [_resolve_ray_value(r, ray_mod) for r in result]
-    if type(result) is tuple:
-        return tuple(_resolve_ray_value(r, ray_mod) for r in result)
-    if type(result) is dict:
-        return {k: _resolve_ray_value(v, ray_mod) for k, v in result.items()}
     return _resolve_ray_value(result, ray_mod)

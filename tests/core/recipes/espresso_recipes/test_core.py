@@ -377,7 +377,7 @@ def test_non_scf_job(tmp_path, monkeypatch):
 
     results = non_scf_job(
         atoms,
-        static_result["dir_name"],
+        [{"source": static_result["dir_name"], "filenames": "*"}],
         input_data=input_data,
         pseudopotentials=pseudopotentials,
     )
