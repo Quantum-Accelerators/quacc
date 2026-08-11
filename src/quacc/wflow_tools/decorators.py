@@ -5,7 +5,6 @@ from __future__ import annotations
 from collections.abc import Callable
 from functools import partial, wraps
 from typing import TYPE_CHECKING, Any
-from warnings import catch_warnings, filterwarnings
 
 from quacc.settings import change_settings_wrap
 from quacc.wflow_tools.context import NodeType, tracked
@@ -640,20 +639,7 @@ def _get_jobflow_wrapped_func(
 def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
     from jobflow import flow as jf_flow
 
-    decorated_flow = jf_flow(_func)
-
-    @wraps(_func)
-    def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
-        with catch_warnings():
-            filterwarnings(
-                "ignore",
-                message=r"@flow decorated function .* contains a Flow or\s*Job as an output\.",
-                category=UserWarning,
-                module=r"jobflow\.core\.flow",
-            )
-            return decorated_flow(*f_args, **f_kwargs)
-
-    return wrapper
+    return jf_flow(_func)
 
 
 class Delayed_:

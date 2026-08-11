@@ -79,7 +79,6 @@ def test_jobflow_flow_output_warning_is_suppressed(tmp_path, monkeypatch):
         return add(a, b)
 
     with warnings.catch_warnings(record=True) as caught_warnings:
-        warnings.simplefilter("always")
         assert isinstance(workflow(1, 2), jf.Flow)
 
     assert not caught_warnings
