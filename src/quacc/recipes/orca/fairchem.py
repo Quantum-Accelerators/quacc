@@ -14,7 +14,7 @@ from quacc import job
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.types import Copy, SourceDirectory
+    from quacc.types import CopyFiles
 
 has_fairchem = bool(find_spec("fairchem"))
 has_fairchem_omol = (
@@ -36,7 +36,7 @@ def omol_static_job(
     vertical: Vertical = Vertical.Default,
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
 ):
     """
