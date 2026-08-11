@@ -374,7 +374,7 @@ graph LR
 
 ## Running a User-Constructed Parallel Workflow
 
-Now we will define a workflow where we will carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, the workflow manager will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
+Now we will define a workflow where we carry out two EMT structure relaxations, but the two jobs are not dependent on one another. In this example, the workflow manager will know that it can run the two jobs separately, and even if Job 1 were to fail, Job 2 would still progress.
 
 ```mermaid
 graph LR
