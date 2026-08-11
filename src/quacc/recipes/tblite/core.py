@@ -121,7 +121,7 @@ def freq_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     energy: float = 0.0,
     temperature: float = 298.15,
-    pressure: float = 1.0,
+    pressure: float | None = 1.0,
     thermo_method: Literal["harmonic", "ideal_gas"] = "ideal_gas",
     vib_kwargs: VibKwargs | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -141,7 +141,7 @@ def freq_job(
     temperature
         Temperature in Kelvins.
     pressure
-        Pressure in bar.
+        Pressure in bar. Ignored when `thermo_method="harmonic"`.
     thermo_method
         Method to use for thermochemistry. Options are "harmonic" or "ideal_gas".
     vib_kwargs

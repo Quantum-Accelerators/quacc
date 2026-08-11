@@ -108,7 +108,7 @@ def test_freq_job_harmonic(tmp_path, monkeypatch):
     output = freq_job(atoms, thermo_method="harmonic")
 
     assert "sigma" not in output["parameters_thermo"]
-    assert "pressure" not in output["parameters_thermo"]
+    assert output["parameters_thermo"]["pressure"] == 1.0
     assert len(output["parameters_thermo"]["vib_freqs"]) == 3
     assert output["results"]["energy"] == 0.0
     assert output["results"]["helmholtz_energy"] == pytest.approx(
