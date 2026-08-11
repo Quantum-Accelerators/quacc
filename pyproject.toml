@@ -160,6 +160,7 @@ lint.select = [
 ]
 lint.ignore = [
   "A005",  # Module shadows
+  "ANN401",  # Dynamically typed expressions
   "E501",   # Line too long
   "ISC001",   # single-line-implicit-string-concatenation
   "PLR",    # Design related pylint codes
