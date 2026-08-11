@@ -142,9 +142,9 @@ if _settings.WORKFLOW_ENGINE == "prefect":
     from prefect.client.schemas import State
     from prefect.futures import PrefectFuture
 
-    def _patched_getitem(self, index: Any) -> Any:
+    def _patched_getitem(self: PrefectFuture | State, index: object) -> object:
         @job
-        def _getitem(future, index_):
+        def _getitem(future: PrefectFuture | State, index_: object) -> object:
             return future[index_]
 
         return _getitem(self, index)

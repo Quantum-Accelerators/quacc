@@ -10,7 +10,7 @@ from monty.dev import requires
 from quacc import flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 has_atomate2 = bool(find_spec("atomate2"))
 
@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_prerelax_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Function to pre-relax a structure with Materials Project r2SCAN workflow settings. By default, this
@@ -79,7 +79,7 @@ def mp_prerelax_job(
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_relax_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Function to relax a structure with Materials Project r2SCAN workflow settings. By default, this uses
@@ -123,7 +123,7 @@ def mp_metagga_relax_job(
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_static_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Function to run a static calculation on a structure with r2SCAN workflow Materials Project settings.
@@ -202,12 +202,15 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (mp_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = customize_funcs(
-        ["mp_prerelax_job", "mp_metagga_relax_job", "mp_metagga_static_job"],
-        [mp_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+    (mp_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = customize_jobs(
+        {
+            "mp_prerelax_job": mp_prerelax_job,
+            "mp_metagga_relax_job": mp_metagga_relax_job,
+            "mp_metagga_static_job": mp_metagga_static_job,
+        },
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     # Run the prerelax
     prerelax_results = mp_prerelax_job_(atoms)

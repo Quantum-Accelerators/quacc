@@ -23,7 +23,7 @@ def mattersim_static_job(
     atoms: Atoms,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Run a static calculation with the VASP settings used for MatterSim.

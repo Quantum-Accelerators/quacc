@@ -17,7 +17,7 @@ from monty.dev import requires
 from quacc import flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 has_atomate2 = bool(find_spec("atomate2"))
 
@@ -47,7 +47,7 @@ def matpes_static_job(
     write_extra_files: bool = False,
     auto_ispin: bool = False,
     prev_dir: SourceDirectory | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Function to run a MatPES-compatible static calculation.
@@ -158,16 +158,15 @@ def matpes_static_flow(
     MatPESStaticFlowSchema
         Dictionary containing the PBE and r2SCAN results.
     """
-    pbe_static_job, r2scan_static_job = customize_funcs(
-        ["pbe_static_job", "r2scan_static_job"],
-        [matpes_static_job, matpes_static_job],
+    pbe_static_job, r2scan_static_job = customize_jobs(
+        {"pbe_static_job": matpes_static_job, "r2scan_static_job": matpes_static_job},
         param_defaults={
             "pbe_static_job": {"level": "PBE"},
             "r2scan_static_job": {"level": "r2SCAN"},
         },
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     pbe_results = pbe_static_job(atoms)
     r2scan_results = r2scan_static_job(

@@ -8,6 +8,8 @@ from quacc import job
 from quacc.recipes.mrcc._base import run_and_summarize
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import CopyFiles, RunSchema
@@ -21,7 +23,7 @@ def static_job(
     method: str = "pbe",
     basis: str = "def2-tzvp",
     copy_files: CopyFiles | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.

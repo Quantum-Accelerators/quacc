@@ -9,6 +9,8 @@ from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import SourceDirectory, VaspSchema
@@ -16,7 +18,7 @@ if TYPE_CHECKING:
 
 @job
 def mp_aloe_static_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Run a static calculation with MP-ALOE settings.

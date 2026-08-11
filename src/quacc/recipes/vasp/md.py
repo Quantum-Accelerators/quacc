@@ -26,7 +26,7 @@ def md_job(
     pressure: float = 1.0,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Run a VASP ab initio molecular dynamics calculation.
