@@ -687,9 +687,9 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
         }
         postahc_coarse_results = postahc_job(
             [
-                c_nscf_results["dir_name"],
-                c_ahc_coarse_results["dir_name"],
-                matdyn_coarse_results["dir_name"],
+                {"source": c_nscf_results["dir_name"], "filenames": "*"},
+                {"source": c_ahc_coarse_results["dir_name"], "filenames": "*"},
+                {"source": matdyn_coarse_results["dir_name"], "filenames": "*"},
             ],
             **postahc_coarse_params,
         )
