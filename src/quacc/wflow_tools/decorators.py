@@ -629,26 +629,9 @@ def _get_prefect_wrapped_flow(
 
 
 def _get_jobflow_wrapped_func(method=None, **job_kwargs):
-    from jobflow import OutputReference
     from jobflow import job as jf_job
 
-    from quacc.wflow_tools.job_argument import JobflowCopy
-
-    wrapped = jf_job(method, **job_kwargs)
-
-    @wraps(wrapped)
-    def wrapper(*args, **kwargs):
-        copy_files = kwargs.get("copy_files")
-        if (
-            copy_files
-            and type(copy_files) is dict
-            and all(isinstance(source, OutputReference) for source in copy_files)
-        ):
-            kwargs["copy_files"] = JobflowCopy(copy_files)
-
-        return wrapped(*args, **kwargs)
-
-    return wrapper
+    return jf_job(method, **job_kwargs)
 
 
 def _jobflow_flow_output(value):
