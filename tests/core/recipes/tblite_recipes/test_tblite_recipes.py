@@ -104,7 +104,7 @@ def test_freq_job_v1(tmp_path, monkeypatch):
 def test_freq_job_harmonic(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = molecule("H2O")
+    atoms = bulk("Cu")
     output = freq_job(atoms, thermo_method="harmonic")
 
     assert "sigma" not in output["parameters_thermo"]
