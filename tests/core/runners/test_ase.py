@@ -380,7 +380,7 @@ def test_run_neb(monkeypatch, tmp_path):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_neb_copy_files(monkeypatch, tmp_path, copy_files):
     monkeypatch.chdir(tmp_path)
