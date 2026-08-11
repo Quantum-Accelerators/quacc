@@ -21,7 +21,7 @@ class Remove:
     `None` is a valid value for many keyword arguments.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         raise NotImplementedError(
             "Remove is a sentinel class and should not be instantiated."
         )

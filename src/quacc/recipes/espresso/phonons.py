@@ -41,7 +41,7 @@ def phonon_job(
     test_run: bool = False,
     use_phcg: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic ph.x calculation. It should allow you to
@@ -113,7 +113,7 @@ def phonon_job(
 def q2r_job(
     copy_files: CopyFiles,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic q2r.x calculation. It should allow you to
@@ -154,7 +154,7 @@ def q2r_job(
 def matdyn_job(
     copy_files: CopyFiles,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic `matdyn.x` calculation. It should allow you to use
@@ -483,7 +483,7 @@ def dvscf_q2r_job(
     copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic dvscf_q2r calculation allowing phonon potential
@@ -552,7 +552,7 @@ def postahc_job(
     copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic postahc calculation. It should allow you to

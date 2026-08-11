@@ -47,7 +47,7 @@ def matpes_static_job(
     write_extra_files: bool = False,
     auto_ispin: bool = False,
     prev_dir: SourceDirectory | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Function to run a MatPES-compatible static calculation.

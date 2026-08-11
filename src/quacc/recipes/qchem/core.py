@@ -45,7 +45,7 @@ def static_job(
     basis: str | None = "def2-tzvpd",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -103,7 +103,7 @@ def relax_job(
     opt_params: OptParams | None = None,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> OptSchema:
     """
     Optimize aka "relax" a molecular structure with an ASE optimizer.
@@ -166,7 +166,7 @@ def freq_job(
     basis: str = "def2-svpd",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Perform a frequency calculation on a molecular structure.

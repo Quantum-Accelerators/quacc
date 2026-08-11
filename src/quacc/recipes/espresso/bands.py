@@ -36,7 +36,7 @@ def bands_pw_job(
     force_gamma: bool = True,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic bandstructure calculation with pw.x.
@@ -115,7 +115,7 @@ def bands_pp_job(
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to re-order bands and computes bands-related properties with bands.x.
@@ -166,7 +166,7 @@ def fermi_surface_job(
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to retrieve the fermi surface with fs.x
