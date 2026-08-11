@@ -132,7 +132,12 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     if _func is None:
         return partial(job, **kwargs)
 
-    if changes := kwargs.pop("settings_swap", {}):
+    changes = kwargs.pop("settings_swap", {})
+
+    if settings.WORKFLOW_ENGINE == "jobflow":
+        return _get_jobflow_wrapped_func(_func, settings_swap=changes, **kwargs)
+
+    if changes:
         _func = change_settings_wrap(_func, changes)
 
     if settings.WORKFLOW_ENGINE == "dask":
@@ -146,8 +151,6 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
 
         return Delayed_(delayed(wrapper, **kwargs))
 
-    elif settings.WORKFLOW_ENGINE == "jobflow":
-        return _get_jobflow_wrapped_func(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "parsl":
         from parsl import python_app
 
@@ -628,10 +631,29 @@ def _get_prefect_wrapped_flow(
             return prefect_flow(_func, validate_parameters=False, **kwargs)
 
 
-def _get_jobflow_wrapped_func(method=None, **job_kwargs):
+def _get_jobflow_wrapped_func(method=None, settings_swap=None, **job_kwargs):
     from jobflow import job as jf_job
 
+    if settings_swap:
+        job_kwargs.setdefault("name", method.__name__)
+        wrapped = jf_job(_run_jobflow_with_settings, **job_kwargs)
+
+        @wraps(method)
+        def get_job(*args, **kwargs):
+            return wrapped(method, settings_swap, args, kwargs)
+
+        get_job.original = method
+        return get_job
+
     return jf_job(method, **job_kwargs)
+
+
+def _run_jobflow_with_settings(method, settings_swap, args, kwargs):
+    """Run a Jobflow function with settings stored in the job document."""
+    from quacc.wflow_tools.customizers import strip_decorator
+
+    method = strip_decorator(method)
+    return change_settings_wrap(method, settings_swap)(*args, **kwargs)
 
 
 def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
