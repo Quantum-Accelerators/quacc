@@ -27,7 +27,6 @@ from ase.optimize.sciopt import SciPyFminBFGS
 from quacc import JobFailure, change_settings, get_settings
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner
-from quacc.wflow_tools.job_argument import Copy
 
 test_files_path = Path(__file__).parent / "test_files"
 
@@ -125,7 +124,7 @@ def test_base_runner2(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_calc(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -148,7 +147,7 @@ def test_run_calc(tmp_path, monkeypatch, copy_files):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_calc_no_gzip(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -181,7 +180,7 @@ def test_run_calc_rejects_mismatched_geom_file(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_opt1(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -205,7 +204,7 @@ def test_run_opt1(tmp_path, monkeypatch, copy_files):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_opt2(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -225,6 +224,22 @@ def test_run_opt2(tmp_path, monkeypatch, copy_files):
     assert traj[-1].calc.results is not None
 
 
+def test_run_opt_without_files(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+
+    dyn = Runner(atoms, EMT()).run_opt(write_files=False)
+    results_dir = Path(_find_results_dir())
+
+    assert dyn.trajectory is None
+    assert dyn.todict().get("logfile") is None
+    assert dyn.todict().get("restart") is None
+    assert not (results_dir / "opt.log.gz").exists()
+    assert not (results_dir / "opt.json.gz").exists()
+    assert not (results_dir / "opt.traj.gz").exists()
+
+
 def test_run_scipy_opt(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu") * (2, 1, 1)
@@ -236,7 +251,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_vib(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -267,7 +282,7 @@ def test_run_vib_failure(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_bad_runs(tmp_path, monkeypatch, caplog, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -297,7 +312,7 @@ def test_bad_runs(tmp_path, monkeypatch, caplog, copy_files):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_unique_workdir(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)

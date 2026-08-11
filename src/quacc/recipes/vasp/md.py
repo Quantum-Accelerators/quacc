@@ -12,8 +12,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import SourceDirectory, VaspSchema
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, VaspSchema
 
 
 @job
@@ -21,11 +20,11 @@ def md_job(
     atoms: Atoms,
     preset: str | None = "DefaultSetGGA",
     timestep: float = 0.5,
-    nsteps: int = 2000,
+    nsteps: int = 20000,
     ensemble: Literal["nve", "nvt", "npt"] = "nvt",
     temperature: float = 300.0,
     pressure: float = 1.0,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:

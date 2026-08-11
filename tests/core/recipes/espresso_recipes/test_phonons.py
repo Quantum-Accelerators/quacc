@@ -67,7 +67,9 @@ def test_phonon_job(tmp_path, monkeypatch):
             kspacing=0.5,
         )
 
-        ph_results = phonon_job(pw_results["dir_name"], input_data=ph_loose)
+        ph_results = phonon_job(
+            [{"source": pw_results["dir_name"], "filenames": "*"}], input_data=ph_loose
+        )
 
         assert_allclose(
             ph_results["results"][1]["atoms"].get_positions(),
@@ -98,7 +100,9 @@ def test_phonon_job(tmp_path, monkeypatch):
 
         ph_loose["inputph"]["recover"] = True
 
-        recover_ph_results = phonon_job(ph_results["dir_name"], input_data=ph_loose)
+        recover_ph_results = phonon_job(
+            [{"source": ph_results["dir_name"], "filenames": "*"}], input_data=ph_loose
+        )
 
         with zopen(Path(recover_ph_results["dir_name"], "ph.out.gz"), "rt") as f:
             lines = str(f.read())
@@ -139,7 +143,7 @@ def test_phonon_job_lqdir(tmp_path, monkeypatch):
         )
 
         ph_results = phonon_job(
-            pw_results["dir_name"],
+            [{"source": pw_results["dir_name"], "filenames": "*"}],
             input_data=ph_loose,
             qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)],
         )
@@ -174,7 +178,7 @@ def test_phonon_job_lqdir(tmp_path, monkeypatch):
         ph_loose["inputph"]["recover"] = True
 
         recover_ph_results = phonon_job(
-            ph_results["dir_name"],
+            [{"source": ph_results["dir_name"], "filenames": "*"}],
             input_data=ph_loose,
             qpts=[(0, 0, 0, 1), (0.1, 0, 0, 1)],
         )
@@ -220,7 +224,7 @@ def test_phonon_job_list_to_do(tmp_path, monkeypatch):
         nat_todo = [1]
 
         ph_results = phonon_job(
-            pw_results["dir_name"],
+            [{"source": pw_results["dir_name"], "filenames": "*"}],
             input_data=ph_loose,
             qpts=qpts,
             nat_todo_indices=nat_todo,
@@ -263,7 +267,9 @@ def test_q2r_job(tmp_path, monkeypatch):
 
         additional_cards = ["1 1 1", "1", "matdyn"]
 
-        q2r_results = q2r_job(tmp_path, additional_cards=additional_cards)
+        q2r_results = q2r_job(
+            [{"source": tmp_path, "filenames": "*"}], additional_cards=additional_cards
+        )
 
         assert Path(q2r_results["dir_name"], "q2r.fc.gz").exists()
 
@@ -286,7 +292,9 @@ def test_matdyn_job(tmp_path, monkeypatch):
         copy_decompress_files(DATA_DIR / "matdyn_test", "q2r.fc", tmp_path)
 
         input_data = {"input": {"dos": True, "nk1": 4, "nk2": 4, "nk3": 4}}
-        matdyn_results = matdyn_job(tmp_path, input_data=input_data)
+        matdyn_results = matdyn_job(
+            [{"source": tmp_path, "filenames": "*"}], input_data=input_data
+        )
 
         assert Path(matdyn_results["dir_name"], "q2r.fc.gz").exists()
         assert Path(matdyn_results["dir_name"], "matdyn.dos.gz").exists()
@@ -380,7 +388,9 @@ def test_phonon_calculation_spin_orbit_example_06(tmp_path, monkeypatch):
             }
         }
         pt_phonon_x_results = phonon_job(
-            pt_relax_results["dir_name"], **pt_phonon_x_params, qpts=(1.0, 0.0, 0.0)
+            [{"source": pt_relax_results["dir_name"], "filenames": "*"}],
+            **pt_phonon_x_params,
+            qpts=(1.0, 0.0, 0.0),
         )
 
         with zopen(Path(pt_phonon_x_results["dir_name"], "ph.out.gz"), "rt") as f:
@@ -433,7 +443,9 @@ def test_phonon_calculation_si_spin_orbit(tmp_path, monkeypatch, caplog):
             }
         }
         si_phonon_results = phonon_job(
-            si_relax_results["dir_name"], **si_phonon_params, qpts=(0.0, 0.0, 0.0)
+            [{"source": si_relax_results["dir_name"], "filenames": "*"}],
+            **si_phonon_params,
+            qpts=(0.0, 0.0, 0.0),
         )
 
         assert (
@@ -502,7 +514,9 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
         }
 
         with caplog.at_level(WARNING):
-            c_ph_results = phonon_job(c_scf_results["dir_name"], **c_ph_params)
+            c_ph_results = phonon_job(
+                [{"source": c_scf_results["dir_name"], "filenames": "*"}], **c_ph_params
+            )
             assert "Overwriting key 'fildyn'" in caplog.text
             caplog.clear()
 
@@ -511,7 +525,9 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
                 "input": {"fildyn": "diam.dyn", "zasr": "crystal", "flfrc": "diam.ifc"}
             }
         }
-        q2r_results = q2r_job(c_ph_results["dir_name"], **q2r_params)
+        q2r_results = q2r_job(
+            [{"source": c_ph_results["dir_name"], "filenames": "*"}], **q2r_params
+        )
 
         assert q2r_results["parameters"]["input_data"]["input"]["flfrc"] == "q2r.fc"
         assert q2r_results["parameters"]["input_data"]["input"]["fildyn"] == "matdyn"
@@ -531,7 +547,8 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
 
         with caplog.at_level(WARNING):
             dvscf_q2r_results = dvscf_q2r_job(
-                c_ph_results["dir_name"], **dvscf_q2r_params
+                [{"source": c_ph_results["dir_name"], "filenames": "*"}],
+                **dvscf_q2r_params,
             )
 
             assert "Overwriting key 'fildyn'" in caplog.text
@@ -568,7 +585,9 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
         }
 
         c_nscf_results = non_scf_job(
-            c_scf_results["atoms"], c_scf_results["dir_name"], **c_nscf_params
+            c_scf_results["atoms"],
+            [{"source": c_scf_results["dir_name"], "filenames": "*"}],
+            **c_nscf_params,
         )
 
         c_ahc_coarse_params = {
@@ -591,7 +610,10 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
             }
         }
         c_ahc_coarse_results = phonon_job(
-            [dvscf_q2r_results["dir_name"], c_nscf_results["dir_name"]],
+            [
+                {"source": dvscf_q2r_results["dir_name"], "filenames": "*"},
+                {"source": c_nscf_results["dir_name"], "filenames": "*"},
+            ],
             **c_ahc_coarse_params,
         )
 
@@ -641,7 +663,10 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
             ],
         }
         matdyn_coarse_results = matdyn_job(
-            [q2r_results["dir_name"], c_ahc_coarse_results["dir_name"]],
+            [
+                {"source": q2r_results["dir_name"], "filenames": "*"},
+                {"source": c_ahc_coarse_results["dir_name"], "filenames": "*"},
+            ],
             **matdyn_coarse_params,
         )
 
@@ -662,9 +687,9 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
         }
         postahc_coarse_results = postahc_job(
             [
-                c_nscf_results["dir_name"],
-                c_ahc_coarse_results["dir_name"],
-                matdyn_coarse_results["dir_name"],
+                {"source": c_nscf_results["dir_name"], "filenames": "*"},
+                {"source": c_ahc_coarse_results["dir_name"], "filenames": "*"},
+                {"source": matdyn_coarse_results["dir_name"], "filenames": "*"},
             ],
             **postahc_coarse_params,
         )
@@ -716,7 +741,7 @@ def test_phonon_dvscf_q2r_inplace(tmp_path, monkeypatch):
 
         dvscf_q2r_results = dvscf_q2r_job(
             prev_outdir=c_scf_results["dir_name"],
-            copy_files=c_ph_results["dir_name"],
+            copy_files=[{"source": c_ph_results["dir_name"], "filenames": "*"}],
             **dvscf_q2r_params,
         )
 

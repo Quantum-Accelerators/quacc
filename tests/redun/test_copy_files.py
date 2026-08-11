@@ -7,7 +7,7 @@ redun = pytest.importorskip("redun")
 from pathlib import Path
 
 from quacc import flow, job
-from quacc.wflow_tools.job_argument import Copy
+from quacc.utils.files import copy_decompress_files
 
 
 @pytest.fixture
@@ -19,22 +19,23 @@ def test_copy_files(tmp_path, monkeypatch, scheduler):
     monkeypatch.chdir(tmp_path)
 
     @job
-    def create_file(name: str, copy: Copy | None = None):
+    def create_file(name: str, copy: list[dict] | None = None):
         output_dir = tmp_path / name
         output_dir.mkdir(parents=True, exist_ok=True)
         Path(output_dir / name).touch()
 
-        extra = None
         if copy is not None:
-            extra = copy.do_copy(output_dir)
+            for spec in copy:
+                copy_decompress_files(spec["source"], spec["filenames"], output_dir)
 
-        # Note: Important to return the copy.do_copy task for it to be run!
-        return {"dir_name": output_dir, "extra": extra}
+        return {"dir_name": output_dir}
 
     @flow
     def create_files():
         job1 = create_file("job1")
-        job2 = create_file("job2", copy=Copy({job1["dir_name"]: "job1*"}))
+        job2 = create_file(
+            "job2", copy=[{"source": job1["dir_name"], "filenames": "job1*"}]
+        )
         return [job1, job2]
 
     scheduler.run(create_files())

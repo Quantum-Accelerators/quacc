@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
+from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.recipes.mlip._base import pick_calculator
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize
@@ -61,6 +62,7 @@ def relax_job(
     library: Literal["fairchem", "matcalc", "rootstock"],
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
+    write_files: bool = True,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
@@ -81,6 +83,9 @@ def relax_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
+    write_files
+        Whether to write optimizer log, restart, and trajectory files. Set to
+        `False` to avoid file I/O during the optimization.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
@@ -97,8 +102,12 @@ def relax_job(
 
     calc = pick_calculator(library, **calc_kwargs)
 
-    dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_flags)
+    dyn = Runner(atoms, calc).run_opt(
+        relax_cell=relax_cell, write_files=write_files, **opt_flags
+    )
+
+    trajectory = None if write_files else [get_final_atoms_from_dynamics(dyn)]
 
     return Summarize(
         additional_fields={"name": f"{library} Relax"} | (additional_fields or {})
-    ).opt(dyn)
+    ).opt(dyn, trajectory=trajectory)

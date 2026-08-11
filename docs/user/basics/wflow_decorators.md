@@ -36,6 +36,20 @@ A `#!Python @subflow` in quacc is any workflow that returns a list of job output
 
     Technically, there are some subtle differences between the `#!Python @delayed` decorator and the `quacc` equivalents, but for the purposes of this tutorial, you can think of them as similar.
 
+=== "Jobflow"
+
+    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the concept of a `#!Python @job` and a `#!Python @flow`, which describe individual compute tasks and workflows, respectively.
+
+    <center>
+
+    | Quacc               | Jobflow          |
+    | ------------------- | ---------------- |
+    | `#!Python @job`     | `#!Python @job`  |
+    | `#!Python @flow`    | `#!Python @flow` |
+    | `#!Python @subflow` | `#!Python @job`  |
+
+    </center>
+
 === "Parsl"
 
     Take a moment to read the Parsl documentation's ["Quick Start"](https://parsl.readthedocs.io/en/stable/quickstart.html) to get a sense of how Parsl works. Namely, you should understand the concept of a [`#!Python python_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html#Python-Apps) and [`#!Python join_app`](https://parsl.readthedocs.io/en/stable/1-parsl-introduction.html?highlight=join_app#Dynamic-workflows-with-apps-that-generate-other-apps), which describe individual compute tasks and dynamic job tasks, respectively.
@@ -91,20 +105,6 @@ A `#!Python @subflow` in quacc is any workflow that returns a list of job output
     | `#!Python @job`     | `#!Python @task` |
     | `#!Python @flow`    | `#!Python @task` |
     | `#!Python @subflow` | `#!Python @task` |
-
-    </center>
-
-=== "Jobflow"
-
-    Take a moment to read the Jobflow documentation's [Quick Start](https://materialsproject.github.io/jobflow/tutorials/1-quickstart.html) to get a sense of how Jobflow works. Namely, you should understand the concept of a `#!Python @job` and a `#!Python @flow`, which describe individual compute tasks and workflows, respectively.
-
-    <center>
-
-    | Quacc               | Jobflow          |
-    | ------------------- | ---------------- |
-    | `#!Python @job`     | `#!Python @job`  |
-    | `#!Python @flow`    | `#!Python @flow` |
-    | `#!Python @subflow` | `#!Python @job`  |
 
     </center>
 
