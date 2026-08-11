@@ -225,6 +225,22 @@ def test_run_opt2(tmp_path, monkeypatch, copy_files):
     assert traj[-1].calc.results is not None
 
 
+def test_run_opt_without_files(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+
+    dyn = Runner(atoms, EMT()).run_opt(write_files=False)
+    results_dir = Path(_find_results_dir())
+
+    assert dyn.trajectory is None
+    assert dyn.todict().get("logfile") is None
+    assert dyn.todict().get("restart") is None
+    assert not (results_dir / "opt.log.gz").exists()
+    assert not (results_dir / "opt.json.gz").exists()
+    assert not (results_dir / "opt.traj.gz").exists()
+
+
 def test_run_scipy_opt(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu") * (2, 1, 1)
