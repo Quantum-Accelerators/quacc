@@ -156,10 +156,34 @@ def customize_jobs(
     param_swaps: dict[str, dict[str, Any]] | None = None,
     decorators: dict[str, Callable | None] | None = None,
 ) -> dict[str, Callable]:
-    """Customize a mapping of workflow jobs.
+    """
+    Customize a mapping of workflow jobs with decorators and common parameters.
 
-    The keys identify jobs in ``param_defaults``, ``param_swaps``, and
-    ``decorators``. The returned mapping preserves the input order.
+    Parameters
+    ----------
+    jobs
+        Mapping of job names to functions. The names are used as keys in
+        `param_defaults`, `param_swaps`, and `decorators`.
+    param_defaults
+        Default parameters to apply to each job. The keys of this dictionary
+        correspond to the keys in `jobs`. If the key `"all"` is present, its
+        parameters are applied to every job before job-specific parameters.
+        If the value is `None`, no default parameters are applied to that job.
+    param_swaps
+        User overrides of parameters to apply to each job. The keys of this
+        dictionary correspond to the keys in `jobs`. If the key `"all"` is
+        present, its parameters are applied to every job before job-specific
+        parameters. If the value is `None`, no parameters are applied to that job.
+    decorators
+        Custom decorators to apply to each job. The keys of this dictionary
+        correspond to the keys in `jobs`. If the key `"all"` is present, its
+        decorator is applied to every job before job-specific decorators. A value
+        of `None` strips the existing decorator from that job.
+
+    Returns
+    -------
+    dict[str, Callable]
+        Mapping of customized jobs in the same order as `jobs`.
     """
     parameters = recursive_dict_merge(param_defaults, param_swaps)
     decorators = decorators or {}
