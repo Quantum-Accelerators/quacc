@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Replaced the workflow-engine-specific `Copy` object and legacy `copy_files`
   forms with plain `{"source": ..., "filenames": ...}` transfer specifications.
 
+### Removed
+
+- Removed the deprecated `quacc.recipes.mlp` compatibility module. Use
+  `quacc.recipes.mlip` instead.
+
 ## [1.5.2]
 
 ### Changed
