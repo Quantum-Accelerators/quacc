@@ -108,7 +108,7 @@ def test_run_and_summarize(monkeypatch):
         calc_defaults={"xc": "pbe"},
         calc_swaps={"spin": "none"},
         additional_fields={"name": "test"},
-        copy_files="source",
+        copy_files=[{"source": "source", "filenames": "*"}],
     )
 
     assert result == summary
@@ -116,7 +116,10 @@ def test_run_and_summarize(monkeypatch):
         (atoms,),
         {"calc_defaults": {"xc": "pbe"}, "calc_swaps": {"spin": "none"}},
     )
-    assert calls["runner_init"] == ((atoms, calc), {"copy_files": "source"})
+    assert calls["runner_init"] == (
+        (atoms, calc),
+        {"copy_files": [{"source": "source", "filenames": "*"}]},
+    )
     assert calls["run_calc"] is True
     assert calls["summarize_init"] == (
         (),
@@ -137,7 +140,7 @@ def test_static_job_defaults_and_overrides(monkeypatch):
         kspacing=0.05,
         spin="none",
         additional_fields={"tag": "custom"},
-        copy_files="source",
+        copy_files=[{"source": "source", "filenames": "*"}],
         xc="pbesol",
     )
 
@@ -151,7 +154,7 @@ def test_static_job_defaults_and_overrides(monkeypatch):
     }
     assert kwargs["calc_swaps"] == {"xc": "pbesol"}
     assert kwargs["additional_fields"] == {"name": "FHI-aims Static", "tag": "custom"}
-    assert kwargs["copy_files"] == "source"
+    assert kwargs["copy_files"] == [{"source": "source", "filenames": "*"}]
 
 
 def test_static_job_nonmetal_and_agnostic(monkeypatch):

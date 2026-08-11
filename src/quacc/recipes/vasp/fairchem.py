@@ -24,8 +24,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import SourceDirectory, VaspSchema
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, VaspSchema
 
 
 @job
@@ -35,7 +34,7 @@ if TYPE_CHECKING:
 )
 def omat_static_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -80,7 +79,7 @@ def omat_static_job(
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[fairchem]`")
 def omc_static_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -177,7 +176,7 @@ def _make_omc_inputs(atoms: Atoms) -> dict:
 def odac_static_job(
     atoms: Atoms,
     kpts: tuple = (1, 1, 1),
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -254,7 +253,7 @@ def odac_static_job(
 )
 def oc20_static_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
