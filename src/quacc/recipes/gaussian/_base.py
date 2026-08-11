@@ -16,8 +16,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import RunSchema, SourceDirectory
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, RunSchema
 
 _LABEL = "Gaussian"
 LOG_FILE = f"{_LABEL}.log"
@@ -28,7 +27,7 @@ def run_and_summarize(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
 ) -> RunSchema:
     """
     Base job function for carrying out Gaussian recipes.

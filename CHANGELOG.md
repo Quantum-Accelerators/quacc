@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+- Replaced the workflow-engine-specific `Copy` object and legacy `copy_files`
+  forms with plain `{"source": ..., "filenames": ...}` transfer specifications.
+
 ## [1.5.2]
 
 ### Changed

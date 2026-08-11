@@ -19,14 +19,13 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import OptParams, OptSchema, RunSchema, SourceDirectory
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, OptParams, OptSchema, RunSchema
 
 
 @job
 def static_job(
     atoms: Atoms,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -65,7 +64,7 @@ def relax_job(
     atoms: Atoms,
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> OptSchema:
