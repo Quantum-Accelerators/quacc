@@ -15,15 +15,14 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import SourceDirectory, VaspSchema
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, VaspSchema
 
 
 @job
 def static_job(
     atoms: Atoms,
     preset: str | None = "SlabSetPBE",
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:
@@ -77,7 +76,7 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     preset: str | None = "SlabSetPBE",
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> VaspSchema:

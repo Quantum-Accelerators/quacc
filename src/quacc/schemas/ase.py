@@ -158,11 +158,12 @@ class Summarize:
         )
 
         # Get trajectory
-        atoms_trajectory = (
-            trajectory or read(dyn.trajectory, index=":")
-            if isinstance(dyn.trajectory, (str, Path))
-            else read(dyn.trajectory.filename, index=":")
-        )
+        if trajectory is not None:
+            atoms_trajectory = trajectory
+        elif isinstance(dyn.trajectory, (str, Path)):
+            atoms_trajectory = read(dyn.trajectory, index=":")
+        else:
+            atoms_trajectory = read(dyn.trajectory.filename, index=":")
         trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
 
         initial_atoms = atoms_trajectory[0]

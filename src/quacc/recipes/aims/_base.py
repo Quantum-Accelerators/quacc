@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, RunSchema, SourceDirectory
+    from quacc.types import CopyFiles, RunSchema
 
 
 def run_and_summarize(
@@ -26,7 +26,7 @@ def run_and_summarize(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: CopyFiles | None = None,
 ) -> RunSchema:
     """
     Base function to carry out FHI-aims recipes.
