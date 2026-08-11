@@ -24,9 +24,7 @@ if TYPE_CHECKING:
 
 @job
 def static_job(
-    atoms: Atoms,
-    additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: Any,
+    atoms: Atoms, additional_fields: dict[str, Any] | None = None, **calc_kwargs: Any
 ) -> RunSchema:
     """
     Function to carry out a static calculation.
