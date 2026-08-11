@@ -15,7 +15,7 @@ from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import run_and_summarize
 from quacc.utils.kpts import convert_pmg_kpts
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -275,12 +275,15 @@ def bands_flow(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
-        ["bands_pw_job", "bands_pp_job", "fermi_surface_job"],
-        [bands_pw_job, bands_pp_job, fermi_surface_job],
+    (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_jobs(
+        {
+            "bands_pw_job": bands_pw_job,
+            "bands_pp_job": bands_pp_job,
+            "fermi_surface_job": fermi_surface_job,
+        },
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     bands_results = bands_pw_job_(
         atoms,

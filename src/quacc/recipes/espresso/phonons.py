@@ -19,7 +19,7 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
 from quacc.recipes.espresso._base import run_and_summarize
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections import UserDict
@@ -266,13 +266,12 @@ def phonon_dos_flow(
             "input_data": {"input": {"dos": True, "nk1": 32, "nk2": 32, "nk3": 32}}
         },
     }
-    ph_job, fc_job, dos_job = customize_funcs(
-        ["phonon_job", "q2r_job", "matdyn_job"],
-        [phonon_job, q2r_job, matdyn_job],
+    ph_job, fc_job, dos_job = customize_jobs(
+        {"phonon_job": phonon_job, "q2r_job": q2r_job, "matdyn_job": matdyn_job},
         param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     ph_job_results = ph_job(copy_files=copy_files, prev_outdir=prev_outdir)
     fc_job_results = fc_job([{"source": ph_job_results["dir_name"], "filenames": "*"}])
@@ -462,13 +461,12 @@ def grid_phonon_flow(
             job_params.get("ph_job"),
         ),
     }
-    ph_init_job, ph_job, ph_recover_job = customize_funcs(
-        ["ph_init_job", "ph_job", "ph_recover_job"],
-        [phonon_job, phonon_job, phonon_job],
+    ph_init_job, ph_job, ph_recover_job = customize_jobs(
+        {"ph_init_job": phonon_job, "ph_job": phonon_job, "ph_recover_job": phonon_job},
         param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     ph_init_job_results = ph_init_job(copy_files=copy_files, prev_outdir=prev_outdir)
     grid_results = _grid_phonon_subflow(

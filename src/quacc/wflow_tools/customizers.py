@@ -150,70 +150,43 @@ def update_parameters(
     return partial_fn
 
 
-def customize_funcs(
-    names: list[str] | str,
-    funcs: list[Callable] | Callable,
+def customize_jobs(
+    jobs: dict[str, Callable],
     param_defaults: dict[str, dict[str, Any]] | None = None,
     param_swaps: dict[str, dict[str, Any]] | None = None,
     decorators: dict[str, Callable | None] | None = None,
-) -> tuple[Callable, ...] | Callable:
-    """
-    Customize a set of functions with decorators and common parameters.
+) -> dict[str, Callable]:
+    """Customize a mapping of workflow jobs.
 
-    Parameters
-    ----------
-    names
-        The names of the functions to customize, in the order they should be returned.
-    funcs
-        The functions to customize, in the order they are described in `names`.
-    param_defaults
-        Default parameters to apply to each function. The keys of this dictionary correspond
-        to the strings in `names`. If the key `"all"` is present, it will be applied to all
-        functions. If the value is `None`, no custom parameters will be applied to that function.
-    param_swaps
-        User-overrides of parameters to apply to each function. The keys of this dictionary correspond
-        to the strings in `names`. If the key `"all"` is present, it will be applied to all
-        functions. If the value is `None`, no custom parameters will be applied to that function.
-    decorators
-        Custom decorators to apply to each function. The keys of this dictionary correspond
-        to the strings in `names`. If the key `"all"` is present, it will be applied to all
-        functions. If a value is `None`, no decorator will be applied that function.
-
-    Returns
-    -------
-    tuple[Callable, ...] | Callable
-        The customized functions, returned in the same order as provided in `funcs`.
+    The keys identify jobs in ``param_defaults``, ``param_swaps``, and
+    ``decorators``. The returned mapping preserves the input order.
     """
     parameters = recursive_dict_merge(param_defaults, param_swaps)
     decorators = decorators or {}
-    updated_funcs = []
+    names = list(jobs)
 
-    if not isinstance(names, list | tuple):
-        names = [names]
-    if not isinstance(funcs, list | tuple):
-        funcs = [funcs]
-
-    if "all" in names:
+    if "all" in jobs:
         raise ValueError("Invalid function name: 'all' is a reserved name.")
-    if bad_decorator_keys := [k for k in decorators if k not in names and k != "all"]:
+    if bad_decorator_keys := [k for k in decorators if k not in jobs and k != "all"]:
         raise ValueError(
             f"Invalid decorator keys: {bad_decorator_keys}. Valid keys are: {names}"
         )
-    if bad_parameter_keys := [k for k in parameters if k not in names and k != "all"]:
+    if bad_parameter_keys := [k for k in parameters if k not in jobs and k != "all"]:
         raise ValueError(
             f"Invalid parameter keys: {bad_parameter_keys}. Valid keys are: {names}"
         )
 
-    for i, func in enumerate(funcs):
+    updated_jobs = {}
+    for name, func in jobs.items():
         func_ = deepcopy(func)
-        if decorator := decorators.get("all"):
-            func_ = redecorate(func_, decorator)
-        if decorator := decorators.get(names[i]):
-            func_ = redecorate(func_, decorator)
+        if "all" in decorators:
+            func_ = redecorate(func_, decorators["all"])
+        if name in decorators:
+            func_ = redecorate(func_, decorators[name])
         if params := parameters.get("all"):
             func_ = update_parameters(func_, params)
-        if params := parameters.get(names[i]):
+        if params := parameters.get(name):
             func_ = update_parameters(func_, params)
-        updated_funcs.append(func_)
+        updated_jobs[name] = func_
 
-    return updated_funcs[0] if len(updated_funcs) == 1 else tuple(updated_funcs)
+    return updated_jobs

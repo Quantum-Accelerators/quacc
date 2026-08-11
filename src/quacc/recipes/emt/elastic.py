@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.elastic import elastic_tensor_flow as elastic_tensor_flow_
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -72,12 +72,11 @@ def elastic_tensor_flow(
     ElasticSchema
         See the return type-hint for the data structure.
     """
-    relax_job_, static_job_ = customize_funcs(
-        ["relax_job", "static_job"],
-        [relax_job, static_job],
+    relax_job_, static_job_ = customize_jobs(
+        {"relax_job": relax_job, "static_job": static_job},
         param_swaps=job_params,
         decorators=job_decorators,
-    )  # type: ignore
+    ).values()
 
     return elastic_tensor_flow_(
         atoms=atoms,

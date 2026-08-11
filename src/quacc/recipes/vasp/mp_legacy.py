@@ -10,7 +10,7 @@ from monty.dev import requires
 from quacc import flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 has_atomate2 = bool(find_spec("atomate2"))
 
@@ -156,12 +156,11 @@ def mp_gga_relax_flow(
     MPGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (mp_gga_relax_job_, mp_gga_static_job_) = customize_funcs(
-        ["mp_gga_relax_job", "mp_gga_static_job"],
-        [mp_gga_relax_job, mp_gga_static_job],
+    (mp_gga_relax_job_, mp_gga_static_job_) = customize_jobs(
+        {"mp_gga_relax_job": mp_gga_relax_job, "mp_gga_static_job": mp_gga_static_job},
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     # Run the relax
     relax_results = mp_gga_relax_job_(atoms)
