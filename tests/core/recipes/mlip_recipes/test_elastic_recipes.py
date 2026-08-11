@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 from ase.build import bulk
 
-from quacc.recipes.mlip.elastic import elastic_tensor_flow
+from quacc.recipes.mlp.elastic import elastic_tensor_flow
 
 torch = pytest.importorskip("torch")
 
@@ -53,19 +53,19 @@ def test_elastic_jobs(tmp_path, monkeypatch, library):
             "relax_job": {"opt_params": {"fmax": 0.01}},
         },
     )
-    assert outputs["deformed_results"][0]["atoms"].get_volume() != pytest.approx(
-        atoms.get_volume()
-    )
+    assert outputs["deformed_results"]["relax"][0][
+        "atoms"
+    ].get_volume() != pytest.approx(atoms.get_volume())
     assert outputs["undeformed_result"]["results"]["stress"] == pytest.approx(
         0, abs=1e-2
     )
     assert outputs["elasticity_doc"].bulk_modulus.voigt == pytest.approx(
         ref_elastic_modulus[library], abs=2
     )
-    for output in outputs["deformed_results"]:
+    for output in outputs["deformed_results"]["relax"]:
         assert output["structure_metadata"]["nelements"] == 1
         assert output["structure_metadata"]["nsites"] == 1
-    assert len(outputs["deformed_results"]) == 24
+    assert len(outputs["deformed_results"]["relax"]) == 24
 
     outputs = elastic_tensor_flow(
         atoms,
@@ -76,14 +76,14 @@ def test_elastic_jobs(tmp_path, monkeypatch, library):
             "relax_job": {"opt_params": {"fmax": 0.01}},
         },
     )
-    assert outputs["deformed_results"][0]["atoms"].get_volume() != pytest.approx(
-        atoms.get_volume()
-    )
+    assert outputs["deformed_results"]["static"][0][
+        "atoms"
+    ].get_volume() != pytest.approx(atoms.get_volume())
 
-    for output in outputs["deformed_results"]:
+    for output in outputs["deformed_results"]["static"]:
         assert output["structure_metadata"]["nelements"] == 1
         assert output["structure_metadata"]["nsites"] == 1
-    assert len(outputs["deformed_results"]) == 24
+    assert len(outputs["deformed_results"]["static"]) == 24
 
     outputs = elastic_tensor_flow(
         atoms,
@@ -94,14 +94,14 @@ def test_elastic_jobs(tmp_path, monkeypatch, library):
             "relax_job": {"opt_params": {"fmax": 0.01}},
         },
     )
-    assert outputs["deformed_results"][0]["atoms"].get_volume() != pytest.approx(
-        atoms.get_volume()
-    )
+    assert outputs["deformed_results"]["static"][0][
+        "atoms"
+    ].get_volume() != pytest.approx(atoms.get_volume())
 
-    for output in outputs["deformed_results"]:
+    for output in outputs["deformed_results"]["static"]:
         assert output["structure_metadata"]["nelements"] == 1
         assert output["structure_metadata"]["nsites"] == 1
-    assert len(outputs["deformed_results"]) == 24
+    assert len(outputs["deformed_results"]["static"]) == 24
 
     outputs = elastic_tensor_flow(
         atoms,
@@ -112,11 +112,11 @@ def test_elastic_jobs(tmp_path, monkeypatch, library):
             "relax_job": {"opt_params": {"fmax": 0.01}},
         },
     )
-    assert outputs["deformed_results"][0]["atoms"].get_volume() != pytest.approx(
-        atoms.get_volume()
-    )
+    assert outputs["deformed_results"]["relax"][0][
+        "atoms"
+    ].get_volume() != pytest.approx(atoms.get_volume())
 
-    for output in outputs["deformed_results"]:
+    for output in outputs["deformed_results"]["relax"]:
         assert output["structure_metadata"]["nelements"] == 1
         assert output["structure_metadata"]["nsites"] == 1
-    assert len(outputs["deformed_results"]) == 24
+    assert len(outputs["deformed_results"]["relax"]) == 24
