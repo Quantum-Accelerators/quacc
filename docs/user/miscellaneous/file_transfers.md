@@ -62,9 +62,7 @@ atoms = bulk("Cu")
 results1 = relax_job(atoms)
 static_job(
     results1["atoms"],
-    copy_files=[
-        {"source": results1["dir_name"], "filenames": ["WAVECAR.gz"]}
-    ],
+    copy_files=[{"source": results1["dir_name"], "filenames": ["WAVECAR.gz"]}],
 )
 ```
 
