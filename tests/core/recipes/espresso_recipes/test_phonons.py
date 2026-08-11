@@ -547,7 +547,8 @@ def test_phonon_induced_renormalization(tmp_path, monkeypatch, caplog):
 
         with caplog.at_level(WARNING):
             dvscf_q2r_results = dvscf_q2r_job(
-                c_ph_results["dir_name"], **dvscf_q2r_params
+                [{"source": c_ph_results["dir_name"], "filenames": "*"}],
+                **dvscf_q2r_params,
             )
 
             assert "Overwriting key 'fildyn'" in caplog.text

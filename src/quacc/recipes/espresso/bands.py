@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 @job
 def bands_pw_job(
     atoms: Atoms,
-    copy_files: (CopyFiles | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     make_bandpath: bool = True,
     line_density: float = 20,
@@ -111,7 +111,7 @@ def bands_pw_job(
 
 @job
 def bands_pp_job(
-    copy_files: (CopyFiles | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -162,7 +162,7 @@ def bands_pp_job(
 
 @job
 def fermi_surface_job(
-    copy_files: (CopyFiles | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
@@ -212,7 +212,7 @@ def fermi_surface_job(
 @flow
 def bands_flow(
     atoms: Atoms,
-    copy_files: (CopyFiles),
+    copy_files: CopyFiles,
     run_bands_pp: bool = True,
     run_fermi_surface: bool = False,
     make_bandpath: bool = True,

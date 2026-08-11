@@ -36,7 +36,7 @@ if TYPE_CHECKING:
 
 @job
 def phonon_job(
-    copy_files: (CopyFiles | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     use_phcg: bool = False,
@@ -111,7 +111,7 @@ def phonon_job(
 
 @job
 def q2r_job(
-    copy_files: (CopyFiles),
+    copy_files: CopyFiles,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -152,7 +152,7 @@ def q2r_job(
 
 @job
 def matdyn_job(
-    copy_files: (CopyFiles),
+    copy_files: CopyFiles,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
@@ -194,7 +194,7 @@ def matdyn_job(
 
 @flow
 def phonon_dos_flow(
-    copy_files: (CopyFiles | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     job_params: dict[str, Any] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
@@ -275,8 +275,10 @@ def phonon_dos_flow(
     )
 
     ph_job_results = ph_job(copy_files=copy_files, prev_outdir=prev_outdir)
-    fc_job_results = fc_job(ph_job_results["dir_name"])
-    dos_job_results = dos_job(fc_job_results["dir_name"])
+    fc_job_results = fc_job([{"source": ph_job_results["dir_name"], "filenames": "*"}])
+    dos_job_results = dos_job(
+        [{"source": fc_job_results["dir_name"], "filenames": "*"}]
+    )
 
     return {
         "phonon_job": ph_job_results,
@@ -287,7 +289,7 @@ def phonon_dos_flow(
 
 @flow
 def grid_phonon_flow(
-    copy_files: (CopyFiles | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     nblocks: int = 1,
     job_params: dict[str, Any] | None = None,
@@ -478,7 +480,7 @@ def grid_phonon_flow(
 
 @job
 def dvscf_q2r_job(
-    copy_files: (CopyFiles | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -547,7 +549,7 @@ def dvscf_q2r_job(
 
 @job
 def postahc_job(
-    copy_files: (CopyFiles | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,

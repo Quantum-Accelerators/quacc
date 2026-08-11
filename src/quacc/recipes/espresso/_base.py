@@ -32,7 +32,7 @@ def run_and_summarize(
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: (CopyFiles | None) = None,
+    copy_files: CopyFiles | None = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes.
@@ -94,7 +94,7 @@ def run_and_summarize_opt(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: (CopyFiles | None) = None,
+    copy_files: CopyFiles | None = None,
 ) -> RunSchema:
     """
     Base function to carry out espresso recipes with ASE optimizers.
