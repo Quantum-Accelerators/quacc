@@ -18,6 +18,8 @@ if has_pmg_defects:
 
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
     from numpy.typing import NDArray
     from pymatgen.core.structure import Structure
@@ -54,7 +56,7 @@ def make_defects_from_bulk(
     max_atoms: int = 240,
     min_length: float = 10.0,
     force_diagonal: bool = False,
-    **defect_gen_kwargs,
+    **defect_gen_kwargs: Any,
 ) -> list[Atoms]:
     """
     Function to make defects from a bulk atoms object.

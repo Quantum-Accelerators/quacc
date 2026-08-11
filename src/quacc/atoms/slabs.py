@@ -15,7 +15,7 @@ from pymatgen.io.ase import AseAtomsAdaptor
 from quacc.atoms.core import copy_atoms
 
 if TYPE_CHECKING:
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
@@ -81,7 +81,7 @@ def make_slabs_from_bulk(
     z_fix: float | None = 2.0,
     flip_asymmetric: bool = True,
     allowed_surface_symbols: list[str] | None = None,
-    **slabgen_kwargs,
+    **slabgen_kwargs: Any,
 ) -> list[Atoms]:
     """
     Function to make slabs from a bulk atoms object.
