@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+
 import pytest
 
 jf = pytest.importorskip("jobflow")
@@ -63,3 +65,21 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch):
     assert isinstance(mult(1, 2), jf.Job)
     assert isinstance(workflow(1, 2, 3), jf.Flow)
     assert isinstance(add_distributed([1, 2, 3], 4), jf.Job)
+
+
+def test_jobflow_flow_output_warning_is_suppressed(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @flow
+    def workflow(a, b):
+        return add(a, b)
+
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        warnings.simplefilter("always")
+        assert isinstance(workflow(1, 2), jf.Flow)
+
+    assert not caught_warnings
