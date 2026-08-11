@@ -40,7 +40,7 @@ def mof_off_static_job(
     level: Literal["PBE", "r2SCAN"],
     dispersion: Literal["D3BJ", "D4"] | None = None,
     prev_dir: SourceDirectory | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> VaspSchema:
     """
     Function to run a MOF-Off-compatible static calculation.

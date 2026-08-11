@@ -50,7 +50,7 @@ class QChem(FileIOCalculator):
         svp: dict | None = None,
         pcm_nonels: dict | None = None,
         qchem_dict_set_params: dict[str, Any] | None = None,
-        **fileiocalculator_kwargs,
+        **fileiocalculator_kwargs: object,
     ) -> None:
         """
         Initialize the Q-Chem calculator. Most of the input parameters here are used to

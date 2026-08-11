@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_gga_relax_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: object
 ) -> VaspSchema:
     """
     Function to relax a structure with the original Materials Project GGA(+U) settings.
@@ -76,7 +76,7 @@ def mp_gga_relax_job(
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_gga_static_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: object
 ) -> VaspSchema:
     """
     Function to run a static calculation on a structure with the original Materials Project GGA(+U) settings.

@@ -21,7 +21,7 @@ def static_job(
     method: str = "pbe",
     basis: str = "def2-tzvp",
     copy_files: CopyFiles | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.

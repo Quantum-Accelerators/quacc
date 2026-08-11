@@ -38,7 +38,7 @@ def qmof_relax_job(
     relax_cell: bool = True,
     run_prerelax: bool = True,
     copy_files: CopyFiles | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> QMOFRelaxSchema:
     """
     Relax a structure in a multi-step process for increased computational efficiency.
@@ -119,7 +119,7 @@ def qmof_relax_job(
 
 
 def _prerelax(
-    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs: object
 ) -> OptSchema:
     """
     A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
@@ -164,7 +164,7 @@ def _prerelax(
 
 
 def _loose_relax_positions(
-    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs: object
 ) -> VaspSchema:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
@@ -210,7 +210,7 @@ def _loose_relax_positions(
 
 
 def _loose_relax_cell(
-    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs: object
 ) -> VaspSchema:
     """
     Volume relaxation with coarse k-point grid.
@@ -257,7 +257,7 @@ def _double_relax(
     atoms: Atoms,
     copy_files: CopyFiles | None = None,
     relax_cell: bool = True,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> list[VaspSchema]:
     """
     Double relaxation using production-quality settings.
@@ -322,7 +322,7 @@ def _double_relax(
 
 
 def _static(
-    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs: object
 ) -> VaspSchema:
     """
     Static calculation using production-quality settings.

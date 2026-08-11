@@ -35,7 +35,7 @@ def md_job(
     md_params: MDParams | None = None,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> DynSchema:
     """
     Carry out a Molecular Dynamics calculation.

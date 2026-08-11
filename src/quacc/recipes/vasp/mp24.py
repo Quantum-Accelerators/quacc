@@ -34,7 +34,7 @@ if TYPE_CHECKING:
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_prerelax_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: object
 ) -> VaspSchema:
     """
     Function to pre-relax a structure with Materials Project r2SCAN workflow settings. By default, this
@@ -79,7 +79,7 @@ def mp_prerelax_job(
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_relax_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: object
 ) -> VaspSchema:
     """
     Function to relax a structure with Materials Project r2SCAN workflow settings. By default, this uses
@@ -123,7 +123,7 @@ def mp_metagga_relax_job(
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def mp_metagga_static_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: object
 ) -> VaspSchema:
     """
     Function to run a static calculation on a structure with r2SCAN workflow Materials Project settings.

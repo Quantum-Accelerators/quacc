@@ -70,7 +70,7 @@ class Vasp(Vasp_):
             | None
         ) = None,
         auto_dipole: bool | None = None,
-        **kwargs,
+        **kwargs: object,
     ) -> None:
         """
         Initialize the VASP calculator.

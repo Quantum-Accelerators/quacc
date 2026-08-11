@@ -24,7 +24,7 @@ def static_job(
     atoms: Atoms,
     library: Literal["fairchem", "matcalc", "rootstock"],
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -64,7 +64,7 @@ def relax_job(
     opt_params: OptParams | None = None,
     write_files: bool = True,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> OptSchema:
     """
     Relax a structure.

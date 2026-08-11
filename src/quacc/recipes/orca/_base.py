@@ -34,7 +34,7 @@ def run_and_summarize(
     block_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: CopyFiles | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> RunSchema:
     """
     Base job function for ORCA recipes.
@@ -98,7 +98,7 @@ def run_and_summarize_opt(
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: CopyFiles | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> OptSchema:
     """
     Base job function for ORCA recipes with ASE optimizer.
@@ -159,7 +159,7 @@ def prep_calculator(
     default_blocks: list[str] | None = None,
     input_swaps: list[str] | None = None,
     block_swaps: list[str] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> ORCA:
     """
     Prepare the ORCA calculator.

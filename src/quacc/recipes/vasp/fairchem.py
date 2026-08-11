@@ -36,7 +36,7 @@ def omat_static_job(
     atoms: Atoms,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> VaspSchema:
     """
     Carry out a static calculation with OMat settings.
@@ -81,7 +81,7 @@ def omc_static_job(
     atoms: Atoms,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> VaspSchema:
     """
     Carry out a static calculation with OMC settings.
@@ -178,7 +178,7 @@ def odac_static_job(
     kpts: tuple = (1, 1, 1),
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> VaspSchema:
     """
     Carry out a static calculation with ODAC settings.
@@ -255,7 +255,7 @@ def oc20_static_job(
     atoms: Atoms,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: object,
 ) -> VaspSchema:
     """
     Carry out a static calculation with OC20 settings.

@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 @job
 def mp_aloe_static_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: object
 ) -> VaspSchema:
     """
     Run a static calculation with MP-ALOE settings.

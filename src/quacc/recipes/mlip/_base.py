@@ -42,7 +42,7 @@ def freezeargs(func: Callable) -> Callable:
     from frozendict import frozendict
 
     @wraps(func)
-    def wrapped(*args, **kwargs):
+    def wrapped(*args: object, **kwargs: object) -> object:
         args = (frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
         kwargs = {
             k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()
@@ -55,7 +55,7 @@ def freezeargs(func: Callable) -> Callable:
 @freezeargs
 @lru_cache
 def pick_calculator(
-    library: Literal["fairchem", "matcalc", "rootstock"], **calc_kwargs
+    library: Literal["fairchem", "matcalc", "rootstock"], **calc_kwargs: object
 ) -> BaseCalculator:
     """
 
