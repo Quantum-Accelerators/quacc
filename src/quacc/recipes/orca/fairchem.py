@@ -39,7 +39,33 @@ def omol_static_job(
     copy_files: SourceDirectory | Copy | None = None,
     additional_fields: dict[str, Any] | None = None,
 ):
+    """
+    Carry out a single-point calculation using the OMol settings.
 
+    Parameters
+    ----------
+    atoms
+        Atoms object.
+    charge
+        Charge of the system.
+    spin_multiplicity
+        Multiplicity of the system.
+    vertical
+        Vertical of the OMol dataset to use.
+    orcasimpleinput
+        List of `orcasimpleinput` swaps for the calculator.
+    orcablocks
+        List of `orcablocks` swaps for the calculator.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
+
+    Returns
+    -------
+    dict
+        Dictionary of results.
+    """
     return single_point_calculation(
         atoms,
         charge,
