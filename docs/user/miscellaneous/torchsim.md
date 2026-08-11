@@ -10,7 +10,7 @@ Before using the TorchSim recipes, you need to install TorchSim and at least one
 pip install quacc[torchsim] mace-torch
 ```
 
-You should also be familiar with [ASE Atoms objects](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) and have read the [Intro to Jobs](recipes_intro.md) tutorial.
+You should also be familiar with [ASE Atoms objects](https://wiki.fysik.dtu.dk/ase/ase/atoms.html) and have read the [Intro to Jobs](../recipes/recipes_intro.md) tutorial.
 
 !!! Note
 

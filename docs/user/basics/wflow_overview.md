@@ -27,6 +27,20 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - The documentation, while comprehensive, can be difficult to follow given the various Dask components
     - Calculations cannot be submitted remotely or across disparate compute resources
 
+=== "Jobflow"
+
+    [Jobflow](https://github.com/materialsproject/jobflow) is developed and maintained by the Materials Project team at Lawrence Berkeley National Laboratory and serves as a seamless interface to [FireWorks](https://github.com/materialsproject/fireworks) or [Jobflow Remote](https://github.com/Matgenix/jobflow-remote) for dispatching and monitoring compute jobs.
+
+    Pros:
+
+    - Native support for a variety of databases
+    - Directly compatible with Atomate2
+    - Designed with materials science workflows in mind
+    - Actively supported by the Materials Project team
+
+    Cons:
+
+    - Requires the use of a database like MongoDB, which may not be widely accessible
 === "Parsl"
 
     [Parsl](https://github.com/Parsl/parsl) is a workflow management solution out of Argonne National Laboratory, the University of Chicago, and the University of Illinois. It is well-adapted for running on virtually any HPC environment with a job scheduler.
@@ -101,18 +115,3 @@ Everyone's computing needs are different, so we ensured that quacc is interopera
     - No user-friendly GUI for job monitoring
     - Does not have a particularly active user community
     - Not updated frequently
-
-=== "Jobflow"
-
-    [Jobflow](https://github.com/materialsproject/jobflow) is developed and maintained by the Materials Project team at Lawrence Berkeley National Laboratory and serves as a seamless interface to [FireWorks](https://github.com/materialsproject/fireworks) or [Jobflow Remote](https://github.com/Matgenix/jobflow-remote) for dispatching and monitoring compute jobs.
-
-    Pros:
-
-    - Native support for a variety of databases
-    - Directly compatible with Atomate2
-    - Designed with materials science workflows in mind
-    - Actively supported by the Materials Project team
-
-    Cons:
-
-    - Requires the use of a database like MongoDB, which may not be widely accessible

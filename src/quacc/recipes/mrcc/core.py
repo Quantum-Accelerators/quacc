@@ -10,8 +10,7 @@ from quacc.recipes.mrcc._base import run_and_summarize
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.types import RunSchema, SourceDirectory
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, RunSchema
 
 
 @job
@@ -21,7 +20,7 @@ def static_job(
     spin_multiplicity: int = 1,
     method: str = "pbe",
     basis: str = "def2-tzvp",
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """

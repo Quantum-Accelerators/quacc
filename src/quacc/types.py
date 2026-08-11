@@ -47,6 +47,14 @@ if TYPE_CHECKING:
     Filenames = str | Path | list[str | Path]
     SourceDirectory = str | Path
 
+    class CopyFileSpec(TypedDict):
+        """A file-transfer request resolved by the workflow engine."""
+
+        source: SourceDirectory
+        filenames: Filenames
+
+    CopyFiles = list[CopyFileSpec]
+
     # ----------- k-point handling -----------
 
     class PmgKpts(TypedDict, total=False):

@@ -12,15 +12,14 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import RunSchema, SourceDirectory
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, RunSchema
 
 
 @job
 def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     kpts: tuple | list[tuple] | dict | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
@@ -74,7 +73,7 @@ def relax_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "DFTB"] = "GFN2-xTB",
     kpts: tuple | list[tuple] | dict | None = None,
     relax_cell: bool = False,
-    copy_files: SourceDirectory | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs,
 ) -> RunSchema:
