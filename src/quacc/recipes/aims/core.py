@@ -58,7 +58,7 @@ def static_job(
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     agnostic_params: bool = False,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic SCF calculation with FHI-aims.
@@ -141,7 +141,7 @@ def relax_job(
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     agnostic_params: bool = False,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a structure relaxation with FHI-aims internal optimizer.

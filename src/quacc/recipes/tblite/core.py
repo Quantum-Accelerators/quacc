@@ -28,7 +28,7 @@ def static_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -72,7 +72,7 @@ def relax_job(
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> OptSchema:
     """
     Relax a structure.
@@ -124,7 +124,7 @@ def freq_job(
     pressure: float = 1.0,
     vib_kwargs: VibKwargs | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> VibThermoSchema:
     """
     Run a frequency job and calculate thermochemistry.

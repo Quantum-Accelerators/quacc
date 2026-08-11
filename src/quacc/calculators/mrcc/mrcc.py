@@ -177,7 +177,7 @@ class MrccTemplate(CalculatorTemplate):
         """
         return read_mrcc_outputs(output_file_path=directory / self.outputname)
 
-    def load_profile(self, cfg: Config, **kwargs: object) -> MrccProfile:
+    def load_profile(self, cfg: Config, **kwargs: Any) -> MrccProfile:
         return MrccProfile.from_config(cfg, self.name, **kwargs)
 
 
@@ -191,7 +191,7 @@ class MRCC(GenericFileIOCalculator):
         *,
         profile: MrccProfile | None = None,
         directory: str | Path = ".",
-        **kwargs: object,
+        **kwargs: Any,
     ) -> None:
         """
         Construct MRCC-calculator object.

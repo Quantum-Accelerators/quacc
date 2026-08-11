@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a static calculation.
@@ -59,7 +59,7 @@ def relax_job(
     atoms: Atoms,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> OptSchema:
     """
     Function to carry out a geometry optimization.
@@ -102,7 +102,7 @@ def freq_job(
     pressure: float = 1.0,
     vib_kwargs: VibKwargs | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> VibThermoSchema:
     """
     Run a frequency job and calculate thermochemistry.

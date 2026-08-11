@@ -30,7 +30,7 @@ def static_job(
     basis: str = "def2-tzvp",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a single-point calculation.

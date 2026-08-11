@@ -35,7 +35,7 @@ def ts_job(
     opt_params: OptParams | None = None,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> OptSchema:
     """
     TS optimize a molecular structure.
@@ -104,7 +104,7 @@ def irc_job(
     opt_params: OptParams | None = None,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> OptSchema:
     """
     IRC optimize a molecular structure.
@@ -181,7 +181,7 @@ def quasi_irc_job(
     opt_params: OptParams | None = None,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> OptSchema:
     """
     Quasi-IRC to optimize a reaction endpoint from a transition-state with known vibrational frequency modes.

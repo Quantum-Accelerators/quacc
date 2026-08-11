@@ -39,7 +39,7 @@ def static_job(
     preset: str | None = "DefaultSetGGA",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Carry out a single-point calculation. If you want high quality forces,
@@ -94,7 +94,7 @@ def relax_job(
     relax_cell: bool = False,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Relax a structure.
@@ -207,7 +207,7 @@ def ase_relax_job(
     opt_params: OptParams | None = None,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> VaspASEOptSchema:
     """
     Relax a structure.
@@ -263,7 +263,7 @@ def non_scf_job(
     line_kpt_density: float = 20,
     calculate_optics: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Carry out a non-self-consistent field (NSCF) calculation.
@@ -358,7 +358,7 @@ def freq_job(
     thermo_method: Literal["harmonic", "ideal_gas"] = "harmonic",
     vib_kwargs: VibKwargs | None = None,
     copy_files: CopyFiles | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> VibThermoSchema:
     """
     Run a frequency job and calculate thermochemistry.

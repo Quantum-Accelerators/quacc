@@ -26,7 +26,7 @@ def static_job(
     basis: str = "def2tzvp",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -93,7 +93,7 @@ def relax_job(
     freq: bool = False,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: object,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Carry out a geometry optimization.
