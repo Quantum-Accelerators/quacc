@@ -527,7 +527,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Subflow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "jobflow":
-        return _get_jobflow_wrapped_subflow(_func, **kwargs)
+        return _get_jobflow_wrapped_func(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
@@ -636,40 +636,10 @@ def _get_jobflow_wrapped_func(
     return jf_job(method, **job_kwargs)
 
 
-def _jobflow_flow_output(value):
-    """Normalize nested outputs returned by a Jobflow-decorated flow."""
-    from jobflow import Flow as JobflowFlow
-    from jobflow import Job as JobflowJob
-
-    while isinstance(value, (JobflowFlow, JobflowJob)):
-        value = value.output
-
-    if type(value) is list:
-        return [_jobflow_flow_output(item) for item in value]
-    if type(value) is tuple:
-        return tuple(_jobflow_flow_output(item) for item in value)
-    if type(value) is dict:
-        return {
-            _jobflow_flow_output(key): _jobflow_flow_output(item)
-            for key, item in value.items()
-        }
-
-    return value
-
-
 def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
     from jobflow import flow as jf_flow
 
-    @wraps(_func)
-    def wrapper(*args, **kwargs):
-        return _jobflow_flow_output(_func(*args, **kwargs))
-
-    return jf_flow(wrapper)
-
-
-def _get_jobflow_wrapped_subflow(_func: Callable, **job_kwargs) -> Callable:
-    """Wrap a dynamic Jobflow subflow while retaining every job it creates."""
-    return _get_jobflow_wrapped_func(_get_jobflow_wrapped_flow(_func), **job_kwargs)
+    return jf_flow(_func)
 
 
 class Delayed_:
