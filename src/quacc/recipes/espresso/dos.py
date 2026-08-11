@@ -9,7 +9,7 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import run_and_summarize
 from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -182,13 +182,12 @@ def dos_flow(
         ),
     }
 
-    static_job_, non_scf_job_, dos_job_ = customize_funcs(
-        ["static_job", "non_scf_job", "dos_job"],
-        [static_job, non_scf_job, dos_job],
+    static_job_, non_scf_job_, dos_job_ = customize_jobs(
+        {"static_job": static_job, "non_scf_job": non_scf_job, "dos_job": dos_job},
         param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     static_results = static_job_(atoms)
     static_results_dir = static_results["dir_name"]
@@ -259,13 +258,16 @@ def projwfc_flow(
             },
         ),
     }
-    static_job_, non_scf_job_, projwfc_job_ = customize_funcs(
-        ["static_job", "non_scf_job", "projwfc_job"],
-        [static_job, non_scf_job, projwfc_job],
+    static_job_, non_scf_job_, projwfc_job_ = customize_jobs(
+        {
+            "static_job": static_job,
+            "non_scf_job": non_scf_job,
+            "projwfc_job": projwfc_job,
+        },
         param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     static_results = static_job_(atoms)
     static_results_dir = static_results["dir_name"]

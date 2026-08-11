@@ -16,7 +16,7 @@ A simple, representative flow can be found in [quacc.recipes.vasp.mp24.mp_metagg
 
 !!! Note
 
-    All `#!Python @flow`-decorated functions distributed with quacc must allow for the individual job parameters and decorators to be updated by the user, which is typically done via the [quacc.wflow_tools.customizers.customize_funcs][] function. Refer to the example above for details.
+    All `#!Python @flow`-decorated functions distributed with quacc must allow for the individual job parameters and decorators to be updated by the user, which is typically done via the [quacc.wflow_tools.customizers.customize_jobs][] function. Refer to the example above for details.
 
 ## Dynamic Flows
 
