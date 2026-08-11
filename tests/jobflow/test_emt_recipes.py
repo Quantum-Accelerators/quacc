@@ -39,7 +39,10 @@ def test_copy_files(tmp_path, monkeypatch, jobflow_output):
     @flow
     def myflow(atoms):
         result1 = relax_job(atoms)
-        return relax_job(result1["atoms"], copy_files={result1["dir_name"]: "opt.*"})
+        return relax_job(
+            result1["atoms"],
+            copy_files=[{"source": result1["dir_name"], "filenames": "opt.*"}],
+        )
 
     workflow = myflow(atoms)
     responses = jf.run_locally(workflow, ensure_success=True)

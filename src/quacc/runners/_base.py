@@ -12,8 +12,7 @@ from quacc.runners.prep import calc_cleanup, calc_setup
 if TYPE_CHECKING:
     from ase.atoms import Atoms
 
-    from quacc.types import SourceDirectory
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles
 
 
 @dataclass
@@ -29,7 +28,7 @@ class BaseRunner:
 
     atoms: Atoms | None = None
 
-    def setup(self, copy_files: SourceDirectory | Copy | None = None) -> None:
+    def setup(self, copy_files: CopyFiles | None = None) -> None:
         """
         Perform setup operations on the runtime directory.
 

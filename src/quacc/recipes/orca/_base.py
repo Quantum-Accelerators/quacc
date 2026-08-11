@@ -17,8 +17,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import OptParams, OptSchema, RunSchema, SourceDirectory
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, OptParams, OptSchema, RunSchema
 
 
 _LABEL = OrcaTemplate()._label  # skipcq: PYL-W0212
@@ -34,7 +33,7 @@ def run_and_summarize(
     input_swaps: list[str] | None = None,
     block_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     **calc_kwargs,
 ) -> RunSchema:
     """
@@ -98,7 +97,7 @@ def run_and_summarize_opt(
     opt_defaults: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
     additional_fields: dict[str, Any] | None = None,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     **calc_kwargs,
 ) -> OptSchema:
     """
