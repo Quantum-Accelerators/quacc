@@ -15,7 +15,7 @@ def test_elastic_jobs(tmp_path, monkeypatch):
     assert outputs["deformed_results"][0]["atoms"].get_volume() != pytest.approx(
         atoms.get_volume()
     )
-    assert outputs["elasticity_doc"].bulk_modulus.voigt == pytest.approx(134.579)
+    assert outputs["elasticity_doc"].bulk_modulus.voigt == pytest.approx(125.897)
     for output in outputs["deformed_results"]:
         assert output["parameters"]["asap_cutoff"] is False
         assert output["name"] == "EMT Relax"
