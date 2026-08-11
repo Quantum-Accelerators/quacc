@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import warnings
+
 import pytest
 
 jf = pytest.importorskip("jobflow")
@@ -85,6 +87,23 @@ def test_jobflow_tuple_argument(tmp_path, monkeypatch, jobflow_output):
     workflow_flow = workflow()
     responses = jf.run_locally(workflow_flow, ensure_success=True)
     assert jobflow_output(responses, workflow_flow.output[0]) == 10
+
+
+def test_jobflow_flow_output_warning_is_suppressed(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @flow
+    def workflow(a, b):
+        return add(a, b)
+
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        assert isinstance(workflow(1, 2), jf.Flow)
+
+    assert not caught_warnings
 
 
 def test_jobflow_dict_output(tmp_path, monkeypatch, jobflow_output):
