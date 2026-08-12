@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from functools import partial, wraps
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ParamSpec, overload
 
 from quacc.settings import change_settings_wrap
 from quacc.wflow_tools.context import NodeType, tracked
@@ -15,6 +15,17 @@ if TYPE_CHECKING:
 Job = Callable[..., Any]
 Flow = Callable[..., Any]
 Subflow = Callable[..., Any]
+P = ParamSpec("P")
+
+
+@overload
+def job(_func: Callable[P, Any], **kwargs: Any) -> Callable[P, Any]: ...
+
+
+@overload
+def job(
+    _func: None = None, **kwargs: Any
+) -> Callable[[Callable[P, Any]], Callable[P, Any]]: ...
 
 
 def job(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Job:
@@ -192,6 +203,16 @@ def job(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Job:
         return _func
 
 
+@overload
+def flow(_func: Callable[P, Any], **kwargs: Any) -> Callable[P, Any]: ...
+
+
+@overload
+def flow(
+    _func: None = None, **kwargs: Any
+) -> Callable[[Callable[P, Any]], Callable[P, Any]]: ...
+
+
 def flow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Flow:
     """
     Decorator for workflows, which consist of at least one compute job. This is a
@@ -332,6 +353,16 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Flow:
         return _get_jobflow_wrapped_flow(_func)
     else:
         return tracked(NodeType.FLOW)(_func)
+
+
+@overload
+def subflow(_func: Callable[P, Any], **kwargs: Any) -> Callable[P, Any]: ...
+
+
+@overload
+def subflow(
+    _func: None = None, **kwargs: Any
+) -> Callable[[Callable[P, Any]], Callable[P, Any]]: ...
 
 
 def subflow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Subflow:
