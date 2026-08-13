@@ -117,7 +117,7 @@ def matpes_static_job(
     elif level.lower() == "r2scan":
         calc_defaults |= {"xc": "r2scan"}
     elif level.lower() == "hse06":
-        calc_defaults |= {"algo": "normal", "isif":2, "xc": "hse06"}
+        calc_defaults |= {"algo": "normal", "isif": 2, "xc": "hse06"}
         calc_defaults.pop("isearch", None)
     else:
         raise ValueError(f"Unsupported value for {level}")
