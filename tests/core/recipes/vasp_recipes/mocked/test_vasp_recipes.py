@@ -1234,6 +1234,7 @@ def test_matpes(patch_metallic_taskdoc):
                 "ediff": 1e-05,
                 "efermi": "midgap",
                 "encut": 435,
+                "gga": "PE",
                 "gga_compat": False,
                 "isearch": 1,
                 "ismear": 0,
