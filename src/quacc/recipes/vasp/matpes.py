@@ -213,6 +213,7 @@ def fastpes_static_job(
         level="PBE" if hf_exchange == 0.0 else "HSE06",
         aexx=hf_exchange,
         use_improvements=True,
+        use_custodian=False,
         encut=435,
         kspacing=0.40,
         setups={symbol: _fastpes_paw[symbol] for symbol in set(atoms.symbols)},
