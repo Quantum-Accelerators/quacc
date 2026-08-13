@@ -18,6 +18,7 @@ from quacc.recipes.vasp.core import (
     static_job,
 )
 from quacc.recipes.vasp.matpes import matpes_static_flow, matpes_static_job
+from quacc.recipes.vasp.mattersim import mattersim_static_job
 from quacc.recipes.vasp.md import md_job
 from quacc.recipes.vasp.mof_off import mof_off_static_flow, mof_off_static_job
 from quacc.recipes.vasp.mp24 import (
@@ -36,7 +37,6 @@ from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
-from quacc.recipes.vasp.mattersim import mattersim_static_job
 
 has_atomate2 = util.find_spec("atomate2") is not None
 has_fairchem = util.find_spec("fairchem") is not None
@@ -1586,6 +1586,7 @@ def test_md_job_error():
 
     with pytest.raises(ValueError, match="Unsupported ensemble"):
         md_job(atoms, ensemble="NNT")
+
 
 def test_mattersim_static_job(patch_nonmetallic_taskdoc):
     atoms = bulk("Ni") * (2, 1, 1)
