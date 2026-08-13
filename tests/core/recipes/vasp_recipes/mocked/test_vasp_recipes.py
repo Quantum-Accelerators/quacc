@@ -1295,9 +1295,7 @@ def test_matpes(patch_metallic_taskdoc):
         ),
     ],
 )
-def test_fastpes_static_job(
-    hf_exchange, expected_parameters, patch_metallic_taskdoc
-):
+def test_fastpes_static_job(hf_exchange, expected_parameters, patch_metallic_taskdoc):
     output = fastpes_static_job(bulk("Al"), hf_exchange=hf_exchange, ncore=None)
     output["parameters"].pop("ncore")
 
