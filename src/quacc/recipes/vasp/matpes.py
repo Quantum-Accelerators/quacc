@@ -219,6 +219,7 @@ def fastpes_static_job(
         setups=_fastpes_paw,
         aexx=hf_exchange,
         additional_fields={"name": f"FastPES {hf_exchange} Static"},
+        **calc_kwargs,
     )
 
 
