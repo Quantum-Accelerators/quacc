@@ -1303,6 +1303,16 @@ def test_fastpes_static_job(hf_exchange, expected_parameters, patch_metallic_tas
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+def test_fastpes_static_job_paw(patch_metallic_taskdoc):
+    atoms = bulk("Al")
+    atoms[0].symbol = "Ba"
+
+    output = fastpes_static_job(atoms, ncore=None)
+
+    assert output["parameters"]["setups"] == {"Ba": "_sv_GW"}
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_matpes_static_flow(tmp_path, patch_metallic_taskdoc):
     with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
         copy_r(MOCKED_DIR / "metallic", tmp_path)
