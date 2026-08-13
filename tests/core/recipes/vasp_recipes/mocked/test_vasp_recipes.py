@@ -17,7 +17,11 @@ from quacc.recipes.vasp.core import (
     relax_job,
     static_job,
 )
-from quacc.recipes.vasp.matpes import matpes_static_flow, matpes_static_job
+from quacc.recipes.vasp.matpes import (
+    fastpes_static_job,
+    matpes_static_flow,
+    matpes_static_job,
+)
 from quacc.recipes.vasp.mattersim import mattersim_static_job
 from quacc.recipes.vasp.md import md_job
 from quacc.recipes.vasp.mof_off import mof_off_static_flow, mof_off_static_job
@@ -1216,6 +1220,33 @@ def test_matpes(patch_metallic_taskdoc):
 
     with pytest.raises(ValueError, match="Unsupported value for m06"):
         matpes_static_job(bulk("Al"), level="m06")
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+@pytest.mark.parametrize(
+    ("hf_exchange", "expected"),
+    [
+        (0.0, {"algo": "all", "aexx": 0.0, "xc": "pbe"}),
+        (
+            0.25,
+            {
+                "algo": "normal",
+                "aexx": 0.25,
+                "hfscreen": 0.2,
+                "isif": 2,
+                "lhfcalc": True,
+                "xc": "hse06",
+            },
+        ),
+    ],
+)
+def test_fastpes_static_job(hf_exchange, expected, patch_metallic_taskdoc):
+    output = fastpes_static_job(bulk("Al"), hf_exchange=hf_exchange, ncore=None)
+
+    assert output["parameters"] | expected == output["parameters"]
+    assert output["parameters"]["encut"] == 435
+    assert output["parameters"]["kspacing"] == 0.4
+    assert output["parameters"]["setups"] == {"Al": ""}
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
