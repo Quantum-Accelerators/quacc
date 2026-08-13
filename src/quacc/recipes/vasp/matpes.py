@@ -217,6 +217,7 @@ def fastpes_static_job(
         encut=435,
         kspacing=0.40,
         setups=_fastpes_paw,
+        prev_dir=prev_dir,
         additional_fields={"name": f"FastPES {hf_exchange} Static"},
         **calc_kwargs,
     )
