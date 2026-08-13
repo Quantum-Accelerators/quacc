@@ -35,6 +35,7 @@ if TYPE_CHECKING:
         pbe: VaspSchema
         r2scan: VaspSchema
 
+
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def matpes_static_job(
@@ -174,6 +175,7 @@ def matpes_static_flow(
 
     return {"pbe": pbe_results, "r2scan": r2scan_results}
 
+
 @job
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def fastpes_static_job(
@@ -207,6 +209,115 @@ def fastpes_static_job(
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
-    return matpes_static_job(atoms, level="PBE" if hf_exchange == 0.0 else "HSE06",kspacing=0.40,use_improvements=True,encut=435, isif=2,setups=_fastpes_paw,aexx=hf_exchange,additional_fields={"name": f"FastPES {hf_exchange} Static"})
+    return matpes_static_job(
+        atoms,
+        level="PBE" if hf_exchange == 0.0 else "HSE06",
+        kspacing=0.40,
+        use_improvements=True,
+        encut=435,
+        isif=2,
+        setups=_fastpes_paw,
+        aexx=hf_exchange,
+        additional_fields={"name": f"FastPES {hf_exchange} Static"},
+    )
 
-_fastpes_paw = {'Ac': '', 'Ag': '_GW', 'Al': '', 'Am': '', 'Ar': '_GW', 'As': '_GW', 'At': '', 'Au': '_GW', 'B': '_GW', 'Ba': '_sv_GW', 'Be': '', 'Bi': '_GW', 'Br': '_GW', 'C': '_s_GW', 'Ca': '_pv', 'Cd': '', 'Ce': '_3', 'Cf': '', 'Cl': '_GW', 'Cm': '', 'Co': '_GW', 'Cr': '', 'Cs': '_sv', 'Cu': '', 'Dy': '_3', 'Er': '_2', 'Eu': '_2', 'F': '_s', 'Fe': '_GW', 'Fr': '_sv', 'Ga': '', 'Gd': '_3', 'Ge': '', 'H': '_GW', 'He': '_GW', 'Hf': '', 'Hg': '', 'Ho': '_3', 'I': '', 'In': '', 'Ir': '', 'K': '_pv', 'Kr': '_GW', 'La': '_s', 'Li': '', 'Lu': '_3', 'Mg': '', 'Mn': '_GW', 'Mo': '', 'N': '_s_GW', 'Na': '', 'Nb': '_pv', 'Nd': '_3', 'Ne': '_s_GW', 'Ni': '', 'Np': '', 'O': '_s_GW', 'Os': '', 'P': '_GW', 'Pa': '_s', 'Pb': '', 'Pd': '', 'Pm': '_3', 'Po': '', 'Pr': '_3', 'Pt': '_GW', 'Pu': '', 'Ra': '_sv', 'Rb': '_pv', 'Re': '', 'Rh': '_GW', 'Rn': '', 'Ru': '', 'S': '_GW', 'Sb': '', 'Sc': '', 'Se': '', 'Si': '_GW', 'Sm': '_3', 'Sn': '', 'Sr': '_sv', 'Ta': '', 'Tb': '_3', 'Tc': '', 'Te': '', 'Th': '_s', 'Ti': '', 'Tl': '', 'Tm': '_3', 'U': '', 'V': '', 'W': '', 'Xe': '_GW', 'Y': '_sv', 'Yb': '_2', 'Zn': '_GW', 'Zr': '_sv'}
+
+_fastpes_paw = {
+    "Ac": "",
+    "Ag": "_GW",
+    "Al": "",
+    "Am": "",
+    "Ar": "_GW",
+    "As": "_GW",
+    "At": "",
+    "Au": "_GW",
+    "B": "_GW",
+    "Ba": "_sv_GW",
+    "Be": "",
+    "Bi": "_GW",
+    "Br": "_GW",
+    "C": "_s_GW",
+    "Ca": "_pv",
+    "Cd": "",
+    "Ce": "_3",
+    "Cf": "",
+    "Cl": "_GW",
+    "Cm": "",
+    "Co": "_GW",
+    "Cr": "",
+    "Cs": "_sv",
+    "Cu": "",
+    "Dy": "_3",
+    "Er": "_2",
+    "Eu": "_2",
+    "F": "_s",
+    "Fe": "_GW",
+    "Fr": "_sv",
+    "Ga": "",
+    "Gd": "_3",
+    "Ge": "",
+    "H": "_GW",
+    "He": "_GW",
+    "Hf": "",
+    "Hg": "",
+    "Ho": "_3",
+    "I": "",
+    "In": "",
+    "Ir": "",
+    "K": "_pv",
+    "Kr": "_GW",
+    "La": "_s",
+    "Li": "",
+    "Lu": "_3",
+    "Mg": "",
+    "Mn": "_GW",
+    "Mo": "",
+    "N": "_s_GW",
+    "Na": "",
+    "Nb": "_pv",
+    "Nd": "_3",
+    "Ne": "_s_GW",
+    "Ni": "",
+    "Np": "",
+    "O": "_s_GW",
+    "Os": "",
+    "P": "_GW",
+    "Pa": "_s",
+    "Pb": "",
+    "Pd": "",
+    "Pm": "_3",
+    "Po": "",
+    "Pr": "_3",
+    "Pt": "_GW",
+    "Pu": "",
+    "Ra": "_sv",
+    "Rb": "_pv",
+    "Re": "",
+    "Rh": "_GW",
+    "Rn": "",
+    "Ru": "",
+    "S": "_GW",
+    "Sb": "",
+    "Sc": "",
+    "Se": "",
+    "Si": "_GW",
+    "Sm": "_3",
+    "Sn": "",
+    "Sr": "_sv",
+    "Ta": "",
+    "Tb": "_3",
+    "Tc": "",
+    "Te": "",
+    "Th": "_s",
+    "Ti": "",
+    "Tl": "",
+    "Tm": "_3",
+    "U": "",
+    "V": "",
+    "W": "",
+    "Xe": "_GW",
+    "Y": "_sv",
+    "Yb": "_2",
+    "Zn": "_GW",
+    "Zr": "_sv",
+}
