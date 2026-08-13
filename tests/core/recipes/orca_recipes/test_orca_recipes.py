@@ -209,4 +209,4 @@ def test_fairchem_omol(tmp_path, monkeypatch):
     assert output["molecule_metadata"]["natoms"] == len(atoms)
     assert output["parameters"]["charge"] == 0
     assert output["parameters"]["mult"] == 1
-    assert output["parameters"]["orcasimpleinput"] == "def2-tzvpd freq hf xyzfile"
+    assert output["parameters"]["orcasimpleinput"] == "allpop def2-tzvpd def2/j defgrid3 diis engrad nonbo nonpa normalconv nososcf nousesym rijcosx wb97m-v xyzfile"
