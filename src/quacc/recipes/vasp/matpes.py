@@ -117,7 +117,7 @@ def matpes_static_job(
     elif level.lower() == "r2scan":
         calc_defaults |= {"xc": "r2scan"}
     elif level.lower() == "hse06":
-        calc_defaults |= {"algo": "normal", "xc": "hse06"}
+        calc_defaults |= {"algo": "normal", "isif": 2, "xc": "hse06"}
         calc_defaults.pop("isearch", None)
     else:
         raise ValueError(f"Unsupported value for {level}")
@@ -174,3 +174,149 @@ def matpes_static_flow(
     )
 
     return {"pbe": pbe_results, "r2scan": r2scan_results}
+
+
+@job
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+def fastpes_static_job(
+    atoms: Atoms,
+    hf_exchange: float = 0.0,
+    prev_dir: SourceDirectory | None = None,
+    **calc_kwargs: Any,
+) -> VaspSchema:
+    """
+    Function to run a FastPES-compatible static calculation.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object
+    hf_exchange
+        The fraction of Hartree-Fock exchange, from 0.0 (PBE) to 1.0.
+        HSE06 is 0.25.
+    prev_dir
+        A previous directory for a prior step in the workflow.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
+        Vasp calculator keyword arguments are supported.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
+        See the type-hint for the data structure.
+    """
+    return matpes_static_job(
+        atoms,
+        level="PBE" if hf_exchange == 0.0 else "HSE06",
+        aexx=hf_exchange,
+        use_improvements=True,
+        encut=435,
+        kspacing=0.40,
+        setups={symbol: _fastpes_paw[symbol] for symbol in set(atoms.symbols)},
+        prev_dir=prev_dir,
+        **calc_kwargs,
+    )
+
+
+_fastpes_paw = {
+    "Ac": "",
+    "Ag": "_GW",
+    "Al": "",
+    "Am": "",
+    "Ar": "_GW",
+    "As": "_GW",
+    "At": "",
+    "Au": "_GW",
+    "B": "_GW",
+    "Ba": "_sv_GW",
+    "Be": "",
+    "Bi": "_GW",
+    "Br": "_GW",
+    "C": "_s_GW",
+    "Ca": "_pv",
+    "Cd": "",
+    "Ce": "_3",
+    "Cf": "",
+    "Cl": "_GW",
+    "Cm": "",
+    "Co": "_GW",
+    "Cr": "",
+    "Cs": "_sv",
+    "Cu": "",
+    "Dy": "_3",
+    "Er": "_2",
+    "Eu": "_2",
+    "F": "_s",
+    "Fe": "_GW",
+    "Fr": "_sv",
+    "Ga": "",
+    "Gd": "_3",
+    "Ge": "",
+    "H": "_GW",
+    "He": "_GW",
+    "Hf": "",
+    "Hg": "",
+    "Ho": "_3",
+    "I": "",
+    "In": "",
+    "Ir": "",
+    "K": "_pv",
+    "Kr": "_GW",
+    "La": "_s",
+    "Li": "",
+    "Lu": "_3",
+    "Mg": "",
+    "Mn": "_GW",
+    "Mo": "",
+    "N": "_s_GW",
+    "Na": "",
+    "Nb": "_pv",
+    "Nd": "_3",
+    "Ne": "_s_GW",
+    "Ni": "",
+    "Np": "",
+    "O": "_s_GW",
+    "Os": "",
+    "P": "_GW",
+    "Pa": "_s",
+    "Pb": "",
+    "Pd": "",
+    "Pm": "_3",
+    "Po": "",
+    "Pr": "_3",
+    "Pt": "_GW",
+    "Pu": "",
+    "Ra": "_sv",
+    "Rb": "_pv",
+    "Re": "",
+    "Rh": "_GW",
+    "Rn": "",
+    "Ru": "",
+    "S": "_GW",
+    "Sb": "",
+    "Sc": "",
+    "Se": "",
+    "Si": "_GW",
+    "Sm": "_3",
+    "Sn": "",
+    "Sr": "_sv",
+    "Ta": "",
+    "Tb": "_3",
+    "Tc": "",
+    "Te": "",
+    "Th": "_s",
+    "Ti": "",
+    "Tl": "",
+    "Tm": "_3",
+    "U": "",
+    "V": "",
+    "W": "",
+    "Xe": "_GW",
+    "Y": "_sv",
+    "Yb": "_2",
+    "Zn": "_GW",
+    "Zr": "_sv",
+}
