@@ -1303,7 +1303,7 @@ def test_fastpes_static_job(hf_exchange, expected_parameters, patch_metallic_tas
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
-def test_fastpes_static_job_paw(patch_metallic_taskdoc):
+def test_matpes_fastpes_static_job_paw(patch_metallic_taskdoc):
     atoms = bulk("Al")
     atoms[0].symbol = "Ba"
 
