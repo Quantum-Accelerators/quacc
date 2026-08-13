@@ -180,7 +180,6 @@ def matpes_static_flow(
 @requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
 def fastpes_static_job(
     atoms: Atoms,
-    *,
     hf_exchange: float = 0.0,
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs: Any,
