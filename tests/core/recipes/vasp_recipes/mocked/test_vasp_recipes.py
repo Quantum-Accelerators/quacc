@@ -1224,29 +1224,84 @@ def test_matpes(patch_metallic_taskdoc):
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 @pytest.mark.parametrize(
-    ("hf_exchange", "expected"),
+    ("hf_exchange", "expected_parameters"),
     [
-        (0.0, {"algo": "all", "aexx": 0.0, "xc": "pbe"}),
+        (
+            0.0,
+            {
+                "algo": "all",
+                "aexx": 0.0,
+                "ediff": 1e-05,
+                "efermi": "midgap",
+                "encut": 435,
+                "gga_compat": False,
+                "isearch": 1,
+                "ismear": 0,
+                "ispin": 2,
+                "kspacing": 0.4,
+                "laechg": True,
+                "lasph": True,
+                "lcharg": True,
+                "lmaxmix": 6,
+                "lmixtau": True,
+                "lorbit": 11,
+                "lreal": False,
+                "lwave": True,
+                "magmom": [0.6],
+                "nelm": 200,
+                "nsw": 0,
+                "pp": "PBE",
+                "pp_version": "64",
+                "prec": "accurate",
+                "setups": {"Al": ""},
+                "sigma": 0.05,
+                "xc": "pbe",
+            },
+        ),
         (
             0.25,
             {
                 "algo": "normal",
                 "aexx": 0.25,
+                "ediff": 1e-05,
+                "efermi": "midgap",
+                "encut": 435,
+                "gga": "PE",
+                "gga_compat": False,
                 "hfscreen": 0.2,
                 "isif": 2,
+                "ismear": 0,
+                "ispin": 2,
+                "kspacing": 0.4,
+                "laechg": True,
+                "lasph": True,
+                "lcharg": True,
                 "lhfcalc": True,
+                "lmaxmix": 6,
+                "lmixtau": True,
+                "lorbit": 11,
+                "lreal": False,
+                "lwave": False,
+                "magmom": [0.6],
+                "nelm": 200,
+                "nsw": 0,
+                "pp": "PBE",
+                "pp_version": "64",
+                "prec": "accurate",
+                "setups": {"Al": ""},
+                "sigma": 0.05,
                 "xc": "hse06",
             },
         ),
     ],
 )
-def test_fastpes_static_job(hf_exchange, expected, patch_metallic_taskdoc):
+def test_fastpes_static_job(
+    hf_exchange, expected_parameters, patch_metallic_taskdoc
+):
     output = fastpes_static_job(bulk("Al"), hf_exchange=hf_exchange, ncore=None)
+    output["parameters"].pop("ncore")
 
-    assert output["parameters"] | expected == output["parameters"]
-    assert output["parameters"]["encut"] == 435
-    assert output["parameters"]["kspacing"] == 0.4
-    assert output["parameters"]["setups"] == {"Al": ""}
+    assert output["parameters"] == expected_parameters
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
