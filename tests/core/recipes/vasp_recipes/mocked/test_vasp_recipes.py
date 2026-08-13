@@ -1229,8 +1229,8 @@ def test_matpes(patch_metallic_taskdoc):
         (
             0.0,
             {
-                "algo": "all",
                 "aexx": 0.0,
+                "algo": "all",
                 "ediff": 1e-05,
                 "efermi": "midgap",
                 "encut": 435,
@@ -1261,8 +1261,8 @@ def test_matpes(patch_metallic_taskdoc):
         (
             0.25,
             {
-                "algo": "normal",
                 "aexx": 0.25,
+                "algo": "normal",
                 "ediff": 1e-05,
                 "efermi": "midgap",
                 "encut": 435,
@@ -1295,7 +1295,9 @@ def test_matpes(patch_metallic_taskdoc):
         ),
     ],
 )
-def test_fastpes_static_job(hf_exchange, expected_parameters, patch_metallic_taskdoc):
+def test_matpes_fastpes_static_job(
+    hf_exchange, expected_parameters, patch_metallic_taskdoc
+):
     output = fastpes_static_job(bulk("Al"), hf_exchange=hf_exchange, ncore=None)
     output["parameters"].pop("ncore")
 
