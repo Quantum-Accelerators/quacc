@@ -1,5 +1,5 @@
 fairchem-core==2.21.0
 fairchem-data-oc==1.0.2
 fairchem-data-omat==0.2
-fairchem-data-omol==0.1.1
+fairchem-data-omol @ git+https://github.com/facebookresearch/fairchem.git@main#subdirectory=packages/fairchem-data-omol
 atomate2==0.1.5
