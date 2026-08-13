@@ -32,7 +32,7 @@ def static_job(
     atoms: Atoms,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic SCF calculation with ONETEP.
@@ -72,7 +72,7 @@ def ase_relax_job(
     opt_params: OptParams | None = None,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a structure relaxation with ONETEP using ASE

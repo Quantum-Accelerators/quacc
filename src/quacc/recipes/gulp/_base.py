@@ -35,7 +35,7 @@ def run_and_summarize(
     option_swaps: list[str] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: CopyFiles | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Base job function for GULP recipes.

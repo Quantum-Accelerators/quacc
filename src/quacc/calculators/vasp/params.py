@@ -642,7 +642,7 @@ class MPtoASEConverter:
         return full_input_params
 
 
-def _params_differ(a, b) -> bool:
+def _params_differ(a: object, b: object) -> bool:
     """Compare two parameter values, handling NumPy arrays."""
     if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
         return not np.array_equal(a, b)

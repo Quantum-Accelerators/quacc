@@ -46,7 +46,7 @@ def static_job(
     copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic SCF calculation with pw.x.
@@ -105,7 +105,7 @@ def relax_job(
     copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a structure relaxation with pw.x.
@@ -169,7 +169,7 @@ def ase_relax_job(
     copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a structure relaxation with pw.x using ASE
@@ -240,7 +240,7 @@ def post_processing_job(
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic pp.x calculation (post-processing).
@@ -301,7 +301,7 @@ def non_scf_job(
     preset: str | None = "sssp_1.3.0_pbe_efficiency",
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic NSCF calculation with pw.x.

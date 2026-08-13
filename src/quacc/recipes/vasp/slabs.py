@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from quacc import flow, job
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
 from quacc.recipes.vasp._base import run_and_summarize
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -24,7 +24,7 @@ def static_job(
     preset: str | None = "SlabSetPBE",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Function to carry out a single-point calculation on a slab.
@@ -78,7 +78,7 @@ def relax_job(
     preset: str | None = "SlabSetPBE",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Function to relax a slab.
@@ -168,12 +168,11 @@ def bulk_to_slabs_flow(
         List of dictionary results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
-    relax_job_, static_job_ = customize_funcs(
-        ["relax_job", "static_job"],
-        [relax_job, static_job],
+    relax_job_, static_job_ = customize_jobs(
+        {"relax_job": relax_job, "static_job": static_job},
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     return bulk_to_slabs_subflow(
         atoms,
@@ -228,12 +227,11 @@ def slab_to_ads_flow(
         List of dictionaries of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
-    relax_job_, static_job_ = customize_funcs(
-        ["relax_job", "static_job"],
-        [relax_job, static_job],
+    relax_job_, static_job_ = customize_jobs(
+        {"relax_job": relax_job, "static_job": static_job},
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     return slab_to_ads_subflow(
         slab,
