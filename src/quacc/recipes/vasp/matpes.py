@@ -117,7 +117,7 @@ def matpes_static_job(
     elif level.lower() == "r2scan":
         calc_defaults |= {"xc": "r2scan"}
     elif level.lower() == "hse06":
-        calc_defaults |= {"algo": "normal", "xc": "hse06"}
+        calc_defaults |= {"algo": "normal", "isif":2, "xc": "hse06"}
         calc_defaults.pop("isearch", None)
     else:
         raise ValueError(f"Unsupported value for {level}")
@@ -212,12 +212,11 @@ def fastpes_static_job(
     return matpes_static_job(
         atoms,
         level="PBE" if hf_exchange == 0.0 else "HSE06",
-        kspacing=0.40,
+        aexx=hf_exchange,
         use_improvements=True,
         encut=435,
-        isif=2,
+        kspacing=0.40,
         setups=_fastpes_paw,
-        aexx=hf_exchange,
         additional_fields={"name": f"FastPES {hf_exchange} Static"},
         **calc_kwargs,
     )
