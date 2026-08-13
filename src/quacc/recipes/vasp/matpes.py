@@ -180,14 +180,11 @@ def fastpes_static_job(
     atoms: Atoms,
     *,
     hf_exchange: float = 0.0,
-    use_improvements: bool = False,
-    write_extra_files: bool = False,
-    auto_ispin: bool = False,
     prev_dir: SourceDirectory | None = None,
     **calc_kwargs: Any,
 ) -> VaspSchema:
     """
-    Function to run a MatPES-compatible static calculation.
+    Function to run a FastPES-compatible static calculation.
 
     Parameters
     ----------
@@ -196,19 +193,6 @@ def fastpes_static_job(
     hf_exchange
         The fraction of Hartree-Fock exchange, from 0.0 (PBE) to 1.0.
         HSE06 is 0.25.
-    kspacing
-        The KSPACING parameter to use. Default: 0.22 as in the MatPES
-        paper. This is likely too expensive in many cases.
-    use_improvements
-        Whether to make the following improvements to the VASP settings:
-        ALGO = All, EFERMI = MIDGAP, GGA_COMPAT = False, ISEARCH = 1,
-        and ENAUG deleted.
-    write_extra_files
-        Whether to write out the following IO files: LELF = True and NEDOS = 3001.
-    auto_ispin
-        If generating input set from a previous calculation, this controls whether
-        to disable magnetisation (ISPIN = 1) if the absolute value of all magnetic
-        moments are less than 0.02.
     prev_dir
         A previous directory for a prior step in the workflow.
     **calc_kwargs
