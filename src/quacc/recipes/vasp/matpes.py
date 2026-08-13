@@ -215,7 +215,7 @@ def fastpes_static_job(
         use_improvements=True,
         encut=435,
         kspacing=0.40,
-        setups=_fastpes_paw,
+        setups={symbol: _fastpes_paw[symbol] for symbol in set(atoms.symbols)},
         prev_dir=prev_dir,
         **calc_kwargs,
     )
