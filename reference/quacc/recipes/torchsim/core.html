@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.54">
+      <meta name="generator" content="zensical-0.0.55">
     
     
       
@@ -6285,7 +6285,7 @@
   </span>
 
 <a href="#quacc.recipes.torchsim.core.has_torchsim" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_torchsim</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s1">&#39;torch_sim&#39;</span><span class="p">))</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_torchsim</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s1">'torch_sim'</span><span class="p">))</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6554,7 +6554,7 @@ molecular dynamics schema. See the type-hint for the data structure.</p>
 <span class="normal"><a href="#__codelineno-0-267">267</a></span>
 <span class="normal"><a href="#__codelineno-0-268">268</a></span>
 <span class="normal"><a href="#__codelineno-0-269">269</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a><span class="nd">@job</span>
-</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_torchsim</span><span class="p">,</span> <span class="s2">&quot;torch_sim is required for this function&quot;</span><span class="p">)</span>
+</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_torchsim</span><span class="p">,</span> <span class="s2">"torch_sim is required for this function"</span><span class="p">)</span>
 </span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a><span class="k">def</span><span class="w"> </span><span class="nf">md_job</span><span class="p">(</span>
 </span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span>
 </span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a>    <span class="n">model_type</span><span class="p">:</span> <span class="n">TSModelType</span><span class="p">,</span>
@@ -6569,7 +6569,7 @@ molecular dynamics schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-179"><a id="__codelineno-0-179" name="__codelineno-0-179"></a>    <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-180"><a id="__codelineno-0-180" name="__codelineno-0-180"></a>    <span class="o">**</span><span class="n">integrator_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 </span><span id="__span-0-181"><a id="__codelineno-0-181" name="__codelineno-0-181"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TorchSimIntegrateSchema</span><span class="p">:</span>
-</span><span id="__span-0-182"><a id="__codelineno-0-182" name="__codelineno-0-182"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-182"><a id="__codelineno-0-182" name="__codelineno-0-182"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="__span-0-183"><a id="__codelineno-0-183" name="__codelineno-0-183"></a><span class="sd">    Carry out a molecular dynamics calculation on a set of atoms.</span>
 </span><span id="__span-0-184"><a id="__codelineno-0-184" name="__codelineno-0-184"></a>
 </span><span id="__span-0-185"><a id="__codelineno-0-185" name="__codelineno-0-185"></a><span class="sd">    Parameters</span>
@@ -6596,7 +6596,7 @@ molecular dynamics schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-206"><a id="__codelineno-0-206" name="__codelineno-0-206"></a><span class="sd">    autobatcher_dict : AutobatcherDict | bool</span>
 </span><span id="__span-0-207"><a id="__codelineno-0-207" name="__codelineno-0-207"></a><span class="sd">        This dictionary defines the autobatcher behavior. This is a quacc-specific</span>
 </span><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a><span class="sd">        dictionary that allows for the configuration of the autobatcher. For a list of</span>
-</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">        available keys, refer to the TorchSim Autobatcher&#39;s documentation or the</span>
+</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="sd">        available keys, refer to the TorchSim Autobatcher's documentation or the</span>
 </span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="sd">        AutobatcherDict type-hint.</span>
 </span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">    model_kwargs : dict[str, Any] | None</span>
 </span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">        Keyword arguments passed to the model.</span>
@@ -6608,7 +6608,7 @@ molecular dynamics schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a><span class="sd">    TorchSimIntegrateSchema</span>
 </span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a><span class="sd">        A dictionary representing the final atoms configuration and metadata for the</span>
 </span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="sd">        molecular dynamics schema. See the type-hint for the data structure.</span>
-</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="sd">    """</span>
 </span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a>    <span class="n">runner</span> <span class="o">=</span> <span class="n">BaseRunner</span><span class="p">()</span>
 </span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a>    <span class="n">runner</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 </span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a>
@@ -6642,20 +6642,20 @@ molecular dynamics schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-252"><a id="__codelineno-0-252" name="__codelineno-0-252"></a>    <span class="n">runner</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
 </span><span id="__span-0-253"><a id="__codelineno-0-253" name="__codelineno-0-253"></a>
 </span><span id="__span-0-254"><a id="__codelineno-0-254" name="__codelineno-0-254"></a>    <span class="k">return</span> <span class="p">{</span>
-</span><span id="__span-0-255"><a id="__codelineno-0-255" name="__codelineno-0-255"></a>        <span class="s2">&quot;atoms&quot;</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">to_atoms</span><span class="p">(),</span>
-</span><span id="__span-0-256"><a id="__codelineno-0-256" name="__codelineno-0-256"></a>        <span class="s2">&quot;dir_name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">runner</span><span class="o">.</span><span class="n">job_results_dir</span><span class="p">),</span>
-</span><span id="__span-0-257"><a id="__codelineno-0-257" name="__codelineno-0-257"></a>        <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">calculation_output</span><span class="p">,</span>
-</span><span id="__span-0-258"><a id="__codelineno-0-258" name="__codelineno-0-258"></a>        <span class="s2">&quot;model_type&quot;</span><span class="p">:</span> <span class="n">model_type</span><span class="p">,</span>
-</span><span id="__span-0-259"><a id="__codelineno-0-259" name="__codelineno-0-259"></a>        <span class="s2">&quot;model_path&quot;</span><span class="p">:</span> <span class="n">model_path</span><span class="p">,</span>
-</span><span id="__span-0-260"><a id="__codelineno-0-260" name="__codelineno-0-260"></a>        <span class="s2">&quot;integrator&quot;</span><span class="p">:</span> <span class="n">integrator</span><span class="p">,</span>
-</span><span id="__span-0-261"><a id="__codelineno-0-261" name="__codelineno-0-261"></a>        <span class="s2">&quot;n_steps&quot;</span><span class="p">:</span> <span class="n">n_steps</span><span class="p">,</span>
-</span><span id="__span-0-262"><a id="__codelineno-0-262" name="__codelineno-0-262"></a>        <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
-</span><span id="__span-0-263"><a id="__codelineno-0-263" name="__codelineno-0-263"></a>        <span class="s2">&quot;timestep&quot;</span><span class="p">:</span> <span class="n">timestep</span><span class="p">,</span>
-</span><span id="__span-0-264"><a id="__codelineno-0-264" name="__codelineno-0-264"></a>        <span class="s2">&quot;trajectory_reporter&quot;</span><span class="p">:</span> <span class="n">trajectory_reporter_details</span><span class="p">,</span>
-</span><span id="__span-0-265"><a id="__codelineno-0-265" name="__codelineno-0-265"></a>        <span class="s2">&quot;autobatcher&quot;</span><span class="p">:</span> <span class="n">autobatcher_details</span><span class="p">,</span>
-</span><span id="__span-0-266"><a id="__codelineno-0-266" name="__codelineno-0-266"></a>        <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="n">model_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-267"><a id="__codelineno-0-267" name="__codelineno-0-267"></a>        <span class="s2">&quot;integrator_kwargs&quot;</span><span class="p">:</span> <span class="n">integrator_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-268"><a id="__codelineno-0-268" name="__codelineno-0-268"></a>        <span class="s2">&quot;quacc_version&quot;</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
+</span><span id="__span-0-255"><a id="__codelineno-0-255" name="__codelineno-0-255"></a>        <span class="s2">"atoms"</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">to_atoms</span><span class="p">(),</span>
+</span><span id="__span-0-256"><a id="__codelineno-0-256" name="__codelineno-0-256"></a>        <span class="s2">"dir_name"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">runner</span><span class="o">.</span><span class="n">job_results_dir</span><span class="p">),</span>
+</span><span id="__span-0-257"><a id="__codelineno-0-257" name="__codelineno-0-257"></a>        <span class="s2">"output"</span><span class="p">:</span> <span class="n">calculation_output</span><span class="p">,</span>
+</span><span id="__span-0-258"><a id="__codelineno-0-258" name="__codelineno-0-258"></a>        <span class="s2">"model_type"</span><span class="p">:</span> <span class="n">model_type</span><span class="p">,</span>
+</span><span id="__span-0-259"><a id="__codelineno-0-259" name="__codelineno-0-259"></a>        <span class="s2">"model_path"</span><span class="p">:</span> <span class="n">model_path</span><span class="p">,</span>
+</span><span id="__span-0-260"><a id="__codelineno-0-260" name="__codelineno-0-260"></a>        <span class="s2">"integrator"</span><span class="p">:</span> <span class="n">integrator</span><span class="p">,</span>
+</span><span id="__span-0-261"><a id="__codelineno-0-261" name="__codelineno-0-261"></a>        <span class="s2">"n_steps"</span><span class="p">:</span> <span class="n">n_steps</span><span class="p">,</span>
+</span><span id="__span-0-262"><a id="__codelineno-0-262" name="__codelineno-0-262"></a>        <span class="s2">"temperature"</span><span class="p">:</span> <span class="n">temperature</span><span class="p">,</span>
+</span><span id="__span-0-263"><a id="__codelineno-0-263" name="__codelineno-0-263"></a>        <span class="s2">"timestep"</span><span class="p">:</span> <span class="n">timestep</span><span class="p">,</span>
+</span><span id="__span-0-264"><a id="__codelineno-0-264" name="__codelineno-0-264"></a>        <span class="s2">"trajectory_reporter"</span><span class="p">:</span> <span class="n">trajectory_reporter_details</span><span class="p">,</span>
+</span><span id="__span-0-265"><a id="__codelineno-0-265" name="__codelineno-0-265"></a>        <span class="s2">"autobatcher"</span><span class="p">:</span> <span class="n">autobatcher_details</span><span class="p">,</span>
+</span><span id="__span-0-266"><a id="__codelineno-0-266" name="__codelineno-0-266"></a>        <span class="s2">"model_kwargs"</span><span class="p">:</span> <span class="n">model_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-267"><a id="__codelineno-0-267" name="__codelineno-0-267"></a>        <span class="s2">"integrator_kwargs"</span><span class="p">:</span> <span class="n">integrator_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-268"><a id="__codelineno-0-268" name="__codelineno-0-268"></a>        <span class="s2">"quacc_version"</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
 </span><span id="__span-0-269"><a id="__codelineno-0-269" name="__codelineno-0-269"></a>    <span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
@@ -6677,7 +6677,7 @@ molecular dynamics schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">model_path</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">,</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">optimizer</span><span class="p">:</span> <span class="n"><span title="torch_sim.optimizers.Optimizer">Optimizer</span></span><span class="p">,</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="o">*</span><span class="p">,</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">convergence_fn</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;force&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;force&quot;</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">convergence_fn</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Literal" href="https://docs.python.org/3/library/typing.html#typing.Literal">Literal</a></span><span class="p">[</span><span class="s2">"energy"</span><span class="p">,</span> <span class="s2">"force"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"force"</span><span class="p">,</span>
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">trajectory_reporter_dict</span><span class="p">:</span> <span class="p">(</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;TrajectoryReporterDict&lt;/span&gt;" href="_base.html#quacc.recipes.torchsim._base.TrajectoryReporterDict">TrajectoryReporterDict</a></span> <span class="o">|</span> <span class="kc">None</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>    <span class="p">)</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -6968,14 +6968,14 @@ optimization schema. See the type-hint for the data structure.</p>
 <span class="normal"><a href="#__codelineno-0-161">161</a></span>
 <span class="normal"><a href="#__codelineno-0-162">162</a></span>
 <span class="normal"><a href="#__codelineno-0-163">163</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="nd">@job</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_torchsim</span><span class="p">,</span> <span class="s2">&quot;torch_sim is required for this function&quot;</span><span class="p">)</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_torchsim</span><span class="p">,</span> <span class="s2">"torch_sim is required for this function"</span><span class="p">)</span>
 </span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="k">def</span><span class="w"> </span><span class="nf">relax_job</span><span class="p">(</span>
 </span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span>
 </span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a>    <span class="n">model_type</span><span class="p">:</span> <span class="n">TSModelType</span><span class="p">,</span>
 </span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a>    <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
 </span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a>    <span class="n">optimizer</span><span class="p">:</span> <span class="n">Optimizer</span><span class="p">,</span>
 </span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a>    <span class="o">*</span><span class="p">,</span>
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>    <span class="n">convergence_fn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;force&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;force&quot;</span><span class="p">,</span>
+</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>    <span class="n">convergence_fn</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"energy"</span><span class="p">,</span> <span class="s2">"force"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"force"</span><span class="p">,</span>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a>    <span class="n">trajectory_reporter_dict</span><span class="p">:</span> <span class="n">TrajectoryReporterDict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a>    <span class="n">autobatcher_dict</span><span class="p">:</span> <span class="n">AutobatcherDict</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="n">max_steps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10_000</span><span class="p">,</span>
@@ -6985,7 +6985,7 @@ optimization schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>    <span class="n">convergence_fn_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="o">**</span><span class="n">optimizer_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 </span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TorchSimOptSchema</span><span class="p">:</span>
-</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="sd">    Carry out a geometry optimization on a set of atoms.</span>
 </span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a>
 </span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="sd">    Parameters</span>
@@ -6998,8 +6998,8 @@ optimization schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">        The path to the model file or checkpoint.</span>
 </span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">    optimizer : Optimizer</span>
 </span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">        The TorchSim optimizer to use.</span>
-</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">    convergence_fn : Literal[&quot;energy&quot;, &quot;force&quot;]</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">        The convergence function, either &quot;energy&quot; or &quot;force&quot;. This will use either the</span>
+</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">    convergence_fn : Literal["energy", "force"]</span>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">        The convergence function, either "energy" or "force". This will use either the</span>
 </span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="sd">        ts.generate_energy_convergence_fn or ts.generate_force_convergence_fn function</span>
 </span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">        to interally generate the convergence function. Arguments can be supplied via</span>
 </span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">        the convergence_fn_kwargs argument. Used to select convergence function</span>
@@ -7012,7 +7012,7 @@ optimization schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a><span class="sd">    autobatcher_dict : AutobatcherDict | bool</span>
 </span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="sd">        This dictionary defines the autobatcher behavior. This is a quacc-specific</span>
 </span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="sd">        dictionary that allows for the configuration of the autobatcher. For a list of</span>
-</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">        available keys, refer to the TorchSim Autobatcher&#39;s documentation or the</span>
+</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">        available keys, refer to the TorchSim Autobatcher's documentation or the</span>
 </span><span id="__span-0-90"><a id="__codelineno-0-90" name="__codelineno-0-90"></a><span class="sd">        AutobatcherDict type-hint.</span>
 </span><span id="__span-0-91"><a id="__codelineno-0-91" name="__codelineno-0-91"></a><span class="sd">    max_steps : int</span>
 </span><span id="__span-0-92"><a id="__codelineno-0-92" name="__codelineno-0-92"></a><span class="sd">        The maximum number of steps to run for each optimization.</span>
@@ -7032,7 +7032,7 @@ optimization schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-106"><a id="__codelineno-0-106" name="__codelineno-0-106"></a><span class="sd">    TorchSimOptSchema</span>
 </span><span id="__span-0-107"><a id="__codelineno-0-107" name="__codelineno-0-107"></a><span class="sd">        A dictionary representing the final atoms configuration and metadata geometry</span>
 </span><span id="__span-0-108"><a id="__codelineno-0-108" name="__codelineno-0-108"></a><span class="sd">        optimization schema. See the type-hint for the data structure.</span>
-</span><span id="__span-0-109"><a id="__codelineno-0-109" name="__codelineno-0-109"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-109"><a id="__codelineno-0-109" name="__codelineno-0-109"></a><span class="sd">    """</span>
 </span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a>    <span class="n">runner</span> <span class="o">=</span> <span class="n">BaseRunner</span><span class="p">()</span>
 </span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a>    <span class="n">runner</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 </span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a>
@@ -7070,22 +7070,22 @@ optimization schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-144"><a id="__codelineno-0-144" name="__codelineno-0-144"></a>    <span class="n">runner</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
 </span><span id="__span-0-145"><a id="__codelineno-0-145" name="__codelineno-0-145"></a>
 </span><span id="__span-0-146"><a id="__codelineno-0-146" name="__codelineno-0-146"></a>    <span class="k">return</span> <span class="p">{</span>
-</span><span id="__span-0-147"><a id="__codelineno-0-147" name="__codelineno-0-147"></a>        <span class="s2">&quot;atoms&quot;</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">to_atoms</span><span class="p">(),</span>
-</span><span id="__span-0-148"><a id="__codelineno-0-148" name="__codelineno-0-148"></a>        <span class="s2">&quot;dir_name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">runner</span><span class="o">.</span><span class="n">job_results_dir</span><span class="p">),</span>
-</span><span id="__span-0-149"><a id="__codelineno-0-149" name="__codelineno-0-149"></a>        <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">calculation_output</span><span class="p">,</span>
-</span><span id="__span-0-150"><a id="__codelineno-0-150" name="__codelineno-0-150"></a>        <span class="s2">&quot;model_type&quot;</span><span class="p">:</span> <span class="n">model_type</span><span class="p">,</span>
-</span><span id="__span-0-151"><a id="__codelineno-0-151" name="__codelineno-0-151"></a>        <span class="s2">&quot;model_path&quot;</span><span class="p">:</span> <span class="n">model_path</span><span class="p">,</span>
-</span><span id="__span-0-152"><a id="__codelineno-0-152" name="__codelineno-0-152"></a>        <span class="s2">&quot;optimizer&quot;</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">,</span>
-</span><span id="__span-0-153"><a id="__codelineno-0-153" name="__codelineno-0-153"></a>        <span class="s2">&quot;convergence_fn&quot;</span><span class="p">:</span> <span class="n">convergence_fn</span><span class="p">,</span>
-</span><span id="__span-0-154"><a id="__codelineno-0-154" name="__codelineno-0-154"></a>        <span class="s2">&quot;trajectory_reporter&quot;</span><span class="p">:</span> <span class="n">trajectory_reporter_details</span><span class="p">,</span>
-</span><span id="__span-0-155"><a id="__codelineno-0-155" name="__codelineno-0-155"></a>        <span class="s2">&quot;autobatcher&quot;</span><span class="p">:</span> <span class="n">autobatcher_details</span><span class="p">,</span>
-</span><span id="__span-0-156"><a id="__codelineno-0-156" name="__codelineno-0-156"></a>        <span class="s2">&quot;max_steps&quot;</span><span class="p">:</span> <span class="n">max_steps</span><span class="p">,</span>
-</span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a>        <span class="s2">&quot;steps_between_swaps&quot;</span><span class="p">:</span> <span class="n">steps_between_swaps</span><span class="p">,</span>
-</span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a>        <span class="s2">&quot;init_kwargs&quot;</span><span class="p">:</span> <span class="n">init_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a>        <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="n">model_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="s2">&quot;convergence_fn_kwargs&quot;</span><span class="p">:</span> <span class="n">convergence_fn_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a>        <span class="s2">&quot;optimizer_kwargs&quot;</span><span class="p">:</span> <span class="n">optimizer_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a>        <span class="s2">&quot;quacc_version&quot;</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
+</span><span id="__span-0-147"><a id="__codelineno-0-147" name="__codelineno-0-147"></a>        <span class="s2">"atoms"</span><span class="p">:</span> <span class="n">state</span><span class="o">.</span><span class="n">to_atoms</span><span class="p">(),</span>
+</span><span id="__span-0-148"><a id="__codelineno-0-148" name="__codelineno-0-148"></a>        <span class="s2">"dir_name"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">runner</span><span class="o">.</span><span class="n">job_results_dir</span><span class="p">),</span>
+</span><span id="__span-0-149"><a id="__codelineno-0-149" name="__codelineno-0-149"></a>        <span class="s2">"output"</span><span class="p">:</span> <span class="n">calculation_output</span><span class="p">,</span>
+</span><span id="__span-0-150"><a id="__codelineno-0-150" name="__codelineno-0-150"></a>        <span class="s2">"model_type"</span><span class="p">:</span> <span class="n">model_type</span><span class="p">,</span>
+</span><span id="__span-0-151"><a id="__codelineno-0-151" name="__codelineno-0-151"></a>        <span class="s2">"model_path"</span><span class="p">:</span> <span class="n">model_path</span><span class="p">,</span>
+</span><span id="__span-0-152"><a id="__codelineno-0-152" name="__codelineno-0-152"></a>        <span class="s2">"optimizer"</span><span class="p">:</span> <span class="n">optimizer</span><span class="p">,</span>
+</span><span id="__span-0-153"><a id="__codelineno-0-153" name="__codelineno-0-153"></a>        <span class="s2">"convergence_fn"</span><span class="p">:</span> <span class="n">convergence_fn</span><span class="p">,</span>
+</span><span id="__span-0-154"><a id="__codelineno-0-154" name="__codelineno-0-154"></a>        <span class="s2">"trajectory_reporter"</span><span class="p">:</span> <span class="n">trajectory_reporter_details</span><span class="p">,</span>
+</span><span id="__span-0-155"><a id="__codelineno-0-155" name="__codelineno-0-155"></a>        <span class="s2">"autobatcher"</span><span class="p">:</span> <span class="n">autobatcher_details</span><span class="p">,</span>
+</span><span id="__span-0-156"><a id="__codelineno-0-156" name="__codelineno-0-156"></a>        <span class="s2">"max_steps"</span><span class="p">:</span> <span class="n">max_steps</span><span class="p">,</span>
+</span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a>        <span class="s2">"steps_between_swaps"</span><span class="p">:</span> <span class="n">steps_between_swaps</span><span class="p">,</span>
+</span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a>        <span class="s2">"init_kwargs"</span><span class="p">:</span> <span class="n">init_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a>        <span class="s2">"model_kwargs"</span><span class="p">:</span> <span class="n">model_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="s2">"convergence_fn_kwargs"</span><span class="p">:</span> <span class="n">convergence_fn_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a>        <span class="s2">"optimizer_kwargs"</span><span class="p">:</span> <span class="n">optimizer_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a>        <span class="s2">"quacc_version"</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
 </span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>    <span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
@@ -7282,7 +7282,7 @@ static calculation schema. See the type-hint for the data structure.</p>
 <span class="normal"><a href="#__codelineno-0-352">352</a></span>
 <span class="normal"><a href="#__codelineno-0-353">353</a></span>
 <span class="normal"><a href="#__codelineno-0-354">354</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-272"><a id="__codelineno-0-272" name="__codelineno-0-272"></a><span class="nd">@job</span>
-</span><span id="__span-0-273"><a id="__codelineno-0-273" name="__codelineno-0-273"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_torchsim</span><span class="p">,</span> <span class="s2">&quot;torch_sim is required for this function&quot;</span><span class="p">)</span>
+</span><span id="__span-0-273"><a id="__codelineno-0-273" name="__codelineno-0-273"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_torchsim</span><span class="p">,</span> <span class="s2">"torch_sim is required for this function"</span><span class="p">)</span>
 </span><span id="__span-0-274"><a id="__codelineno-0-274" name="__codelineno-0-274"></a><span class="k">def</span><span class="w"> </span><span class="nf">static_job</span><span class="p">(</span>
 </span><span id="__span-0-275"><a id="__codelineno-0-275" name="__codelineno-0-275"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">],</span>
 </span><span id="__span-0-276"><a id="__codelineno-0-276" name="__codelineno-0-276"></a>    <span class="n">model_type</span><span class="p">:</span> <span class="n">TSModelType</span><span class="p">,</span>
@@ -7292,7 +7292,7 @@ static calculation schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-280"><a id="__codelineno-0-280" name="__codelineno-0-280"></a>    <span class="n">autobatcher_dict</span><span class="p">:</span> <span class="n">AutobatcherDict</span> <span class="o">|</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 </span><span id="__span-0-281"><a id="__codelineno-0-281" name="__codelineno-0-281"></a>    <span class="n">model_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-282"><a id="__codelineno-0-282" name="__codelineno-0-282"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TorchSimStaticSchema</span><span class="p">:</span>
-</span><span id="__span-0-283"><a id="__codelineno-0-283" name="__codelineno-0-283"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-283"><a id="__codelineno-0-283" name="__codelineno-0-283"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="__span-0-284"><a id="__codelineno-0-284" name="__codelineno-0-284"></a><span class="sd">    Carry out a static calculation on a set of atoms.</span>
 </span><span id="__span-0-285"><a id="__codelineno-0-285" name="__codelineno-0-285"></a>
 </span><span id="__span-0-286"><a id="__codelineno-0-286" name="__codelineno-0-286"></a><span class="sd">    Parameters</span>
@@ -7311,7 +7311,7 @@ static calculation schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-299"><a id="__codelineno-0-299" name="__codelineno-0-299"></a><span class="sd">    autobatcher_dict : AutobatcherDict | bool</span>
 </span><span id="__span-0-300"><a id="__codelineno-0-300" name="__codelineno-0-300"></a><span class="sd">        This dictionary defines the autobatcher behavior. This is a quacc-specific</span>
 </span><span id="__span-0-301"><a id="__codelineno-0-301" name="__codelineno-0-301"></a><span class="sd">        dictionary that allows for the configuration of the autobatcher. For a list of</span>
-</span><span id="__span-0-302"><a id="__codelineno-0-302" name="__codelineno-0-302"></a><span class="sd">        available keys, refer to the TorchSim Autobatcher&#39;s documentation or the</span>
+</span><span id="__span-0-302"><a id="__codelineno-0-302" name="__codelineno-0-302"></a><span class="sd">        available keys, refer to the TorchSim Autobatcher's documentation or the</span>
 </span><span id="__span-0-303"><a id="__codelineno-0-303" name="__codelineno-0-303"></a><span class="sd">        AutobatcherDict type-hint.</span>
 </span><span id="__span-0-304"><a id="__codelineno-0-304" name="__codelineno-0-304"></a><span class="sd">    model_kwargs : dict[str, Any] | None</span>
 </span><span id="__span-0-305"><a id="__codelineno-0-305" name="__codelineno-0-305"></a><span class="sd">        Keyword arguments passed to the model.</span>
@@ -7321,7 +7321,7 @@ static calculation schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-309"><a id="__codelineno-0-309" name="__codelineno-0-309"></a><span class="sd">    TorchSimStaticSchema</span>
 </span><span id="__span-0-310"><a id="__codelineno-0-310" name="__codelineno-0-310"></a><span class="sd">        A dictionary representing the final atoms configuration and metadata for the</span>
 </span><span id="__span-0-311"><a id="__codelineno-0-311" name="__codelineno-0-311"></a><span class="sd">        static calculation schema. See the type-hint for the data structure.</span>
-</span><span id="__span-0-312"><a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-312"><a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="sd">    """</span>
 </span><span id="__span-0-313"><a id="__codelineno-0-313" name="__codelineno-0-313"></a>    <span class="n">runner</span> <span class="o">=</span> <span class="n">BaseRunner</span><span class="p">()</span>
 </span><span id="__span-0-314"><a id="__codelineno-0-314" name="__codelineno-0-314"></a>    <span class="n">runner</span><span class="o">.</span><span class="n">setup</span><span class="p">()</span>
 </span><span id="__span-0-315"><a id="__codelineno-0-315" name="__codelineno-0-315"></a>
@@ -7353,16 +7353,16 @@ static calculation schema. See the type-hint for the data structure.</p>
 </span><span id="__span-0-341"><a id="__codelineno-0-341" name="__codelineno-0-341"></a>    <span class="n">runner</span><span class="o">.</span><span class="n">cleanup</span><span class="p">()</span>
 </span><span id="__span-0-342"><a id="__codelineno-0-342" name="__codelineno-0-342"></a>
 </span><span id="__span-0-343"><a id="__codelineno-0-343" name="__codelineno-0-343"></a>    <span class="k">return</span> <span class="p">{</span>
-</span><span id="__span-0-344"><a id="__codelineno-0-344" name="__codelineno-0-344"></a>        <span class="s2">&quot;atoms&quot;</span><span class="p">:</span> <span class="n">atoms</span><span class="p">,</span>
-</span><span id="__span-0-345"><a id="__codelineno-0-345" name="__codelineno-0-345"></a>        <span class="s2">&quot;dir_name&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">runner</span><span class="o">.</span><span class="n">job_results_dir</span><span class="p">),</span>
-</span><span id="__span-0-346"><a id="__codelineno-0-346" name="__codelineno-0-346"></a>        <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">calculation_output</span><span class="p">,</span>
-</span><span id="__span-0-347"><a id="__codelineno-0-347" name="__codelineno-0-347"></a>        <span class="s2">&quot;all_properties&quot;</span><span class="p">:</span> <span class="n">all_properties_lists</span><span class="p">,</span>
-</span><span id="__span-0-348"><a id="__codelineno-0-348" name="__codelineno-0-348"></a>        <span class="s2">&quot;model_type&quot;</span><span class="p">:</span> <span class="n">model_type</span><span class="p">,</span>
-</span><span id="__span-0-349"><a id="__codelineno-0-349" name="__codelineno-0-349"></a>        <span class="s2">&quot;model_path&quot;</span><span class="p">:</span> <span class="n">model_path</span><span class="p">,</span>
-</span><span id="__span-0-350"><a id="__codelineno-0-350" name="__codelineno-0-350"></a>        <span class="s2">&quot;trajectory_reporter&quot;</span><span class="p">:</span> <span class="n">trajectory_reporter_details</span><span class="p">,</span>
-</span><span id="__span-0-351"><a id="__codelineno-0-351" name="__codelineno-0-351"></a>        <span class="s2">&quot;autobatcher&quot;</span><span class="p">:</span> <span class="n">autobatcher_details</span><span class="p">,</span>
-</span><span id="__span-0-352"><a id="__codelineno-0-352" name="__codelineno-0-352"></a>        <span class="s2">&quot;model_kwargs&quot;</span><span class="p">:</span> <span class="n">model_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-353"><a id="__codelineno-0-353" name="__codelineno-0-353"></a>        <span class="s2">&quot;quacc_version&quot;</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
+</span><span id="__span-0-344"><a id="__codelineno-0-344" name="__codelineno-0-344"></a>        <span class="s2">"atoms"</span><span class="p">:</span> <span class="n">atoms</span><span class="p">,</span>
+</span><span id="__span-0-345"><a id="__codelineno-0-345" name="__codelineno-0-345"></a>        <span class="s2">"dir_name"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">runner</span><span class="o">.</span><span class="n">job_results_dir</span><span class="p">),</span>
+</span><span id="__span-0-346"><a id="__codelineno-0-346" name="__codelineno-0-346"></a>        <span class="s2">"output"</span><span class="p">:</span> <span class="n">calculation_output</span><span class="p">,</span>
+</span><span id="__span-0-347"><a id="__codelineno-0-347" name="__codelineno-0-347"></a>        <span class="s2">"all_properties"</span><span class="p">:</span> <span class="n">all_properties_lists</span><span class="p">,</span>
+</span><span id="__span-0-348"><a id="__codelineno-0-348" name="__codelineno-0-348"></a>        <span class="s2">"model_type"</span><span class="p">:</span> <span class="n">model_type</span><span class="p">,</span>
+</span><span id="__span-0-349"><a id="__codelineno-0-349" name="__codelineno-0-349"></a>        <span class="s2">"model_path"</span><span class="p">:</span> <span class="n">model_path</span><span class="p">,</span>
+</span><span id="__span-0-350"><a id="__codelineno-0-350" name="__codelineno-0-350"></a>        <span class="s2">"trajectory_reporter"</span><span class="p">:</span> <span class="n">trajectory_reporter_details</span><span class="p">,</span>
+</span><span id="__span-0-351"><a id="__codelineno-0-351" name="__codelineno-0-351"></a>        <span class="s2">"autobatcher"</span><span class="p">:</span> <span class="n">autobatcher_details</span><span class="p">,</span>
+</span><span id="__span-0-352"><a id="__codelineno-0-352" name="__codelineno-0-352"></a>        <span class="s2">"model_kwargs"</span><span class="p">:</span> <span class="n">model_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-353"><a id="__codelineno-0-353" name="__codelineno-0-353"></a>        <span class="s2">"quacc_version"</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
 </span><span id="__span-0-354"><a id="__codelineno-0-354" name="__codelineno-0-354"></a>    <span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
             </details>

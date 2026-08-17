@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.54">
+      <meta name="generator" content="zensical-0.0.55">
     
     
       
@@ -6625,8 +6625,8 @@
 
 <a href="#quacc.schemas.torchsim.CONVERGENCE_FN_REGISTRY" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">CONVERGENCE_FN_REGISTRY</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="collections.abc.Callable" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="s2">&quot;energy&quot;</span><span class="p">:</span> <span class="n"><span title="torch_sim">ts</span></span><span class="o">.</span><span class="n"><span title="torch_sim.generate_energy_convergence_fn">generate_energy_convergence_fn</span></span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s2">&quot;force&quot;</span><span class="p">:</span> <span class="n"><span title="torch_sim">ts</span></span><span class="o">.</span><span class="n"><span title="torch_sim.generate_force_convergence_fn">generate_force_convergence_fn</span></span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="s2">"energy"</span><span class="p">:</span> <span class="n"><span title="torch_sim">ts</span></span><span class="o">.</span><span class="n"><span title="torch_sim.generate_energy_convergence_fn">generate_energy_convergence_fn</span></span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s2">"force"</span><span class="p">:</span> <span class="n"><span title="torch_sim">ts</span></span><span class="o">.</span><span class="n"><span title="torch_sim.generate_force_convergence_fn">generate_force_convergence_fn</span></span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">}</span>
 </span></code></pre></div>
 
@@ -6650,14 +6650,14 @@
 
 <a href="#quacc.schemas.torchsim.PROPERTY_FN_REGISTRY" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">PROPERTY_FN_REGISTRY</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="collections.abc.Callable" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="s2">&quot;potential_energy&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.energy">energy</span></span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s2">&quot;forces&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.forces">forces</span></span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="s2">&quot;stress&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.stress">stress</span></span><span class="p">,</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="s2">&quot;kinetic_energy&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="torch_sim">ts</span></span><span class="o">.</span><span class="n"><span title="torch_sim.calc_kinetic_energy">calc_kinetic_energy</span></span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="s2">"potential_energy"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.energy">energy</span></span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s2">"forces"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.forces">forces</span></span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="s2">"stress"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.stress">stress</span></span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="s2">"kinetic_energy"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="torch_sim">ts</span></span><span class="o">.</span><span class="n"><span title="torch_sim.calc_kinetic_energy">calc_kinetic_energy</span></span><span class="p">(</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        <span class="n"><span title="torch_sim.calc_kinetic_energy(velocities)">velocities</span></span><span class="o">=</span><span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.velocities">velocities</span></span><span class="p">,</span> <span class="n"><span title="torch_sim.calc_kinetic_energy(masses)">masses</span></span><span class="o">=</span><span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.masses">masses</span></span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="p">),</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="s2">&quot;temperature&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.calc_temperature">calc_temperature</span></span><span class="p">(),</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="s2">&quot;max_force&quot;</span><span class="p">:</span> <span class="n"><span title="torch_sim">ts</span></span><span class="o">.</span><span class="n"><span title="torch_sim.system_wise_max_force">system_wise_max_force</span></span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="s2">"temperature"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.calc_temperature">calc_temperature</span></span><span class="p">(),</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>    <span class="s2">"max_force"</span><span class="p">:</span> <span class="n"><span title="torch_sim">ts</span></span><span class="o">.</span><span class="n"><span title="torch_sim.system_wise_max_force">system_wise_max_force</span></span><span class="p">,</span>
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">}</span>
 </span></code></pre></div>
 
@@ -6723,7 +6723,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.PropertyFn.ENERGY" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ENERGY</span> <span class="o">=</span> <span class="s1">&#39;energy&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ENERGY</span> <span class="o">=</span> <span class="s1">'energy'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6746,7 +6746,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.PropertyFn.FORCES" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">FORCES</span> <span class="o">=</span> <span class="s1">&#39;forces&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">FORCES</span> <span class="o">=</span> <span class="s1">'forces'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6769,7 +6769,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.PropertyFn.KINETIC_ENERGY" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">KINETIC_ENERGY</span> <span class="o">=</span> <span class="s1">&#39;kinetic_energy&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">KINETIC_ENERGY</span> <span class="o">=</span> <span class="s1">'kinetic_energy'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6792,7 +6792,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.PropertyFn.MAX_FORCE" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">MAX_FORCE</span> <span class="o">=</span> <span class="s1">&#39;max_force&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">MAX_FORCE</span> <span class="o">=</span> <span class="s1">'max_force'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6815,7 +6815,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.PropertyFn.STRESS" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">STRESS</span> <span class="o">=</span> <span class="s1">&#39;stress&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">STRESS</span> <span class="o">=</span> <span class="s1">'stress'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6838,7 +6838,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.PropertyFn.TEMPERATURE" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">TEMPERATURE</span> <span class="o">=</span> <span class="s1">&#39;temperature&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">TEMPERATURE</span> <span class="o">=</span> <span class="s1">'temperature'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6909,7 +6909,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.TSModelType.FAIRCHEM" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">FAIRCHEM</span> <span class="o">=</span> <span class="s1">&#39;FairChemModel&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">FAIRCHEM</span> <span class="o">=</span> <span class="s1">'FairChemModel'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6932,7 +6932,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.TSModelType.FAIRCHEMV1" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">FAIRCHEMV1</span> <span class="o">=</span> <span class="s1">&#39;FairChemV1Model&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">FAIRCHEMV1</span> <span class="o">=</span> <span class="s1">'FairChemV1Model'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6955,7 +6955,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.TSModelType.GRAPHPESWRAPPER" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">GRAPHPESWRAPPER</span> <span class="o">=</span> <span class="s1">&#39;GraphPESWrapper&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">GRAPHPESWRAPPER</span> <span class="o">=</span> <span class="s1">'GraphPESWrapper'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6978,7 +6978,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.TSModelType.LENNARD_JONES" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">LENNARD_JONES</span> <span class="o">=</span> <span class="s1">&#39;LennardJonesModel&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">LENNARD_JONES</span> <span class="o">=</span> <span class="s1">'LennardJonesModel'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7001,7 +7001,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.TSModelType.MACE" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">MACE</span> <span class="o">=</span> <span class="s1">&#39;MaceModel&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">MACE</span> <span class="o">=</span> <span class="s1">'MaceModel'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7024,7 +7024,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.TSModelType.MATTERSIM" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">MATTERSIM</span> <span class="o">=</span> <span class="s1">&#39;MatterSimModel&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">MATTERSIM</span> <span class="o">=</span> <span class="s1">'MatterSimModel'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7047,7 +7047,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.TSModelType.METATOMIC" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">METATOMIC</span> <span class="o">=</span> <span class="s1">&#39;MetatomicModel&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">METATOMIC</span> <span class="o">=</span> <span class="s1">'MetatomicModel'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7070,7 +7070,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.TSModelType.NEQUIPFRAMEWORK" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">NEQUIPFRAMEWORK</span> <span class="o">=</span> <span class="s1">&#39;NequIPFrameworkModel&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">NEQUIPFRAMEWORK</span> <span class="o">=</span> <span class="s1">'NequIPFrameworkModel'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7093,7 +7093,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.TSModelType.ORB" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ORB</span> <span class="o">=</span> <span class="s1">&#39;OrbModel&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ORB</span> <span class="o">=</span> <span class="s1">'OrbModel'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7116,7 +7116,7 @@ compatibility.</p>
   </span>
 
 <a href="#quacc.schemas.torchsim.TSModelType.SEVENNET" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">SEVENNET</span> <span class="o">=</span> <span class="s1">&#39;SevenNetModel&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">SEVENNET</span> <span class="o">=</span> <span class="s1">'SevenNetModel'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">

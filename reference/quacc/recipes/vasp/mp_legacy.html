@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.54">
+      <meta name="generator" content="zensical-0.0.55">
     
     
       
@@ -6385,7 +6385,7 @@
   </span>
 
 <a href="#quacc.recipes.vasp.mp_legacy.has_atomate2" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_atomate2</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s1">&#39;atomate2&#39;</span><span class="p">))</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_atomate2</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s1">'atomate2'</span><span class="p">))</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6667,25 +6667,25 @@ the keys are the names of the jobs and the values are decorators.</p>
 <span class="normal"><a href="#__codelineno-0-180">180</a></span>
 <span class="normal"><a href="#__codelineno-0-181">181</a></span>
 <span class="normal"><a href="#__codelineno-0-182">182</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-121"><a id="__codelineno-0-121" name="__codelineno-0-121"></a><span class="nd">@flow</span>
-</span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">&quot;atomate2 is not installed. Run `pip install quacc[mp]`&quot;</span><span class="p">)</span>
+</span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">"atomate2 is not installed. Run `pip install quacc[mp]`"</span><span class="p">)</span>
 </span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a><span class="k">def</span><span class="w"> </span><span class="nf">mp_gga_relax_flow</span><span class="p">(</span>
 </span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
 </span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a>    <span class="n">job_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a>    <span class="n">job_decorators</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MPGGARelaxFlowSchema</span><span class="p">:</span>
-</span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-128"><a id="__codelineno-0-128" name="__codelineno-0-128"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="__span-0-129"><a id="__codelineno-0-129" name="__codelineno-0-129"></a><span class="sd">    Materials Project GGA workflow consisting of:</span>
 </span><span id="__span-0-130"><a id="__codelineno-0-130" name="__codelineno-0-130"></a>
 </span><span id="__span-0-131"><a id="__codelineno-0-131" name="__codelineno-0-131"></a><span class="sd">    1. MP-compatible relax</span>
-</span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">        - name: &quot;mp_gga_relax_job&quot;</span>
+</span><span id="__span-0-132"><a id="__codelineno-0-132" name="__codelineno-0-132"></a><span class="sd">        - name: "mp_gga_relax_job"</span>
 </span><span id="__span-0-133"><a id="__codelineno-0-133" name="__codelineno-0-133"></a><span class="sd">        - job: [quacc.recipes.vasp.mp_legacy.mp_gga_relax_job][]</span>
 </span><span id="__span-0-134"><a id="__codelineno-0-134" name="__codelineno-0-134"></a>
 </span><span id="__span-0-135"><a id="__codelineno-0-135" name="__codelineno-0-135"></a><span class="sd">    2. MP-compatible (second) relax</span>
-</span><span id="__span-0-136"><a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="sd">        - name: &quot;mp_gga_relax_job&quot;</span>
+</span><span id="__span-0-136"><a id="__codelineno-0-136" name="__codelineno-0-136"></a><span class="sd">        - name: "mp_gga_relax_job"</span>
 </span><span id="__span-0-137"><a id="__codelineno-0-137" name="__codelineno-0-137"></a><span class="sd">        - job: [quacc.recipes.vasp.mp_legacy.mp_gga_relax_job][]</span>
 </span><span id="__span-0-138"><a id="__codelineno-0-138" name="__codelineno-0-138"></a>
 </span><span id="__span-0-139"><a id="__codelineno-0-139" name="__codelineno-0-139"></a><span class="sd">    3. MP-compatible static</span>
-</span><span id="__span-0-140"><a id="__codelineno-0-140" name="__codelineno-0-140"></a><span class="sd">        - name: &quot;mp_gga_static_job&quot;</span>
+</span><span id="__span-0-140"><a id="__codelineno-0-140" name="__codelineno-0-140"></a><span class="sd">        - name: "mp_gga_static_job"</span>
 </span><span id="__span-0-141"><a id="__codelineno-0-141" name="__codelineno-0-141"></a><span class="sd">        - job: [quacc.recipes.vasp.mp_legacy.mp_gga_static_job][]</span>
 </span><span id="__span-0-142"><a id="__codelineno-0-142" name="__codelineno-0-142"></a>
 </span><span id="__span-0-143"><a id="__codelineno-0-143" name="__codelineno-0-143"></a><span class="sd">    Parameters</span>
@@ -6703,9 +6703,9 @@ the keys are the names of the jobs and the values are decorators.</p>
 </span><span id="__span-0-155"><a id="__codelineno-0-155" name="__codelineno-0-155"></a><span class="sd">    -------</span>
 </span><span id="__span-0-156"><a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="sd">    MPGGARelaxFlowSchema</span>
 </span><span id="__span-0-157"><a id="__codelineno-0-157" name="__codelineno-0-157"></a><span class="sd">        Dictionary of results. See the type-hint for the data structure.</span>
-</span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-158"><a id="__codelineno-0-158" name="__codelineno-0-158"></a><span class="sd">    """</span>
 </span><span id="__span-0-159"><a id="__codelineno-0-159" name="__codelineno-0-159"></a>    <span class="p">(</span><span class="n">mp_gga_relax_job_</span><span class="p">,</span> <span class="n">mp_gga_static_job_</span><span class="p">)</span> <span class="o">=</span> <span class="n">customize_jobs</span><span class="p">(</span>
-</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="p">{</span><span class="s2">&quot;mp_gga_relax_job&quot;</span><span class="p">:</span> <span class="n">mp_gga_relax_job</span><span class="p">,</span> <span class="s2">&quot;mp_gga_static_job&quot;</span><span class="p">:</span> <span class="n">mp_gga_static_job</span><span class="p">},</span>
+</span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="p">{</span><span class="s2">"mp_gga_relax_job"</span><span class="p">:</span> <span class="n">mp_gga_relax_job</span><span class="p">,</span> <span class="s2">"mp_gga_static_job"</span><span class="p">:</span> <span class="n">mp_gga_static_job</span><span class="p">},</span>
 </span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a>        <span class="n">param_swaps</span><span class="o">=</span><span class="n">job_params</span><span class="p">,</span>
 </span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a>        <span class="n">decorators</span><span class="o">=</span><span class="n">job_decorators</span><span class="p">,</span>
 </span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>    <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
@@ -6715,18 +6715,18 @@ the keys are the names of the jobs and the values are decorators.</p>
 </span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a>
 </span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a>    <span class="c1"># Run the second relax</span>
 </span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a>    <span class="n">double_relax_results</span> <span class="o">=</span> <span class="n">mp_gga_relax_job_</span><span class="p">(</span>
-</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a>        <span class="n">relax_results</span><span class="p">[</span><span class="s2">&quot;atoms&quot;</span><span class="p">],</span> <span class="n">prev_dir</span><span class="o">=</span><span class="n">relax_results</span><span class="p">[</span><span class="s2">&quot;dir_name&quot;</span><span class="p">]</span>
+</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a>        <span class="n">relax_results</span><span class="p">[</span><span class="s2">"atoms"</span><span class="p">],</span> <span class="n">prev_dir</span><span class="o">=</span><span class="n">relax_results</span><span class="p">[</span><span class="s2">"dir_name"</span><span class="p">]</span>
 </span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a>    <span class="p">)</span>
 </span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a>
 </span><span id="__span-0-173"><a id="__codelineno-0-173" name="__codelineno-0-173"></a>    <span class="c1"># Run the static</span>
 </span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a>    <span class="n">static_results</span> <span class="o">=</span> <span class="n">mp_gga_static_job_</span><span class="p">(</span>
-</span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a>        <span class="n">double_relax_results</span><span class="p">[</span><span class="s2">&quot;atoms&quot;</span><span class="p">],</span> <span class="n">prev_dir</span><span class="o">=</span><span class="n">double_relax_results</span><span class="p">[</span><span class="s2">&quot;dir_name&quot;</span><span class="p">]</span>
+</span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a>        <span class="n">double_relax_results</span><span class="p">[</span><span class="s2">"atoms"</span><span class="p">],</span> <span class="n">prev_dir</span><span class="o">=</span><span class="n">double_relax_results</span><span class="p">[</span><span class="s2">"dir_name"</span><span class="p">]</span>
 </span><span id="__span-0-176"><a id="__codelineno-0-176" name="__codelineno-0-176"></a>    <span class="p">)</span>
 </span><span id="__span-0-177"><a id="__codelineno-0-177" name="__codelineno-0-177"></a>
 </span><span id="__span-0-178"><a id="__codelineno-0-178" name="__codelineno-0-178"></a>    <span class="k">return</span> <span class="p">{</span>
-</span><span id="__span-0-179"><a id="__codelineno-0-179" name="__codelineno-0-179"></a>        <span class="s2">&quot;relax1&quot;</span><span class="p">:</span> <span class="n">relax_results</span><span class="p">,</span>
-</span><span id="__span-0-180"><a id="__codelineno-0-180" name="__codelineno-0-180"></a>        <span class="s2">&quot;relax2&quot;</span><span class="p">:</span> <span class="n">double_relax_results</span><span class="p">,</span>
-</span><span id="__span-0-181"><a id="__codelineno-0-181" name="__codelineno-0-181"></a>        <span class="s2">&quot;static&quot;</span><span class="p">:</span> <span class="n">static_results</span><span class="p">,</span>
+</span><span id="__span-0-179"><a id="__codelineno-0-179" name="__codelineno-0-179"></a>        <span class="s2">"relax1"</span><span class="p">:</span> <span class="n">relax_results</span><span class="p">,</span>
+</span><span id="__span-0-180"><a id="__codelineno-0-180" name="__codelineno-0-180"></a>        <span class="s2">"relax2"</span><span class="p">:</span> <span class="n">double_relax_results</span><span class="p">,</span>
+</span><span id="__span-0-181"><a id="__codelineno-0-181" name="__codelineno-0-181"></a>        <span class="s2">"static"</span><span class="p">:</span> <span class="n">static_results</span><span class="p">,</span>
 </span><span id="__span-0-182"><a id="__codelineno-0-182" name="__codelineno-0-182"></a>    <span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
@@ -6855,11 +6855,11 @@ Vasp calculator keyword arguments are supported.</p>
 <span class="normal"><a href="#__codelineno-0-71">71</a></span>
 <span class="normal"><a href="#__codelineno-0-72">72</a></span>
 <span class="normal"><a href="#__codelineno-0-73">73</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="nd">@job</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">&quot;atomate2 is not installed. Run `pip install quacc[mp]`&quot;</span><span class="p">)</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">"atomate2 is not installed. Run `pip install quacc[mp]`"</span><span class="p">)</span>
 </span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="k">def</span><span class="w"> </span><span class="nf">mp_gga_relax_job</span><span class="p">(</span>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">prev_dir</span><span class="p">:</span> <span class="n">SourceDirectory</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">calc_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VaspSchema</span><span class="p">:</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">    Function to relax a structure with the original Materials Project GGA(+U) settings.</span>
 </span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">    Parameters</span>
@@ -6878,20 +6878,20 @@ Vasp calculator keyword arguments are supported.</p>
 </span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    -------</span>
 </span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">    VaspSchema</span>
 </span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">        Dictionary of results.</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">    """</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">atomate2.vasp.jobs.mp</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPGGARelaxMaker</span>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>
 </span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="n">calc_defaults</span> <span class="o">=</span> <span class="n">MPtoASEConverter</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">prev_dir</span><span class="o">=</span><span class="n">prev_dir</span><span class="p">)</span><span class="o">.</span><span class="n">convert_maker</span><span class="p">(</span>
 </span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>        <span class="n">MPGGARelaxMaker</span><span class="p">()</span>
 </span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>    <span class="p">)</span>
-</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="n">calc_defaults</span><span class="p">[</span><span class="s2">&quot;incar_copilot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;critical&quot;</span>
+</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="n">calc_defaults</span><span class="p">[</span><span class="s2">"incar_copilot"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"critical"</span>
 </span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a>    <span class="k">return</span> <span class="n">run_and_summarize</span><span class="p">(</span>
 </span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>        <span class="n">atoms</span><span class="p">,</span>
 </span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a>        <span class="n">calc_defaults</span><span class="o">=</span><span class="n">calc_defaults</span><span class="p">,</span>
 </span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a>        <span class="n">calc_swaps</span><span class="o">=</span><span class="n">calc_kwargs</span><span class="p">,</span>
 </span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="n">report_mp_corrections</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="n">additional_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MP GGA Relax&quot;</span><span class="p">},</span>
-</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a>        <span class="n">copy_files</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">prev_dir</span><span class="p">,</span> <span class="s2">&quot;filenames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CHGCAR*&quot;</span><span class="p">,</span> <span class="s2">&quot;WAVECAR*&quot;</span><span class="p">]}]</span>
+</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="n">additional_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"MP GGA Relax"</span><span class="p">},</span>
+</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a>        <span class="n">copy_files</span><span class="o">=</span><span class="p">[{</span><span class="s2">"source"</span><span class="p">:</span> <span class="n">prev_dir</span><span class="p">,</span> <span class="s2">"filenames"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CHGCAR*"</span><span class="p">,</span> <span class="s2">"WAVECAR*"</span><span class="p">]}]</span>
 </span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="k">if</span> <span class="n">prev_dir</span>
 </span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a>        <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>    <span class="p">)</span>
@@ -7025,11 +7025,11 @@ Vasp calculator keyword arguments are supported.</p>
 <span class="normal"><a href="#__codelineno-0-116">116</a></span>
 <span class="normal"><a href="#__codelineno-0-117">117</a></span>
 <span class="normal"><a href="#__codelineno-0-118">118</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="nd">@job</span>
-</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">&quot;atomate2 is not installed. Run `pip install quacc[mp]`&quot;</span><span class="p">)</span>
+</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_atomate2</span><span class="p">,</span> <span class="s2">"atomate2 is not installed. Run `pip install quacc[mp]`"</span><span class="p">)</span>
 </span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="k">def</span><span class="w"> </span><span class="nf">mp_gga_static_job</span><span class="p">(</span>
 </span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span> <span class="n">prev_dir</span><span class="p">:</span> <span class="n">SourceDirectory</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">calc_kwargs</span><span class="p">:</span> <span class="n">Any</span>
 </span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VaspSchema</span><span class="p">:</span>
-</span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="sd">    Function to run a static calculation on a structure with the original Materials Project GGA(+U) settings.</span>
 </span><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83"></a>
 </span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84"></a><span class="sd">    This is also the settings compatible with the MPtrj dataset.</span>
@@ -7050,20 +7050,20 @@ Vasp calculator keyword arguments are supported.</p>
 </span><span id="__span-0-99"><a id="__codelineno-0-99" name="__codelineno-0-99"></a><span class="sd">    -------</span>
 </span><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="sd">    VaspSchema</span>
 </span><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a><span class="sd">        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].</span>
-</span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="sd">    """</span>
 </span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">atomate2.vasp.jobs.mp</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPGGAStaticMaker</span>
 </span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a>
 </span><span id="__span-0-105"><a id="__codelineno-0-105" name="__codelineno-0-105"></a>    <span class="n">calc_defaults</span> <span class="o">=</span> <span class="n">MPtoASEConverter</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span> <span class="n">prev_dir</span><span class="o">=</span><span class="n">prev_dir</span><span class="p">)</span><span class="o">.</span><span class="n">convert_maker</span><span class="p">(</span>
 </span><span id="__span-0-106"><a id="__codelineno-0-106" name="__codelineno-0-106"></a>        <span class="n">MPGGAStaticMaker</span><span class="p">()</span>
 </span><span id="__span-0-107"><a id="__codelineno-0-107" name="__codelineno-0-107"></a>    <span class="p">)</span>
-</span><span id="__span-0-108"><a id="__codelineno-0-108" name="__codelineno-0-108"></a>    <span class="n">calc_defaults</span><span class="p">[</span><span class="s2">&quot;incar_copilot&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;critical&quot;</span>
+</span><span id="__span-0-108"><a id="__codelineno-0-108" name="__codelineno-0-108"></a>    <span class="n">calc_defaults</span><span class="p">[</span><span class="s2">"incar_copilot"</span><span class="p">]</span> <span class="o">=</span> <span class="s2">"critical"</span>
 </span><span id="__span-0-109"><a id="__codelineno-0-109" name="__codelineno-0-109"></a>    <span class="k">return</span> <span class="n">run_and_summarize</span><span class="p">(</span>
 </span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a>        <span class="n">atoms</span><span class="p">,</span>
 </span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a>        <span class="n">calc_defaults</span><span class="o">=</span><span class="n">calc_defaults</span><span class="p">,</span>
 </span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a>        <span class="n">calc_swaps</span><span class="o">=</span><span class="n">calc_kwargs</span><span class="p">,</span>
 </span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a>        <span class="n">report_mp_corrections</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a>        <span class="n">additional_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;MP GGA Static&quot;</span><span class="p">},</span>
-</span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a>        <span class="n">copy_files</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;source&quot;</span><span class="p">:</span> <span class="n">prev_dir</span><span class="p">,</span> <span class="s2">&quot;filenames&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;CHGCAR*&quot;</span><span class="p">,</span> <span class="s2">&quot;WAVECAR*&quot;</span><span class="p">]}]</span>
+</span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a>        <span class="n">additional_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"MP GGA Static"</span><span class="p">},</span>
+</span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a>        <span class="n">copy_files</span><span class="o">=</span><span class="p">[{</span><span class="s2">"source"</span><span class="p">:</span> <span class="n">prev_dir</span><span class="p">,</span> <span class="s2">"filenames"</span><span class="p">:</span> <span class="p">[</span><span class="s2">"CHGCAR*"</span><span class="p">,</span> <span class="s2">"WAVECAR*"</span><span class="p">]}]</span>
 </span><span id="__span-0-116"><a id="__codelineno-0-116" name="__codelineno-0-116"></a>        <span class="k">if</span> <span class="n">prev_dir</span>
 </span><span id="__span-0-117"><a id="__codelineno-0-117" name="__codelineno-0-117"></a>        <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-118"><a id="__codelineno-0-118" name="__codelineno-0-118"></a>    <span class="p">)</span>

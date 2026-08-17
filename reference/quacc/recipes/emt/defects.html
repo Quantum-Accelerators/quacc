@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.54">
+      <meta name="generator" content="zensical-0.0.55">
     
     
       
@@ -6264,7 +6264,7 @@
 
 <a href="#quacc.recipes.emt.defects.has_pmg_defects" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_pmg_defects</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s2">&quot;pymatgen.analysis.defects&quot;</span><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s2">"pymatgen.analysis.defects"</span><span class="p">)</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">)</span>
 </span></code></pre></div>
 
@@ -6287,7 +6287,7 @@
   </span>
 
 <a href="#quacc.recipes.emt.defects.has_shakenbreak" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_shakenbreak</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s1">&#39;shakenbreak&#39;</span><span class="p">))</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_shakenbreak</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s1">'shakenbreak'</span><span class="p">))</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6522,9 +6522,9 @@ See the return type-hint for the data structure.</p>
 <span class="normal"><a href="#__codelineno-0-117">117</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="nd">@flow</span>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="nd">@requires</span><span class="p">(</span>
 </span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a>    <span class="n">has_pmg_defects</span><span class="p">,</span>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a>    <span class="s2">&quot;Missing pymatgen-analysis-defects. Please run pip install quacc[defects]&quot;</span><span class="p">,</span>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a>    <span class="s2">"Missing pymatgen-analysis-defects. Please run pip install quacc[defects]"</span><span class="p">,</span>
 </span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="p">)</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_shakenbreak</span><span class="p">,</span> <span class="s2">&quot;Missing shakenbreak. Please run pip install quacc[defects]&quot;</span><span class="p">)</span>
+</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_shakenbreak</span><span class="p">,</span> <span class="s2">"Missing shakenbreak. Please run pip install quacc[defects]"</span><span class="p">)</span>
 </span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="k">def</span><span class="w"> </span><span class="nf">bulk_to_defects_flow</span><span class="p">(</span>
 </span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
 </span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a>    <span class="n">defect_gen</span><span class="p">:</span> <span class="p">(</span>
@@ -6541,17 +6541,17 @@ See the return type-hint for the data structure.</p>
 </span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="n">job_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>    <span class="n">job_decorators</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">RunSchema</span> <span class="o">|</span> <span class="n">OptSchema</span><span class="p">]:</span>
-</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="sd">    Workflow consisting of:</span>
 </span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>
 </span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a><span class="sd">    1. Defect generation</span>
 </span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a>
 </span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="sd">    2. Defect relaxations</span>
-</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">        - name: &quot;relax_job&quot;</span>
+</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">        - name: "relax_job"</span>
 </span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">        - job: [quacc.recipes.emt.core.relax_job][]</span>
 </span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a>
 </span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">    3. Optional defect statics</span>
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">        - name: &quot;static_job&quot;</span>
+</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">        - name: "static_job"</span>
 </span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">        - job: [quacc.recipes.emt.core.static_job][]</span>
 </span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>
 </span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">    Parameters</span>
@@ -6580,14 +6580,14 @@ See the return type-hint for the data structure.</p>
 </span><span id="__span-0-99"><a id="__codelineno-0-99" name="__codelineno-0-99"></a><span class="sd">        List of dictionary of results from [quacc.schemas.ase.Summarize.run][]</span>
 </span><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="sd">        or [quacc.schemas.ase.Summarize.opt][].</span>
 </span><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a><span class="sd">        See the return type-hint for the data structure.</span>
-</span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="sd">    """</span>
 </span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>    <span class="n">relax_job_</span><span class="p">,</span> <span class="n">static_job_</span> <span class="o">=</span> <span class="n">customize_jobs</span><span class="p">(</span>
-</span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a>        <span class="p">{</span><span class="s2">&quot;relax_job&quot;</span><span class="p">:</span> <span class="n">relax_job</span><span class="p">,</span> <span class="s2">&quot;static_job&quot;</span><span class="p">:</span> <span class="n">static_job</span><span class="p">},</span>
+</span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a>        <span class="p">{</span><span class="s2">"relax_job"</span><span class="p">:</span> <span class="n">relax_job</span><span class="p">,</span> <span class="s2">"static_job"</span><span class="p">:</span> <span class="n">static_job</span><span class="p">},</span>
 </span><span id="__span-0-105"><a id="__codelineno-0-105" name="__codelineno-0-105"></a>        <span class="n">param_swaps</span><span class="o">=</span><span class="n">job_params</span><span class="p">,</span>
 </span><span id="__span-0-106"><a id="__codelineno-0-106" name="__codelineno-0-106"></a>        <span class="n">decorators</span><span class="o">=</span><span class="n">job_decorators</span><span class="p">,</span>
 </span><span id="__span-0-107"><a id="__codelineno-0-107" name="__codelineno-0-107"></a>    <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 </span><span id="__span-0-108"><a id="__codelineno-0-108" name="__codelineno-0-108"></a>    <span class="n">make_defects_kwargs</span> <span class="o">=</span> <span class="n">recursive_dict_merge</span><span class="p">(</span>
-</span><span id="__span-0-109"><a id="__codelineno-0-109" name="__codelineno-0-109"></a>        <span class="n">make_defects_kwargs</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;defect_gen&quot;</span><span class="p">:</span> <span class="n">defect_gen</span><span class="p">,</span> <span class="s2">&quot;defect_charge&quot;</span><span class="p">:</span> <span class="n">defect_charge</span><span class="p">}</span>
+</span><span id="__span-0-109"><a id="__codelineno-0-109" name="__codelineno-0-109"></a>        <span class="n">make_defects_kwargs</span><span class="p">,</span> <span class="p">{</span><span class="s2">"defect_gen"</span><span class="p">:</span> <span class="n">defect_gen</span><span class="p">,</span> <span class="s2">"defect_charge"</span><span class="p">:</span> <span class="n">defect_charge</span><span class="p">}</span>
 </span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a>    <span class="p">)</span>
 </span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a>
 </span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a>    <span class="k">return</span> <span class="n">bulk_to_defects_subflow</span><span class="p">(</span>

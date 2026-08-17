@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.54">
+      <meta name="generator" content="zensical-0.0.55">
     
     
       
@@ -6443,7 +6443,7 @@ See the type-hint for the data structure.</p>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="n">additional_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a>    <span class="o">**</span><span class="n">calc_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
 </span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DynSchema</span><span class="p">:</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">    Carry out a Molecular Dynamics calculation.</span>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>
 </span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">    Parameters</span>
@@ -6477,13 +6477,13 @@ See the type-hint for the data structure.</p>
 </span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">    DynSchema</span>
 </span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">        Dictionary of results, specified in [quacc.schemas.ase.Summarize.md][].</span>
 </span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">        See the type-hint for the data structure.</span>
-</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">    """</span>
 </span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>    <span class="n">md_defaults</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="s2">&quot;steps&quot;</span><span class="p">:</span> <span class="n">steps</span><span class="p">,</span>
-</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>        <span class="s2">&quot;dynamics_kwargs&quot;</span><span class="p">:</span> <span class="p">{</span>
-</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>            <span class="s2">&quot;timestep&quot;</span><span class="p">:</span> <span class="n">timestep_fs</span> <span class="o">*</span> <span class="n">fs</span><span class="p">,</span>
-</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>            <span class="s2">&quot;temperature_K&quot;</span><span class="p">:</span> <span class="n">temperature_K</span> <span class="k">if</span> <span class="n">temperature_K</span> <span class="k">else</span> <span class="n">Remove</span><span class="p">,</span>
-</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a>            <span class="s2">&quot;pressure_au&quot;</span><span class="p">:</span> <span class="n">pressure_bar</span> <span class="o">*</span> <span class="n">bar</span> <span class="k">if</span> <span class="n">pressure_bar</span> <span class="k">else</span> <span class="n">Remove</span><span class="p">,</span>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="s2">"steps"</span><span class="p">:</span> <span class="n">steps</span><span class="p">,</span>
+</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>        <span class="s2">"dynamics_kwargs"</span><span class="p">:</span> <span class="p">{</span>
+</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>            <span class="s2">"timestep"</span><span class="p">:</span> <span class="n">timestep_fs</span> <span class="o">*</span> <span class="n">fs</span><span class="p">,</span>
+</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>            <span class="s2">"temperature_K"</span><span class="p">:</span> <span class="n">temperature_K</span> <span class="k">if</span> <span class="n">temperature_K</span> <span class="k">else</span> <span class="n">Remove</span><span class="p">,</span>
+</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a>            <span class="s2">"pressure_au"</span><span class="p">:</span> <span class="n">pressure_bar</span> <span class="o">*</span> <span class="n">bar</span> <span class="k">if</span> <span class="n">pressure_bar</span> <span class="k">else</span> <span class="n">Remove</span><span class="p">,</span>
 </span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a>        <span class="p">},</span>
 </span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82"></a>    <span class="p">}</span>
 </span><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83"></a>    <span class="n">md_params</span> <span class="o">=</span> <span class="n">recursive_dict_merge</span><span class="p">(</span><span class="n">md_defaults</span><span class="p">,</span> <span class="n">md_params</span><span class="p">)</span>
@@ -6492,7 +6492,7 @@ See the type-hint for the data structure.</p>
 </span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a>    <span class="n">dyn</span> <span class="o">=</span> <span class="n">Runner</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">calc</span><span class="p">,</span> <span class="n">copy_files</span><span class="o">=</span><span class="n">copy_files</span><span class="p">)</span><span class="o">.</span><span class="n">run_md</span><span class="p">(</span><span class="n">dynamics</span><span class="p">,</span> <span class="o">**</span><span class="n">md_params</span><span class="p">)</span>
 </span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a>
 </span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a>    <span class="k">return</span> <span class="n">Summarize</span><span class="p">(</span>
-</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a>        <span class="n">additional_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;EMT MD&quot;</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span><span class="n">additional_fields</span> <span class="ow">or</span> <span class="p">{})</span>
+</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a>        <span class="n">additional_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"EMT MD"</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span><span class="n">additional_fields</span> <span class="ow">or</span> <span class="p">{})</span>
 </span><span id="__span-0-90"><a id="__codelineno-0-90" name="__codelineno-0-90"></a>    <span class="p">)</span><span class="o">.</span><span class="n">md</span><span class="p">(</span><span class="n">dyn</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>

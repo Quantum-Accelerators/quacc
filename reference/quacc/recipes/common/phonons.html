@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.54">
+      <meta name="generator" content="zensical-0.0.55">
     
     
       
@@ -6263,7 +6263,7 @@
   </span>
 
 <a href="#quacc.recipes.common.phonons.has_phonopy" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_phonopy</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s1">&#39;phonopy&#39;</span><span class="p">))</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_phonopy</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s1">'phonopy'</span><span class="p">))</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6285,7 +6285,7 @@
   </span>
 
 <a href="#quacc.recipes.common.phonons.has_seekpath" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_seekpath</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s1">&#39;seekpath&#39;</span><span class="p">))</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">has_seekpath</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/functions.html#bool">bool</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" title="importlib.util.find_spec" href="https://docs.python.org/3/library/importlib.html#importlib.util.find_spec">find_spec</a></span><span class="p">(</span><span class="s1">'seekpath'</span><span class="p">))</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6632,8 +6632,8 @@ value specified by <code>min_lengths</code>.</p>
 <span class="normal"><a href="#__codelineno-0-177">177</a></span>
 <span class="normal"><a href="#__codelineno-0-178">178</a></span>
 <span class="normal"><a href="#__codelineno-0-179">179</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="nd">@subflow</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_phonopy</span><span class="p">,</span> <span class="s2">&quot;Phonopy must be installed. Run `pip install quacc[phonons]`&quot;</span><span class="p">)</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_seekpath</span><span class="p">,</span> <span class="s2">&quot;Seekpath must be installed. Run `pip install quacc[phonons]`&quot;</span><span class="p">)</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_phonopy</span><span class="p">,</span> <span class="s2">"Phonopy must be installed. Run `pip install quacc[phonons]`"</span><span class="p">)</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_seekpath</span><span class="p">,</span> <span class="s2">"Seekpath must be installed. Run `pip install quacc[phonons]`"</span><span class="p">)</span>
 </span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="k">def</span><span class="w"> </span><span class="nf">phonon_subflow</span><span class="p">(</span>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a>    <span class="n">force_job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span>
@@ -6650,7 +6650,7 @@ value specified by <code>min_lengths</code>.</p>
 </span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a>    <span class="n">phonopy_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a>    <span class="n">additional_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhononSchema</span><span class="p">:</span>
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">    Calculate phonon properties using the Phonopy package.</span>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a>
 </span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    Parameters</span>
@@ -6688,7 +6688,7 @@ value specified by <code>min_lengths</code>.</p>
 </span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a><span class="sd">    -------</span>
 </span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="sd">    PhononSchema</span>
 </span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="sd">        Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][]</span>
-</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a><span class="sd">    """</span>
 </span><span id="__span-0-90"><a id="__codelineno-0-90" name="__codelineno-0-90"></a>    <span class="n">mask_to_fix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atoms</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
 </span><span id="__span-0-91"><a id="__codelineno-0-91" name="__codelineno-0-91"></a>
 </span><span id="__span-0-92"><a id="__codelineno-0-92" name="__codelineno-0-92"></a>    <span class="k">if</span> <span class="n">fixed_atom_indices</span><span class="p">:</span>
@@ -6697,11 +6697,11 @@ value specified by <code>min_lengths</code>.</p>
 </span><span id="__span-0-95"><a id="__codelineno-0-95" name="__codelineno-0-95"></a>    <span class="n">displaced_atoms</span><span class="p">,</span> <span class="n">non_displaced_atoms</span> <span class="o">=</span> <span class="n">atoms</span><span class="p">[</span><span class="o">~</span><span class="n">mask_to_fix</span><span class="p">],</span> <span class="n">atoms</span><span class="p">[</span><span class="n">mask_to_fix</span><span class="p">]</span>
 </span><span id="__span-0-96"><a id="__codelineno-0-96" name="__codelineno-0-96"></a>
 </span><span id="__span-0-97"><a id="__codelineno-0-97" name="__codelineno-0-97"></a>    <span class="n">get_phonopy_kwargs</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="__span-0-98"><a id="__codelineno-0-98" name="__codelineno-0-98"></a>        <span class="s2">&quot;min_lengths&quot;</span><span class="p">:</span> <span class="n">min_lengths</span><span class="p">,</span>
-</span><span id="__span-0-99"><a id="__codelineno-0-99" name="__codelineno-0-99"></a>        <span class="s2">&quot;supercell_matrix&quot;</span><span class="p">:</span> <span class="n">supercell_matrix</span><span class="p">,</span>
-</span><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a>        <span class="s2">&quot;symprec&quot;</span><span class="p">:</span> <span class="n">symprec</span><span class="p">,</span>
-</span><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a>        <span class="s2">&quot;displacement&quot;</span><span class="p">:</span> <span class="n">displacement</span><span class="p">,</span>
-</span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a>        <span class="s2">&quot;phonopy_kwargs&quot;</span><span class="p">:</span> <span class="n">phonopy_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-98"><a id="__codelineno-0-98" name="__codelineno-0-98"></a>        <span class="s2">"min_lengths"</span><span class="p">:</span> <span class="n">min_lengths</span><span class="p">,</span>
+</span><span id="__span-0-99"><a id="__codelineno-0-99" name="__codelineno-0-99"></a>        <span class="s2">"supercell_matrix"</span><span class="p">:</span> <span class="n">supercell_matrix</span><span class="p">,</span>
+</span><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a>        <span class="s2">"symprec"</span><span class="p">:</span> <span class="n">symprec</span><span class="p">,</span>
+</span><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a>        <span class="s2">"displacement"</span><span class="p">:</span> <span class="n">displacement</span><span class="p">,</span>
+</span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a>        <span class="s2">"phonopy_kwargs"</span><span class="p">:</span> <span class="n">phonopy_kwargs</span><span class="p">,</span>
 </span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>    <span class="p">}</span>
 </span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a>    <span class="n">phonopy</span> <span class="o">=</span> <span class="n">get_phonopy</span><span class="p">(</span><span class="n">displaced_atoms</span><span class="p">,</span> <span class="o">**</span><span class="n">get_phonopy_kwargs</span><span class="p">)</span>
 </span><span id="__span-0-105"><a id="__codelineno-0-105" name="__codelineno-0-105"></a>
@@ -6736,9 +6736,9 @@ value specified by <code>min_lengths</code>.</p>
 </span><span id="__span-0-134"><a id="__codelineno-0-134" name="__codelineno-0-134"></a>        <span class="n">additional_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-135"><a id="__codelineno-0-135" name="__codelineno-0-135"></a>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhononSchema</span><span class="p">:</span>
 </span><span id="__span-0-136"><a id="__codelineno-0-136" name="__codelineno-0-136"></a>        <span class="n">phonopy</span> <span class="o">=</span> <span class="n">get_phonopy</span><span class="p">(</span><span class="n">displaced_atoms</span><span class="p">,</span> <span class="o">**</span><span class="n">get_phonopy_kwargs</span><span class="p">)</span>
-</span><span id="__span-0-137"><a id="__codelineno-0-137" name="__codelineno-0-137"></a>        <span class="n">parameters</span> <span class="o">=</span> <span class="n">force_job_results</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;parameters&quot;</span><span class="p">)</span>
+</span><span id="__span-0-137"><a id="__codelineno-0-137" name="__codelineno-0-137"></a>        <span class="n">parameters</span> <span class="o">=</span> <span class="n">force_job_results</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"parameters"</span><span class="p">)</span>
 </span><span id="__span-0-138"><a id="__codelineno-0-138" name="__codelineno-0-138"></a>        <span class="n">forces</span> <span class="o">=</span> <span class="p">[</span>
-</span><span id="__span-0-139"><a id="__codelineno-0-139" name="__codelineno-0-139"></a>            <span class="n">output</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span><span class="s2">&quot;forces&quot;</span><span class="p">][:</span> <span class="nb">len</span><span class="p">(</span><span class="n">phonopy</span><span class="o">.</span><span class="n">supercell</span><span class="p">)]</span>
+</span><span id="__span-0-139"><a id="__codelineno-0-139" name="__codelineno-0-139"></a>            <span class="n">output</span><span class="p">[</span><span class="s2">"results"</span><span class="p">][</span><span class="s2">"forces"</span><span class="p">][:</span> <span class="nb">len</span><span class="p">(</span><span class="n">phonopy</span><span class="o">.</span><span class="n">supercell</span><span class="p">)]</span>
 </span><span id="__span-0-140"><a id="__codelineno-0-140" name="__codelineno-0-140"></a>            <span class="k">for</span> <span class="n">output</span> <span class="ow">in</span> <span class="n">force_job_results</span>
 </span><span id="__span-0-141"><a id="__codelineno-0-141" name="__codelineno-0-141"></a>        <span class="p">]</span>
 </span><span id="__span-0-142"><a id="__codelineno-0-142" name="__codelineno-0-142"></a>        <span class="n">phonopy_results</span> <span class="o">=</span> <span class="n">PhonopyRunner</span><span class="p">()</span><span class="o">.</span><span class="n">run_phonopy</span><span class="p">(</span>
@@ -6762,8 +6762,8 @@ value specified by <code>min_lengths</code>.</p>
 </span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="n">additional_fields</span> <span class="o">=</span> <span class="n">recursive_dict_merge</span><span class="p">(</span>
 </span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a>            <span class="n">additional_fields</span><span class="p">,</span>
 </span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a>            <span class="p">{</span>
-</span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>                <span class="s2">&quot;displaced_atoms&quot;</span><span class="p">:</span> <span class="n">displaced_atoms</span><span class="p">,</span>
-</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a>                <span class="s2">&quot;non_displaced_atoms&quot;</span><span class="p">:</span> <span class="n">non_displaced_atoms</span><span class="p">,</span>
+</span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>                <span class="s2">"displaced_atoms"</span><span class="p">:</span> <span class="n">displaced_atoms</span><span class="p">,</span>
+</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a>                <span class="s2">"non_displaced_atoms"</span><span class="p">:</span> <span class="n">non_displaced_atoms</span><span class="p">,</span>
 </span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a>            <span class="p">},</span>
 </span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a>        <span class="p">)</span>
 </span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a>

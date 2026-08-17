@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.54">
+      <meta name="generator" content="zensical-0.0.55">
     
     
       
@@ -6042,7 +6042,7 @@
 </span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">      </span><span class="no">module load anaconda3/2025.6</span>
 </span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">      </span><span class="no">conda activate cms</span>
 </span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">      </span><span class="no">module load vasp/6.5.1</span>
-</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">      </span><span class="no">export QUACC_VASP_PARALLEL_CMD=&quot;srun --nodes 1 --ntasks-per-node 112&quot;</span>
+</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">      </span><span class="no">export QUACC_VASP_PARALLEL_CMD="srun --nodes 1 --ntasks-per-node 112"</span>
 </span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">      </span><span class="no">export QUACC_WORKFLOW_ENGINE=jobflow</span>
 </span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="w">    </span><span class="nt">timeout_execute</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">60</span>
 </span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">    </span><span class="nt">resources</span><span class="p">:</span>
@@ -6081,7 +6081,7 @@
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">job2</span> <span class="o">=</span> <span class="n">add</span><span class="p">(</span><span class="n">job1</span><span class="o">.</span><span class="n">output</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">flow</span> <span class="o">=</span> <span class="n">Flow</span><span class="p">([</span><span class="n">job1</span><span class="p">,</span> <span class="n">job2</span><span class="p">])</span>
 </span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="n">ids</span> <span class="o">=</span> <span class="n">submit_flow</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">worker</span><span class="o">=</span><span class="s2">&quot;basic_python&quot;</span><span class="p">)</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="n">ids</span> <span class="o">=</span> <span class="n">submit_flow</span><span class="p">(</span><span class="n">flow</span><span class="p">,</span> <span class="n">worker</span><span class="o">=</span><span class="s2">"basic_python"</span><span class="p">)</span>
 </span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">ids</span><span class="p">)</span>
 </span></code></pre></div>
 </div>
@@ -6121,7 +6121,7 @@
 </span></code></pre></div>
 </details>
 <p>You will then need to define a <code>JOBFLOW_CONFIG_FILE</code> environment variable pointing to the file you made. For instance, in your <code>~/.bashrc</code> file, add the following line:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">JOBFLOW_CONFIG_FILE</span><span class="o">=</span><span class="s2">&quot;/path/to/my/jobflow.yaml&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">JOBFLOW_CONFIG_FILE</span><span class="o">=</span><span class="s2">"/path/to/my/jobflow.yaml"</span>
 </span></code></pre></div>
 <p><strong>FireWorks Setup</strong></p>
 <p>If you plan to use FireWorks to dispatch your Jobflow workflows, you will also need to make a few configuration files: <code>FW_config.yaml</code>, <code>my_fworker.yaml</code>, <code>my_launchpad.yaml</code>, and <code>my_qadapter.yaml</code>. To begin, make a directory called <code>fw_config</code> where you will store the four files described in greater detail below. The directory structure will look like the following:</p>
@@ -6137,13 +6137,13 @@
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nt">QUEUE_UPDATE_INTERVAL</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2</span>
 </span></code></pre></div>
 <p>You will also need to define a <code>FW_CONFIG_FILE</code> environment variable pointing to the <code>FW_config.yaml</code> file you made. For instance, in your <code>~/.bashrc</code> file, add the following line:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FW_CONFIG_FILE</span><span class="o">=</span><span class="s2">&quot;/path/to/config/fw_config/FW_config.yaml&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">FW_CONFIG_FILE</span><span class="o">=</span><span class="s2">"/path/to/config/fw_config/FW_config.yaml"</span>
 </span></code></pre></div>
 <p><strong>FWorker</strong></p>
 <p>For the <code>my_fworker.yaml</code>, you can use the following template. You do not need to make any modifications.</p>
 <div class="language-yaml highlight"><span class="filename">my_fworker.yaml</span><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">quacc_fworker</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&quot;</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{}&quot;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="s">""</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nt">query</span><span class="p">:</span><span class="w"> </span><span class="s">"{}"</span>
 </span></code></pre></div>
 <p><strong>Launchpad</strong></p>
 <p>For the <code>my_launchpad.yaml</code>, you can use the following template. Replace the entries in <code>&lt;&gt;</code> with the appropriate values for your Mongo database.</p>

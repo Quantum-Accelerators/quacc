@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.54">
+      <meta name="generator" content="zensical-0.0.55">
     
     
       
@@ -6241,7 +6241,7 @@
   </span>
 
 <a href="#quacc.recipes.gaussian._base.LOG_FILE" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">LOG_FILE</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n"><span title="quacc.recipes.gaussian._base._LABEL">_LABEL</span></span><span class="si">}</span><span class="s1">.log&#39;</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">LOG_FILE</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n"><span title="quacc.recipes.gaussian._base._LABEL">_LABEL</span></span><span class="si">}</span><span class="s1">.log'</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6400,7 +6400,7 @@ keys, refer to the <a class="autorefs autorefs-external" href="https://docs.ase-
 </span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a>    <span class="n">additional_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>    <span class="n">copy_files</span><span class="p">:</span> <span class="n">CopyFiles</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RunSchema</span><span class="p">:</span>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    Base job function for carrying out Gaussian recipes.</span>
 </span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>
 </span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">    Parameters</span>
@@ -6422,9 +6422,9 @@ keys, refer to the <a class="autorefs autorefs-external" href="https://docs.ase-
 </span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">    -------</span>
 </span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">    RunSchema</span>
 </span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">        Dictionary of results</span>
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    """</span>
 </span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>    <span class="n">settings</span> <span class="o">=</span> <span class="n">get_settings</span><span class="p">()</span>
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>    <span class="n">gaussian_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">GAUSSIAN_CMD</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">{</span><span class="n">_LABEL</span><span class="si">}</span><span class="s2">.com &gt; </span><span class="si">{</span><span class="n">LOG_FILE</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>    <span class="n">gaussian_cmd</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">settings</span><span class="o">.</span><span class="n">GAUSSIAN_CMD</span><span class="si">}</span><span class="s2"> &lt; </span><span class="si">{</span><span class="n">_LABEL</span><span class="si">}</span><span class="s2">.com &gt; </span><span class="si">{</span><span class="n">LOG_FILE</span><span class="si">}</span><span class="s2">"</span>
 </span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>    <span class="n">calc_flags</span> <span class="o">=</span> <span class="n">recursive_dict_merge</span><span class="p">(</span><span class="n">calc_defaults</span><span class="p">,</span> <span class="n">calc_swaps</span><span class="p">)</span>
 </span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>
 </span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>    <span class="n">calc</span> <span class="o">=</span> <span class="n">Gaussian</span><span class="p">(</span><span class="n">command</span><span class="o">=</span><span class="n">gaussian_cmd</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">_LABEL</span><span class="p">,</span> <span class="o">**</span><span class="n">calc_flags</span><span class="p">)</span>
