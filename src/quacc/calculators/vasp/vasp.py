@@ -58,7 +58,7 @@ class Vasp(Vasp_):
         input_atoms: Atoms,
         preset: str | Path | None = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
-        incar_copilot: Literal["off", "critical", "standard", "aggressive"]
+        incar_copilot_mode: Literal["off", "critical", "standard", "aggressive"]
         | DefaultSetting = QuaccDefault,
         copy_magmoms: bool | DefaultSetting = QuaccDefault,
         preset_mag_default: float | DefaultSetting = QuaccDefault,
@@ -88,7 +88,7 @@ class Vasp(Vasp_):
             override any corresponding preset values.
         use_custodian
             Whether to use Custodian to run VASP. Default is True in settings.
-        incar_copilot
+        incar_copilot_mode
             Controls VASP co-pilot mode for automated INCAR parameter handling.
 
             Options include:
@@ -135,10 +135,10 @@ class Vasp(Vasp_):
             if use_custodian == QuaccDefault
             else use_custodian
         )
-        incar_copilot = (
-            self._settings.VASP_INCAR_COPILOT
-            if incar_copilot == QuaccDefault
-            else incar_copilot
+        incar_copilot_mode = (
+            self._settings.VASP_INCAR_COPILOT_MODE
+            if incar_copilot_mode == QuaccDefault
+            else incar_copilot_mode
         )
         copy_magmoms = (
             self._settings.VASP_COPY_MAGMOMS
@@ -318,9 +318,11 @@ class Vasp(Vasp_):
             incar_copilot_mode=self.incar_copilot,
             pmg_kpts=self.pmg_kpts,
         )
+        if self.incar_copilot_mode.lower() not in {"off", "critical"}:
+            self.user_calc_params = remove_unused_flags(self.user_calc_params)
 
         # Clean up the user calc parameters
-        self.user_calc_params = sort_dict(remove_unused_flags(self.user_calc_params))
+        self.user_calc_params = sort_dict(self.user_calc_params)
 
     def _run(
         self,
