@@ -158,7 +158,7 @@ class Vasp(Vasp_):
         self.input_atoms = input_atoms
         self.preset = preset
         self.use_custodian = use_custodian
-        self.incar_copilot = incar_copilot
+        self.incar_copilot_mode = incar_copilot_mode
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
