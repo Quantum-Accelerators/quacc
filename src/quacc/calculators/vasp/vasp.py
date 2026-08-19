@@ -315,7 +315,7 @@ class Vasp(Vasp_):
         self.user_calc_params = get_param_swaps(
             self.user_calc_params,
             self.input_atoms,
-            incar_copilot_mode=self.incar_copilot,
+            incar_copilot_mode=self.incar_copilot_mode,
             pmg_kpts=self.pmg_kpts,
         )
         if self.incar_copilot_mode.lower() not in {"off", "critical"}:
