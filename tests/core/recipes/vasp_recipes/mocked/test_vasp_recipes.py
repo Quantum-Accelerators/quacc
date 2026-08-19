@@ -17,7 +17,12 @@ from quacc.recipes.vasp.core import (
     relax_job,
     static_job,
 )
-from quacc.recipes.vasp.matpes import matpes_static_flow, matpes_static_job
+from quacc.recipes.vasp.matpes import (
+    fastpes_static_job,
+    matpes_static_flow,
+    matpes_static_job,
+)
+from quacc.recipes.vasp.mattersim import mattersim_static_job
 from quacc.recipes.vasp.md import md_job
 from quacc.recipes.vasp.mof_off import mof_off_static_flow, mof_off_static_job
 from quacc.recipes.vasp.mp24 import (
@@ -1155,6 +1160,7 @@ def test_matpes(patch_metallic_taskdoc):
         "gga": "PE",
         "gga_compat": False,
         "hfscreen": 0.2,
+        "isif": 2,
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.22,
@@ -1188,6 +1194,7 @@ def test_matpes(patch_metallic_taskdoc):
         "encut": 680.0,
         "gga": "PE",
         "hfscreen": 0.2,
+        "isif": 2,
         "ismear": 0,
         "ispin": 2,
         "kspacing": 0.22,
@@ -1213,6 +1220,99 @@ def test_matpes(patch_metallic_taskdoc):
 
     with pytest.raises(ValueError, match="Unsupported value for m06"):
         matpes_static_job(bulk("Al"), level="m06")
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+@pytest.mark.parametrize(
+    ("hf_exchange", "expected_parameters"),
+    [
+        (
+            0.0,
+            {
+                "aexx": 0.0,
+                "algo": "all",
+                "ediff": 1e-05,
+                "efermi": "midgap",
+                "encut": 435,
+                "gga": "PE",
+                "gga_compat": False,
+                "isearch": 1,
+                "ismear": 0,
+                "ispin": 2,
+                "kspacing": 0.4,
+                "laechg": True,
+                "lasph": True,
+                "lcharg": True,
+                "lmaxmix": 6,
+                "lmixtau": True,
+                "lorbit": 11,
+                "lreal": False,
+                "lwave": True,
+                "magmom": [0.6],
+                "nelm": 200,
+                "nsw": 0,
+                "pp": "PBE",
+                "pp_version": "64",
+                "prec": "accurate",
+                "setups": {"Al": ""},
+                "sigma": 0.05,
+                "xc": "pbe",
+            },
+        ),
+        (
+            0.25,
+            {
+                "aexx": 0.25,
+                "algo": "normal",
+                "ediff": 1e-05,
+                "efermi": "midgap",
+                "encut": 435,
+                "gga": "PE",
+                "gga_compat": False,
+                "hfscreen": 0.2,
+                "isif": 2,
+                "ismear": 0,
+                "ispin": 2,
+                "kspacing": 0.4,
+                "laechg": True,
+                "lasph": True,
+                "lcharg": True,
+                "lhfcalc": True,
+                "lmaxmix": 6,
+                "lmixtau": True,
+                "lorbit": 11,
+                "lreal": False,
+                "lwave": False,
+                "magmom": [0.6],
+                "nelm": 200,
+                "nsw": 0,
+                "pp": "PBE",
+                "pp_version": "64",
+                "prec": "accurate",
+                "setups": {"Al": ""},
+                "sigma": 0.05,
+                "xc": "hse06",
+            },
+        ),
+    ],
+)
+def test_matpes_fastpes_static_job(
+    hf_exchange, expected_parameters, patch_metallic_taskdoc
+):
+    output = fastpes_static_job(bulk("Al"), hf_exchange=hf_exchange, ncore=None)
+    output["parameters"].pop("ncore")
+
+    assert output["parameters"] == expected_parameters
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+def test_matpes_fastpes_static_job_paw(patch_metallic_taskdoc):
+    atoms = bulk("Al")
+    atoms[0].symbol = "Ba"
+
+    output = fastpes_static_job(atoms, ncore=None)
+
+    assert output["parameters"]["setups"] == {"Ba": "_sv_GW"}
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
@@ -1585,3 +1685,43 @@ def test_md_job_error():
 
     with pytest.raises(ValueError, match="Unsupported ensemble"):
         md_job(atoms, ensemble="NNT")
+
+
+def test_mattersim_static_job(patch_nonmetallic_taskdoc):
+    atoms = bulk("Ni") * (2, 1, 1)
+    atoms[0].symbol = "O"
+    del atoms.arrays["initial_magmoms"]
+
+    output = mattersim_static_job(atoms, ncore=1)
+
+    assert output["parameters"] == {
+        "algo": "fast",
+        "ediff": 0.0001,
+        "encut": 520,
+        "gamma": True,
+        "isif": 3,
+        "ismear": -5,
+        "ispin": 2,
+        "kpts": (5, 11, 11),
+        "lasph": True,
+        "ldau": True,
+        "ldauj": [0, 0],
+        "ldaul": [0, 2],
+        "ldauprint": 1,
+        "ldautype": 2,
+        "ldauu": [0, 6.2],
+        "lmaxmix": 4,
+        "lorbit": 11,
+        "lreal": "auto",
+        "lwave": False,
+        "magmom": [0.6, 5],
+        "nelm": 100,
+        "ncore": 1,
+        "nsw": 0,
+        "pp": "pbe",
+        "pp_version": "original",
+        "prec": "accurate",
+        "setups": {"Ni": "_pv", "O": ""},
+        "sigma": 0.05,
+    }
+    assert output["name"] == "MatterSim Static"
