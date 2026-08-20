@@ -74,6 +74,7 @@ def elastic_tensor_flow(
     """
     relax_job_, static_job_ = customize_jobs(
         {"relax_job": relax_job, "static_job": static_job},
+        param_defaults={"relax_job": {"relax_cell": True}},
         param_swaps=job_params,
         decorators=job_decorators,
     ).values()
