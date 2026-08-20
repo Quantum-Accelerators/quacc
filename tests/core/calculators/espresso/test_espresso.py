@@ -247,3 +247,44 @@ def test_bad_calculator_params():
 
     with pytest.raises(NotImplementedError, match="does not support the directory"):
         Espresso(input_atoms=atoms, kpts=(1, 1, 1), directory="bad")
+
+
+def test_prepare_copy_files_pw_restart():
+    parameters = {
+        "input_data": {
+            "control": {"restart_mode": "restart"},
+            "electrons": {},
+        }
+    }
+
+    to_copy = prepare_copy_files(parameters)
+
+    assert Path("pwscf.wfc*") in to_copy
+    assert Path("pwscf.mix*") in to_copy
+    assert Path("pwscf.restart_k*") in to_copy
+    assert Path("pwscf.restart_scf*") in to_copy
+    assert Path("pwscf.save", "charge-density.*") in to_copy
+    assert Path("pwscf.save", "wfc*.*") in to_copy
+
+
+def test_prepare_copy_files_ph_recovery():
+    parameters = {
+        "input_data": {"inputph": {"lqdir": True, "recover": True}}
+    }
+
+    to_copy = prepare_copy_files(parameters, binary="ph")
+
+    assert Path("_ph*", "pwscf.q_*", "pwscf.save", "charge-density.*") in to_copy
+    assert Path("_ph*", "pwscf.phsave") in to_copy
+
+
+@pytest.mark.parametrize(
+    ("binary", "expected"),
+    [
+        ("matdyn", Path("q2r.fc*")),
+        ("q2r", Path("matdyn*")),
+        ("dvscf_q2r", Path("matdyn0*")),
+    ],
+)
+def test_prepare_copy_files_postprocessing(binary, expected):
+    assert expected in prepare_copy_files({}, binary=binary)
