@@ -1576,11 +1576,11 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
     output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "kpts": (1, 1, 1),
-        "istart": 0,
         "ediffg": -0.05,
         "ibrion": 2,
         "nwrite": 2,
-        "gga": "pe",
+        "gga": "PE",
+        "xc": "pbe",
         "ivdw": 12,
         "encut": 600.0,
         "lcharg": False,
@@ -1603,6 +1603,7 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
         "gamma": True,
         "isym": 0,
         "potim": 0.01,
+        "pp": "PBE",
         "pp_version": "54",
     }
 

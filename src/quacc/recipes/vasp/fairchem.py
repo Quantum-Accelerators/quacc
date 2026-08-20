@@ -24,6 +24,11 @@ has_fairchem_odac = (
     and bool(find_spec("fairchem.data"))
     and bool(find_spec("fairchem.data.odac"))
 )
+has_fairchem_oc = (
+    has_fairchem
+    and bool(find_spec("fairchem.data"))
+    and bool(find_spec("fairchem.data.oc"))
+)
 has_atomate2 = bool(find_spec("atomate2"))
 
 if TYPE_CHECKING:
@@ -224,9 +229,12 @@ def odac_static_job(
     with TemporaryDirectory() as tmpdir:
         setup_vasp_calc_mof(odac_atoms, Path(tmpdir))
         calc_defaults = dict(odac_atoms.calc.parameters)
+    calc_defaults.pop("istart", None)
     calc_defaults |= {
         "kpts": kpts,
         "nsw": 0,
+        "xc": "pbe",
+        "pp": "PBE",
         "incar_copilot_mode": "critical",
         "use_custodian": False,
     }
@@ -241,7 +249,7 @@ def odac_static_job(
 
 @job
 @requires(
-    has_fairchem_omat,
+    has_fairchem_oc,
     "fairchem-data-oc is not installed. Run `pip install quacc[fairchem]`",
 )
 def oc20_static_job(
