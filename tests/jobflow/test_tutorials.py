@@ -25,6 +25,31 @@ def test_tutorial1a(tmp_path, monkeypatch, jobflow_output):
     assert "atoms" in jobflow_output(responses, job)
 
 
+def test_tutorial1b(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    # Define the Atoms object
+    atoms = bulk("Cu")
+
+    # Create the workflow with arguments
+    workflow = bulk_to_slabs_flow(atoms)
+
+    # Dispatch the workflow and get results
+    responses = jf.run_locally(workflow, ensure_success=True)
+
+    # Inspect the concrete results returned by the static jobs
+    results = [
+        response.output
+        for indexed_responses in responses.values()
+        for response in indexed_responses.values()
+        if isinstance(response.output, dict)
+        and response.output.get("name") == "EMT Static"
+    ]
+    assert len(results) == 4
+    for result in results:
+        assert "atoms" in result
+
+
 def test_tutorial2a(tmp_path, monkeypatch, jobflow_output):
     monkeypatch.chdir(tmp_path)
 
