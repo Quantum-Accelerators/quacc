@@ -275,3 +275,11 @@ def test_safe_decompress_dir_skips_disappearing_files(tmp_path, monkeypatch, cap
         safe_decompress_dir(tmp_path)
 
     assert f"Cannot find {disappearing_file.name}" in caplog.text
+
+
+def test_find_recent_logfile_skips_directories(tmp_path):
+    (tmp_path / "directory.log").mkdir()
+    logfile = tmp_path / "actual.log"
+    logfile.touch()
+
+    assert find_recent_logfile(tmp_path, ".log") == logfile.resolve()
