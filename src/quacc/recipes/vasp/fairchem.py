@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from importlib.util import find_spec
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -16,6 +18,11 @@ has_fairchem_omat = (
     has_fairchem
     and bool(find_spec("fairchem.data"))
     and bool(find_spec("fairchem.data.omat"))
+)
+has_fairchem_odac = (
+    has_fairchem
+    and bool(find_spec("fairchem.data"))
+    and bool(find_spec("fairchem.data.odac"))
 )
 has_atomate2 = bool(find_spec("atomate2"))
 
@@ -173,6 +180,10 @@ def _make_omc_inputs(atoms: Atoms) -> dict:
 
 
 @job
+@requires(
+    has_fairchem_odac,
+    "fairchem-data-odac is not installed. Run `pip install quacc[fairchem]`",
+)
 def odac_static_job(
     atoms: Atoms,
     kpts: tuple = (1, 1, 1),
@@ -207,36 +218,18 @@ def odac_static_job(
         See the type-hint for the data structure.
     """
 
-    calc_defaults = {
+    from fairchem.data.odac.setup_vasp import setup_vasp_calc_mof
+
+    odac_atoms = atoms.copy()
+    with TemporaryDirectory() as tmpdir:
+        setup_vasp_calc_mof(odac_atoms, Path(tmpdir))
+        calc_defaults = dict(odac_atoms.calc.parameters)
+    calc_defaults |= {
         "kpts": kpts,
-        "nwrite": 2,
-        "xc": "pbe",
-        "ivdw": 12,
-        "encut": 600.0,
-        "lcharg": False,
-        "lwave": False,
-        "ismear": 0,
-        "sigma": 0.2,
-        "ispin": 2,
-        "prec": "accurate",
-        "nelm": 60,
-        "nelmin": 2,
-        "ediff": 1e-5,
-        "ediffg": -0.05,
-        "maxmix": 40,
         "nsw": 0,
-        "ibrion": 2,
-        "isif": 3,
-        "potim": 0.01,
-        "algo": "normal",
-        "ldiag": True,
-        "lreal": "auto",
-        "lplane": True,
-        "gamma": True,
-        "isym": 0,
-        "pp_version": "54",
+        "incar_copilot_mode": "critical",
+        "use_custodian": False,
     }
-    calc_defaults |= {"incar_copilot_mode": "critical", "use_custodian": False}
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
