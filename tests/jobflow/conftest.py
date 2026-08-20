@@ -3,7 +3,20 @@ from __future__ import annotations
 from pathlib import Path
 from shutil import rmtree
 
+import pytest
+
 TEST_SCRATCH_DIR = Path(__file__).parent / "_test_scratch"
+
+
+@pytest.fixture
+def jobflow_output():
+    """Return the latest stored output for a Jobflow job."""
+
+    def get_output(responses, job):
+        indexed_responses = responses[job.uuid]
+        return indexed_responses[max(indexed_responses)].output
+
+    return get_output
 
 
 def pytest_sessionstart():
