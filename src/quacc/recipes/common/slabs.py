@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import get_settings, subflow
+from quacc import subflow
 from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 
 if TYPE_CHECKING:
@@ -52,19 +52,16 @@ def bulk_to_slabs_subflow(
 
     slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
-    jobs = []
     results = []
     for slab in slabs:
         result = relax_job(slab)
-        jobs.append(result)
 
         if static_job is not None:
             result = static_job(result["atoms"])
-            jobs.append(result)
 
         results.append(result)
 
-    return _finalize_subflow(jobs, results)
+    return results
 
 
 @subflow
@@ -107,26 +104,13 @@ def slab_to_ads_subflow(
 
     slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
-    jobs = []
     results = []
     for slab in slabs:
         result = relax_job(slab)
-        jobs.append(result)
 
         if static_job is not None:
             result = static_job(result["atoms"])
-            jobs.append(result)
 
         results.append(result)
 
-    return _finalize_subflow(jobs, results)
-
-
-def _finalize_subflow(jobs: list[Any], results: list[Any]) -> Any:
-    """Return an explicit replacement flow when running with Jobflow."""
-    if get_settings().WORKFLOW_ENGINE != "jobflow":
-        return results
-
-    from jobflow import Flow
-
-    return Flow(jobs=jobs, output=[result.output for result in results])
+    return results
