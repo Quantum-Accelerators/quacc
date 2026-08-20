@@ -251,10 +251,7 @@ def test_bad_calculator_params():
 
 def test_prepare_copy_files_pw_restart():
     parameters = {
-        "input_data": {
-            "control": {"restart_mode": "restart"},
-            "electrons": {},
-        }
+        "input_data": {"control": {"restart_mode": "restart"}, "electrons": {}}
     }
 
     to_copy = prepare_copy_files(parameters)
@@ -268,9 +265,7 @@ def test_prepare_copy_files_pw_restart():
 
 
 def test_prepare_copy_files_ph_recovery():
-    parameters = {
-        "input_data": {"inputph": {"lqdir": True, "recover": True}}
-    }
+    parameters = {"input_data": {"inputph": {"lqdir": True, "recover": True}}}
 
     to_copy = prepare_copy_files(parameters, binary="ph")
 
