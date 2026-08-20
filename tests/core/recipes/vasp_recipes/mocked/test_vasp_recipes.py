@@ -63,8 +63,10 @@ def test_mp_aloe_static_job(patch_metallic_taskdoc):
     ref_parameters = {
         "algo": "normal",
         "ediff": 1e-5,
+        "ediffg": -0.02,
         "encut": 680.0,
         "gga_compat": False,
+        "ibrion": 2,
         "isif": 3,
         "ismear": 0,
         "ispin": 2,
@@ -1549,6 +1551,7 @@ def test_fairchem_omc(patch_metallic_taskdoc):
         "sigma": 0.1,
         "gga": "pe",
         "addgrid": True,
+        "ibrion": -1,
         "ivdw": 11,
         "nelmdl": -10,
         "setups": {"Si": ""},
@@ -1567,6 +1570,8 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
     output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "kpts": (1, 1, 1),
+        "ediffg": -0.05,
+        "ibrion": 2,
         "nwrite": 2,
         "gga": "PE",
         "xc": "pbe",
@@ -1591,6 +1596,7 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
         "lplane": True,
         "gamma": True,
         "isym": 0,
+        "potim": 0.01,
         "pp": "PBE",
         "pp_version": "54",
     }
@@ -1699,6 +1705,7 @@ def test_mattersim_static_job(patch_nonmetallic_taskdoc):
         "ediff": 0.0001,
         "encut": 520,
         "gamma": True,
+        "ibrion": 2,
         "isif": 3,
         "ismear": -5,
         "ispin": 2,
