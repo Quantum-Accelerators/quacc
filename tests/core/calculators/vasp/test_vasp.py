@@ -694,7 +694,7 @@ def test_kspacing():
 
 
 def test_kspacing_aggressive():
-    with change_settings({"VASP_incar_copilot_mode": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, kspacing=0.1, ismear=-5)
         assert calc.parameters["ismear"] == -5
@@ -970,7 +970,7 @@ def test_lasph():
 
 
 def test_lasph_aggressive():
-    with change_settings({"VASP_incar_copilot_mode": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, xc="rpbe")
@@ -1000,7 +1000,7 @@ def test_algo():
 
 
 def test_algo_aggressive():
-    with change_settings({"VASP_incar_copilot_mode": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, xc="rpbe")
@@ -1022,7 +1022,7 @@ def test_kpar():
     calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
     assert calc.parameters["kpar"] == 4
 
-    with change_settings({"VASP_incar_copilot_mode": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
         assert calc.parameters["kpar"] == 4
 
@@ -1031,7 +1031,7 @@ def test_kpar():
 
 
 def test_isym_aggressive():
-    with change_settings({"VASP_incar_copilot_mode": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, isym=2)
@@ -1051,7 +1051,7 @@ def test_isym_aggressive():
 
 
 def test_ncore_aggressive():
-    with change_settings({"VASP_incar_copilot_mode": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         atoms *= (2, 2, 2)
@@ -1067,7 +1067,7 @@ def test_ncore_aggressive():
 
 
 def test_ismear_aggressive():
-    with change_settings({"VASP_incar_copilot_mode": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, nsw=10)
@@ -1122,7 +1122,7 @@ def test_ismear_aggressive():
 
 
 def test_laechg_aggressive():
-    with change_settings({"VASP_incar_copilot_mode": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, nsw=10, laechg=True)
         assert not calc.parameters["laechg"]
@@ -1148,7 +1148,7 @@ def test_ldauprint():
 
 
 def test_ldauprint_aggressive():
-    with change_settings({"VASP_incar_copilot_mode": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, ldau=True)
@@ -1172,7 +1172,7 @@ def test_lreal():
 
 
 def test_lreal_aggressive():
-    with change_settings({"VASP_incar_copilot_mode": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, lreal=True, nsw=0)
         assert calc.parameters["lreal"] is False
