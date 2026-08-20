@@ -17,6 +17,11 @@ has_fairchem_omat = (
     and bool(find_spec("fairchem.data"))
     and bool(find_spec("fairchem.data.omat"))
 )
+has_fairchem_oc = (
+    has_fairchem
+    and bool(find_spec("fairchem.data"))
+    and bool(find_spec("fairchem.data.oc"))
+)
 has_atomate2 = bool(find_spec("atomate2"))
 
 if TYPE_CHECKING:
@@ -248,7 +253,7 @@ def odac_static_job(
 
 @job
 @requires(
-    has_fairchem_omat,
+    has_fairchem_oc,
     "fairchem-data-oc is not installed. Run `pip install quacc[fairchem]`",
 )
 def oc20_static_job(
