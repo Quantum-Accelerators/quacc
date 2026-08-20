@@ -47,20 +47,20 @@ def atoms_nospin():
 
 def test_vanilla_vasp():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, incar_copilot="off")
+    calc = Vasp(atoms, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, use_custodian=False, incar_copilot="off")
+    calc = Vasp(atoms, use_custodian=False, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot="off")
+    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot_mode="off")
     assert calc.parameters.get("gamma") is None
     assert calc.kpts is None
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, encut=None, incar_copilot="off")
+    calc = Vasp(atoms, encut=None, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
 
@@ -694,7 +694,7 @@ def test_kspacing():
 
 
 def test_kspacing_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, kspacing=0.1, ismear=-5)
         assert calc.parameters["ismear"] == -5
@@ -970,7 +970,7 @@ def test_lasph():
 
 
 def test_lasph_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, xc="rpbe")
@@ -1000,7 +1000,7 @@ def test_algo():
 
 
 def test_algo_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, xc="rpbe")
@@ -1022,7 +1022,7 @@ def test_kpar():
     calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
     assert calc.parameters["kpar"] == 4
 
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
         assert calc.parameters["kpar"] == 4
 
@@ -1031,7 +1031,7 @@ def test_kpar():
 
 
 def test_isym_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, isym=2)
@@ -1051,7 +1051,7 @@ def test_isym_aggressive():
 
 
 def test_ncore_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         atoms *= (2, 2, 2)
@@ -1067,7 +1067,7 @@ def test_ncore_aggressive():
 
 
 def test_ismear_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, nsw=10)
@@ -1122,7 +1122,7 @@ def test_ismear_aggressive():
 
 
 def test_laechg_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, nsw=10, laechg=True)
         assert not calc.parameters["laechg"]
@@ -1148,7 +1148,7 @@ def test_ldauprint():
 
 
 def test_ldauprint_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, ldau=True)
@@ -1172,7 +1172,7 @@ def test_lreal():
 
 
 def test_lreal_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, lreal=True, nsw=0)
         assert calc.parameters["lreal"] is False
@@ -1427,7 +1427,7 @@ def test_bad_pmg_converter():
 def test_pmg_input_set():
     atoms = bulk("Cu")
     parameters = MPtoASEConverter(atoms=atoms).convert_input_set(MPRelaxSet())
-    calc = Vasp(atoms, incar_copilot="off", **parameters)
+    calc = Vasp(atoms, incar_copilot_mode="off", **parameters)
     assert calc.parameters == {
         "algo": "fast",
         "ediff": 5e-05,
@@ -1458,7 +1458,7 @@ def test_pmg_input_set2():
     atoms = bulk("Fe") * (2, 1, 1)
     atoms[0].symbol = "O"
     parameters = MPtoASEConverter(atoms=atoms).convert_input_set(MPRelaxSet())
-    calc = Vasp(atoms, incar_copilot="off", **parameters)
+    calc = Vasp(atoms, incar_copilot_mode="off", **parameters)
     assert calc.parameters == {
         "algo": "fast",
         "ediff": 0.0001,

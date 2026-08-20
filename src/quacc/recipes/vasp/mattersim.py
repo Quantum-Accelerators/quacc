@@ -47,7 +47,7 @@ def mattersim_static_job(
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
     """
     calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(MPRelaxSet())
-    calc_defaults["nsw"] = 0
+    calc_defaults |= {"nsw": 0, "incar_copilot_mode": "critical"}
 
     return run_and_summarize(
         atoms,
