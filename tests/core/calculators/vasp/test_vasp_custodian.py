@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import pytest
 from custodian import Custodian
+from custodian.vasp.handlers import VaspErrorHandler
 
+from quacc.calculators.vasp import vasp_custodian
 from quacc.calculators.vasp.vasp_custodian import run_custodian
 
 
@@ -40,3 +42,29 @@ def test_run_vasp_custodian(monkeypatch):
 
     with pytest.raises(ValueError, match="Unknown VASP validator"):
         run_custodian(vasp_custodian_validators=["cow"])
+
+
+def test_vasp_error_exclude(monkeypatch):
+    original_error_msgs = VaspErrorHandler.error_msgs
+    seen_handlers = []
+
+    class MockVaspErrorHandler:
+        error_msgs = original_error_msgs
+        is_monitor = False
+
+        def __init__(self, **kwargs):
+            self.kwargs = kwargs
+            seen_handlers.append(self)
+
+    monkeypatch.setattr(vasp_custodian, "VaspErrorHandler", MockVaspErrorHandler)
+
+    run_custodian(vasp_custodian_vasp_error_exclude=["bravais"])
+
+    handler = seen_handlers[0]
+    assert "bravais" not in handler.kwargs["errors_subset_to_catch"]
+    assert set(handler.kwargs["errors_subset_to_catch"]) == set(original_error_msgs) - {
+        "bravais"
+    }
+
+    with pytest.raises(ValueError, match="Unknown VASP errors to exclude"):
+        run_custodian(vasp_custodian_vasp_error_exclude=["not-a-vasp-error"])
