@@ -68,4 +68,3 @@ def test_vasp_error_exclude(monkeypatch):
 
     with pytest.raises(ValueError, match="Unknown VASP errors to exclude"):
         run_custodian(vasp_custodian_vasp_error_exclude=["not-a-vasp-error"])
-

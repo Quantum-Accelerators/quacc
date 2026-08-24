@@ -637,4 +637,3 @@ def change_settings_wrap(
     wrapper._changed = True
     wrapper._original_func = original_func
     return wrapper
-
