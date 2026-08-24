@@ -1,4 +1,4 @@
-fairchem-core==2.21.0
+fairchem-core==2.22.0
 fairchem-data-oc==1.0.2
 fairchem-data-omat==0.2
 fairchem-data-omol==0.1.2
