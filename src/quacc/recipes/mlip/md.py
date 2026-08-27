@@ -4,6 +4,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import numpy as np
+from ase.md.andersen import Andersen
+from ase.md.bussi import Bussi
+from ase.md.langevin import Langevin
+from ase.md.nose_hoover_chain import MTKNPT, IsotropicMTKNPT, NoseHooverChainNVT
+from ase.md.npt import NPT
+from ase.md.nptberendsen import Inhomogeneous_NPTBerendsen, NPTBerendsen
+from ase.md.nvtberendsen import NVTBerendsen
 from ase.md.verlet import VelocityVerlet
 from ase.units import bar, fs
 
@@ -26,7 +34,7 @@ if TYPE_CHECKING:
 def md_job(
     atoms: Atoms,
     library: Literal["fairchem", "matcalc", "rootstock"],
-    dynamics: MolecularDynamics = VelocityVerlet,
+    dynamics: MolecularDynamics | str = VelocityVerlet,
     steps: int = 1000,
     timestep_fs: float = 1.0,
     temperature_K: float | None = None,
@@ -48,7 +56,28 @@ def md_job(
         - `matcalc` passes `**calc_kwargs` to `matcalc.load_fp()`
         - `rootstock` passes `**calc_kwargs` to `rootstock.RootstockCalculator()`
     dynamics
-        ASE `MolecularDynamics` class to use, from `ase.md.md.MolecularDynamics`.
+        Either an ASE `MolecularDynamics` class (from `ase.md.md.MolecularDynamics`)
+        or an ensemble name. Supported ensemble names, their ASE dynamics classes,
+        and their default parameters (any of which can be overridden via
+        `md_params["dynamics_kwargs"]`; `taut` defaults to 100x the timestep and
+        `taup` to 1000x the timestep):
+
+        - `"nve"`: `VelocityVerlet` (`temperature_K` and `pressure_bar` are ignored)
+        - `"nvt"`, `"nvt_nose_hoover"`: `NoseHooverChainNVT` (`tdamp=taut`)
+        - `"nvt_berendsen"`: `NVTBerendsen` (`taut`)
+        - `"nvt_langevin"`: `Langevin` (`friction=0.001`)
+        - `"nvt_andersen"`: `Andersen` (`andersen_prob=0.01`)
+        - `"nvt_bussi"`: `Bussi` (`taut`)
+        - `"npt"`, `"npt_nose_hoover"`: `NPT` (`ttime=25 fs`, `pfactor=75**2 fs`)
+        - `"npt_berendsen"`: `NPTBerendsen` (`taut`, `taup`)
+        - `"npt_inhomogeneous"`: `Inhomogeneous_NPTBerendsen` (`taut`, `taup`)
+        - `"npt_mtk"`: `MTKNPT` (`tdamp=taut`, `pdamp=taup`)
+        - `"npt_isotropic_mtk"`: `IsotropicMTKNPT` (`tdamp=taut`, `pdamp=taup`)
+
+        For the NPT-family ensembles, `pressure_bar` is routed to the appropriate
+        keyword argument of the dynamics class (`externalstress` or `pressure_au`)
+        and defaults to 0 bar when not specified. If the `NPT` class is used, the
+        cell is transformed to the upper-triangular form it requires.
     steps
         Number of MD steps to run.
     timestep_fs
@@ -56,7 +85,10 @@ def md_job(
     temperature_K
         Temperature in K, if applicable for the given ensemble.
     pressure_bar
-        Pressure in bar, if applicable for the given ensemble.
+        Pressure in bar, if applicable for the given ensemble. When `dynamics` is
+        an ASE class, this is passed as `pressure_au` and is only compatible with
+        classes that accept that keyword argument (e.g. the Berendsen family);
+        prefer an ensemble name for NPT runs.
     md_params
         Dictionary of custom kwargs for the MD run. For a list of available
         keys, refer to [quacc.runners.ase.Runner.run_md][].
@@ -71,14 +103,21 @@ def md_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.md][].
         See the type-hint for the data structure.
     """
-    md_defaults = {
-        "steps": steps,
-        "dynamics_kwargs": {
-            "timestep": timestep_fs * fs,
+    if isinstance(dynamics, str):
+        dynamics, dynamics_defaults = _resolve_ensemble(
+            dynamics, timestep_fs * fs, temperature_K, pressure_bar
+        )
+    else:
+        dynamics_defaults = {
             "temperature_K": temperature_K if temperature_K is not None else Remove,
             "pressure_au": pressure_bar * bar if pressure_bar is not None else Remove,
-        },
-    }
+        }
+    dynamics_defaults["timestep"] = timestep_fs * fs
+
+    if dynamics is NPT:
+        atoms = _upper_triangular_cell(atoms)
+
+    md_defaults = {"steps": steps, "dynamics_kwargs": dynamics_defaults}
     md_params = recursive_dict_merge(md_defaults, md_params)
 
     calc = pick_calculator(library, **calc_kwargs)
@@ -87,3 +126,121 @@ def md_job(
     return Summarize(
         additional_fields={"name": f"{library} MD"} | (additional_fields or {})
     ).md(dyn)
+
+
+def _resolve_ensemble(
+    ensemble: str,
+    timestep: float,
+    temperature_K: float | None,
+    pressure_bar: float | None,
+) -> tuple[type[MolecularDynamics], dict[str, Any]]:
+    """
+    Resolve an ensemble name to an ASE dynamics class and its default kwargs.
+
+    The default parameters follow matcalc's `MDCalc`: `taut` is 100x the
+    timestep, `taup` is 1000x the timestep, and the pressure defaults to 0 bar
+    for the NPT-family ensembles.
+
+    Parameters
+    ----------
+    ensemble
+        Name of the ensemble (case-insensitive). See [quacc.recipes.mlip.md.md_job][]
+        for the supported names.
+    timestep
+        Time step in ASE units.
+    temperature_K
+        Temperature in K, if applicable for the given ensemble.
+    pressure_bar
+        Pressure in bar, if applicable for the given ensemble.
+
+    Returns
+    -------
+    tuple[type[MolecularDynamics], dict]
+        The ASE dynamics class and its default `dynamics_kwargs`.
+    """
+    taut = 100 * timestep
+    taup = 1000 * timestep
+    temperature = {
+        "temperature_K": temperature_K if temperature_K is not None else Remove
+    }
+    pressure = (pressure_bar if pressure_bar is not None else 0.0) * bar
+
+    presets: dict[str, tuple[type[MolecularDynamics], dict[str, Any]]] = {
+        "nve": (VelocityVerlet, {}),
+        "nvt": (NoseHooverChainNVT, temperature | {"tdamp": taut}),
+        "nvt_nose_hoover": (NoseHooverChainNVT, temperature | {"tdamp": taut}),
+        "nvt_berendsen": (NVTBerendsen, temperature | {"taut": taut}),
+        "nvt_langevin": (Langevin, temperature | {"friction": 1.0e-3}),
+        "nvt_andersen": (Andersen, temperature | {"andersen_prob": 1.0e-2}),
+        "nvt_bussi": (Bussi, temperature | {"taut": taut}),
+        "npt": (
+            NPT,
+            temperature
+            | {"externalstress": pressure, "ttime": 25 * fs, "pfactor": 75.0**2 * fs},
+        ),
+        "npt_nose_hoover": (
+            NPT,
+            temperature
+            | {"externalstress": pressure, "ttime": 25 * fs, "pfactor": 75.0**2 * fs},
+        ),
+        "npt_berendsen": (
+            NPTBerendsen,
+            temperature | {"pressure_au": pressure, "taut": taut, "taup": taup},
+        ),
+        "npt_inhomogeneous": (
+            Inhomogeneous_NPTBerendsen,
+            temperature | {"pressure_au": pressure, "taut": taut, "taup": taup},
+        ),
+        "npt_mtk": (
+            MTKNPT,
+            temperature | {"pressure_au": pressure, "tdamp": taut, "pdamp": taup},
+        ),
+        "npt_isotropic_mtk": (
+            IsotropicMTKNPT,
+            temperature | {"pressure_au": pressure, "tdamp": taut, "pdamp": taup},
+        ),
+    }
+
+    if ensemble.lower() not in presets:
+        msg = (
+            f"Unsupported ensemble: {ensemble}. "
+            f"Valid options are: {', '.join(presets)}."
+        )
+        raise ValueError(msg)
+
+    return presets[ensemble.lower()]
+
+
+def _upper_triangular_cell(atoms: Atoms) -> Atoms:
+    """
+    Transform the cell to the upper-triangular form required by the ASE `NPT`
+    class, if it is not already in that form. Adapted from matcalc's `MDCalc`.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object.
+
+    Returns
+    -------
+    Atoms
+        A copy of the Atoms object with an upper-triangular cell, or the
+        original Atoms object if the cell is already upper-triangular.
+    """
+    if atoms.cell[1, 0] == atoms.cell[2, 0] == atoms.cell[2, 1] == 0.0:
+        return atoms
+
+    atoms = atoms.copy()
+    a, b, c, alpha, beta, gamma = atoms.cell.cellpar()
+    angles = np.radians((alpha, beta, gamma))
+    sin_a, sin_b, _ = np.sin(angles)
+    cos_a, cos_b, cos_g = np.cos(angles)
+    cos_p = np.clip((cos_g - cos_a * cos_b) / (sin_a * sin_b), -1, 1)
+    sin_p = np.sqrt(1 - cos_p**2)
+    new_basis = [
+        (a * sin_b * sin_p, a * sin_b * cos_p, a * cos_b),
+        (0, b * sin_a, b * cos_a),
+        (0, 0, c),
+    ]
+    atoms.set_cell(new_basis, scale_atoms=True)
+    return atoms
