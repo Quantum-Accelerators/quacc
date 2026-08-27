@@ -62,7 +62,9 @@ def test_md_job(tmp_path, monkeypatch, library):
     assert np.shape(output["results"]["forces"]) == (8, 3)
     # The velocities are seeded, so the initial temperature does not depend on
     # the MLIP library.
-    assert output["trajectory_log"][0]["temperature"] == pytest.approx(205.312, abs=0.01)
+    assert output["trajectory_log"][0]["temperature"] == pytest.approx(
+        205.312, abs=0.01
+    )
     # The input Atoms object should not be mutated.
     assert atoms.positions == pytest.approx(old_positions)
 

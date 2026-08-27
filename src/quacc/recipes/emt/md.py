@@ -76,8 +76,8 @@ def md_job(
         "steps": steps,
         "dynamics_kwargs": {
             "timestep": timestep_fs * fs,
-            "temperature_K": temperature_K if temperature_K else Remove,
-            "pressure_au": pressure_bar * bar if pressure_bar else Remove,
+            "temperature_K": temperature_K if temperature_K is not None else Remove,
+            "pressure_au": pressure_bar * bar if pressure_bar is not None else Remove,
         },
     }
     md_params = recursive_dict_merge(md_defaults, md_params)
