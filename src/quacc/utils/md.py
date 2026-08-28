@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from ase.md.andersen import Andersen
 from ase.md.bussi import Bussi
@@ -22,7 +22,20 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
 
-    from quacc.types import MDEnsemble
+MDEnsemble = Literal[
+    "nve",
+    "nvt",
+    "nvt_berendsen",
+    "nvt_langevin",
+    "nvt_andersen",
+    "nvt_bussi",
+    "npt",
+    "npt_berendsen",
+    "npt_inhomogeneous",
+    "npt_mtk",
+    "npt_isotropic_mtk",
+]
+"""Ensemble names accepted by [quacc.utils.md.resolve_md_ensemble][]."""
 
 
 def resolve_md_ensemble(
@@ -37,8 +50,8 @@ def resolve_md_ensemble(
     Parameters
     ----------
     ensemble
-        Name of the ensemble (case-insensitive). See [quacc.types.MDEnsemble][]
-        for the supported names.
+        Name of the ensemble (case-insensitive). See
+        [quacc.utils.md.MDEnsemble][] for the supported names.
     timestep
         Time step in ASE units.
     temperature_K

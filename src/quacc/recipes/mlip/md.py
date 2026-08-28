@@ -21,7 +21,8 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
 
-    from quacc.types import DynSchema, MDEnsemble, MDParams
+    from quacc.types import DynSchema, MDParams
+    from quacc.utils.md import MDEnsemble
 
 
 @job

@@ -23,7 +23,8 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
 
-    from quacc.types import CopyFiles, DynSchema, MDEnsemble, MDParams
+    from quacc.types import CopyFiles, DynSchema, MDParams
+    from quacc.utils.md import MDEnsemble
 
 
 @job
@@ -48,7 +49,7 @@ def md_job(
         Atoms object
     dynamics
         Either an ASE `MolecularDynamics` class (from `ase.md.md.MolecularDynamics`)
-        or an ensemble name from [quacc.types.MDEnsemble][], resolved to an ASE
+        or an ensemble name from [quacc.utils.md.MDEnsemble][], resolved to an ASE
         dynamics class with sensible defaults by
         [quacc.utils.md.resolve_md_ensemble][] (all of which can be overridden
         via `md_params["dynamics_kwargs"]`). For the NPT-family ensembles,

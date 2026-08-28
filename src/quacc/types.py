@@ -69,21 +69,6 @@ if TYPE_CHECKING:
 
     # ----------- Runner parameter type hints -----------
 
-    MDEnsemble = Literal[
-        "nve",
-        "nvt",
-        "nvt_berendsen",
-        "nvt_langevin",
-        "nvt_andersen",
-        "nvt_bussi",
-        "npt",
-        "npt_berendsen",
-        "npt_inhomogeneous",
-        "npt_mtk",
-        "npt_isotropic_mtk",
-    ]
-    """Ensemble names accepted by [quacc.utils.md.resolve_md_ensemble][]."""
-
     class OptParams(TypedDict, total=False):
         """
         Type hint for `opt_params` used throughout quacc.
