@@ -120,7 +120,7 @@ def test_relax_job(tmp_path, monkeypatch):
 def test_md_job1():
     atoms = molecule("H2O")
     old_positions = atoms.positions.copy()
-    output = md_job(atoms, steps=500)
+    output = md_job(atoms, timestep_fs=1.0, steps=500)
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 501
     assert output["name"] == "EMT MD"
@@ -175,6 +175,15 @@ def test_md_job3():
     assert output["name"] == "EMT MD"
     assert output["trajectory_log"][1]["temperature"] == pytest.approx(759.8829)
     assert output["trajectory_results"][-1]["energy"] == pytest.approx(2.0363759)
+
+
+def test_md_job_ensemble():
+    atoms = molecule("H2O")
+    output = md_job(atoms, dynamics="nvt_langevin", temperature_K=300, steps=20)
+    assert len(output["trajectory"]) == 21
+    assert output["parameters_md"]["timestep"] == pytest.approx(0.5 * fs)
+    assert output["parameters_md"]["temperature_K"] == 300
+    assert output["parameters_md"]["friction"] == pytest.approx(1.0e-3)
 
 
 def test_md_job_error():
