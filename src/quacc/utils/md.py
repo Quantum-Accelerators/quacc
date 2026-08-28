@@ -40,24 +40,23 @@ MDEnsemble = Literal[
 
 def resolve_md_ensemble(
     ensemble: MDEnsemble,
-    timestep: float,
+    timestep_fs: float,
     temperature_K: float | None,
     pressure_bar: float | None,
 ) -> tuple[type[MolecularDynamics], dict[str, Any]]:
     """
     Resolve an ensemble name to an ASE dynamics class and its default kwargs.
 
-    Note that the `npt_berendsen` and `npt_inhomogeneous`
-    presets additionally require a
-    `compressibility_au`, which is not set here.
+    Note that the `npt_berendsen` and `npt_inhomogeneous` presets additionally
+    require a `compressibility_au`, which is not set here.
 
     Parameters
     ----------
     ensemble
         Name of the ensemble (case-insensitive). See
         [quacc.utils.md.MDEnsemble][] for the supported names.
-    timestep
-        Time step in ASE units.
+    timestep_fs
+        Time step in fs.
     temperature_K
         Temperature in K, if applicable for the given ensemble.
     pressure_bar
@@ -68,8 +67,8 @@ def resolve_md_ensemble(
     tuple[type[MolecularDynamics], dict]
         The ASE dynamics class and its default `dynamics_kwargs`.
     """
-    taut = 100 * timestep
-    taup = 1000 * timestep
+    taut = 100 * timestep_fs * fs
+    taup = 1000 * timestep_fs * fs
     temperature = {
         "temperature_K": temperature_K if temperature_K is not None else Remove
     }

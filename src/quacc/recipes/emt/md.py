@@ -94,7 +94,10 @@ def md_job(
     """
     if isinstance(dynamics, str):
         dynamics, dynamics_defaults = resolve_md_ensemble(
-            dynamics, timestep_fs * fs, temperature_K, pressure_bar
+            dynamics,
+            timestep_fs=timestep_fs,
+            temperature_K=temperature_K,
+            pressure_bar=pressure_bar,
         )
     else:
         dynamics_defaults = {

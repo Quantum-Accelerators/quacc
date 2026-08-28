@@ -84,10 +84,7 @@ def test_md_job_nvt(tmp_path, monkeypatch, library):
         temperature_K=300,
         md_params={
             "dynamics_kwargs": {"friction": 0.01},
-            "maxwell_boltzmann_kwargs": {
-                "temperature_K": 300,
-                "rng": np.random.default_rng(seed=42),
-            },
+            "maxwell_boltzmann_kwargs": {"rng": np.random.default_rng(seed=42)},
         },
         **_calc_kwargs(library),
     )
@@ -111,12 +108,7 @@ def test_md_job_ensemble_nvt_langevin(tmp_path, monkeypatch, library):
         dynamics="nvt_langevin",
         steps=10,
         temperature_K=300,
-        md_params={
-            "maxwell_boltzmann_kwargs": {
-                "temperature_K": 300,
-                "rng": np.random.default_rng(seed=42),
-            }
-        },
+        md_params={"maxwell_boltzmann_kwargs": {"rng": np.random.default_rng(seed=42)}},
         **_calc_kwargs(library),
     )
 
@@ -143,12 +135,7 @@ def test_md_job_ensemble_npt(tmp_path, monkeypatch, library):
         dynamics="npt",
         steps=10,
         temperature_K=300,
-        md_params={
-            "maxwell_boltzmann_kwargs": {
-                "temperature_K": 300,
-                "rng": np.random.default_rng(seed=42),
-            }
-        },
+        md_params={"maxwell_boltzmann_kwargs": {"rng": np.random.default_rng(seed=42)}},
         **_calc_kwargs(library),
     )
 

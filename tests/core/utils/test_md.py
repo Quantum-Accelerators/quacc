@@ -34,56 +34,56 @@ from quacc.utils.md import resolve_md_ensemble, upper_triangular_cell
     ],
 )
 def test_resolve_md_ensemble_classes(ensemble, expected_class):
-    dynamics, _ = resolve_md_ensemble(ensemble, 1.0 * fs, 300, None)
+    dynamics, _ = resolve_md_ensemble(ensemble, 1.0, 300, None)
     assert dynamics is expected_class
 
 
 def test_resolve_md_ensemble_is_case_insensitive():
-    dynamics, _ = resolve_md_ensemble("NVT_Langevin", 1.0 * fs, 300, None)
+    dynamics, _ = resolve_md_ensemble("NVT_Langevin", 1.0, 300, None)
     assert dynamics is Langevin
 
 
 def test_resolve_md_ensemble_coupling_times_scale_with_timestep():
-    _, kwargs = resolve_md_ensemble("npt_berendsen", 2.0 * fs, 300, 1.0)
+    _, kwargs = resolve_md_ensemble("npt_berendsen", 2.0, 300, 1.0)
     assert kwargs["taut"] == pytest.approx(200 * fs)
     assert kwargs["taup"] == pytest.approx(2000 * fs)
 
-    _, kwargs = resolve_md_ensemble("nvt", 2.0 * fs, 300, None)
+    _, kwargs = resolve_md_ensemble("nvt", 2.0, 300, None)
     assert kwargs["tdamp"] == pytest.approx(200 * fs)
 
 
 def test_resolve_md_ensemble_pressure_routing():
     # ase.md.npt.NPT takes `externalstress`; the Berendsen and MTK families
     # take `pressure_au`.
-    _, kwargs = resolve_md_ensemble("npt", 1.0 * fs, 300, 2.0)
+    _, kwargs = resolve_md_ensemble("npt", 1.0, 300, 2.0)
     assert kwargs["externalstress"] == pytest.approx(2.0 * bar)
     assert "pressure_au" not in kwargs
 
-    _, kwargs = resolve_md_ensemble("npt_berendsen", 1.0 * fs, 300, 2.0)
+    _, kwargs = resolve_md_ensemble("npt_berendsen", 1.0, 300, 2.0)
     assert kwargs["pressure_au"] == pytest.approx(2.0 * bar)
     assert "externalstress" not in kwargs
 
     # The pressure defaults to 0 bar for the NPT-family ensembles.
-    _, kwargs = resolve_md_ensemble("npt_mtk", 1.0 * fs, 300, None)
+    _, kwargs = resolve_md_ensemble("npt_mtk", 1.0, 300, None)
     assert kwargs["pressure_au"] == 0.0
 
 
 def test_resolve_md_ensemble_temperature_handling():
     # An explicit 0 K is honored; only None means unset.
-    _, kwargs = resolve_md_ensemble("nvt_langevin", 1.0 * fs, 0, None)
+    _, kwargs = resolve_md_ensemble("nvt_langevin", 1.0, 0, None)
     assert kwargs["temperature_K"] == 0
 
-    _, kwargs = resolve_md_ensemble("nvt_langevin", 1.0 * fs, None, None)
+    _, kwargs = resolve_md_ensemble("nvt_langevin", 1.0, None, None)
     assert kwargs["temperature_K"] is Remove
 
     # NVE ignores the temperature and pressure entirely.
-    _, kwargs = resolve_md_ensemble("nve", 1.0 * fs, 300, 1.0)
+    _, kwargs = resolve_md_ensemble("nve", 1.0, 300, 1.0)
     assert kwargs == {}
 
 
 def test_resolve_md_ensemble_unknown():
     with pytest.raises(ValueError, match="Unsupported ensemble"):
-        resolve_md_ensemble("nvt_gibberish", 1.0 * fs, 300, None)
+        resolve_md_ensemble("nvt_gibberish", 1.0, 300, None)
 
 
 def test_upper_triangular_cell():
