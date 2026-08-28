@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 def md_job(
     atoms: Atoms,
     dynamics: MolecularDynamics | MDEnsemble = "nve",
-    steps: int = 10000,
+    steps: int = 20000,
     timestep_fs: float = 0.5,
     temperature_K: float | None = None,
     pressure_bar: float | None = None,
