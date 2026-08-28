@@ -29,14 +29,28 @@ if TYPE_CHECKING:
 
     from quacc.types import DynSchema, MDParams
 
+    MDEnsemble = Literal[
+        "nve",
+        "nvt",
+        "nvt_berendsen",
+        "nvt_langevin",
+        "nvt_andersen",
+        "nvt_bussi",
+        "npt",
+        "npt_berendsen",
+        "npt_inhomogeneous",
+        "npt_mtk",
+        "npt_isotropic_mtk",
+    ]
+
 
 @job
 def md_job(
     atoms: Atoms,
     library: Literal["fairchem", "matcalc", "rootstock"],
-    dynamics: MolecularDynamics | str = VelocityVerlet,
-    steps: int = 1000,
-    timestep_fs: float = 1.0,
+    dynamics: MolecularDynamics | MDEnsemble = VelocityVerlet,
+    steps: int = 10000,
+    timestep_fs: float = 0.5,
     temperature_K: float | None = None,
     pressure_bar: float | None = None,
     md_params: MDParams | None = None,
@@ -63,12 +77,12 @@ def md_job(
         `taup` to 1000x the timestep):
 
         - `"nve"`: `VelocityVerlet` (`temperature_K` and `pressure_bar` are ignored)
-        - `"nvt"`, `"nvt_nose_hoover"`: `NoseHooverChainNVT` (`tdamp=taut`)
+        - `"nvt"`: `NoseHooverChainNVT` (`tdamp=taut`)
         - `"nvt_berendsen"`: `NVTBerendsen` (`taut`)
         - `"nvt_langevin"`: `Langevin` (`friction=0.001`)
         - `"nvt_andersen"`: `Andersen` (`andersen_prob=0.01`)
         - `"nvt_bussi"`: `Bussi` (`taut`)
-        - `"npt"`, `"npt_nose_hoover"`: `NPT` (`ttime=25 fs`, `pfactor=75**2 fs`)
+        - `"npt"`: `NPT` (`ttime=25 fs`, `pfactor=75**2 fs`)
         - `"npt_berendsen"`: `NPTBerendsen` (`taut`, `taup`)
         - `"npt_inhomogeneous"`: `Inhomogeneous_NPTBerendsen` (`taut`, `taup`)
         - `"npt_mtk"`: `MTKNPT` (`tdamp=taut`, `pdamp=taup`)
@@ -129,7 +143,7 @@ def md_job(
 
 
 def _resolve_ensemble(
-    ensemble: str,
+    ensemble: MDEnsemble,
     timestep: float,
     temperature_K: float | None,
     pressure_bar: float | None,
@@ -168,17 +182,11 @@ def _resolve_ensemble(
     presets: dict[str, tuple[type[MolecularDynamics], dict[str, Any]]] = {
         "nve": (VelocityVerlet, {}),
         "nvt": (NoseHooverChainNVT, temperature | {"tdamp": taut}),
-        "nvt_nose_hoover": (NoseHooverChainNVT, temperature | {"tdamp": taut}),
         "nvt_berendsen": (NVTBerendsen, temperature | {"taut": taut}),
         "nvt_langevin": (Langevin, temperature | {"friction": 1.0e-3}),
         "nvt_andersen": (Andersen, temperature | {"andersen_prob": 1.0e-2}),
         "nvt_bussi": (Bussi, temperature | {"taut": taut}),
         "npt": (
-            NPT,
-            temperature
-            | {"externalstress": pressure, "ttime": 25 * fs, "pfactor": 75.0**2 * fs},
-        ),
-        "npt_nose_hoover": (
             NPT,
             temperature
             | {"externalstress": pressure, "ttime": 25 * fs, "pfactor": 75.0**2 * fs},

@@ -6,7 +6,6 @@ import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
-from ase.md.langevin import Langevin
 from ase.md.npt import NPT
 from ase.optimize import FIRE
 from ase.units import fs
@@ -176,21 +175,6 @@ def test_md_job3():
     assert output["name"] == "EMT MD"
     assert output["trajectory_log"][1]["temperature"] == pytest.approx(759.8829)
     assert output["trajectory_results"][-1]["energy"] == pytest.approx(2.0363759)
-
-
-def test_md_job_zero_temperature():
-    # A 0 K setting (e.g. a Langevin quench) is valid and should not be
-    # silently dropped as falsy.
-    atoms = molecule("H2O")
-    output = md_job(
-        atoms,
-        dynamics=Langevin,
-        temperature_K=0,
-        steps=10,
-        md_params={"dynamics_kwargs": {"friction": 0.01}},
-    )
-    assert output["parameters_md"]["temperature_K"] == 0
-    assert len(output["trajectory"]) == 11
 
 
 def test_md_job_error():

@@ -148,7 +148,7 @@ def test_md_job_ensemble_npt(tmp_path, monkeypatch, library):
     output = md_job(
         atoms,
         library=library,
-        dynamics="npt_nose_hoover",
+        dynamics="npt",
         steps=10,
         temperature_K=300,
         md_params={
@@ -174,13 +174,11 @@ def test_md_job_ensemble_npt(tmp_path, monkeypatch, library):
     [
         ("nve", VelocityVerlet),
         ("nvt", NoseHooverChainNVT),
-        ("nvt_nose_hoover", NoseHooverChainNVT),
         ("nvt_berendsen", NVTBerendsen),
         ("nvt_langevin", Langevin),
         ("nvt_andersen", Andersen),
         ("nvt_bussi", Bussi),
         ("npt", NPT),
-        ("npt_nose_hoover", NPT),
         ("npt_berendsen", NPTBerendsen),
         ("npt_inhomogeneous", Inhomogeneous_NPTBerendsen),
         ("npt_mtk", MTKNPT),
