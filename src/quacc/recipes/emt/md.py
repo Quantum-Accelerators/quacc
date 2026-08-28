@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 
 from ase.calculators.emt import EMT
 from ase.md.npt import NPT
-from ase.md.verlet import VelocityVerlet
 from ase.units import bar, fs
 
 from quacc import Remove, job
@@ -30,7 +29,7 @@ if TYPE_CHECKING:
 @job
 def md_job(
     atoms: Atoms,
-    dynamics: MolecularDynamics | MDEnsemble = VelocityVerlet,
+    dynamics: MolecularDynamics | MDEnsemble = "nve",
     steps: int = 10000,
     timestep_fs: float = 0.5,
     temperature_K: float | None = None,
@@ -48,23 +47,33 @@ def md_job(
     atoms
         Atoms object
     dynamics
-        Either an ASE `MolecularDynamics` class (from `ase.md.md.MolecularDynamics`)
-        or an ensemble name from [quacc.utils.md.MDEnsemble][], resolved to an ASE
-        dynamics class with sensible defaults by
-        [quacc.utils.md.resolve_md_ensemble][] (all of which can be overridden
-        via `md_params["dynamics_kwargs"]`). For the NPT-family ensembles,
-        `pressure_bar` is routed to the appropriate keyword argument of the
-        dynamics class (`externalstress` or `pressure_au`) and defaults to 0 bar
-        when not specified. If the `NPT` class is used, the cell is transformed
-        to the upper-triangular form it requires.
+        Either an ensemble name from [quacc.utils.md.MDEnsemble][] (the default
+        is `"nve"`), resolved to an ASE dynamics class with sensible defaults
+        by [quacc.utils.md.resolve_md_ensemble][] (all of which can be
+        overridden via `md_params["dynamics_kwargs"]`), or an ASE
+        `MolecularDynamics` class (from `ase.md.md.MolecularDynamics`). For the
+        NPT-family ensembles, `pressure_bar` is routed to the appropriate
+        keyword argument of the dynamics class (`externalstress` or
+        `pressure_au`) and defaults to 0 bar when not specified. If the `NPT`
+        class is used, the cell is transformed to the upper-triangular form it
+        requires.
     steps
         Number of MD steps to run.
     timestep_fs
         Time step in fs.
     temperature_K
-        Temperature in K, if applicable for the given ensemble.
+        Temperature in K, if applicable for the given ensemble. Unless the
+        input atoms already have nonzero momenta, a Maxwell-Boltzmann
+        distribution at this temperature is also applied to initialize the
+        velocities; set `md_params={"maxwell_boltzmann_kwargs": None}` to
+        disable this. When `dynamics` is an ASE class, `temperature_K` is also
+        passed to the class and is only compatible with classes that accept
+        that keyword argument.
     pressure_bar
-        Pressure in bar, if applicable for the given ensemble.
+        Pressure in bar, if applicable for the given ensemble. When `dynamics`
+        is an ASE class, this is passed as `pressure_au` and is only compatible
+        with classes that accept that keyword argument (e.g. the Berendsen
+        family); prefer an ensemble name for NPT runs.
     md_params
         Dictionary of custom kwargs for the MD run. For a list of available
         keys, refer to [quacc.runners.ase.Runner.run_md][].
@@ -98,6 +107,8 @@ def md_job(
         atoms = upper_triangular_cell(atoms)
 
     md_defaults = {"steps": steps, "dynamics_kwargs": dynamics_defaults}
+    if temperature_K is not None and not atoms.get_momenta().any():
+        md_defaults["maxwell_boltzmann_kwargs"] = {"temperature_K": temperature_K}
     md_params = recursive_dict_merge(md_defaults, md_params)
 
     calc = EMT(**calc_kwargs)

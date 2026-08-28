@@ -47,6 +47,10 @@ def resolve_md_ensemble(
     """
     Resolve an ensemble name to an ASE dynamics class and its default kwargs.
 
+    Note that the `npt_berendsen` and `npt_inhomogeneous` 
+    presets additionally require a
+    `compressibility_au`, which is not set here.
+
     Parameters
     ----------
     ensemble

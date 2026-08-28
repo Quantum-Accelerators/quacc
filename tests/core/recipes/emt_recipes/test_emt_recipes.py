@@ -7,8 +7,9 @@ import pytest
 from ase.build import bulk, molecule
 from ase.constraints import FixAtoms
 from ase.md.npt import NPT
+from ase.md.nptberendsen import NPTBerendsen
 from ase.optimize import FIRE
-from ase.units import fs
+from ase.units import bar, fs
 
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.recipes.emt.md import md_job
@@ -168,7 +169,11 @@ def test_md_job3():
         timestep_fs=1.0,
         temperature_K=1000,
         steps=500,
-        md_params={"dynamics_kwargs": {"ttime": 50 * fs}},
+        md_params={
+            "dynamics_kwargs": {"ttime": 50 * fs},
+            # The reference values below assume a zero-velocity start.
+            "maxwell_boltzmann_kwargs": None,
+        },
     )
     assert output["parameters"]["asap_cutoff"] is False
     assert len(output["trajectory"]) == 501
@@ -184,6 +189,52 @@ def test_md_job_ensemble():
     assert output["parameters_md"]["timestep"] == pytest.approx(0.5 * fs)
     assert output["parameters_md"]["temperature_K"] == 300
     assert output["parameters_md"]["friction"] == pytest.approx(1.0e-3)
+
+
+def test_md_job_maxwell_boltzmann_default():
+    # When a temperature is given, the velocities are initialized to a
+    # Maxwell-Boltzmann distribution at that temperature by default.
+    atoms = molecule("H2O")
+    output = md_job(atoms, dynamics="nve", temperature_K=300, steps=5)
+    assert output["trajectory_log"][0]["temperature"] > 0
+
+    # An all-zero momenta array (e.g. from a file round-trip) is still seeded.
+    atoms = molecule("H2O")
+    atoms.set_momenta(np.zeros((len(atoms), 3)))
+    output = md_job(atoms, dynamics="nve", temperature_K=300, steps=5)
+    assert output["trajectory_log"][0]["temperature"] > 0
+
+
+def test_md_job_maxwell_boltzmann_preserves_momenta():
+    # Atoms that already carry momenta (e.g. a restart) are not re-seeded.
+    atoms = molecule("H2O")
+    atoms.set_momenta(np.full((len(atoms), 3), 0.1))
+    expected_temperature = atoms.get_temperature()
+    output = md_job(atoms, dynamics="nve", temperature_K=300, steps=5)
+    assert output["trajectory_log"][0]["temperature"] == pytest.approx(
+        expected_temperature
+    )
+
+
+def test_md_job_npt_berendsen():
+    # An ASE dynamics class that accepts pressure_au, with an explicit 0 bar.
+    atoms = bulk("Cu") * (2, 2, 2)
+    output = md_job(
+        atoms,
+        dynamics=NPTBerendsen,
+        temperature_K=300,
+        pressure_bar=0.0,
+        steps=10,
+        md_params={
+            "dynamics_kwargs": {
+                "taut": 50 * fs,
+                "taup": 500 * fs,
+                "compressibility_au": 4.57e-5 / bar,
+            }
+        },
+    )
+    assert len(output["trajectory"]) == 11
+    assert output["trajectory_log"][0]["temperature"] > 0
 
 
 def test_md_job_error():

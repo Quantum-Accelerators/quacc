@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from ase.md.npt import NPT
-from ase.md.verlet import VelocityVerlet
 from ase.units import bar, fs
 
 from quacc import Remove, job
@@ -29,7 +28,7 @@ if TYPE_CHECKING:
 def md_job(
     atoms: Atoms,
     library: Literal["fairchem", "matcalc", "rootstock"],
-    dynamics: MolecularDynamics | MDEnsemble = VelocityVerlet,
+    dynamics: MolecularDynamics | MDEnsemble = "nve",
     steps: int = 10000,
     timestep_fs: float = 0.5,
     temperature_K: float | None = None,
@@ -51,21 +50,27 @@ def md_job(
         - `matcalc` passes `**calc_kwargs` to `matcalc.load_fp()`
         - `rootstock` passes `**calc_kwargs` to `rootstock.RootstockCalculator()`
     dynamics
-        Either an ASE `MolecularDynamics` class (from `ase.md.md.MolecularDynamics`)
-        or an ensemble name. Supported ensemble names, their ASE dynamics classes,
-        and their default parameters (any of which can be overridden via
+        Either an ensemble name (the default is `"nve"`) or an ASE
+        `MolecularDynamics` class (from `ase.md.md.MolecularDynamics`).
+        Supported ensemble names, their ASE dynamics classes, and their default
+        parameters (any of which can be overridden via
         `md_params["dynamics_kwargs"]`; `taut` defaults to 100x the timestep and
         `taup` to 1000x the timestep):
 
-        - `"nve"`: `VelocityVerlet` (`temperature_K` and `pressure_bar` are ignored)
+        - `"nve"`: `VelocityVerlet` (`pressure_bar` is ignored; `temperature_K`
+          only sets the initial velocities)
         - `"nvt"`: `NoseHooverChainNVT` (`tdamp=taut`)
         - `"nvt_berendsen"`: `NVTBerendsen` (`taut`)
         - `"nvt_langevin"`: `Langevin` (`friction=0.001`)
         - `"nvt_andersen"`: `Andersen` (`andersen_prob=0.01`)
         - `"nvt_bussi"`: `Bussi` (`taut`)
-        - `"npt"`: `NPT` (`ttime=25 fs`, `pfactor=75**2 fs`)
-        - `"npt_berendsen"`: `NPTBerendsen` (`taut`, `taup`)
-        - `"npt_inhomogeneous"`: `Inhomogeneous_NPTBerendsen` (`taut`, `taup`)
+        - `"npt"`: `NPT` (`ttime=25 fs` and matcalc's `pfactor=75**2 fs`; set
+          `pfactor` to `ptime**2 * B`, with `B` the bulk modulus, for a
+          physically motivated barostat time)
+        - `"npt_berendsen"`: `NPTBerendsen` (`taut`, `taup`; requires a
+          `compressibility_au` via `md_params["dynamics_kwargs"]`)
+        - `"npt_inhomogeneous"`: `Inhomogeneous_NPTBerendsen` (`taut`, `taup`;
+          requires a `compressibility_au` via `md_params["dynamics_kwargs"]`)
         - `"npt_mtk"`: `MTKNPT` (`tdamp=taut`, `pdamp=taup`)
         - `"npt_isotropic_mtk"`: `IsotropicMTKNPT` (`tdamp=taut`, `pdamp=taup`)
 
@@ -78,7 +83,13 @@ def md_job(
     timestep_fs
         Time step in fs.
     temperature_K
-        Temperature in K, if applicable for the given ensemble.
+        Temperature in K, if applicable for the given ensemble. Unless the
+        input atoms already have nonzero momenta, a Maxwell-Boltzmann
+        distribution at this temperature is also applied to initialize the
+        velocities; set `md_params={"maxwell_boltzmann_kwargs": None}` to
+        disable this. When `dynamics` is an ASE class, `temperature_K` is also
+        passed to the class and is only compatible with classes that accept
+        that keyword argument.
     pressure_bar
         Pressure in bar, if applicable for the given ensemble. When `dynamics` is
         an ASE class, this is passed as `pressure_au` and is only compatible with
@@ -113,6 +124,8 @@ def md_job(
         atoms = upper_triangular_cell(atoms)
 
     md_defaults = {"steps": steps, "dynamics_kwargs": dynamics_defaults}
+    if temperature_K is not None and not atoms.get_momenta().any():
+        md_defaults["maxwell_boltzmann_kwargs"] = {"temperature_K": temperature_K}
     md_params = recursive_dict_merge(md_defaults, md_params)
 
     calc = pick_calculator(library, **calc_kwargs)
