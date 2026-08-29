@@ -84,6 +84,11 @@ def phonon_flow(
     job_params
         Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
+        This is also where the MLIP `library` and its calculator kwargs are supplied
+        to each job, e.g. `job_params={"static_job": {"library": "matcalc", "name":
+        "TensorNet-MatPES-PBE-2025.2"}}`. See
+        [quacc.recipes.mlip._base.pick_calculator][] for the kwargs each library
+        requires.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are decorators.

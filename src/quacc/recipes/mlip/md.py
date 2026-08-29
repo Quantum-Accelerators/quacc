@@ -101,13 +101,23 @@ def md_job(
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
-        Custom kwargs for the underlying MLIP library.
+        Custom kwargs for the underlying MLIP library, all passed by keyword.
+        `matcalc` requires `name`, `rootstock` requires `checkpoint`, and
+        `fairchem` requires `name_or_path` (plus `task_name` for UMA
+        checkpoints). See [quacc.recipes.mlip._base.pick_calculator][] for
+        details and examples.
 
     Returns
     -------
     DynSchema
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.md][].
         See the type-hint for the data structure.
+
+    Examples
+    --------
+    >>> md_job(atoms, "fairchem", name_or_path="uma-s-1p1", task_name="omat")
+    >>> md_job(atoms, "matcalc", name="tensornet", dynamics="nvt", temperature_K=300)
+    >>> md_job(atoms, "rootstock", checkpoint="mace-mp-0-medium", steps=1000)
     """
     if isinstance(dynamics, str):
         dynamics, dynamics_defaults = resolve_md_ensemble(
