@@ -41,7 +41,11 @@ def static_job(
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
-        Custom kwargs for the underlying MLIP library.
+        Custom kwargs for the underlying MLIP library, all passed by keyword.
+        `matcalc` requires `name`, `rootstock` requires `checkpoint`, and
+        `fairchem` requires `name_or_path` (plus `task_name` for UMA
+        checkpoints). See [quacc.recipes.mlip._base.pick_calculator][] for
+        details and examples.
 
     Returns
     -------
@@ -89,7 +93,11 @@ def relax_job(
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
-        Custom kwargs for the underlying MLIP library.
+        Custom kwargs for the underlying MLIP library, all passed by keyword.
+        `matcalc` requires `name`, `rootstock` requires `checkpoint`, and
+        `fairchem` requires `name_or_path` (plus `task_name` for UMA
+        checkpoints). See [quacc.recipes.mlip._base.pick_calculator][] for
+        details and examples.
 
     Returns
     -------
