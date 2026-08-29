@@ -78,6 +78,9 @@ def pick_calculator(
               checkpoint file, e.g. `name_or_path="uma-s-1p1"`.
             - `task_name` (required for UMA checkpoints): one of `"omol"`,
               `"omat"`, `"oc20"`, `"odac"`, or `"omc"`.
+            - Optional: `inference_settings`, `overrides`, `device`, and
+              `workers`; see `FAIRChemCalculator.from_model_checkpoint` for
+              details.
             - Downloading gated checkpoints requires Hugging Face
               authentication.
         - `matcalc`:
