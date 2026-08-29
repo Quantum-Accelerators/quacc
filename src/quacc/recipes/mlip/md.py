@@ -112,6 +112,12 @@ def md_job(
     DynSchema
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.md][].
         See the type-hint for the data structure.
+
+    Examples
+    --------
+    >>> md_job(atoms, "fairchem", name_or_path="uma-s-1p1", task_name="omat")
+    >>> md_job(atoms, "matcalc", name="tensornet", dynamics="nvt", temperature_K=300)
+    >>> md_job(atoms, "rootstock", checkpoint="mace-mp-0-medium", steps=1000)
     """
     if isinstance(dynamics, str):
         dynamics, dynamics_defaults = resolve_md_ensemble(
