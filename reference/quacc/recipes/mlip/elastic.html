@@ -6318,14 +6318,14 @@
 <p>Bulk structure relaxation (if pre_relax is True)</p>
 <ul>
 <li>name: "relax_job"</li>
-<li>job: <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;relax_job&lt;/span&gt;" href="../emt/core.html#quacc.recipes.emt.core.relax_job">quacc.recipes.emt.core.relax_job</a></li>
+<li>job: <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;relax_job&lt;/span&gt;" href="core.html#quacc.recipes.mlip.core.relax_job">quacc.recipes.mlip.core.relax_job</a></li>
 </ul>
 </li>
 <li>
 <p>Bulk structure static calculation (if run_static is True)</p>
 <ul>
 <li>name: "static_job"</li>
-<li>job: <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;static_job&lt;/span&gt;" href="../emt/core.html#quacc.recipes.emt.core.static_job">quacc.recipes.emt.core.static_job</a></li>
+<li>job: <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;static_job&lt;/span&gt;" href="core.html#quacc.recipes.mlip.core.static_job">quacc.recipes.mlip.core.static_job</a></li>
 </ul>
 </li>
 <li>
@@ -6335,14 +6335,14 @@
 <p>Deformed structures relaxations</p>
 <ul>
 <li>name: "relax_job"</li>
-<li>job: <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;relax_job&lt;/span&gt;" href="../emt/core.html#quacc.recipes.emt.core.relax_job">quacc.recipes.emt.core.relax_job</a></li>
+<li>job: <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;relax_job&lt;/span&gt;" href="core.html#quacc.recipes.mlip.core.relax_job">quacc.recipes.mlip.core.relax_job</a></li>
 </ul>
 </li>
 <li>
 <p>Deformed structures statics (if run_static is True)</p>
 <ul>
 <li>name: "static_job"</li>
-<li>job: <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;static_job&lt;/span&gt;" href="../emt/core.html#quacc.recipes.emt.core.static_job">quacc.recipes.emt.core.static_job</a></li>
+<li>job: <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;static_job&lt;/span&gt;" href="core.html#quacc.recipes.mlip.core.static_job">quacc.recipes.mlip.core.static_job</a></li>
 </ul>
 </li>
 <li>
@@ -6399,7 +6399,17 @@
           –
           <div class="doc-md-description">
             <p>Custom parameters to pass to each Job in the Flow. This is a dictionary where
-the keys are the names of the jobs and the values are dictionaries of parameters.</p>
+the keys are the names of the jobs and the values are dictionaries of parameters.
+This is also where the MLIP <code>library</code> and its calculator kwargs are supplied
+to each job, e.g. <code>job_params={"relax_job": {"library": "matcalc", "name":
+"TensorNet-MatPES-PBE-2025.2"}}</code>. See
+<a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;pick_calculator&lt;/span&gt;
+
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-cached&quot;&gt;&lt;code&gt;cached&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt;" href="_base.html#quacc.recipes.mlip._base.pick_calculator">quacc.recipes.mlip._base.pick_calculator</a> for the kwargs each library
+requires.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -6498,7 +6508,12 @@ the keys are the names of the jobs and the values are decorators.</p>
 <span class="normal"><a href="#__codelineno-0-86">86</a></span>
 <span class="normal"><a href="#__codelineno-0-87">87</a></span>
 <span class="normal"><a href="#__codelineno-0-88">88</a></span>
-<span class="normal"><a href="#__codelineno-0-89">89</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="nd">@flow</span>
+<span class="normal"><a href="#__codelineno-0-89">89</a></span>
+<span class="normal"><a href="#__codelineno-0-90">90</a></span>
+<span class="normal"><a href="#__codelineno-0-91">91</a></span>
+<span class="normal"><a href="#__codelineno-0-92">92</a></span>
+<span class="normal"><a href="#__codelineno-0-93">93</a></span>
+<span class="normal"><a href="#__codelineno-0-94">94</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="nd">@flow</span>
 </span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="k">def</span><span class="w"> </span><span class="nf">elastic_tensor_flow</span><span class="p">(</span>
 </span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
 </span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="n">pre_relax</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -6512,21 +6527,21 @@ the keys are the names of the jobs and the values are decorators.</p>
 </span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>
 </span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    1. Bulk structure relaxation (if pre_relax is True)</span>
 </span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">        - name: "relax_job"</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">        - job: [quacc.recipes.emt.core.relax_job][]</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">        - job: [quacc.recipes.mlip.core.relax_job][]</span>
 </span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a>
 </span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    2. Bulk structure static calculation (if run_static is True)</span>
 </span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">        - name: "static_job"</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">        - job: [quacc.recipes.emt.core.static_job][]</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">        - job: [quacc.recipes.mlip.core.static_job][]</span>
 </span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>
 </span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">    3. Deformed structures generation</span>
 </span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>
 </span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">    4. Deformed structures relaxations</span>
 </span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">        - name: "relax_job"</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">        - job: [quacc.recipes.emt.core.relax_job][]</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">        - job: [quacc.recipes.mlip.core.relax_job][]</span>
 </span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a>
 </span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">    5. Deformed structures statics (if run_static is True)</span>
 </span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">        - name: "static_job"</span>
-</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">        - job: [quacc.recipes.emt.core.static_job][]</span>
+</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">        - job: [quacc.recipes.mlip.core.static_job][]</span>
 </span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a>
 </span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">    6. Elastic tensor calculation</span>
 </span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>
@@ -6543,30 +6558,35 @@ the keys are the names of the jobs and the values are decorators.</p>
 </span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="sd">    job_params</span>
 </span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="sd">        Custom parameters to pass to each Job in the Flow. This is a dictionary where</span>
 </span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="sd">        the keys are the names of the jobs and the values are dictionaries of parameters.</span>
-</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a><span class="sd">    job_decorators</span>
-</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">        Custom decorators to apply to each Job in the Flow. This is a dictionary where</span>
-</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="sd">        the keys are the names of the jobs and the values are decorators.</span>
-</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>
-</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">    -------</span>
-</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">    ElasticSchema</span>
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">        See the return type-hint for the data structure.</span>
-</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">    """</span>
-</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>    <span class="n">relax_job_</span><span class="p">,</span> <span class="n">static_job_</span> <span class="o">=</span> <span class="n">customize_jobs</span><span class="p">(</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="p">{</span><span class="s2">"relax_job"</span><span class="p">:</span> <span class="n">relax_job</span><span class="p">,</span> <span class="s2">"static_job"</span><span class="p">:</span> <span class="n">static_job</span><span class="p">},</span>
-</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>        <span class="n">param_defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">"relax_job"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"relax_cell"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}},</span>
-</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>        <span class="n">param_swaps</span><span class="o">=</span><span class="n">job_params</span><span class="p">,</span>
-</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>        <span class="n">decorators</span><span class="o">=</span><span class="n">job_decorators</span><span class="p">,</span>
-</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a>    <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-</span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a>
-</span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82"></a>    <span class="k">return</span> <span class="n">elastic_tensor_flow_</span><span class="p">(</span>
-</span><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83"></a>        <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span>
-</span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="n">relax_job</span><span class="o">=</span><span class="n">relax_job_</span><span class="p">,</span>
-</span><span id="__span-0-85"><a id="__codelineno-0-85" name="__codelineno-0-85"></a>        <span class="n">static_job</span><span class="o">=</span><span class="n">static_job_</span><span class="p">,</span>
-</span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a>        <span class="n">pre_relax</span><span class="o">=</span><span class="n">pre_relax</span><span class="p">,</span>
-</span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a>        <span class="n">run_static</span><span class="o">=</span><span class="n">run_static</span><span class="p">,</span>
-</span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a>        <span class="n">deform_kwargs</span><span class="o">=</span><span class="n">deform_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a>    <span class="p">)</span>
+</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a><span class="sd">        This is also where the MLIP `library` and its calculator kwargs are supplied</span>
+</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">        to each job, e.g. `job_params={"relax_job": {"library": "matcalc", "name":</span>
+</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="sd">        "TensorNet-MatPES-PBE-2025.2"}}`. See</span>
+</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a><span class="sd">        [quacc.recipes.mlip._base.pick_calculator][] for the kwargs each library</span>
+</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">        requires.</span>
+</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">    job_decorators</span>
+</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">        Custom decorators to apply to each Job in the Flow. This is a dictionary where</span>
+</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">        the keys are the names of the jobs and the values are decorators.</span>
+</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a>
+</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a><span class="sd">    Returns</span>
+</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a><span class="sd">    -------</span>
+</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a><span class="sd">    ElasticSchema</span>
+</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a><span class="sd">        See the return type-hint for the data structure.</span>
+</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a><span class="sd">    """</span>
+</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a>    <span class="n">relax_job_</span><span class="p">,</span> <span class="n">static_job_</span> <span class="o">=</span> <span class="n">customize_jobs</span><span class="p">(</span>
+</span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a>        <span class="p">{</span><span class="s2">"relax_job"</span><span class="p">:</span> <span class="n">relax_job</span><span class="p">,</span> <span class="s2">"static_job"</span><span class="p">:</span> <span class="n">static_job</span><span class="p">},</span>
+</span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82"></a>        <span class="n">param_defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">"relax_job"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"relax_cell"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}},</span>
+</span><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83"></a>        <span class="n">param_swaps</span><span class="o">=</span><span class="n">job_params</span><span class="p">,</span>
+</span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="n">decorators</span><span class="o">=</span><span class="n">job_decorators</span><span class="p">,</span>
+</span><span id="__span-0-85"><a id="__codelineno-0-85" name="__codelineno-0-85"></a>    <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+</span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a>
+</span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a>    <span class="k">return</span> <span class="n">elastic_tensor_flow_</span><span class="p">(</span>
+</span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a>        <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span>
+</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a>        <span class="n">relax_job</span><span class="o">=</span><span class="n">relax_job_</span><span class="p">,</span>
+</span><span id="__span-0-90"><a id="__codelineno-0-90" name="__codelineno-0-90"></a>        <span class="n">static_job</span><span class="o">=</span><span class="n">static_job_</span><span class="p">,</span>
+</span><span id="__span-0-91"><a id="__codelineno-0-91" name="__codelineno-0-91"></a>        <span class="n">pre_relax</span><span class="o">=</span><span class="n">pre_relax</span><span class="p">,</span>
+</span><span id="__span-0-92"><a id="__codelineno-0-92" name="__codelineno-0-92"></a>        <span class="n">run_static</span><span class="o">=</span><span class="n">run_static</span><span class="p">,</span>
+</span><span id="__span-0-93"><a id="__codelineno-0-93" name="__codelineno-0-93"></a>        <span class="n">deform_kwargs</span><span class="o">=</span><span class="n">deform_kwargs</span><span class="p">,</span>
+</span><span id="__span-0-94"><a id="__codelineno-0-94" name="__codelineno-0-94"></a>    <span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
