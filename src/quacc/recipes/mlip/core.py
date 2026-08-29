@@ -52,6 +52,12 @@ def static_job(
     RunSchema
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
+
+    Examples
+    --------
+    >>> static_job(atoms, "fairchem", name_or_path="uma-s-1p1", task_name="omat")
+    >>> static_job(atoms, "matcalc", name="TensorNet-MatPES-PBE-2025.2")
+    >>> static_job(atoms, "rootstock", checkpoint="mace-mp-0-medium")
     """
     calc = pick_calculator(library, **calc_kwargs)
     final_atoms = Runner(atoms, calc).run_calc()
