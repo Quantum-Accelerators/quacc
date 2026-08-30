@@ -6,6 +6,6 @@ monty==2026.7.16
 psutil==7.2.2
 pydantic==2.13.4
 pydantic-settings==2.15.0
-pymatgen-core==2026.8.13
+pymatgen-core==2026.8.30
 ruamel.yaml==0.19.1
 typer==0.27.1
