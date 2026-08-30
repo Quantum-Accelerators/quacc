@@ -27,7 +27,7 @@ def static_job(
     atoms: Atoms,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Carry out a static calculation.
@@ -66,7 +66,7 @@ def relax_job(
     opt_params: OptParams | None = None,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> OptSchema:
     """
     Carry out a geometry optimization.

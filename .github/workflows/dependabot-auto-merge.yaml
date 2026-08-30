@@ -1,0 +1,53 @@
+name: Dependabot auto-merge
+
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  merge:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Merge current Dependabot PRs
+        uses: actions/github-script@v9
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const candidates = context.payload.workflow_run.pull_requests ?? [];
+
+            for (const candidate of candidates) {
+              const { data: pullRequest } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: candidate.number,
+              });
+
+              if (pullRequest.user.login !== "dependabot[bot]") {
+                core.info(`Skipping PR #${pullRequest.number}: not opened by Dependabot.`);
+                continue;
+              }
+
+              if (pullRequest.head.sha !== context.payload.workflow_run.head_sha) {
+                core.info(`Skipping PR #${pullRequest.number}: a newer commit is awaiting tests.`);
+                continue;
+              }
+
+              await exec.exec("gh", [
+                "pr",
+                "merge",
+                String(pullRequest.number),
+                "--repo",
+                `${owner}/${repo}`,
+                "--squash",
+                "--auto",
+              ]);
+            }

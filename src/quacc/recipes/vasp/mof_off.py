@@ -13,7 +13,7 @@ from monty.dev import requires
 from quacc import flow, job
 from quacc.recipes.vasp.matpes import matpes_static_job
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 has_atomate2 = bool(find_spec("atomate2"))
 
@@ -40,7 +40,7 @@ def mof_off_static_job(
     level: Literal["PBE", "r2SCAN"],
     dispersion: Literal["D3BJ", "D4"] | None = None,
     prev_dir: SourceDirectory | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Function to run a MOF-Off-compatible static calculation.
@@ -69,7 +69,7 @@ def mof_off_static_job(
     """
     default_parameters = {
         "kspacing": 0.4,
-        "incar_copilot": "critical",
+        "incar_copilot_mode": "critical",
         "use_improvements": True,
         "write_extra_files": True,
     }
@@ -119,16 +119,15 @@ def mof_off_static_flow(
     MOFOffStaticFlowSchema
         Dictionary containing the PBE and r2SCAN results.
     """
-    pbe_static_job, r2scan_static_job = customize_funcs(
-        ["pbe_static_job", "r2scan_static_job"],
-        [mof_off_static_job, mof_off_static_job],
+    pbe_static_job, r2scan_static_job = customize_jobs(
+        {"pbe_static_job": mof_off_static_job, "r2scan_static_job": mof_off_static_job},
         param_defaults={
             "pbe_static_job": {"level": "PBE", "dispersion": dispersion},
             "r2scan_static_job": {"level": "r2SCAN", "dispersion": dispersion},
         },
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     pbe_results = pbe_static_job(atoms)
     r2scan_results = r2scan_static_job(

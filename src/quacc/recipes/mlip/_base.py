@@ -14,7 +14,7 @@ has_torch = bool(find_spec("torch"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase.calculators.calculator import BaseCalculator
 
@@ -42,7 +42,7 @@ def freezeargs(func: Callable) -> Callable:
     from frozendict import frozendict
 
     @wraps(func)
-    def wrapped(*args, **kwargs):
+    def wrapped(*args: Any, **kwargs: Any) -> Any:
         args = (frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
         kwargs = {
             k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()
@@ -55,9 +55,10 @@ def freezeargs(func: Callable) -> Callable:
 @freezeargs
 @lru_cache
 def pick_calculator(
-    library: Literal["fairchem", "matcalc", "rootstock"], **calc_kwargs
+    library: Literal["fairchem", "matcalc", "rootstock"], **calc_kwargs: Any
 ) -> BaseCalculator:
     """
+    Instantiate an ASE calculator from one of the supported MLIP libraries.
 
     Parameters
     ----------
@@ -67,7 +68,30 @@ def pick_calculator(
         - `matcalc` passes `**calc_kwargs` to `matcalc.load_fp()`
         - `rootstock` passes `**calc_kwargs` to `rootstock.RootstockCalculator()`
     **calc_kwargs
-        Custom kwargs for the underlying MLIP library.
+        Keyword arguments forwarded to the loader function listed above for
+        the given `library`. Every argument must be passed by keyword, even
+        ones that are positional in the underlying function. Per library:
+
+        - `fairchem`:
+            - `name_or_path` (required): a model name from
+              `fairchem.core.pretrained_mlip.available_models` or a path to a
+              checkpoint file, e.g. `name_or_path="uma-s-1p1"`.
+            - `task_name` (required for UMA checkpoints): one of `"omol"`,
+              `"omat"`, `"oc20"`, `"odac"`, or `"omc"`.
+            - Optional: `inference_settings`, `overrides`, `device`, and
+              `workers`; see `FAIRChemCalculator.from_model_checkpoint` for
+              details.
+            - Downloading gated checkpoints requires Hugging Face
+              authentication.
+        - `matcalc`:
+            - `name` (required): the name of the foundation potential, e.g.
+              `name="TensorNet-MatPES-PBE-2025.2"`. The supported names are
+              the entries of `matcalc.UNIVERSAL_CALCULATOR_NAMES`
+              (case-insensitive; common aliases are also accepted).
+        - `rootstock`:
+            - `checkpoint` (required): the checkpoint identifier, e.g.
+              `checkpoint="mace-mp-0-medium"`. The corresponding environment
+              must be pre-built via `rootstock install`.
 
     Returns
     -------

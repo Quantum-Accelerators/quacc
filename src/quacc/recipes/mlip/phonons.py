@@ -10,7 +10,7 @@ from monty.dev import requires
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.mlip.core import static_job
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 has_phonopy = bool(find_spec("phonopy"))
 has_seekpath = bool(find_spec("seekpath"))
@@ -84,6 +84,11 @@ def phonon_flow(
     job_params
         Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
+        This is also where the MLIP `library` and its calculator kwargs are supplied
+        to each job, e.g. `job_params={"static_job": {"library": "matcalc", "name":
+        "TensorNet-MatPES-PBE-2025.2"}}`. See
+        [quacc.recipes.mlip._base.pick_calculator][] for the kwargs each library
+        requires.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are decorators.
@@ -94,9 +99,9 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][].
         See the type-hint for the data structure.
     """
-    static_job_ = customize_funcs(
-        ["static_job"], [static_job], param_swaps=job_params, decorators=job_decorators
-    )
+    static_job_ = customize_jobs(
+        {"static_job": static_job}, param_swaps=job_params, decorators=job_decorators
+    )["static_job"]
 
     return phonon_subflow(
         atoms,

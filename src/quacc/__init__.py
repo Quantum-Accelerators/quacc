@@ -7,6 +7,7 @@ from importlib.metadata import version
 from logging import basicConfig
 from pathlib import Path
 from typing import TYPE_CHECKING
+from warnings import filterwarnings
 
 from ase.atoms import Atoms
 from pymatgen.io.ase import MSONAtoms
@@ -90,6 +91,14 @@ def get_settings() -> QuaccSettings:
 
 _settings = get_settings()
 
+if _settings.WORKFLOW_ENGINE == "jobflow":
+    filterwarnings(
+        "ignore",
+        message=r"@flow decorated function .* contains a Flow or\s*Job as an output\.",
+        category=UserWarning,
+        module=r"jobflow\.core\.flow",
+    )
+
 # Dummy value for when a default setting will be applied
 QuaccDefault = DefaultSetting()
 
@@ -142,9 +151,9 @@ if _settings.WORKFLOW_ENGINE == "prefect":
     from prefect.client.schemas import State
     from prefect.futures import PrefectFuture
 
-    def _patched_getitem(self, index: Any) -> Any:
+    def _patched_getitem(self: PrefectFuture | State, index: object) -> object:
         @job
-        def _getitem(future, index_):
+        def _getitem(future: PrefectFuture | State, index_: object) -> object:
             return future[index_]
 
         return _getitem(self, index)

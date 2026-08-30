@@ -22,7 +22,7 @@ def static_job(
     copy_files: CopyFiles | None = None,
     kpts: tuple | list[tuple] | dict | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -75,7 +75,7 @@ def relax_job(
     relax_cell: bool = False,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Carry out a structure relaxation.

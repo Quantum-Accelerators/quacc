@@ -24,7 +24,7 @@ def static_job(
     atoms: Atoms,
     library: Literal["fairchem", "matcalc", "rootstock"],
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -41,13 +41,23 @@ def static_job(
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
-        Custom kwargs for the underlying MLIP library.
+        Custom kwargs for the underlying MLIP library, all passed by keyword.
+        `matcalc` requires `name`, `rootstock` requires `checkpoint`, and
+        `fairchem` requires `name_or_path` (plus `task_name` for UMA
+        checkpoints). See [quacc.recipes.mlip._base.pick_calculator][] for
+        details and examples.
 
     Returns
     -------
     RunSchema
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
+
+    Examples
+    --------
+    >>> static_job(atoms, "fairchem", name_or_path="uma-s-1p1", task_name="omat")
+    >>> static_job(atoms, "matcalc", name="TensorNet-MatPES-PBE-2025.2")
+    >>> static_job(atoms, "rootstock", checkpoint="mace-mp-0-medium")
     """
     calc = pick_calculator(library, **calc_kwargs)
     final_atoms = Runner(atoms, calc).run_calc()
@@ -64,7 +74,7 @@ def relax_job(
     opt_params: OptParams | None = None,
     write_files: bool = True,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> OptSchema:
     """
     Relax a structure.
@@ -89,7 +99,11 @@ def relax_job(
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
-        Custom kwargs for the underlying MLIP library.
+        Custom kwargs for the underlying MLIP library, all passed by keyword.
+        `matcalc` requires `name`, `rootstock` requires `checkpoint`, and
+        `fairchem` requires `name_or_path` (plus `task_name` for UMA
+        checkpoints). See [quacc.recipes.mlip._base.pick_calculator][] for
+        details and examples.
 
     Returns
     -------

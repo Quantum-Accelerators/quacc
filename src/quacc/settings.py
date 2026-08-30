@@ -7,7 +7,7 @@ from contextlib import contextmanager
 from functools import wraps
 from pathlib import Path
 from shutil import which
-from typing import TYPE_CHECKING, Literal, Union
+from typing import TYPE_CHECKING, Literal, ParamSpec, TypeVar, Union
 
 import psutil
 from pydantic import Field, field_validator, model_validator
@@ -15,10 +15,12 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from ruamel.yaml import YAML
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Generator
     from typing import Any
 
 _DEFAULT_CONFIG_FILE_PATH = Path("~", ".quacc.yaml").expanduser().resolve()
+P = ParamSpec("P")
+R = TypeVar("R")
 
 
 class QuaccSettings(BaseSettings):
@@ -278,17 +280,19 @@ class QuaccSettings(BaseSettings):
     )
 
     # VASP Settings: General
-    VASP_INCAR_COPILOT: Literal["off", "critical", "standard", "aggressive"] = Field(
-        "standard",
-        description=(
-            """
+    VASP_INCAR_COPILOT_MODE: Literal["off", "critical", "standard", "aggressive"] = (
+        Field(
+            "standard",
+            description=(
+                """
             Controls VASP co-pilot mode for automated INCAR parameter handling.
             off: Do not use co-pilot mode. INCAR parameters will be unmodified.
             critical: Use co-pilot mode for only critical swaps. These will always be applied regardless of user settings.
             standard: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
             aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
             """
-        ),
+            ),
+        )
     )
     VASP_BADER: bool = Field(
         bool(which("bader")),
@@ -370,6 +374,9 @@ class QuaccSettings(BaseSettings):
             "IncorrectSmearingHandler",
         ],
         description="Handlers for Custodian",
+    )
+    VASP_CUSTODIAN_VASP_ERROR_EXCLUDE: list[str] = Field(
+        [], description="VASP errors to exclude from Custodian's VaspErrorHandler"
     )
     VASP_CUSTODIAN_VALIDATORS: list[str] = Field(
         ["VasprunXMLValidator", "VaspFilesValidator"],
@@ -540,7 +547,7 @@ class QuaccSettings(BaseSettings):
         return _type_handler(cls._use_custom_config_settings(settings))
 
     @model_validator(mode="after")
-    def set_jobflow_settings(self):
+    def set_jobflow_settings(self) -> QuaccSettings:
         """
         If WORKFLOW_ENGINE is jobflow, ensure that CREATE_UNIQUE_DIR
         is set to False since Jobflow already handles this for us.
@@ -575,7 +582,7 @@ def _type_handler(settings: dict[str, Any]) -> dict[str, Any]:
 
 
 @contextmanager
-def change_settings(changes: dict[str, Any]):
+def change_settings(changes: dict[str, Any]) -> Generator[None]:
     """
     Temporarily change an attribute of an object.
 
@@ -602,7 +609,9 @@ def change_settings(changes: dict[str, Any]):
         _internally_set_settings(changes=original_values)
 
 
-def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
+def change_settings_wrap(
+    func: Callable[P, R], changes: dict[str, Any]
+) -> Callable[P, R]:
     """
     Wraps a function with the change_settings context manager if not already wrapped.
 
@@ -621,7 +630,7 @@ def change_settings_wrap(func: Callable, changes: dict[str, Any]) -> Callable:
     original_func = func._original_func if getattr(func, "_changed", False) else func
 
     @wraps(original_func)
-    def wrapper(*args, **kwargs):
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         with change_settings(changes):
             return original_func(*args, **kwargs)
 
