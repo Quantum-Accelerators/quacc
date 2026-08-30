@@ -16,8 +16,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added feature to ignore specific VASP custodian handlers via the quacc settings
 
-### 
-
 ## [1.5.5]
 
 ### Added
