@@ -32,21 +32,21 @@ def elastic_tensor_flow(
 
     1. Bulk structure relaxation (if pre_relax is True)
         - name: "relax_job"
-        - job: [quacc.recipes.emt.core.relax_job][]
+        - job: [quacc.recipes.mlip.core.relax_job][]
 
     2. Bulk structure static calculation (if run_static is True)
         - name: "static_job"
-        - job: [quacc.recipes.emt.core.static_job][]
+        - job: [quacc.recipes.mlip.core.static_job][]
 
     3. Deformed structures generation
 
     4. Deformed structures relaxations
         - name: "relax_job"
-        - job: [quacc.recipes.emt.core.relax_job][]
+        - job: [quacc.recipes.mlip.core.relax_job][]
 
     5. Deformed structures statics (if run_static is True)
         - name: "static_job"
-        - job: [quacc.recipes.emt.core.static_job][]
+        - job: [quacc.recipes.mlip.core.static_job][]
 
     6. Elastic tensor calculation
 
@@ -63,6 +63,11 @@ def elastic_tensor_flow(
     job_params
         Custom parameters to pass to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are dictionaries of parameters.
+        This is also where the MLIP `library` and its calculator kwargs are supplied
+        to each job, e.g. `job_params={"relax_job": {"library": "matcalc", "name":
+        "TensorNet-MatPES-PBE-2025.2"}}`. See
+        [quacc.recipes.mlip._base.pick_calculator][] for the kwargs each library
+        requires.
     job_decorators
         Custom decorators to apply to each Job in the Flow. This is a dictionary where
         the keys are the names of the jobs and the values are decorators.
