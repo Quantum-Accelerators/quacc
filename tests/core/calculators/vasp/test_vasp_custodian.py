@@ -58,7 +58,7 @@ def test_vasp_error_exclude(monkeypatch):
 
     monkeypatch.setattr(vasp_custodian, "VaspErrorHandler", MockVaspErrorHandler)
 
-    run_custodian(vasp_custodian_vasp_error_exclude=["bravais"])
+    run_custodian(vasp_custodian_error_exclude=["bravais"])
 
     handler = seen_handlers[0]
     assert "bravais" not in handler.kwargs["errors_subset_to_catch"]
@@ -67,4 +67,4 @@ def test_vasp_error_exclude(monkeypatch):
     }
 
     with pytest.raises(ValueError, match="Unknown VASP errors to exclude"):
-        run_custodian(vasp_custodian_vasp_error_exclude=["not-a-vasp-error"])
+        run_custodian(vasp_custodian_error_exclude=["not-a-vasp-error"])

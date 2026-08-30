@@ -375,7 +375,7 @@ class QuaccSettings(BaseSettings):
         ],
         description="Handlers for Custodian",
     )
-    VASP_CUSTODIAN_VASP_ERROR_EXCLUDE: list[str] = Field(
+    VASP_CUSTODIAN_ERROR_EXCLUDE: list[str] = Field(
         [], description="VASP errors to exclude from Custodian's VaspErrorHandler"
     )
     VASP_CUSTODIAN_VALIDATORS: list[str] = Field(
