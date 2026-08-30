@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.8]
+
+### Changed
+
+- Rename VASP_CUSTODIAN_VASP_ERROR_EXCLUDE to VASP_CUSTODIAN_ERROR_EXCLUDE
+
 ## [1.5.7]
 
 ### Added
