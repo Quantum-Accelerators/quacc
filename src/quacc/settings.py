@@ -280,17 +280,19 @@ class QuaccSettings(BaseSettings):
     )
 
     # VASP Settings: General
-    VASP_INCAR_COPILOT: Literal["off", "critical", "standard", "aggressive"] = Field(
-        "standard",
-        description=(
-            """
+    VASP_INCAR_COPILOT_MODE: Literal["off", "critical", "standard", "aggressive"] = (
+        Field(
+            "standard",
+            description=(
+                """
             Controls VASP co-pilot mode for automated INCAR parameter handling.
             off: Do not use co-pilot mode. INCAR parameters will be unmodified.
             critical: Use co-pilot mode for only critical swaps. These will always be applied regardless of user settings.
             standard: Use co-pilot mode. This will only modify INCAR flags not already set by the user.
             aggressive: Use co-pilot mode in aggressive mode. This will modify INCAR flags even if they are already set by the user.
             """
-        ),
+            ),
+        )
     )
     VASP_BADER: bool = Field(
         bool(which("bader")),
@@ -372,6 +374,9 @@ class QuaccSettings(BaseSettings):
             "IncorrectSmearingHandler",
         ],
         description="Handlers for Custodian",
+    )
+    VASP_CUSTODIAN_VASP_ERROR_EXCLUDE: list[str] = Field(
+        [], description="VASP errors to exclude from Custodian's VaspErrorHandler"
     )
     VASP_CUSTODIAN_VALIDATORS: list[str] = Field(
         ["VasprunXMLValidator", "VaspFilesValidator"],
