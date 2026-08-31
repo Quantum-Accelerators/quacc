@@ -1428,8 +1428,8 @@ def test_logging(caplog):
         "WARNING: LMAXMIX was not changed from 1 to 4 to respect the user's decision.\n"
         "    Reason: d electrons were detected."
     ) in caplog.text
-    assert "Attention required:" in caplog.text
-    assert caplog.text.index("Attention required:") < caplog.text.index(
+    assert "⚠️ Attention required:" in caplog.text
+    assert caplog.text.index("⚠️ Attention required:") < caplog.text.index(
         "Applied changes:"
     )
     assert (
