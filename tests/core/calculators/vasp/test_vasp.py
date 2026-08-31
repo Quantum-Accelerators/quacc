@@ -21,7 +21,7 @@ from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp import vasp as vasp_module
-from quacc.calculators.vasp.params import MPtoASEConverter
+from quacc.calculators.vasp.params import MPtoASEConverter, get_param_swaps
 from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
@@ -1387,33 +1387,37 @@ def test_logging(caplog):
     atoms = bulk("Cu")
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
-    assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending NCORE" in caplog.text
-    assert "The following parameters were added" in caplog.text
-    assert "'lmaxmix': 4" in caplog.text
-    assert "'ncore':" in caplog.text
+    assert "VASP INCAR copilot:" in caplog.text
+    assert "0 warnings" in caplog.text
+    assert "LMAXMIX: None -> 4" in caplog.text
+    assert "Reason: d electrons were detected." in caplog.text
+    assert "NCORE: None ->" in caplog.text
+    assert "Recommending" not in caplog.text
     caplog.clear()
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
-    assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending SIGMA = 0.05" in caplog.text
-    assert "Recommending NCORE" in caplog.text
-    assert "The following parameters were added" in caplog.text
-    assert "'lmaxmix': 4" in caplog.text
-    assert "'ncore':" in caplog.text
+    assert "VASP INCAR copilot:" in caplog.text
+    assert "  ISMEAR:" not in caplog.text
+    assert "LMAXMIX: None -> 4" in caplog.text
+    assert "NCORE: None ->" in caplog.text
+    assert "SIGMA: None -> 0.05" in caplog.text
     caplog.clear()
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=-5, algo="all", lmaxmix=1)
-    assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending NCORE" in caplog.text
-    assert "The following parameters were added" in caplog.text
-    assert "'isearch': 1" in caplog.text
-    assert "'ncore':" in caplog.text
+    assert "VASP INCAR copilot:" in caplog.text
+    assert "ISEARCH: None -> 1" in caplog.text
+    assert "NCORE: None ->" in caplog.text
     assert "ALGO was changed from 'all' to 'normal'" in caplog.text
-    assert "LMAXMIX was *not* changed from 1 to 4" in caplog.text
+    assert "LMAXMIX was not changed from 1 to 4" in caplog.text
+    assert "2 WARNING" in caplog.text
     caplog.clear()
+
+    with caplog.at_level(INFO):
+        params = get_param_swaps({}, atoms, incar_copilot_mode="off")
+    assert isinstance(params, dict)
+    assert "INCAR copilot" not in caplog.text
 
 
 def test_bad_pmg_converter():
