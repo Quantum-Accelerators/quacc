@@ -15,3 +15,7 @@ def test_emmet_task_doc_log_filter(caplog):
     assert "Another useful Emmet message" in caplog.text
     assert "Getting task doc in: warning context" in caplog.text
     assert caplog.records[-1].levelno == WARNING
+
+
+def test_custodian_default_log_level():
+    assert getLogger("custodian").level == WARNING

@@ -459,6 +459,9 @@ class QuaccSettings(BaseSettings):
     LOG_LEVEL: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] = Field(
         "INFO", description=("Logger level.")
     )
+    CUSTODIAN_LOG_LEVEL: Literal[
+        "CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"
+    ] = Field("WARNING", description="Logger level for Custodian.")
 
     # --8<-- [end:settings]
 
