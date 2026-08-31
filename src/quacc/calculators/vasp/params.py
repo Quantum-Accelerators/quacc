@@ -64,6 +64,11 @@ def get_param_swaps(
     calc = Vasp_(**remove_unused_flags(user_calc_params))
     max_Z = input_atoms.get_atomic_numbers().max()
 
+    if (ediff := calc.parameters.get("ediff")) is not None and ediff > 1e-4:
+        LOGGER.warning(
+            f"EDIFF = {ediff} is greater than 1e-4, which may lead to inaccurate results."
+        )
+
     # ----------------------------
     # General INCAR swaps
     # ----------------------------

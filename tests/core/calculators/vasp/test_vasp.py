@@ -1416,6 +1416,26 @@ def test_logging(caplog):
     caplog.clear()
 
 
+@pytest.mark.parametrize("ediff", [None, 1e-5, 1e-4])
+def test_ediff_warning_not_raised(ediff, caplog):
+    atoms = bulk("Cu")
+    kwargs = {} if ediff is None else {"ediff": ediff}
+
+    with caplog.at_level(WARNING):
+        Vasp(atoms, **kwargs)
+
+    assert "EDIFF" not in caplog.text
+
+
+def test_ediff_warning(caplog):
+    atoms = bulk("Cu")
+
+    with caplog.at_level(WARNING):
+        Vasp(atoms, ediff=1.01e-4, incar_copilot_mode="off")
+
+    assert "EDIFF = 0.000101 is greater than 1e-4" in caplog.text
+
+
 def test_bad_pmg_converter():
     with pytest.raises(ValueError, match="Either atoms or prev_dir must be provided"):
         MPtoASEConverter()
