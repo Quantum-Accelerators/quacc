@@ -1388,6 +1388,14 @@ def test_logging(caplog):
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
     assert "================ VASP INCAR COPILOT ================" in caplog.text
+    copilot_record = next(
+        record for record in caplog.records if "VASP INCAR COPILOT" in record.getMessage()
+    )
+    assert copilot_record.getMessage().startswith(
+        "\n================ VASP INCAR COPILOT ================"
+    )
+    header = "================ VASP INCAR COPILOT ================"
+    assert copilot_record.getMessage().endswith("=" * len(header))
     assert "Summary:" in caplog.text
     assert "0 warnings" in caplog.text
     assert "LMAXMIX: None -> 4" in caplog.text

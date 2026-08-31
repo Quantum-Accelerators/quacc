@@ -62,6 +62,7 @@ class CopilotReport:
 def log_copilot_report(report: CopilotReport) -> None:
     """Log a framed summary as a single record."""
     header = "================ VASP INCAR COPILOT ================"
+    footer = "=" * len(header)
     change_label = "change" if len(report.changes) == 1 else "changes"
     warning_label = "warning" if len(report.warnings) == 1 else "warnings"
     lines = [
@@ -86,10 +87,10 @@ def log_copilot_report(report: CopilotReport) -> None:
             lines.append(f"  WARNING: {warning.message}")
             if warning.remediation:
                 lines.append(f"    Remediation: {warning.remediation}")
-    lines.extend(("", header))
+    lines.extend(("", footer))
 
     log_level = WARNING if report.warnings else INFO
-    LOGGER.log(log_level, "\n".join(lines))
+    LOGGER.log(log_level, "\n%s", "\n".join(lines))
 
 
 def get_param_swaps(
