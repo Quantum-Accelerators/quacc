@@ -1583,7 +1583,7 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
         "sigma": 0.2,
         "ispin": 2,
         "prec": "accurate",
-        "nelm": 60,
+        "nelm": 120,
         "nelmin": 2,
         "ediff": 1e-5,
         "maxmix": 40,
