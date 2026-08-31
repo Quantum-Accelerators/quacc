@@ -66,7 +66,6 @@ def log_copilot_report(report: CopilotReport) -> None:
     footer = "=" * len(header)
     lines = [header]
     if report.changes:
-        lines.append("")
         lines.append("Applied changes:")
         lines.extend(
             f"  {change.parameter.upper()}: {change.old_value!r} -> {change.new_value!r}\n"
@@ -74,7 +73,8 @@ def log_copilot_report(report: CopilotReport) -> None:
             for change in report.changes
         )
     if report.warnings:
-        lines.append("")
+        if report.changes:
+            lines.append("")
         lines.append("Attention required:")
         for warning in report.warnings:
             lines.append(f"  WARNING: {warning.message}")
@@ -82,7 +82,7 @@ def log_copilot_report(report: CopilotReport) -> None:
                 lines.append(f"    Reason: {warning.reason}")
             if warning.remediation:
                 lines.append(f"    Remediation: {warning.remediation}")
-    lines.extend(("", footer))
+    lines.append(footer)
 
     log_level = WARNING if report.warnings else INFO
     LOGGER.log(log_level, "\n%s", "\n".join(lines))

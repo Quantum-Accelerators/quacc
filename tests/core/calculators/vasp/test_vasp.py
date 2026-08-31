@@ -1394,10 +1394,11 @@ def test_logging(caplog):
         if "VASP INCAR COPILOT" in record.getMessage()
     )
     assert copilot_record.getMessage().startswith(
-        "\n================ VASP INCAR COPILOT ================"
+        "\n================ VASP INCAR COPILOT ================\nApplied changes:"
     )
     header = "================ VASP INCAR COPILOT ================"
     assert copilot_record.getMessage().endswith("=" * len(header))
+    assert f"\n\n{'=' * len(header)}" not in copilot_record.getMessage()
     assert "Summary:" not in caplog.text
     assert "LMAXMIX: None -> 4" in caplog.text
     assert "Reason: d electrons were detected." in caplog.text
