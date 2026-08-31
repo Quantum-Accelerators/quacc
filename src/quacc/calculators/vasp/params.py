@@ -413,7 +413,7 @@ def _get_param_swaps(
             k,
             user_calc_params.get(k),
             new_parameters[k],
-            change_reasons.get(k, "A critical INCAR compatibility rule was applied."),
+            change_reasons.get(k, "General INCAR compatibility rule was applied."),
         )
         for k in sorted(new_parameters)
         if _params_differ(user_calc_params.get(k), new_parameters[k])
@@ -430,7 +430,7 @@ def _get_param_swaps(
             CopilotWarning(
                 f"{k.upper()} was changed from {old!r} to {new!r}.",
                 reason=change_reasons.get(
-                    k, "A critical INCAR compatibility rule was applied."
+                    k, "General INCAR compatibility rule was applied."
                 ),
             )
         )
