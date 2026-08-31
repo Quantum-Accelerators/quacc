@@ -20,9 +20,11 @@ from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
 from ase.io import read, write
+from ase.md.verlet import VelocityVerlet
 from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
+from ase.units import fs
 
 from quacc import JobFailure, change_settings, get_settings
 from quacc.runners._base import BaseRunner
@@ -348,6 +350,22 @@ def test_fn_hook(tmp_path, monkeypatch):
         Runner(bulk("Cu"), EMT()).run_opt(fn_hook=fn_hook)
     with pytest.raises(ValueError, match="Test error"):
         raise err.value.parent_error
+
+
+def test_run_md_stop_condition(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    dyn = Runner(molecule("H2"), LennardJones()).run_md(
+        VelocityVerlet,
+        dynamics_kwargs={"timestep": fs},
+        steps=10,
+        stop_condition=lambda dyn: dyn.nsteps >= 3,
+    )
+
+    assert dyn.nsteps == 3
+    assert dyn.requested_steps == 10
+    assert dyn.completed_steps == 3
+    assert dyn.stop_reason == "walltime"
+    assert len(read(dyn.trajectory.filename, index=":")) == 4
 
 
 def test_copy_intermediate_files_copies_files_and_directories(tmp_path, monkeypatch):
