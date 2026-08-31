@@ -49,6 +49,7 @@ class CopilotWarning:
 
     message: str
     remediation: str | None = None
+    reason: str | None = None
 
 
 @dataclass
@@ -63,15 +64,7 @@ def log_copilot_report(report: CopilotReport) -> None:
     """Log a framed summary as a single record."""
     header = "================ VASP INCAR COPILOT ================"
     footer = "=" * len(header)
-    change_label = "change" if len(report.changes) == 1 else "changes"
-    warning_label = "warning" if len(report.warnings) == 1 else "warnings"
-    lines = [
-        header,
-        (
-            f"Summary: {len(report.changes)} {change_label} applied, "
-            f"{len(report.warnings)} {warning_label}"
-        ),
-    ]
+    lines = [header]
     if report.changes:
         lines.append("")
         lines.append("Applied changes:")
@@ -85,6 +78,8 @@ def log_copilot_report(report: CopilotReport) -> None:
         lines.append("Attention required:")
         for warning in report.warnings:
             lines.append(f"  WARNING: {warning.message}")
+            if warning.reason:
+                lines.append(f"    Reason: {warning.reason}")
             if warning.remediation:
                 lines.append(f"    Remediation: {warning.remediation}")
     lines.extend(("", footer))
@@ -432,7 +427,12 @@ def _get_param_swaps(
     }
     for k, (old, new) in overridden_user_params.items():
         report.warnings.append(
-            CopilotWarning(f"{k.upper()} was changed from {old!r} to {new!r}.")
+            CopilotWarning(
+                f"{k.upper()} was changed from {old!r} to {new!r}.",
+                reason=change_reasons.get(
+                    k, "A critical INCAR compatibility rule was applied."
+                ),
+            )
         )
 
     if overridden_swaps := {
@@ -443,7 +443,8 @@ def _get_param_swaps(
         for k, (current, recommended) in overridden_swaps.items():
             report.warnings.append(
                 CopilotWarning(
-                    f"{k.upper()} was not changed from {current!r} to {recommended!r} to respect the user's decision."
+                    f"{k.upper()} was not changed from {current!r} to {recommended!r} to respect the user's decision.",
+                    reason=change_reasons.get(k),
                 )
             )
 

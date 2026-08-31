@@ -1398,8 +1398,7 @@ def test_logging(caplog):
     )
     header = "================ VASP INCAR COPILOT ================"
     assert copilot_record.getMessage().endswith("=" * len(header))
-    assert "Summary:" in caplog.text
-    assert "0 warnings" in caplog.text
+    assert "Summary:" not in caplog.text
     assert "LMAXMIX: None -> 4" in caplog.text
     assert "Reason: d electrons were detected." in caplog.text
     assert "NCORE: None ->" in caplog.text
@@ -1422,7 +1421,10 @@ def test_logging(caplog):
     assert "NCORE: None ->" in caplog.text
     assert "ALGO was changed from 'all' to 'normal'" in caplog.text
     assert "LMAXMIX was not changed from 1 to 4" in caplog.text
-    assert "2 warnings" in caplog.text
+    assert (
+        "WARNING: LMAXMIX was not changed from 1 to 4 to respect the user's decision.\n"
+        "    Reason: d electrons were detected."
+    ) in caplog.text
     assert "Attention required:" in caplog.text
     assert (
         sum("VASP INCAR COPILOT" in record.getMessage() for record in caplog.records)
