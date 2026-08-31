@@ -1426,6 +1426,22 @@ def test_logging(caplog):
     assert "INCAR copilot" not in caplog.text
 
 
+def test_ediff_warning(caplog):
+    atoms = bulk("Cu")
+
+    with caplog.at_level(INFO):
+        calc = Vasp(atoms, ediff=1e-3)
+    assert calc.parameters["ediff"] == 1e-3
+    assert "EDIFF=0.001 is greater than 1e-4" in caplog.text
+    assert "results are likely unconverged" in caplog.text
+    caplog.clear()
+
+    with caplog.at_level(INFO):
+        calc = Vasp(atoms, ediff=1e-4)
+    assert calc.parameters["ediff"] == 1e-4
+    assert "results are likely unconverged" not in caplog.text
+
+
 def test_bad_pmg_converter():
     with pytest.raises(ValueError, match="Either atoms or prev_dir must be provided"):
         MPtoASEConverter()

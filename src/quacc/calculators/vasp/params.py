@@ -241,6 +241,16 @@ def _get_param_swaps(
     # ----------------------------
     pre_critical_params = dict(calc.parameters)
     if incar_copilot_mode.lower() != "off":
+        if (
+            (ediff := calc.parameters.get("ediff")) is not None
+            and ediff > 1e-4
+        ):
+            report.warnings.append(
+                CopilotWarning(
+                    f"EDIFF={ediff!r} is greater than 1e-4; the results are likely unconverged."
+                )
+            )
+
         if not calc.parameters.get("lorbit", False) and (
             calc.parameters.get("ispin", 1) == 2
             or np.any(input_atoms.get_initial_magnetic_moments() != 0)
