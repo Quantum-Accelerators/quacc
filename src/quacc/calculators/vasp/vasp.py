@@ -211,7 +211,7 @@ class Vasp(Vasp_):
             potpaw_path = (
                 self._settings.VASP_PP_PATH / f"{potpaw_prefix}{potpaw_suffix}"
             ).resolve()
-            LOGGER.info(f"Using PAW pseudopotentials: {potpaw_path}")
+            LOGGER.info(f"PAW potentials = {potpaw_path}")
 
         # Set the ASE_VASP_VDW environment variable
         if self._settings.VASP_VDW:
@@ -230,7 +230,7 @@ class Vasp(Vasp_):
             self._settings.VASP_GAMMA_CMD if use_gamma else self._settings.VASP_CMD
         )
         full_vasp_cmd = f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"
-        LOGGER.info(f"Using VASP command: {full_vasp_cmd.strip()}")
+        LOGGER.info(f"VASP command = {full_vasp_cmd.strip()}")
 
         return full_vasp_cmd
 

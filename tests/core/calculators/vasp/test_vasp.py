@@ -1404,6 +1404,8 @@ def test_logging(caplog):
     assert "Reason: d electrons were detected." in caplog.text
     assert "NCORE: None ->" in caplog.text
     assert "Recommending" not in caplog.text
+    assert "VASP command = vasp_std" in caplog.text
+    assert "Using VASP command:" not in caplog.text
     caplog.clear()
 
     with caplog.at_level(INFO):
@@ -1568,6 +1570,8 @@ def test_logger(caplog):
     with change_settings({"VASP_PP_PATH": "/path/to/pseudos"}):
         with caplog.at_level(INFO):
             Vasp(atoms)
+        assert "PAW potentials = /path/to/pseudos/potpaw_PBE" in caplog.text
+        assert "Using PAW pseudopotentials:" not in caplog.text
         assert "/path/to/pseudos/potpaw_PBE" in caplog.text
         caplog.clear()
 

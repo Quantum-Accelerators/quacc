@@ -83,7 +83,7 @@ def calc_setup(
         if settings.CREATE_UNIQUE_DIR:
             job_results_dir /= f"{tmpdir.name.split('tmp-')[-1]}"
 
-    LOGGER.info(f"Calculation will run at {tmpdir}")
+    LOGGER.info(f"Run directory = {tmpdir}")
 
     # Set the calculator's directory
     if atoms is not None:
