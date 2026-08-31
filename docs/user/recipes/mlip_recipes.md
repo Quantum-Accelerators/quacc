@@ -4,16 +4,16 @@ Several popular datasets used to train machine-learned interatomic potentials (M
 
 ## Supported Datasets
 
-| Dataset | Recipe |
-|---|---|
-| [OC20](https://pubs.acs.org/accacs/article/11/10/6059/459430/Open-Catalyst-2020-OC20-Dataset-and-Community) | quacc.recipes.vasp.fairchem.oc20_static_job |
-| [OMat24](https://www.nature.com/articles/s43588-026-00996-w) | quacc.recipes.vasp.fairchem.omat_static_job |
-| [OMC25](https://www.nature.com/articles/s41597-026-06628-2) | quacc.recipes.vasp.fairchem.omc_static_job |
-| [OMol25](https://arxiv.org/abs/2505.08762) | quacc.recipes.orca.fairchem.omol_static_job |
-| [ODAC25](https://arxiv.org/abs/2508.03162) | quacc.recipes.vasp.fairchem.odac_static_job |
-| [MPtrj](https://www.nature.com/articles/s42256-023-00716-3) | quacc.recipes.vasp.mp_legacy.mp_gga_static_job |
-| [MatPES](https://arxiv.org/abs/2503.04070) | quacc.recipes.vasp.matpes.matpes_static_job |
-| [MP-ALOE](https://www.nature.com/articles/s41524-025-01834-9) | quacc.recipes.vasp.mp_aloe.mp_aloe_static_job |
+| Dataset | Recipe | Extra Dependencies |
+|---|---|---|
+| [OC20](https://pubs.acs.org/accacs/article/11/10/6059/459430/Open-Catalyst-2020-OC20-Dataset-and-Community) | quacc.recipes.vasp.fairchem.oc20_static_job | `quacc[fairchem]` |
+| [OMat24](https://www.nature.com/articles/s43588-026-00996-w) | quacc.recipes.vasp.fairchem.omat_static_job | `quacc[fairchem]` |
+| [OMC25](https://www.nature.com/articles/s41597-026-06628-2) | quacc.recipes.vasp.fairchem.omc_static_job | `quacc[mp]` |
+| [OMol25](https://arxiv.org/abs/2505.08762) | quacc.recipes.orca.fairchem.omol_static_job | `quacc[fairchem]` |
+| [ODAC25](https://arxiv.org/abs/2508.03162) | quacc.recipes.vasp.fairchem.odac_static_job | none |
+| [MPtrj](https://www.nature.com/articles/s42256-023-00716-3) | quacc.recipes.vasp.mp_legacy.mp_gga_static_job | `quacc[mp]` |
+| [MatPES](https://arxiv.org/abs/2503.04070) | quacc.recipes.vasp.matpes.matpes_static_job | `quacc[mp]` |
+| [MP-ALOE](https://www.nature.com/articles/s41524-025-01834-9) | quacc.recipes.vasp.mp_aloe.mp_aloe_static_job | none |
 
 A few notes on specific rows:
 
