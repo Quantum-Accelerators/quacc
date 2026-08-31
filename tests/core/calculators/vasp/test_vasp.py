@@ -1414,9 +1414,10 @@ def test_logging(caplog):
     assert "LMAXMIX was not changed from 1 to 4" in caplog.text
     assert "2 warnings" in caplog.text
     assert "Attention required:" in caplog.text
-    assert sum(
-        "VASP INCAR COPILOT" in record.getMessage() for record in caplog.records
-    ) == 1
+    assert (
+        sum("VASP INCAR COPILOT" in record.getMessage() for record in caplog.records)
+        == 1
+    )
     caplog.clear()
 
     with caplog.at_level(INFO):
