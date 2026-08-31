@@ -1427,6 +1427,9 @@ def test_logging(caplog):
         "    Reason: d electrons were detected."
     ) in caplog.text
     assert "Attention required:" in caplog.text
+    assert caplog.text.index("Attention required:") < caplog.text.index(
+        "Applied changes:"
+    )
     assert (
         sum("VASP INCAR COPILOT" in record.getMessage() for record in caplog.records)
         == 1
@@ -1453,6 +1456,14 @@ def test_ediff_warning(caplog):
         calc = Vasp(atoms, ediff=1e-4)
     assert calc.parameters["ediff"] == 1e-4
     assert "results are likely unconverged" not in caplog.text
+
+
+def test_copilot_recommendation_label(caplog):
+    with caplog.at_level(INFO):
+        Vasp(bulk("Cu"), isif=3, nsw=2)
+
+    assert "Recommendation: Re-relax the final structure" in caplog.text
+    assert "Remediation:" not in caplog.text
 
 
 def test_bad_pmg_converter():

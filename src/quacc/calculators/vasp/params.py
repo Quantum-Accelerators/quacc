@@ -65,23 +65,23 @@ def log_copilot_report(report: CopilotReport) -> None:
     header = "================ VASP INCAR COPILOT ================"
     footer = "=" * len(header)
     lines = [header]
-    if report.changes:
-        lines.append("Applied changes:")
-        lines.extend(
-            f"  {change.parameter.upper()}: {change.old_value!r} -> {change.new_value!r}\n"
-            f"    Reason: {change.reason}"
-            for change in report.changes
-        )
     if report.warnings:
-        if report.changes:
-            lines.append("")
         lines.append("Attention required:")
         for warning in report.warnings:
             lines.append(f"  WARNING: {warning.message}")
             if warning.reason:
                 lines.append(f"    Reason: {warning.reason}")
             if warning.remediation:
-                lines.append(f"    Remediation: {warning.remediation}")
+                lines.append(f"    Recommendation: {warning.remediation}")
+    if report.changes:
+        if report.warnings:
+            lines.append("")
+        lines.append("Applied changes:")
+        lines.extend(
+            f"  {change.parameter.upper()}: {change.old_value!r} -> {change.new_value!r}\n"
+            f"    Reason: {change.reason}"
+            for change in report.changes
+        )
     lines.append(footer)
 
     log_level = WARNING if report.warnings else INFO
