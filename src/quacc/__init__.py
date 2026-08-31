@@ -109,7 +109,8 @@ basicConfig(filename=_settings.LOG_FILENAME, level=_settings.LOG_LEVEL)
 def _filter_emmet_task_doc_log(record: LogRecord) -> bool:
     """Suppress Emmet's noisy task-document path announcement."""
     return not (
-        record.levelno == INFO and record.getMessage().startswith("Getting task doc in:")
+        record.levelno == INFO
+        and record.getMessage().startswith("Getting task doc in:")
     )
 
 
