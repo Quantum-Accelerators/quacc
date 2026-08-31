@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from importlib.util import find_spec
-from logging import getLogger
+from logging import INFO, WARNING, getLogger
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -60,27 +60,36 @@ class CopilotReport:
 
 
 def log_copilot_report(report: CopilotReport) -> None:
-    """Log a compact summary while preserving warning severity."""
-    warning_label = "WARNING" if report.warnings else "warnings"
-    LOGGER.info(
-        "VASP INCAR copilot: %d changes applied, %d %s",
-        len(report.changes),
-        len(report.warnings),
-        warning_label,
-    )
+    """Log a framed summary as a single record."""
+    header = "================ VASP INCAR COPILOT ================"
+    change_label = "change" if len(report.changes) == 1 else "changes"
+    warning_label = "warning" if len(report.warnings) == 1 else "warnings"
+    lines = [
+        header,
+        (
+            f"Summary: {len(report.changes)} {change_label} applied, "
+            f"{len(report.warnings)} {warning_label}"
+        ),
+    ]
     if report.changes:
-        lines = ["INCAR copilot applied changes:"]
+        lines.append("")
+        lines.append("Applied changes:")
         lines.extend(
             f"  {change.parameter.upper()}: {change.old_value!r} -> {change.new_value!r}\n"
             f"    Reason: {change.reason}"
             for change in report.changes
         )
-        LOGGER.info("\n".join(lines))
-    for warning in report.warnings:
-        message = f"INCAR copilot attention required: {warning.message}"
-        if warning.remediation:
-            message += f" Remediation: {warning.remediation}"
-        LOGGER.warning(message)
+    if report.warnings:
+        lines.append("")
+        lines.append("Attention required:")
+        for warning in report.warnings:
+            lines.append(f"  WARNING: {warning.message}")
+            if warning.remediation:
+                lines.append(f"    Remediation: {warning.remediation}")
+    lines.extend(("", header))
+
+    log_level = WARNING if report.warnings else INFO
+    LOGGER.log(log_level, "\n".join(lines))
 
 
 def get_param_swaps(

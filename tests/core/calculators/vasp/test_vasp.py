@@ -1387,7 +1387,8 @@ def test_logging(caplog):
     atoms = bulk("Cu")
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
-    assert "VASP INCAR copilot:" in caplog.text
+    assert "================ VASP INCAR COPILOT ================" in caplog.text
+    assert "Summary:" in caplog.text
     assert "0 warnings" in caplog.text
     assert "LMAXMIX: None -> 4" in caplog.text
     assert "Reason: d electrons were detected." in caplog.text
@@ -1397,7 +1398,7 @@ def test_logging(caplog):
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
-    assert "VASP INCAR copilot:" in caplog.text
+    assert "================ VASP INCAR COPILOT ================" in caplog.text
     assert "  ISMEAR:" not in caplog.text
     assert "LMAXMIX: None -> 4" in caplog.text
     assert "NCORE: None ->" in caplog.text
@@ -1406,12 +1407,16 @@ def test_logging(caplog):
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=-5, algo="all", lmaxmix=1)
-    assert "VASP INCAR copilot:" in caplog.text
+    assert "================ VASP INCAR COPILOT ================" in caplog.text
     assert "ISEARCH: None -> 1" in caplog.text
     assert "NCORE: None ->" in caplog.text
     assert "ALGO was changed from 'all' to 'normal'" in caplog.text
     assert "LMAXMIX was not changed from 1 to 4" in caplog.text
-    assert "2 WARNING" in caplog.text
+    assert "2 warnings" in caplog.text
+    assert "Attention required:" in caplog.text
+    assert sum(
+        "VASP INCAR COPILOT" in record.getMessage() for record in caplog.records
+    ) == 1
     caplog.clear()
 
     with caplog.at_level(INFO):
