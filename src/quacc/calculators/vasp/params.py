@@ -68,7 +68,7 @@ def log_copilot_report(report: CopilotReport) -> None:
     if report.warnings:
         lines.append("⚠️ Attention required:")
         for warning in report.warnings:
-            lines.append(f"  WARNING: {warning.message}")
+            lines.append(f"  {warning.message}")
             if warning.reason:
                 lines.append(f"    Reason: {warning.reason}")
             if warning.remediation:
