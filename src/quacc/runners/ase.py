@@ -254,6 +254,14 @@ class Runner(BaseRunner):
 
         # Run optimization
         try:
+            import signal
+            
+            sigterm = False
+            def handler(signum, frame):
+                global sigterm
+                sigterm = True
+            signal.signal(signal.SIGTERM, handler)
+
             with (
                 traj if traj is not None else nullcontext(),
                 optimizer(self.atoms, **merged_optimizer_kwargs) as dyn,
@@ -274,7 +282,7 @@ class Runner(BaseRunner):
                             )
                         if fn_hook:
                             fn_hook(dyn)
-                        if stop_condition and stop_condition(dyn):
+                        if (stop_condition and stop_condition(dyn)) or sigterm:
                             break
         except Exception as exception:
             terminate(self.tmpdir, exception)
