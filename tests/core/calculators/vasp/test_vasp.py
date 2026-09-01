@@ -1425,7 +1425,7 @@ def test_logging(caplog):
     assert "ALGO was changed from 'all' to 'normal'" in caplog.text
     assert "LMAXMIX was not changed from 1 to 4" in caplog.text
     assert (
-        "  LMAXMIX was not changed from 1 to 4 to respect the user's decision.\n"
+        "  LMAXMIX was not changed from 1 to 4, but should be modified.\n"
         "    Reason: d electrons were detected."
     ) in caplog.text
     assert "⚠️ Attention required:" in caplog.text

@@ -443,7 +443,7 @@ def _get_param_swaps(
         for k, (current, recommended) in overridden_swaps.items():
             report.warnings.append(
                 CopilotWarning(
-                    f"{k.upper()} was not changed from {current!r} to {recommended!r} to respect the user's decision.",
+                    f"{k.upper()} was not changed from {current!r} to {recommended!r}, but should be modified.",
                     reason=change_reasons.get(k),
                 )
             )
