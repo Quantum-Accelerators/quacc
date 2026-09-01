@@ -15,14 +15,6 @@ Several popular datasets used to train machine-learned interatomic potentials (M
 | [MatPES](https://arxiv.org/abs/2503.04070) | quacc.recipes.vasp.matpes.matpes_static_job | `quacc[mp]` |
 | [MP-ALOE](https://www.nature.com/articles/s41524-025-01834-9) | quacc.recipes.vasp.mp_aloe.mp_aloe_static_job | none |
 
-A few notes on specific rows:
-
-- **OMol25** is not a VASP recipe. OMol is a molecular (non-periodic) dataset computed with ORCA, so [quacc.recipes.orca.fairchem.omol_static_job][] wraps an ORCA single-point calculation rather than a VASP input set. It requires the `fairchem-data-omol` package (`pip install quacc[fairchem]`).
-
-- **ODAC25**: [quacc.recipes.vasp.fairchem.odac_static_job][]'s default settings were verified against the official `fairchem-data-odac` package and the ODAC25 paper's supplementary Table S2. They match closely, with one known discrepancy (`NELM=60` in quacc vs. `NELM=120` in the paper). Separately, the ODAC25 paper applies a post-hoc statistical correction for k-point convergence to its raw DFT energies — this correction is not a VASP setting and cannot be reproduced by any VASP recipe.
-
-- **MPtrj** does not have a dataset-specific recipe name. [quacc.recipes.vasp.mp_legacy.mp_gga_static_job][] is quacc's existing Materials Project legacy GGA static recipe, which its docstring notes is "also the settings compatible with the MPtrj dataset."
-
 ## Custodian and the INCAR Copilot
 
 All of the VASP recipes above run with `incar_copilot_mode="critical"` by default, unlike quacc's other VASP recipes. This disables quacc's automatic INCAR-fixing behavior so that the settings intentionally chosen to match a dataset are not silently overridden.
