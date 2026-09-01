@@ -255,15 +255,15 @@ class Runner(BaseRunner):
         # Run optimization
         try:
             import signal
-            from types import SimpleNamespace
+            import threading
+            
+            def sigterm_handler(_signum, _frame):
+                sigterm_handler.status = True
 
-            status = SimpleNamespace(sigterm=False)
+            sigterm_handler.status = False
 
-            def handler(signum, frame):
-                global sigterm
-                status.sigterm = True
-
-            signal.signal(signal.SIGTERM, handler)
+            if threading.current_thread() is threading.main_thread():
+                signal.signal(signal.SIGTERM, sigterm_handler)
 
             with (
                 traj if traj is not None else nullcontext(),
@@ -285,7 +285,7 @@ class Runner(BaseRunner):
                             )
                         if fn_hook:
                             fn_hook(dyn)
-                        if (stop_condition and stop_condition(dyn)) or status.sigterm:
+                        if (stop_condition and stop_condition(dyn)) or sigterm_handler.status:
                             break
         except Exception as exception:
             terminate(self.tmpdir, exception)
