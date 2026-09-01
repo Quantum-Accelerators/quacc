@@ -642,17 +642,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#custodian-and-the-incar-copilot" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Custodian and the INCAR Copilot
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#a-representative-example" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -6078,17 +6067,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#custodian-and-the-incar-copilot" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Custodian and the INCAR Copilot
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#a-representative-example" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -6262,9 +6240,6 @@
 </tr>
 </tbody>
 </table>
-<h2 id="custodian-and-the-incar-copilot">Custodian and the INCAR Copilot<a class="headerlink" href="#custodian-and-the-incar-copilot" title="Permanent link">&para;</a></h2>
-<p>All of the VASP recipes above run with <code>incar_copilot_mode="critical"</code> by default, unlike quacc's other VASP recipes. This disables quacc's automatic INCAR-fixing behavior so that the settings intentionally chosen to match a dataset are not silently overridden.</p>
-<p>A subset of these recipes — <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;oc20_static_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/fairchem.html#quacc.recipes.vasp.fairchem.oc20_static_job">quacc.recipes.vasp.fairchem.oc20_static_job</a>, <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;omc_static_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/fairchem.html#quacc.recipes.vasp.fairchem.omc_static_job">quacc.recipes.vasp.fairchem.omc_static_job</a>, and <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;odac_static_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/fairchem.html#quacc.recipes.vasp.fairchem.odac_static_job">quacc.recipes.vasp.fairchem.odac_static_job</a> — additionally run with <code>use_custodian=False</code> by default, since Custodian-based error correction was not used when those datasets were originally generated. The other VASP recipes in the table above leave Custodian enabled (the quacc default).</p>
 <h2 id="a-representative-example">A Representative Example<a class="headerlink" href="#a-representative-example" title="Permanent link">&para;</a></h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.vasp.fairchem</span><span class="w"> </span><span class="kn">import</span> <span class="n">omat_static_job</span>
