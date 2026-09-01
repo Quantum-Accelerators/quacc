@@ -18,6 +18,7 @@ nav = [
         { "Recipes" = [
             "user/recipes/recipes_intro.md",
             "user/recipes/workflows.md",
+            "user/recipes/file_transfers.md",
             "user/recipes/mlip_recipes.md",
         ] },
         { "Settings Management" = [
@@ -39,8 +40,7 @@ nav = [
             "user/db/context.md",
             "user/db/basics.md"
         ] },
-        { "Miscellaneous" = [
-            "user/miscellaneous/file_transfers.md",
+        { "Additional Recipe Details" = [
             "user/miscellaneous/torchsim.md"
         ] }
     ] },

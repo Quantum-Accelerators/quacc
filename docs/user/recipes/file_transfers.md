@@ -47,7 +47,7 @@ relax_job(
 
 !!! Tip "Glob Patterns"
 
-    The `copy_files` keyword argument also supports [glob patterns](https://docs.python.org/3/library/pathlib.html#pathlib.Path.glob) for the filenames, such as `WAVECAR*` to copy all files that start with `WAVECAR` from the source.
+    The `copy_files` keyword argument supports [glob patterns](https://docs.python.org/3/library/pathlib.html#pathlib.Path.glob) for the filenames, such as `WAVECAR*` to copy all files that start with `WAVECAR` from the source.
 
 ### Transfers Between Jobs
 
