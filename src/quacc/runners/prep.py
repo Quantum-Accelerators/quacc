@@ -83,7 +83,7 @@ def calc_setup(
         if settings.CREATE_UNIQUE_DIR:
             job_results_dir /= f"{tmpdir.name.split('tmp-')[-1]}"
 
-    LOGGER.info(f"Calculation will run at {tmpdir}")
+    LOGGER.info(f"Run directory = {tmpdir}")
 
     # Set the calculator's directory
     if atoms is not None:
@@ -146,7 +146,6 @@ def calc_cleanup(
         gzip_dir(tmpdir)
 
     # Move files from tmpdir to job_results_dir.
-    LOGGER.info(f"Moving {tmpdir} contents to {job_results_dir}")
     job_results_dir.mkdir(parents=True, exist_ok=True)
     for file_name in os.listdir(tmpdir):
         move(tmpdir / file_name, job_results_dir / file_name)

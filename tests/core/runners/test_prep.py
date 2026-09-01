@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from logging import INFO
 from pathlib import Path
 
 import pytest
@@ -31,7 +32,7 @@ def make_files3():
         f.write("file2")
 
 
-def test_calc_setup(tmp_path, monkeypatch):
+def test_calc_setup(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     make_files()
 
@@ -40,9 +41,12 @@ def test_calc_setup(tmp_path, monkeypatch):
         atoms.calc = EMT()
         settings = get_settings()
 
-        tmpdir, results_dir = calc_setup(atoms)
+        with caplog.at_level(INFO):
+            tmpdir, results_dir = calc_setup(atoms)
 
         assert tmpdir.is_dir()
+        assert f"Run directory = {tmpdir}" in caplog.text
+        assert "Calculation will run at" not in caplog.text
         assert "tmp" in str(tmpdir)
         assert results_dir.name == tmpdir.name.split("tmp-")[-1]
         assert str(settings.RESULTS_DIR) in str(results_dir)

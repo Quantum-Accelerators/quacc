@@ -224,7 +224,7 @@ def odac_static_job(
         "sigma": 0.2,
         "ispin": 2,
         "prec": "accurate",
-        "nelm": 60,
+        "nelm": 120,
         "nelmin": 2,
         "ediff": 1e-5,
         "ediffg": -0.05,
