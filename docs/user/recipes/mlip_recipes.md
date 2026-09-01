@@ -15,12 +15,6 @@ Several popular datasets used to train machine-learned interatomic potentials (M
 | [MatPES](https://arxiv.org/abs/2503.04070) | [quacc.recipes.vasp.matpes.matpes_static_job][] | `quacc[mp]` |
 | [MP-ALOE](https://www.nature.com/articles/s41524-025-01834-9) | [quacc.recipes.vasp.mp_aloe.mp_aloe_static_job][] | none |
 
-## Custodian and the INCAR Copilot
-
-All of the VASP recipes above run with `incar_copilot_mode="critical"` by default, unlike quacc's other VASP recipes. This disables quacc's automatic INCAR-fixing behavior so that the settings intentionally chosen to match a dataset are not silently overridden.
-
-A subset of these recipes — [quacc.recipes.vasp.fairchem.oc20_static_job][], [quacc.recipes.vasp.fairchem.omc_static_job][], and [quacc.recipes.vasp.fairchem.odac_static_job][] — additionally run with `use_custodian=False` by default, since Custodian-based error correction was not used when those datasets were originally generated. The other VASP recipes in the table above leave Custodian enabled (the quacc default).
-
 ## A Representative Example
 
 ```python
