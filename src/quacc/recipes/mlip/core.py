@@ -110,6 +110,12 @@ def relax_job(
     OptSchema
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
+
+    Examples
+    --------
+    >>> relax_job(atoms, "fairchem", name_or_path="uma-s-1p1", task_name="omat")
+    >>> relax_job(atoms, "matcalc", name="TensorNet-MatPES-PBE-2025.2", relax_cell=True)
+    >>> relax_job(atoms, "rootstock", checkpoint="mace-mp-0-medium", opt_params={"fmax": 0.05})
     """
     opt_defaults = {"fmax": 0.01}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
