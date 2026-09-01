@@ -382,10 +382,10 @@ def test_run_md_sigterm(tmp_path, monkeypatch):
     sig_thread.start()
 
     dyn = Runner(molecule("H2"), LennardJones()).run_md(
-        VelocityVerlet, dynamics_kwargs={"timestep": fs}, steps=10
+        VelocityVerlet, dynamics_kwargs={"timestep": fs}, steps=10000
     )
 
-    assert dyn.completed_steps < 10
+    assert dyn.completed_steps < 10000
     assert dyn.state == "partial"
     assert dyn.stop_reason == "walltime"
 
