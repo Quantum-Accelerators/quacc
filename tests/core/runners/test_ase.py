@@ -375,20 +375,18 @@ def test_run_md_sigterm(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
     def send_signal():
-        time.sleep(0.05) 
+        time.sleep(0.05)
         os.kill(os.getpid(), signal.SIGTERM)
 
     sig_thread = threading.Thread(target=send_signal, daemon=True)
     sig_thread.start()
 
     dyn = Runner(molecule("H2"), LennardJones()).run_md(
-        VelocityVerlet,
-        dynamics_kwargs={"timestep": fs},
-        steps=10,
+        VelocityVerlet, dynamics_kwargs={"timestep": fs}, steps=10
     )
 
     assert dyn.completed_steps < 10
-    assert dyn.state == 'partial'
+    assert dyn.state == "partial"
     assert dyn.stop_reason == "walltime"
 
 
