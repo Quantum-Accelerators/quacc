@@ -33,18 +33,18 @@ A subset of these recipes — [quacc.recipes.vasp.fairchem.oc20_static_job][], [
 
 ```python
 from ase.build import bulk
-from quacc.recipes.vasp.fairchem import oc20_static_job
+from quacc.recipes.vasp.fairchem import omat_static_job
 
 # Make an Atoms object of a bulk Cu structure
 atoms = bulk("Cu")
 
-# Run a static calculation with OC20-compatible VASP settings
-result = oc20_static_job(atoms)
+# Run a static calculation with OMat24-compatible VASP settings
+result = omat_static_job(atoms)
 print(result)
 ```
 
 As with all quacc recipes, you can override any of the default calculator settings by passing additional keyword arguments:
 
 ```python
-result = oc20_static_job(atoms, encut=600)
+result = omat_static_job(atoms, encut=600)
 ```
