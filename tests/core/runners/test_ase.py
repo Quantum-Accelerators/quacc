@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import glob
 import os
+import signal
+import threading
+import time
 from logging import WARNING, getLogger
 from pathlib import Path
 from shutil import rmtree
@@ -366,6 +369,27 @@ def test_run_md_stop_condition(tmp_path, monkeypatch):
     assert dyn.completed_steps == 3
     assert dyn.stop_reason == "walltime"
     assert len(read(dyn.trajectory.filename, index=":")) == 4
+
+
+def test_run_md_sigterm(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def send_signal():
+        time.sleep(0.05) 
+        os.kill(os.getpid(), signal.SIGTERM)
+
+    sig_thread = threading.Thread(target=send_signal, daemon=True)
+    sig_thread.start()
+
+    dyn = Runner(molecule("H2"), LennardJones()).run_md(
+        VelocityVerlet,
+        dynamics_kwargs={"timestep": fs},
+        steps=10,
+    )
+
+    assert dyn.completed_steps < 10
+    assert dyn.state == 'partial'
+    assert dyn.stop_reason == "walltime"
 
 
 def test_copy_intermediate_files_copies_files_and_directories(tmp_path, monkeypatch):
