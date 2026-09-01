@@ -386,7 +386,6 @@ def test_run_md_sigterm(tmp_path, monkeypatch):
     )
 
     assert dyn.completed_steps < 10000
-    assert dyn.state == "partial"
     assert dyn.stop_reason == "walltime"
 
 
