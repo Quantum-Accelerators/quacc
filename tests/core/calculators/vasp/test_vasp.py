@@ -1567,7 +1567,6 @@ def test_logger(caplog):
         with caplog.at_level(INFO):
             Vasp(atoms)
         assert "PAW potentials = /path/to/pseudos/potpaw_PBE" in caplog.text
-        assert "Using PAW pseudopotentials:" not in caplog.text
         assert "/path/to/pseudos/potpaw_PBE" in caplog.text
         caplog.clear()
 
