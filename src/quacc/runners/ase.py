@@ -255,11 +255,13 @@ class Runner(BaseRunner):
         # Run optimization
         try:
             import signal
-            
+
             sigterm = False
+
             def handler(signum, frame):
                 global sigterm
                 sigterm = True
+
             signal.signal(signal.SIGTERM, handler)
 
             with (
