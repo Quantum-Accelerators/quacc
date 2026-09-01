@@ -6,6 +6,7 @@ from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
+from pymatgen.io.vasp.sets import MPRelaxSet
 
 from quacc import flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import SourceDirectory, VaspSchema
+    from quacc.types import CopyFiles, SourceDirectory, VaspSchema
 
     class MPGGARelaxFlowSchema(TypedDict):
         """Type hint associated with the MP GGA relaxation flows."""
@@ -81,8 +82,6 @@ def mp_gga_static_job(
     """
     Function to run a static calculation on a structure with the original Materials Project GGA(+U) settings.
 
-    This is also the settings compatible with the MPtrj dataset.
-
     Parameters
     ----------
     atoms
@@ -115,6 +114,47 @@ def mp_gga_static_job(
         copy_files=[{"source": prev_dir, "filenames": ["CHGCAR*", "WAVECAR*"]}]
         if prev_dir
         else None,
+    )
+
+
+@job
+def mp_relax_set_job(
+    atoms: Atoms,
+    copy_files: CopyFiles | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    **calc_kwargs: Any,
+) -> VaspSchema:
+    """
+    Run a static calculation with the original pymatgen `MPRelaxSet` VASP settings,
+    compatible with the MPtrj, WBM, sAlex, and MatterSim datasets.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to `None` to remove a
+        pre-existing key entirely. All ASE Vasp calculator keyword arguments are
+        supported.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
+    """
+    calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(MPRelaxSet())
+    calc_defaults |= {"nsw": 0, "incar_copilot_mode": "critical"}
+
+    return run_and_summarize(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "MP RelaxSet Static"} | (additional_fields or {}),
+        copy_files=copy_files,
     )
 
 

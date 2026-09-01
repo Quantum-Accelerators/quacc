@@ -11,7 +11,7 @@ Several popular datasets used to train machine-learned interatomic potentials (M
 | [OMC25](https://www.nature.com/articles/s41597-026-06628-2) | quacc.recipes.vasp.fairchem.omc_static_job | `quacc[mp]` |
 | [OMol25](https://arxiv.org/abs/2505.08762) | quacc.recipes.orca.fairchem.omol_static_job | `quacc[fairchem]` |
 | [ODAC25](https://arxiv.org/abs/2508.03162) | quacc.recipes.vasp.fairchem.odac_static_job | none |
-| [MPtrj](https://www.nature.com/articles/s42256-023-00716-3) | quacc.recipes.vasp.mp_legacy.mp_gga_static_job | `quacc[mp]` |
+| [MPtrj](https://www.nature.com/articles/s42256-023-00716-3) / [WBM](https://www.nature.com/articles/s41524-020-00481-6) / [sAlex](https://matbench-discovery.materialsproject.org/data/salex) / [MatterSim](https://arxiv.org/abs/2405.04967) | quacc.recipes.vasp.mp_legacy.mp_relax_set_job | none |
 | [MatPES](https://arxiv.org/abs/2503.04070) | quacc.recipes.vasp.matpes.matpes_static_job | `quacc[mp]` |
 | [MP-ALOE](https://www.nature.com/articles/s41524-025-01834-9) | quacc.recipes.vasp.mp_aloe.mp_aloe_static_job | none |
 
