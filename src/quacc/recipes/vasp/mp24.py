@@ -175,7 +175,7 @@ def mp_metagga_relax_flow(
     Materials Project r2SCAN workflow consisting of:
 
     1. MP-compatible pre-relax
-        - name: "mpa_prerelax_job"
+        - name: "mp_prerelax_job"
         - job: [quacc.recipes.vasp.mp24.mp_prerelax_job][]
 
     2. MP-compatible relax
