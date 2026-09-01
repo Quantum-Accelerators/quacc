@@ -15,7 +15,8 @@ from ase.calculators.vasp import setups as ase_setups
 from quacc import QuaccDefault, get_settings
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
-    get_param_swaps,
+    _get_param_swaps,
+    log_copilot_report,
     normalize_params,
     remove_unused_flags,
     set_auto_dipole,
@@ -210,7 +211,7 @@ class Vasp(Vasp_):
             potpaw_path = (
                 self._settings.VASP_PP_PATH / f"{potpaw_prefix}{potpaw_suffix}"
             ).resolve()
-            LOGGER.info(f"Using PAW pseudopotentials: {potpaw_path}")
+            LOGGER.info(f"PAW potentials = {potpaw_path}")
 
         # Set the ASE_VASP_VDW environment variable
         if self._settings.VASP_VDW:
@@ -229,7 +230,7 @@ class Vasp(Vasp_):
             self._settings.VASP_GAMMA_CMD if use_gamma else self._settings.VASP_CMD
         )
         full_vasp_cmd = f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"
-        LOGGER.info(f"Using VASP command: {full_vasp_cmd.strip()}")
+        LOGGER.info(f"VASP command = {full_vasp_cmd.strip()}")
 
         return full_vasp_cmd
 
@@ -312,7 +313,7 @@ class Vasp(Vasp_):
         )
 
         # Handle INCAR swaps
-        self.user_calc_params = get_param_swaps(
+        self.user_calc_params, copilot_report = _get_param_swaps(
             self.user_calc_params,
             self.input_atoms,
             incar_copilot_mode=self.incar_copilot_mode,
@@ -320,6 +321,9 @@ class Vasp(Vasp_):
         )
         if self.incar_copilot_mode.lower() not in {"off", "critical"}:
             self.user_calc_params = remove_unused_flags(self.user_calc_params)
+
+        if self.incar_copilot_mode.lower() != "off":
+            log_copilot_report(copilot_report)
 
         # Clean up the user calc parameters
         self.user_calc_params = sort_dict(self.user_calc_params)

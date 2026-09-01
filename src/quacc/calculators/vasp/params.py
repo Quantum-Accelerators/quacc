@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 from importlib.util import find_spec
-from logging import getLogger
+from logging import INFO, WARNING, getLogger
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -13,7 +14,6 @@ from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import check_is_metal
-from quacc.utils.dicts import sort_dict
 from quacc.utils.kpts import convert_pmg_kpts
 
 has_atomate2 = bool(find_spec("atomate2"))
@@ -31,6 +31,61 @@ if TYPE_CHECKING:
         from atomate2.vasp.sets.base import VaspInputGenerator
 
 LOGGER = getLogger(__name__)
+
+
+@dataclass(frozen=True)
+class CopilotChange:
+    """An INCAR parameter change made by the copilot."""
+
+    parameter: str
+    old_value: Any
+    new_value: Any
+    reason: str
+
+
+@dataclass(frozen=True)
+class CopilotWarning:
+    """An issue that the INCAR copilot cannot safely fix."""
+
+    message: str
+    remediation: str | None = None
+    reason: str | None = None
+
+
+@dataclass
+class CopilotReport:
+    """Structured results from the INCAR copilot."""
+
+    changes: list[CopilotChange] = field(default_factory=list)
+    warnings: list[CopilotWarning] = field(default_factory=list)
+
+
+def log_copilot_report(report: CopilotReport) -> None:
+    """Log a framed summary as a single record."""
+    header = "================ VASP INCAR COPILOT ================"
+    footer = "=" * len(header)
+    lines = [header]
+    if report.warnings:
+        lines.append("⚠️ Attention required:")
+        for warning in report.warnings:
+            lines.append(f"  {warning.message}")
+            if warning.reason:
+                lines.append(f"    Reason: {warning.reason}")
+            if warning.remediation:
+                lines.append(f"    Recommendation: {warning.remediation}")
+    if report.changes:
+        if report.warnings:
+            lines.append("")
+        lines.append("Applied changes:")
+        lines.extend(
+            f"  {change.parameter.upper()}: {change.old_value!r} -> {change.new_value!r}\n"
+            f"    Reason: {change.reason}"
+            for change in report.changes
+        )
+    lines.append(footer)
+
+    log_level = WARNING if report.warnings else INFO
+    LOGGER.log(log_level, "\n%s", "\n".join(lines))
 
 
 def get_param_swaps(
@@ -60,8 +115,35 @@ def get_param_swaps(
     dict
         The updated user-provided calculator parameters.
     """
+    new_parameters, report = _get_param_swaps(
+        user_calc_params,
+        input_atoms,
+        pmg_kpts=pmg_kpts,
+        incar_copilot_mode=incar_copilot_mode,
+    )
+    if incar_copilot_mode.lower() != "off":
+        log_copilot_report(report)
+    return new_parameters
+
+
+def _get_param_swaps(
+    user_calc_params: dict[str, Any],
+    input_atoms: Atoms,
+    pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float] | None = None,
+    incar_copilot_mode: Literal[
+        "off", "critical", "standard", "aggressive"
+    ] = "standard",
+) -> tuple[dict[str, Any], CopilotReport]:
+    """Return updated parameters and a structured INCAR copilot report."""
+    report = CopilotReport()
     is_metal = check_is_metal(input_atoms)
     calc = Vasp_(**remove_unused_flags(user_calc_params))
+    change_reasons: dict[str, str] = {}
+
+    def recommend(reason: str, **parameters: Any) -> None:
+        change_reasons.update(dict.fromkeys(parameters, reason))
+        calc.set(**parameters)
+
     max_Z = input_atoms.get_atomic_numbers().max()
 
     # ----------------------------
@@ -69,11 +151,9 @@ def get_param_swaps(
     # ----------------------------
     if incar_copilot_mode.lower() not in {"off", "critical"}:
         if calc.parameters.get("lmaxmix", 2) < 6 and max_Z > 56:
-            LOGGER.info("Recommending LMAXMIX = 6 because you have f electrons.")
-            calc.set(lmaxmix=6)
+            recommend("f electrons were detected.", lmaxmix=6)
         elif calc.parameters.get("lmaxmix", 2) < 4 and max_Z > 20:
-            LOGGER.info("Recommending LMAXMIX = 4 because you have d electrons.")
-            calc.set(lmaxmix=4)
+            recommend("d electrons were detected.", lmaxmix=4)
 
         if (
             calc.parameters.get("luse_vdw", False)
@@ -82,135 +162,120 @@ def get_param_swaps(
             or calc.parameters.get("ldau_luj", {})
             or calc.parameters.get("metagga", "")
         ) and not calc.parameters.get("lasph"):
-            LOGGER.info(
-                "Recommending LASPH = True because you have a +U, vdW, meta-GGA, or hybrid calculation."
+            recommend(
+                "LASPH is recommended for +U, vdW, meta-GGA, and hybrid calculations.",
+                lasph=True,
             )
-            calc.set(lasph=True)
 
         if calc.parameters.get("metagga", "") and (
             calc.parameters.get("algo", "normal").lower() != "all"
         ):
-            LOGGER.info(
-                "Recommending ALGO = All because you have a meta-GGA calculation."
+            recommend(
+                "ALGO=All is recommended for meta-GGA calculations.",
+                algo="all",
+                isearch=1,
             )
-            calc.set(algo="all", isearch=1)
 
         if (
             is_metal
             and (calc.parameters.get("ismear", 1) < 0)
             and (calc.parameters.get("nsw", 0) > 0)
         ):
-            LOGGER.info(
-                "Recommending ISMEAR = 1 and SIGMA = 0.1 because you are likely relaxing a metal."
+            recommend(
+                "Metal relaxations should use finite-width smearing.",
+                ismear=1,
+                sigma=0.1,
             )
-            calc.set(ismear=1, sigma=0.1)
 
         if (
             pmg_kpts
             and pmg_kpts.get("line_density")
             and calc.parameters.get("ismear", 1) != 0
         ):
-            LOGGER.info(
-                "Recommending ISMEAR = 0 and SIGMA = 0.01 because you are doing a line mode calculation."
+            recommend(
+                "Line-mode calculations should use Gaussian smearing.",
+                ismear=0,
+                sigma=0.01,
             )
-            calc.set(ismear=0, sigma=0.01)
 
         if calc.parameters.get("ismear", 1) == 0 and (
             calc.parameters.get("sigma", 0.2) > 0.05
         ):
-            LOGGER.info(
-                "Recommending SIGMA = 0.05 because ISMEAR = 0 was requested with SIGMA > 0.05."
-            )
-            calc.set(sigma=0.05)
+            recommend("SIGMA should be <=0.05 when ISMEAR=0.", sigma=0.05)
 
         if calc.parameters.get("nsw", 0) > 0 and calc.parameters.get("laechg", False):
-            LOGGER.info(
-                "Recommending LAECHG = False because you have NSW > 0. LAECHG is supposedly not compatible with NSW > 0."
-            )
-            calc.set(laechg=False)
+            recommend("LAECHG is not compatible with NSW>0.", laechg=False)
 
         if calc.parameters.get("ldauprint", 0) == 0 and (
             calc.parameters.get("ldau", False) or calc.parameters.get("ldau_luj", {})
         ):
-            LOGGER.info("Recommending LDAUPRINT = 1 because LDAU = True.")
-            calc.set(ldauprint=1)
+            recommend("LDAUPRINT=1 is recommended when LDAU is enabled.", ldauprint=1)
 
         if calc.parameters.get("lreal", False) and len(input_atoms) < 30:
-            LOGGER.info(
-                "Recommending LREAL = False because you have a small system (< 30 atoms/cell)."
+            recommend(
+                "Reciprocal-space projectors are recommended for systems with fewer than 30 atoms.",
+                lreal=False,
             )
-            calc.set(lreal=False)
 
         if (
             calc.parameters.get("lhfcalc", False) is True
             and calc.parameters.get("isym", 3) < 3
         ):
-            LOGGER.info(
-                "Recommending ISYM = 3 because you are running a hybrid calculation."
-            )
-            calc.set(isym=3)
+            recommend("ISYM=3 is recommended for hybrid calculations.", isym=3)
 
         if calc.parameters.get("lsorbit", False):
-            LOGGER.info(
-                "Recommending ISYM = -1 because you are running an SOC calculation."
-            )
-            calc.set(isym=-1)
+            recommend("Symmetry should be disabled for spin-orbit coupling.", isym=-1)
 
         if (
             calc.parameters.get("algo", "normal") in ("all", "conjugate")
             and calc.parameters.get("isearch", 0) != 1
         ):
-            LOGGER.info("Recommending ISEARCH = 1 because you have ALGO = All.")
-            calc.set(isearch=1)
+            recommend("ISEARCH=1 is required when ALGO=All.", isearch=1)
 
     # ----------------------------
     # Critical INCAR swaps
     # ----------------------------
     pre_critical_params = dict(calc.parameters)
     if incar_copilot_mode.lower() != "off":
+        if (ediff := calc.parameters.get("ediff", 1e-4)) > 1e-4:
+            report.warnings.append(
+                CopilotWarning(
+                    f"EDIFF={ediff!r} is greater than 1e-4; the results are likely unconverged."
+                )
+            )
+
         if not calc.parameters.get("lorbit", False) and (
             calc.parameters.get("ispin", 1) == 2
             or np.any(input_atoms.get_initial_magnetic_moments() != 0)
         ):
-            LOGGER.info(
-                "Recommending LORBIT = 11 because you have a spin-polarized calculation."
+            recommend(
+                "LORBIT=11 is recommended for spin-polarized calculations.", lorbit=11
             )
-            calc.set(lorbit=11)
 
         if (
             calc.parameters.get("ismear", 1) == -5
             and (calc.kpts is not None and np.prod(calc.kpts) < 4)
             and calc.parameters.get("kspacing", None) is None
         ):
-            LOGGER.info(
-                "Recommending ISMEAR = 0 because you don't have enough k-points for ISMEAR = -5."
-            )
-            calc.set(ismear=0)
+            recommend("There are too few k-points for tetrahedron smearing.", ismear=0)
 
         if (
             calc.parameters.get("kspacing", 0.5) > 0.5
             and calc.parameters.get("ismear", 1) == -5
         ):
-            LOGGER.info(
-                "Recommending ISMEAR = 0 because KSPACING is likely too large for ISMEAR = -5."
-            )
-            calc.set(ismear=0)
+            recommend("KSPACING is too large for tetrahedron smearing.", ismear=0)
 
         if calc.parameters.get("ismear", 1) == -5 and calc.parameters.get(
             "algo", "normal"
         ) in ("all", "conjugate", "damped"):
-            LOGGER.info(
-                "Recommending ALGO = Normal because your ALGO is not compatible with ISMEAR = -5."
+            recommend(
+                "The selected ALGO is incompatible with ISMEAR=-5.", algo="normal"
             )
-            calc.set(algo="normal")
 
         if calc.parameters.get("lhfcalc", False) and (
             calc.parameters.get("algo", "normal").lower() != "normal"
         ):
-            LOGGER.info(
-                "Recommending ALGO = Normal because you have a hybrid calculation."
-            )
-            calc.set(algo="normal")
+            recommend("ALGO=Normal is required for hybrid calculations.", algo="normal")
 
         if (
             calc.parameters.get("ncore", 1) > 1
@@ -221,19 +286,19 @@ def get_param_swaps(
             or calc.parameters.get("lepsilon", False) is True
             or calc.parameters.get("ibrion", 0) in [5, 6, 7, 8]
         ):
-            LOGGER.info(
-                "Recommending NCORE = 1 because NCORE/NPAR is not compatible with this job type."
+            recommend(
+                "NCORE/NPAR is incompatible with this job type.", ncore=1, npar=None
             )
-            calc.set(ncore=1, npar=None)
 
         if not calc.parameters.get("npar") and not calc.parameters.get("ncore"):
             ncores = psutil.cpu_count(logical=False) or 1
             for ncore in range(int(np.sqrt(ncores)), ncores):
                 if ncores % ncore == 0:
-                    LOGGER.info(
-                        f"Recommending NCORE = {ncore} per the sqrt(# cores) suggestion by VASP."
+                    recommend(
+                        "This follows VASP's sqrt(number of cores) recommendation.",
+                        ncore=ncore,
+                        npar=None,
                     )
-                    calc.set(ncore=ncore, npar=None)
                     break
 
         if (
@@ -244,24 +309,29 @@ def get_param_swaps(
             )
             and calc.float_params["kspacing"] is None
         ):
-            LOGGER.info(
-                "Recommending KPAR = 1 because you have too few k-points to parallelize."
+            recommend(
+                "There are too few k-points to parallelize over k-points.", kpar=1
             )
-            calc.set(kpar=1)
 
         if (
             calc.parameters.get("isif", 2) in (3, 6, 7, 8)
             and calc.parameters.get("nsw", 0) > 0
         ):
             if calc.encut is None:
-                LOGGER.warning(
-                    "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT=1.3*max(ENMAX)."
+                report.warnings.append(
+                    CopilotWarning(
+                        "Pulay stress risk during variable-cell relaxation because ENCUT was not explicitly set.",
+                        "Re-relax the final structure with the converged ENCUT or set ENCUT=1.3*max(ENMAX).",
+                    )
                 )
             if "He" in input_atoms.get_chemical_symbols() and (
                 calc.encut is None or calc.encut < 478.896 * 1.3
             ):
-                LOGGER.warning(
-                    "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=623."
+                report.warnings.append(
+                    CopilotWarning(
+                        "Pulay stress risk for a variable-cell relaxation containing He.",
+                        "Re-relax the final structure with the converged ENCUT or set ENCUT>=623.",
+                    )
                 )
 
             if (
@@ -271,8 +341,11 @@ def get_param_swaps(
                 and calc.parameters["setups"].get("Li", "") in ("Li_sv", "_sv")
                 and (calc.encut is None or calc.encut < 499.034 * 1.3)
             ):
-                LOGGER.warning(
-                    "Be careful of Pulay stresses. At the end of your run, re-relax your structure with your current ENCUT or set ENCUT>=650."
+                report.warnings.append(
+                    CopilotWarning(
+                        "Pulay stress risk for a variable-cell relaxation using Li_sv.",
+                        "Re-relax the final structure with the converged ENCUT or set ENCUT>=650.",
+                    )
                 )
 
         if (
@@ -286,11 +359,12 @@ def get_param_swaps(
             and not calc.parameters.get("vdw_a1")
             and not calc.parameters.get("vdw_a2")
         ):
-            LOGGER.info(
-                "Recommending VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for r2SCAN-D4."
-            )
-            calc.set(
-                vdw_s6=1.0, vdw_s8=0.60187490, vdw_a1=0.51559235, vdw_a2=5.77342911
+            recommend(
+                "These are the recommended r2SCAN-D4 damping parameters.",
+                vdw_s6=1.0,
+                vdw_s8=0.60187490,
+                vdw_a1=0.51559235,
+                vdw_a2=5.77342911,
             )
 
         if (
@@ -302,16 +376,21 @@ def get_param_swaps(
             and not calc.parameters.get("vdw_a1")
             and not calc.parameters.get("vdw_a2")
         ):
-            LOGGER.info(
-                "Recommending VDW_S6, VDW_S8, VDW_A1, VDW_A2 parameters for HSE06-D3(BJ)."
+            recommend(
+                "These are the recommended HSE06-D3(BJ) damping parameters.",
+                vdw_s6=1.0,
+                vdw_s8=2.310,
+                vdw_a1=0.383,
+                vdw_a2=5.685,
             )
-            calc.set(vdw_s6=1.0, vdw_s8=2.310, vdw_a1=0.383, vdw_a2=5.685)
 
         if input_atoms.get_chemical_formula() == "O2" and all(
             input_atoms.get_initial_magnetic_moments() == 0
         ):
-            LOGGER.warning(
-                "You are running O2 without magnetic moments, but its ground state should have 2 unpaired electrons!"
+            report.warnings.append(
+                CopilotWarning(
+                    "O2 is being run without magnetic moments, but its ground state should have 2 unpaired electrons."
+                )
             )
 
     # ----------------------------
@@ -329,12 +408,16 @@ def get_param_swaps(
     else:
         new_parameters = (calc.parameters | user_calc_params) | critical_swap_changes
 
-    if added_parameters := {
-        k: new_parameters[k] for k in set(new_parameters) - set(user_calc_params)
-    }:
-        LOGGER.info(
-            f"The following parameters were added: {sort_dict(added_parameters)}"
+    report.changes = [
+        CopilotChange(
+            k,
+            user_calc_params.get(k),
+            new_parameters[k],
+            change_reasons.get(k, "General INCAR compatibility rule was applied."),
         )
+        for k in sorted(new_parameters)
+        if _params_differ(user_calc_params.get(k), new_parameters[k])
+    ]
 
     overridden_user_params = {
         k: (user_calc_params[k], new_parameters[k])
@@ -343,7 +426,14 @@ def get_param_swaps(
         and _params_differ(new_parameters[k], user_calc_params[k])
     }
     for k, (old, new) in overridden_user_params.items():
-        LOGGER.warning(f"{k.upper()} was changed from {old!r} to {new!r}.")
+        report.warnings.append(
+            CopilotWarning(
+                f"{k.upper()} was changed from {old!r} to {new!r}.",
+                reason=change_reasons.get(
+                    k, "General INCAR compatibility rule was applied."
+                ),
+            )
+        )
 
     if overridden_swaps := {
         k: (user_calc_params.get(k), recommended_params[k])
@@ -351,11 +441,14 @@ def get_param_swaps(
         if _params_differ(recommended_params[k], new_parameters.get(k))
     }:
         for k, (current, recommended) in overridden_swaps.items():
-            LOGGER.warning(
-                f"{k.upper()} was *not* changed from {current!r} to {recommended!r} to respect the user's decisions."
+            report.warnings.append(
+                CopilotWarning(
+                    f"{k.upper()} was not changed from {current!r} to {recommended!r}, but should be modified.",
+                    reason=change_reasons.get(k),
+                )
             )
 
-    return new_parameters
+    return new_parameters, report
 
 
 def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
