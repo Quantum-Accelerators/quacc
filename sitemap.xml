@@ -19,6 +19,9 @@
         <loc>https://quantum-accelerators.github.io/quacc/user/recipes/workflows.html</loc>
       </url>
       <url>
+        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/mlip_recipes.html</loc>
+      </url>
+      <url>
         <loc>https://quantum-accelerators.github.io/quacc/user/settings/settings.html</loc>
       </url>
       <url>
@@ -254,9 +257,6 @@
       </url>
       <url>
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/vasp/matpes.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/vasp/mattersim.html</loc>
       </url>
       <url>
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/vasp/md.html</loc>

@@ -12,36 +12,36 @@
         <meta name="author" content="Andrew S. Rosen">
       
       
-        <link rel="canonical" href="https://quantum-accelerators.github.io/quacc/reference/quacc/recipes/vasp/mattersim.html">
+        <link rel="canonical" href="https://quantum-accelerators.github.io/quacc/user/recipes/mlip_recipes.html">
       
       
-        <link rel="prev" href="./matpes.html">
+        <link rel="prev" href="./workflows.html">
       
       
-        <link rel="next" href="./md.html">
+        <link rel="next" href="../settings/settings.html">
       
       
         
       
       
-      <link rel="icon" href="../../../../images/quacc_favicon.png">
+      <link rel="icon" href="../../images/quacc_favicon.png">
       <meta name="generator" content="zensical-0.0.57">
     
     
       
-        <title>Mattersim - quacc</title>
+        <title>MLIP-Compatible Recipes - quacc</title>
       
     
     
       
         
       
-      <link rel="stylesheet" href="../../../../assets/stylesheets/modern/main.5da3a30f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/modern/main.5da3a30f.min.css">
       
         
           
         
-        <link rel="stylesheet" href="../../../../assets/stylesheets/modern/palette.812a03bb.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/modern/palette.812a03bb.min.css">
       
       
 
@@ -62,7 +62,7 @@
       
     
     
-    <script>__md_scope=new URL("../../../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
+    <script>__md_scope=new URL("../..",location),__md_scope.pathname.endsWith("/")||(__md_scope=new URL(__md_scope.pathname+"/",location)),__md_hash=e=>[...e].reduce(((e,t)=>(e<<5)-e+t.charCodeAt(0)),0),__md_get=(e,t=localStorage,_=__md_scope)=>JSON.parse(t.getItem(_.pathname+"."+e)),__md_set=(e,t,_=localStorage,a=__md_scope)=>{try{_.setItem(a.pathname+"."+e,JSON.stringify(t))}catch(e){}},document.documentElement.setAttribute("data-platform",navigator.platform)</script>
     
       
 
@@ -87,7 +87,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#quacc.recipes.vasp.mattersim" class="md-skip">
+        <a href="#mlip-compatible-recipes" class="md-skip">
           Skip to content
         </a>
       
@@ -103,9 +103,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../../../index.html" title="quacc" class="md-header__button md-logo" aria-label="quacc" data-md-component="logo">
+    <a href="../../index.html" title="quacc" class="md-header__button md-logo" aria-label="quacc" data-md-component="logo">
       
-  <img src="../../../../images/quacc_logo_wide.png" alt="quacc">
+  <img src="../../images/quacc_logo_wide.png" alt="quacc">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer" aria-label="Navigation">
@@ -122,7 +122,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Mattersim
+              MLIP-Compatible Recipes
             
           </span>
         </div>
@@ -197,9 +197,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../../index.html" title="quacc" class="md-nav__button md-logo" aria-label="quacc" data-md-component="logo">
+    <a href="../../index.html" title="quacc" class="md-nav__button md-logo" aria-label="quacc" data-md-component="logo">
       
-  <img src="../../../../images/quacc_logo_wide.png" alt="quacc">
+  <img src="../../images/quacc_logo_wide.png" alt="quacc">
 
     </a>
     quacc
@@ -226,7 +226,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../index.html" class="md-nav__link">
+      <a href="../../index.html" class="md-nav__link">
         
   
   
@@ -302,7 +302,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../install/install.html" class="md-nav__link">
+      <a href="../../install/install.html" class="md-nav__link">
         
   
   
@@ -329,7 +329,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../install/codes.html" class="md-nav__link">
+      <a href="../../install/codes.html" class="md-nav__link">
         
   
   
@@ -356,7 +356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../install/wflow_engines.html" class="md-nav__link">
+      <a href="../../install/wflow_engines.html" class="md-nav__link">
         
   
   
@@ -387,8 +387,10 @@
       
   
   
+    
   
   
+  
     
     
     
@@ -399,11 +401,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
@@ -423,7 +425,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -437,6 +439,8 @@
                 
   
   
+    
+  
   
   
     
@@ -446,11 +450,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" checked>
         
           
           <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
@@ -470,7 +474,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3_1">
             <span class="md-nav__icon md-icon"></span>
             
@@ -487,7 +491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/recipes/recipes_intro.html" class="md-nav__link">
+      <a href="./recipes_intro.html" class="md-nav__link">
         
   
   
@@ -514,7 +518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/recipes/workflows.html" class="md-nav__link">
+      <a href="./workflows.html" class="md-nav__link">
         
   
   
@@ -529,6 +533,113 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MLIP-Compatible Recipes
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="mlip_recipes.html" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  MLIP-Compatible Recipes
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+
+<nav class="md-nav md-nav--secondary" aria-label="On this page">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      On this page
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#supported-datasets" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Supported Datasets
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#custodian-and-the-incar-copilot" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Custodian and the INCAR Copilot
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-representative-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A Representative Example
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -596,7 +707,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/settings/settings.html" class="md-nav__link">
+      <a href="../settings/settings.html" class="md-nav__link">
         
   
   
@@ -623,7 +734,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/settings/file_management.html" class="md-nav__link">
+      <a href="../settings/file_management.html" class="md-nav__link">
         
   
   
@@ -650,7 +761,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/settings/settings_list.html" class="md-nav__link">
+      <a href="../settings/settings_list.html" class="md-nav__link">
         
   
   
@@ -732,7 +843,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/basics/wflow_overview.html" class="md-nav__link">
+      <a href="../basics/wflow_overview.html" class="md-nav__link">
         
   
   
@@ -759,7 +870,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/basics/wflow_decorators.html" class="md-nav__link">
+      <a href="../basics/wflow_decorators.html" class="md-nav__link">
         
   
   
@@ -786,7 +897,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/basics/wflow_syntax.html" class="md-nav__link">
+      <a href="../basics/wflow_syntax.html" class="md-nav__link">
         
   
   
@@ -868,7 +979,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/wflow_engine/wflow_engines1.html" class="md-nav__link">
+      <a href="../wflow_engine/wflow_engines1.html" class="md-nav__link">
         
   
   
@@ -895,7 +1006,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/wflow_engine/wflow_engines2.html" class="md-nav__link">
+      <a href="../wflow_engine/wflow_engines2.html" class="md-nav__link">
         
   
   
@@ -922,7 +1033,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/wflow_engine/executors.html" class="md-nav__link">
+      <a href="../wflow_engine/executors.html" class="md-nav__link">
         
   
   
@@ -1004,7 +1115,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/db/context.html" class="md-nav__link">
+      <a href="../db/context.html" class="md-nav__link">
         
   
   
@@ -1031,7 +1142,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/db/basics.html" class="md-nav__link">
+      <a href="../db/basics.html" class="md-nav__link">
         
   
   
@@ -1113,7 +1224,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/miscellaneous/file_transfers.html" class="md-nav__link">
+      <a href="../miscellaneous/file_transfers.html" class="md-nav__link">
         
   
   
@@ -1140,7 +1251,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../user/miscellaneous/torchsim.html" class="md-nav__link">
+      <a href="../miscellaneous/torchsim.html" class="md-nav__link">
         
   
   
@@ -1179,8 +1290,6 @@
       
   
   
-    
-  
   
   
     
@@ -1193,11 +1302,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
           <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
@@ -1217,7 +1326,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1231,8 +1340,6 @@
                 
   
   
-    
-  
   
   
     
@@ -1242,11 +1349,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1" >
         
           
           <label class="md-nav__link" for="__nav_4_1" id="__nav_4_1_label" tabindex="0">
@@ -1266,7 +1373,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_1_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_1">
             <span class="md-nav__icon md-icon"></span>
             
@@ -1330,7 +1437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../atoms/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/atoms/core.html" class="md-nav__link">
         
   
   
@@ -1357,7 +1464,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../atoms/defects.html" class="md-nav__link">
+      <a href="../../reference/quacc/atoms/defects.html" class="md-nav__link">
         
   
   
@@ -1384,7 +1491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../atoms/deformation.html" class="md-nav__link">
+      <a href="../../reference/quacc/atoms/deformation.html" class="md-nav__link">
         
   
   
@@ -1411,7 +1518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../atoms/phonons.html" class="md-nav__link">
+      <a href="../../reference/quacc/atoms/phonons.html" class="md-nav__link">
         
   
   
@@ -1438,7 +1545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../atoms/slabs.html" class="md-nav__link">
+      <a href="../../reference/quacc/atoms/slabs.html" class="md-nav__link">
         
   
   
@@ -1567,7 +1674,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/espresso/espresso.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/espresso/espresso.html" class="md-nav__link">
         
   
   
@@ -1594,7 +1701,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/espresso/utils.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/espresso/utils.html" class="md-nav__link">
         
   
   
@@ -1676,7 +1783,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/mrcc/io.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/mrcc/io.html" class="md-nav__link">
         
   
   
@@ -1703,7 +1810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/mrcc/mrcc.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/mrcc/mrcc.html" class="md-nav__link">
         
   
   
@@ -1785,7 +1892,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/qchem/io.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/qchem/io.html" class="md-nav__link">
         
   
   
@@ -1812,7 +1919,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/qchem/params.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/qchem/params.html" class="md-nav__link">
         
   
   
@@ -1839,7 +1946,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/qchem/qchem.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/qchem/qchem.html" class="md-nav__link">
         
   
   
@@ -1866,7 +1973,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/qchem/qchem_custodian.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/qchem/qchem_custodian.html" class="md-nav__link">
         
   
   
@@ -1948,7 +2055,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/vasp/io.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/vasp/io.html" class="md-nav__link">
         
   
   
@@ -1975,7 +2082,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/vasp/params.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/vasp/params.html" class="md-nav__link">
         
   
   
@@ -2002,7 +2109,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/vasp/vasp.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/vasp/vasp.html" class="md-nav__link">
         
   
   
@@ -2029,7 +2136,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../calculators/vasp/vasp_custodian.html" class="md-nav__link">
+      <a href="../../reference/quacc/calculators/vasp/vasp_custodian.html" class="md-nav__link">
         
   
   
@@ -2069,8 +2176,6 @@
                 
   
   
-    
-  
   
   
     
@@ -2080,11 +2185,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1_3" >
         
           
           <label class="md-nav__link" for="__nav_4_1_3" id="__nav_4_1_3_label" tabindex="0">
@@ -2104,7 +2209,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_1_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_1_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_1_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2168,7 +2273,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../aims/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/aims/_base.html" class="md-nav__link">
         
   
   
@@ -2195,7 +2300,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../aims/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/aims/core.html" class="md-nav__link">
         
   
   
@@ -2277,7 +2382,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../common/defects.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/common/defects.html" class="md-nav__link">
         
   
   
@@ -2304,7 +2409,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../common/elastic.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/common/elastic.html" class="md-nav__link">
         
   
   
@@ -2331,7 +2436,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../common/phonons.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/common/phonons.html" class="md-nav__link">
         
   
   
@@ -2358,7 +2463,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../common/slabs.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/common/slabs.html" class="md-nav__link">
         
   
   
@@ -2440,7 +2545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../dftb/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/dftb/_base.html" class="md-nav__link">
         
   
   
@@ -2467,7 +2572,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../dftb/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/dftb/core.html" class="md-nav__link">
         
   
   
@@ -2549,7 +2654,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../emt/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/emt/core.html" class="md-nav__link">
         
   
   
@@ -2576,7 +2681,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../emt/defects.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/emt/defects.html" class="md-nav__link">
         
   
   
@@ -2603,7 +2708,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../emt/elastic.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/emt/elastic.html" class="md-nav__link">
         
   
   
@@ -2630,7 +2735,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../emt/md.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/emt/md.html" class="md-nav__link">
         
   
   
@@ -2657,7 +2762,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../emt/phonons.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/emt/phonons.html" class="md-nav__link">
         
   
   
@@ -2684,7 +2789,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../emt/slabs.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/emt/slabs.html" class="md-nav__link">
         
   
   
@@ -2766,7 +2871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../espresso/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/espresso/_base.html" class="md-nav__link">
         
   
   
@@ -2793,7 +2898,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../espresso/bands.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/espresso/bands.html" class="md-nav__link">
         
   
   
@@ -2820,7 +2925,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../espresso/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/espresso/core.html" class="md-nav__link">
         
   
   
@@ -2847,7 +2952,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../espresso/dos.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/espresso/dos.html" class="md-nav__link">
         
   
   
@@ -2874,7 +2979,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../espresso/phonons.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/espresso/phonons.html" class="md-nav__link">
         
   
   
@@ -2956,7 +3061,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gaussian/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/gaussian/_base.html" class="md-nav__link">
         
   
   
@@ -2983,7 +3088,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gaussian/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/gaussian/core.html" class="md-nav__link">
         
   
   
@@ -3065,7 +3170,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gulp/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/gulp/_base.html" class="md-nav__link">
         
   
   
@@ -3092,7 +3197,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gulp/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/gulp/core.html" class="md-nav__link">
         
   
   
@@ -3174,7 +3279,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../lj/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/lj/core.html" class="md-nav__link">
         
   
   
@@ -3256,7 +3361,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mlip/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/mlip/_base.html" class="md-nav__link">
         
   
   
@@ -3283,7 +3388,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mlip/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/mlip/core.html" class="md-nav__link">
         
   
   
@@ -3310,7 +3415,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mlip/elastic.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/mlip/elastic.html" class="md-nav__link">
         
   
   
@@ -3337,7 +3442,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mlip/md.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/mlip/md.html" class="md-nav__link">
         
   
   
@@ -3364,7 +3469,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mlip/phonons.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/mlip/phonons.html" class="md-nav__link">
         
   
   
@@ -3446,7 +3551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mrcc/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/mrcc/_base.html" class="md-nav__link">
         
   
   
@@ -3473,7 +3578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../mrcc/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/mrcc/core.html" class="md-nav__link">
         
   
   
@@ -3555,7 +3660,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../onetep/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/onetep/_base.html" class="md-nav__link">
         
   
   
@@ -3582,7 +3687,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../onetep/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/onetep/core.html" class="md-nav__link">
         
   
   
@@ -3664,7 +3769,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../orca/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/orca/_base.html" class="md-nav__link">
         
   
   
@@ -3691,7 +3796,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../orca/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/orca/core.html" class="md-nav__link">
         
   
   
@@ -3718,7 +3823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../orca/fairchem.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/orca/fairchem.html" class="md-nav__link">
         
   
   
@@ -3800,7 +3905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../psi4/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/psi4/_base.html" class="md-nav__link">
         
   
   
@@ -3827,7 +3932,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../psi4/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/psi4/core.html" class="md-nav__link">
         
   
   
@@ -3909,7 +4014,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../qchem/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/qchem/_base.html" class="md-nav__link">
         
   
   
@@ -3936,7 +4041,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../qchem/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/qchem/core.html" class="md-nav__link">
         
   
   
@@ -3963,7 +4068,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../qchem/ts.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/qchem/ts.html" class="md-nav__link">
         
   
   
@@ -4045,7 +4150,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tblite/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/tblite/core.html" class="md-nav__link">
         
   
   
@@ -4072,7 +4177,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../tblite/phonons.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/tblite/phonons.html" class="md-nav__link">
         
   
   
@@ -4154,7 +4259,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../torchsim/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/torchsim/_base.html" class="md-nav__link">
         
   
   
@@ -4181,7 +4286,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../torchsim/core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/torchsim/core.html" class="md-nav__link">
         
   
   
@@ -4213,8 +4318,6 @@
                 
   
   
-    
-  
   
   
     
@@ -4224,11 +4327,11 @@
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1_3_17" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_1_3_17" >
         
           
           <label class="md-nav__link" for="__nav_4_1_3_17" id="__nav_4_1_3_17_label" tabindex="0">
@@ -4248,7 +4351,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_1_3_17_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_1_3_17_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_1_3_17">
             <span class="md-nav__icon md-icon"></span>
             
@@ -4265,7 +4368,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/_base.html" class="md-nav__link">
         
   
   
@@ -4292,7 +4395,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./core.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/core.html" class="md-nav__link">
         
   
   
@@ -4319,7 +4422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./fairchem.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/fairchem.html" class="md-nav__link">
         
   
   
@@ -4346,7 +4449,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./matpes.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/matpes.html" class="md-nav__link">
         
   
   
@@ -4370,102 +4473,10 @@
                 
   
   
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      
-      
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  mattersim
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="mattersim.html" class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-  mattersim
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-
-<nav class="md-nav md-nav--secondary" aria-label="On this page">
-  
-  
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      On this page
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#quacc.recipes.vasp.mattersim" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        mattersim
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#quacc.recipes.vasp.mattersim.mattersim_static_job" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        mattersim_static_job
-      </span>
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
   
   
     <li class="md-nav__item">
-      <a href="./md.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/md.html" class="md-nav__link">
         
   
   
@@ -4492,7 +4503,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./mof_off.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/mof_off.html" class="md-nav__link">
         
   
   
@@ -4519,7 +4530,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./mp24.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/mp24.html" class="md-nav__link">
         
   
   
@@ -4546,7 +4557,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./mp_aloe.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/mp_aloe.html" class="md-nav__link">
         
   
   
@@ -4573,7 +4584,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./mp_legacy.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/mp_legacy.html" class="md-nav__link">
         
   
   
@@ -4600,7 +4611,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./qmof.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/qmof.html" class="md-nav__link">
         
   
   
@@ -4627,7 +4638,7 @@
   
   
     <li class="md-nav__item">
-      <a href="./slabs.html" class="md-nav__link">
+      <a href="../../reference/quacc/recipes/vasp/slabs.html" class="md-nav__link">
         
   
   
@@ -4717,7 +4728,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../runners/_base.html" class="md-nav__link">
+      <a href="../../reference/quacc/runners/_base.html" class="md-nav__link">
         
   
   
@@ -4744,7 +4755,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../runners/ase.html" class="md-nav__link">
+      <a href="../../reference/quacc/runners/ase.html" class="md-nav__link">
         
   
   
@@ -4771,7 +4782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../runners/generic.html" class="md-nav__link">
+      <a href="../../reference/quacc/runners/generic.html" class="md-nav__link">
         
   
   
@@ -4798,7 +4809,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../runners/phonons.html" class="md-nav__link">
+      <a href="../../reference/quacc/runners/phonons.html" class="md-nav__link">
         
   
   
@@ -4825,7 +4836,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../runners/prep.html" class="md-nav__link">
+      <a href="../../reference/quacc/runners/prep.html" class="md-nav__link">
         
   
   
@@ -4907,7 +4918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../schemas/ase.html" class="md-nav__link">
+      <a href="../../reference/quacc/schemas/ase.html" class="md-nav__link">
         
   
   
@@ -4934,7 +4945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../schemas/atoms.html" class="md-nav__link">
+      <a href="../../reference/quacc/schemas/atoms.html" class="md-nav__link">
         
   
   
@@ -4961,7 +4972,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../schemas/phonons.html" class="md-nav__link">
+      <a href="../../reference/quacc/schemas/phonons.html" class="md-nav__link">
         
   
   
@@ -4988,7 +4999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../schemas/prep.html" class="md-nav__link">
+      <a href="../../reference/quacc/schemas/prep.html" class="md-nav__link">
         
   
   
@@ -5015,7 +5026,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../schemas/thermo.html" class="md-nav__link">
+      <a href="../../reference/quacc/schemas/thermo.html" class="md-nav__link">
         
   
   
@@ -5042,7 +5053,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../schemas/torchsim.html" class="md-nav__link">
+      <a href="../../reference/quacc/schemas/torchsim.html" class="md-nav__link">
         
   
   
@@ -5069,7 +5080,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../schemas/vasp.html" class="md-nav__link">
+      <a href="../../reference/quacc/schemas/vasp.html" class="md-nav__link">
         
   
   
@@ -5104,7 +5115,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../settings.html" class="md-nav__link">
+      <a href="../../reference/quacc/settings.html" class="md-nav__link">
         
   
   
@@ -5131,7 +5142,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../types.html" class="md-nav__link">
+      <a href="../../reference/quacc/types.html" class="md-nav__link">
         
   
   
@@ -5205,7 +5216,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/dicts.html" class="md-nav__link">
+      <a href="../../reference/quacc/utils/dicts.html" class="md-nav__link">
         
   
   
@@ -5232,7 +5243,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/files.html" class="md-nav__link">
+      <a href="../../reference/quacc/utils/files.html" class="md-nav__link">
         
   
   
@@ -5259,7 +5270,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/kpts.html" class="md-nav__link">
+      <a href="../../reference/quacc/utils/kpts.html" class="md-nav__link">
         
   
   
@@ -5286,7 +5297,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/lists.html" class="md-nav__link">
+      <a href="../../reference/quacc/utils/lists.html" class="md-nav__link">
         
   
   
@@ -5313,7 +5324,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utils/md.html" class="md-nav__link">
+      <a href="../../reference/quacc/utils/md.html" class="md-nav__link">
         
   
   
@@ -5395,7 +5406,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wflow_tools/context.html" class="md-nav__link">
+      <a href="../../reference/quacc/wflow_tools/context.html" class="md-nav__link">
         
   
   
@@ -5422,7 +5433,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wflow_tools/customizers.html" class="md-nav__link">
+      <a href="../../reference/quacc/wflow_tools/customizers.html" class="md-nav__link">
         
   
   
@@ -5449,7 +5460,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wflow_tools/decorators.html" class="md-nav__link">
+      <a href="../../reference/quacc/wflow_tools/decorators.html" class="md-nav__link">
         
   
   
@@ -5476,7 +5487,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../wflow_tools/job_patterns.html" class="md-nav__link">
+      <a href="../../reference/quacc/wflow_tools/job_patterns.html" class="md-nav__link">
         
   
   
@@ -5576,7 +5587,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/contributing.html" class="md-nav__link">
+      <a href="../../dev/contributing.html" class="md-nav__link">
         
   
   
@@ -5603,7 +5614,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/docs.html" class="md-nav__link">
+      <a href="../../dev/docs.html" class="md-nav__link">
         
   
   
@@ -5677,7 +5688,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/recipes/jobs.html" class="md-nav__link">
+      <a href="../../dev/recipes/jobs.html" class="md-nav__link">
         
   
   
@@ -5704,7 +5715,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../dev/recipes/flows.html" class="md-nav__link">
+      <a href="../../dev/recipes/flows.html" class="md-nav__link">
         
   
   
@@ -5796,7 +5807,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../maintainers/internal.html" class="md-nav__link">
+      <a href="../../maintainers/internal.html" class="md-nav__link">
         
   
   
@@ -5880,7 +5891,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/faq.html" class="md-nav__link">
+      <a href="../../about/faq.html" class="md-nav__link">
         
   
   
@@ -5907,7 +5918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/contributors.html" class="md-nav__link">
+      <a href="../../about/contributors.html" class="md-nav__link">
         
   
   
@@ -5934,7 +5945,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/changelog.html" class="md-nav__link">
+      <a href="../../about/changelog.html" class="md-nav__link">
         
   
   
@@ -5961,7 +5972,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/conduct.html" class="md-nav__link">
+      <a href="../../about/conduct.html" class="md-nav__link">
         
   
   
@@ -5988,7 +5999,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../about/license.html" class="md-nav__link">
+      <a href="../../about/license.html" class="md-nav__link">
         
   
   
@@ -6029,6 +6040,8 @@
                     
                     
                     
+                      
+                    
                     
                       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
                       <div class="md-sidebar-button__wrapper">
@@ -6044,6 +6057,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -6052,10 +6067,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#quacc.recipes.vasp.mattersim" class="md-nav__link">
+  <a href="#supported-datasets" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        mattersim
+        Supported Datasets
       </span>
     </span>
   </a>
@@ -6063,10 +6078,21 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quacc.recipes.vasp.mattersim.mattersim_static_job" class="md-nav__link">
+  <a href="#custodian-and-the-incar-copilot" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        mattersim_static_job
+        Custodian and the INCAR Copilot
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-representative-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        A Representative Example
       </span>
     </span>
   </a>
@@ -6098,7 +6124,7 @@
   
   
     <li class="md-path__item">
-      <a href="../../../../index.html" class="md-path__link">
+      <a href="../../index.html" class="md-path__link">
         
   
   <span class="md-ellipsis">
@@ -6127,89 +6153,12 @@
     
     
     
-      
-  
-  
-    
-    
-    
-    
-    
       <li class="md-path__item">
-        <a href="../../atoms/core.html" class="md-path__link">
+        <a href="./recipes_intro.html" class="md-path__link">
           
   
   <span class="md-ellipsis">
-    Code Documentation
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-    
-  
-
-    
-  
-
-      
-        
-  
-  
-    
-    
-    
-    
-    
-      
-  
-  
-    
-    
-    
-    
-    
-      <li class="md-path__item">
-        <a href="../../atoms/core.html" class="md-path__link">
-          
-  
-  <span class="md-ellipsis">
-    quacc
-  </span>
-
-        </a>
-      </li>
-    
-  
-
-    
-  
-
-      
-        
-  
-  
-    
-    
-    
-    
-    
-      
-  
-  
-    
-    
-    
-    
-    
-      <li class="md-path__item">
-        <a href="../aims/_base.html" class="md-path__link">
-          
-  
-  <span class="md-ellipsis">
-    recipes
+    User Guide
   </span>
 
         </a>
@@ -6230,11 +6179,11 @@
     
     
       <li class="md-path__item">
-        <a href="./_base.html" class="md-path__link">
+        <a href="./recipes_intro.html" class="md-path__link">
           
   
   <span class="md-ellipsis">
-    vasp
+    Recipes
   </span>
 
         </a>
@@ -6251,7 +6200,7 @@
                 
                   
   
-    <a href="https://github.com/Quantum-Accelerators/quacc//blob/main/docs/reference/quacc/recipes/vasp/mattersim.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/Quantum-Accelerators/quacc//blob/main/docs/user/recipes/mlip_recipes.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-file-pen" viewBox="0 0 24 24"><path d="M12.659 22H18a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v9.34"/><path d="M14 2v5a1 1 0 0 0 1 1h5M10.378 12.622a1 1 0 0 1 3 3.003L8.36 20.637a2 2 0 0 1-.854.506l-2.867.837a.5.5 0 0 1-.62-.62l.836-2.869a2 2 0 0 1 .506-.853z"/></svg>
     </a>
@@ -6259,215 +6208,77 @@
   
 
 
-  <h1 id="__skip">Mattersim</h1>
-
-<div class="doc doc-object doc-module">
-
-
-
-<a id="quacc.recipes.vasp.mattersim"></a>
-    <div class="doc doc-contents first">
-
-        <p>MatterSim-compatible VASP recipes.</p>
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-children">
-
-
-
-
-
-
-
-
-
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="quacc.recipes.vasp.mattersim.mattersim_static_job" class="doc doc-heading">
-            <span class="doc doc-object-name doc-function-name">mattersim_static_job</span>
-
-
-<a href="#quacc.recipes.vasp.mattersim.mattersim_static_job" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">mattersim_static_job</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">copy_files</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;CopyFiles&lt;/span&gt;
-
-
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-module-attribute&quot;&gt;&lt;code&gt;module-attribute&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="../../types.html#quacc.types.CopyFiles">CopyFiles</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">additional_fields</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="o">**</span><span class="n">calc_kwargs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;VaspSchema&lt;/span&gt;" href="../../types.html#quacc.types.VaspSchema">VaspSchema</a></span>
+<h1 id="mlip-compatible-recipes">MLIP-Compatible Recipes<a class="headerlink" href="#mlip-compatible-recipes" title="Permanent link">&para;</a></h1>
+<p>Several popular datasets used to train machine-learned interatomic potentials (MLIPs) were built from large collections of DFT calculations run with a specific, fixed set of computational settings. To let users generate additional data that is consistent with one of these datasets (e.g. to extend a dataset or build an internally-consistent benchmark without introducing methodological drift), quacc ships a set of recipes that reproduce those settings.</p>
+<h2 id="supported-datasets">Supported Datasets<a class="headerlink" href="#supported-datasets" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Dataset</th>
+<th>Recipe</th>
+<th>Extra Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://pubs.acs.org/accacs/article/11/10/6059/459430/Open-Catalyst-2020-OC20-Dataset-and-Community">OC20</a></td>
+<td>quacc.recipes.vasp.fairchem.oc20_static_job</td>
+<td><code>quacc[fairchem]</code></td>
+</tr>
+<tr>
+<td><a href="https://www.nature.com/articles/s43588-026-00996-w">OMat24</a></td>
+<td>quacc.recipes.vasp.fairchem.omat_static_job</td>
+<td><code>quacc[fairchem]</code></td>
+</tr>
+<tr>
+<td><a href="https://www.nature.com/articles/s41597-026-06628-2">OMC25</a></td>
+<td>quacc.recipes.vasp.fairchem.omc_static_job</td>
+<td><code>quacc[mp]</code></td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/abs/2505.08762">OMol25</a></td>
+<td>quacc.recipes.orca.fairchem.omol_static_job</td>
+<td><code>quacc[fairchem]</code></td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/abs/2508.03162">ODAC25</a></td>
+<td>quacc.recipes.vasp.fairchem.odac_static_job</td>
+<td>none</td>
+</tr>
+<tr>
+<td><a href="https://www.nature.com/articles/s42256-023-00716-3">MPtrj</a> / <a href="https://www.nature.com/articles/s41524-020-00481-6">WBM</a> / <a href="https://matbench-discovery.materialsproject.org/data/salex">sAlex</a> / <a href="https://arxiv.org/abs/2405.04967">MatterSim</a></td>
+<td>quacc.recipes.vasp.mp_legacy.mp_relax_set_job</td>
+<td>none</td>
+</tr>
+<tr>
+<td><a href="https://arxiv.org/abs/2503.04070">MatPES</a></td>
+<td>quacc.recipes.vasp.matpes.matpes_static_job</td>
+<td><code>quacc[mp]</code></td>
+</tr>
+<tr>
+<td><a href="https://www.nature.com/articles/s41524-025-01834-9">MP-ALOE</a></td>
+<td>quacc.recipes.vasp.mp_aloe.mp_aloe_static_job</td>
+<td>none</td>
+</tr>
+</tbody>
+</table>
+<h2 id="custodian-and-the-incar-copilot">Custodian and the INCAR Copilot<a class="headerlink" href="#custodian-and-the-incar-copilot" title="Permanent link">&para;</a></h2>
+<p>All of the VASP recipes above run with <code>incar_copilot_mode="critical"</code> by default, unlike quacc's other VASP recipes. This disables quacc's automatic INCAR-fixing behavior so that the settings intentionally chosen to match a dataset are not silently overridden.</p>
+<p>A subset of these recipes — <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;oc20_static_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/fairchem.html#quacc.recipes.vasp.fairchem.oc20_static_job">quacc.recipes.vasp.fairchem.oc20_static_job</a>, <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;omc_static_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/fairchem.html#quacc.recipes.vasp.fairchem.omc_static_job">quacc.recipes.vasp.fairchem.omc_static_job</a>, and <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;odac_static_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/fairchem.html#quacc.recipes.vasp.fairchem.odac_static_job">quacc.recipes.vasp.fairchem.odac_static_job</a> — additionally run with <code>use_custodian=False</code> by default, since Custodian-based error correction was not used when those datasets were originally generated. The other VASP recipes in the table above leave Custodian enabled (the quacc default).</p>
+<h2 id="a-representative-example">A Representative Example<a class="headerlink" href="#a-representative-example" title="Permanent link">&para;</a></h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.vasp.fairchem</span><span class="w"> </span><span class="kn">import</span> <span class="n">omat_static_job</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">"Cu"</span><span class="p">)</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Run a static calculation with OMat24-compatible VASP settings</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">result</span> <span class="o">=</span> <span class="n">omat_static_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 </span></code></pre></div>
-
-    <div class="doc doc-contents ">
-
-        <p>Run a static calculation with the VASP settings used for MatterSim.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-            <b><code>atoms</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
-          –
-          <div class="doc-md-description">
-            <p>Atoms object.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>copy_files</code></b>
-              (<code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;CopyFiles&lt;/span&gt;
-
-
-  &lt;span class=&quot;doc doc-labels&quot;&gt;
-      &lt;small class=&quot;doc doc-label doc-label-module-attribute&quot;&gt;&lt;code&gt;module-attribute&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt;" href="../../types.html#quacc.types.CopyFiles">CopyFiles</a> | None</code>, default:
-                  <code>None</code>
-)
-          –
-          <div class="doc-md-description">
-            <p>Files to copy (and decompress) from source to the runtime directory.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>additional_fields</code></b>
-              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>] | None</code>, default:
-                  <code>None</code>
-)
-          –
-          <div class="doc-md-description">
-            <p>Additional fields to add to the results dictionary.</p>
-          </div>
-        </li>
-        <li class="doc-section-item field-body">
-            <b><code>**calc_kwargs</code></b>
-              (<code><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></code>, default:
-                  <code>{}</code>
-)
-          –
-          <div class="doc-md-description">
-            <p>Custom kwargs for the Vasp calculator. Set a value to <code>None</code> to remove a
-pre-existing key entirely. All ASE Vasp calculator keyword arguments are
-supported.</p>
-          </div>
-        </li>
-    </ul>
-
-
-<p><span class="doc-section-title">Returns:</span></p>
-    <ul>
-        <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;VaspSchema&lt;/span&gt;" href="../../types.html#quacc.types.VaspSchema">VaspSchema</a></code>
-          –
-          <div class="doc-md-description">
-            <p>Dictionary of results from <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;run&lt;/span&gt;" href="../../schemas/vasp.html#quacc.schemas.vasp.VaspSummarize.run">quacc.schemas.vasp.VaspSummarize.run</a>.</p>
-          </div>
-        </li>
-    </ul>
-
-
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>quacc/recipes/vasp/mattersim.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span>
-<span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="nd">@job</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="k">def</span><span class="w"> </span><span class="nf">mattersim_static_job</span><span class="p">(</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="n">copy_files</span><span class="p">:</span> <span class="n">CopyFiles</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="n">additional_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="o">**</span><span class="n">calc_kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VaspSchema</span><span class="p">:</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    Run a static calculation with the VASP settings used for MatterSim.</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    atoms</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">        Atoms object.</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">    copy_files</span>
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="sd">        Files to copy (and decompress) from source to the runtime directory.</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    additional_fields</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">        Additional fields to add to the results dictionary.</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">    **calc_kwargs</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">        Custom kwargs for the Vasp calculator. Set a value to `None` to remove a</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">        pre-existing key entirely. All ASE Vasp calculator keyword arguments are</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">        supported.</span>
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">    -------</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">    VaspSchema</span>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].</span>
-</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">    """</span>
-</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a>    <span class="n">calc_defaults</span> <span class="o">=</span> <span class="n">MPtoASEConverter</span><span class="p">(</span><span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">)</span><span class="o">.</span><span class="n">convert_input_set</span><span class="p">(</span><span class="n">MPRelaxSet</span><span class="p">())</span>
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a>    <span class="n">calc_defaults</span> <span class="o">|=</span> <span class="p">{</span><span class="s2">"nsw"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"incar_copilot_mode"</span><span class="p">:</span> <span class="s2">"critical"</span><span class="p">}</span>
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a>
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>    <span class="k">return</span> <span class="n">run_and_summarize</span><span class="p">(</span>
-</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a>        <span class="n">atoms</span><span class="p">,</span>
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a>        <span class="n">calc_defaults</span><span class="o">=</span><span class="n">calc_defaults</span><span class="p">,</span>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>        <span class="n">calc_swaps</span><span class="o">=</span><span class="n">calc_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>        <span class="n">additional_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">"name"</span><span class="p">:</span> <span class="s2">"MatterSim Static"</span><span class="p">}</span> <span class="o">|</span> <span class="p">(</span><span class="n">additional_fields</span> <span class="ow">or</span> <span class="p">{}),</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a>        <span class="n">copy_files</span><span class="o">=</span><span class="n">copy_files</span><span class="p">,</span>
-</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>    <span class="p">)</span>
-</span></code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-
-
-  </div>
-
-    </div>
-
-</div>
+<p>As with all quacc recipes, you can override any of the default calculator settings by passing additional keyword arguments:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">result</span> <span class="o">=</span> <span class="n">omat_static_job</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="n">encut</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</span></code></pre></div>
 
 
 
@@ -6507,7 +6318,7 @@ supported.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="./matpes.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: matpes">
+          <a href="./workflows.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Intro to Flows">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="lucide lucide-arrow-left" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
@@ -6517,20 +6328,20 @@ supported.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                matpes
+                Intro to Flows
               </div>
             </div>
           </a>
         
         
           
-          <a href="./md.html" class="md-footer__link md-footer__link--next" aria-label="Next: md">
+          <a href="../settings/settings.html" class="md-footer__link md-footer__link--next" aria-label="Next: Modifying Settings">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                md
+                Modifying Settings
               </div>
             </div>
             <div class="md-footer__button md-icon">
@@ -6583,10 +6394,10 @@ supported.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate":null,"base":"../../../..","features":["content.action.edit","content.code.copy","content.code.select","content.code.annotate","content.tabs.link","content.tooltips","navigation.footer","navigation.path","navigation.tracking","navigation.sections","navigation.top","search.highlight","search.suggest","search.share","header.autohide","toc.follow"],"search":"../../../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
+      <script id="__config" type="application/json">{"annotate":null,"base":"../..","features":["content.action.edit","content.code.copy","content.code.select","content.code.annotate","content.tabs.link","content.tooltips","navigation.footer","navigation.path","navigation.tracking","navigation.sections","navigation.top","search.highlight","search.suggest","search.share","header.autohide","toc.follow"],"search":"../../assets/javascripts/workers/search.7d14d953.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.49251538.min.js"></script>
+      <script src="../../assets/javascripts/bundle.49251538.min.js"></script>
       
     
   </body>
