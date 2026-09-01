@@ -256,7 +256,7 @@ class Runner(BaseRunner):
         try:
             import signal
             import threading
-            
+
             def sigterm_handler(_signum, _frame):
                 sigterm_handler.status = True
 
@@ -285,7 +285,9 @@ class Runner(BaseRunner):
                             )
                         if fn_hook:
                             fn_hook(dyn)
-                        if (stop_condition and stop_condition(dyn)) or sigterm_handler.status:
+                        if (
+                            stop_condition and stop_condition(dyn)
+                        ) or sigterm_handler.status:
                             break
         except Exception as exception:
             terminate(self.tmpdir, exception)
