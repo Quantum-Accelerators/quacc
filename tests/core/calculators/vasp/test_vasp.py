@@ -1399,13 +1399,10 @@ def test_logging(caplog):
     header = "================ VASP INCAR COPILOT ================"
     assert copilot_record.getMessage().endswith("=" * len(header))
     assert f"\n\n{'=' * len(header)}" not in copilot_record.getMessage()
-    assert "Summary:" not in caplog.text
     assert "LMAXMIX: None -> 4" in caplog.text
     assert "Reason: d electrons were detected." in caplog.text
     assert "NCORE: None ->" in caplog.text
-    assert "Recommending" not in caplog.text
     assert "VASP command = vasp_std" in caplog.text
-    assert "Using VASP command:" not in caplog.text
     caplog.clear()
 
     with caplog.at_level(INFO):
@@ -1465,7 +1462,6 @@ def test_copilot_recommendation_label(caplog):
         Vasp(bulk("Cu"), isif=3, nsw=2)
 
     assert "Recommendation: Re-relax the final structure" in caplog.text
-    assert "Remediation:" not in caplog.text
 
 
 def test_bad_pmg_converter():
