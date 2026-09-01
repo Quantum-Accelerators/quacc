@@ -115,26 +115,6 @@ def get_param_swaps(
     dict
         The updated user-provided calculator parameters.
     """
-    new_parameters, report = _get_param_swaps(
-        user_calc_params,
-        input_atoms,
-        pmg_kpts=pmg_kpts,
-        incar_copilot_mode=incar_copilot_mode,
-    )
-    if incar_copilot_mode.lower() != "off":
-        log_copilot_report(report)
-    return new_parameters
-
-
-def _get_param_swaps(
-    user_calc_params: dict[str, Any],
-    input_atoms: Atoms,
-    pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float] | None = None,
-    incar_copilot_mode: Literal[
-        "off", "critical", "standard", "aggressive"
-    ] = "standard",
-) -> tuple[dict[str, Any], CopilotReport]:
-    """Return updated parameters and a structured INCAR copilot report."""
     report = CopilotReport()
     is_metal = check_is_metal(input_atoms)
     calc = Vasp_(**remove_unused_flags(user_calc_params))
@@ -448,7 +428,10 @@ def _get_param_swaps(
                 )
             )
 
-    return new_parameters, report
+    if incar_copilot_mode.lower() != "off":
+        log_copilot_report(report)
+
+    return new_parameters
 
 
 def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:
