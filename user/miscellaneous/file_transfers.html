@@ -6278,7 +6278,7 @@
 </span></code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">Glob Patterns</p>
-<p>The <code>copy_files</code> keyword argument also supports <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.glob">glob patterns</a> for the filenames, such as <code>WAVECAR*</code> to copy all files that start with <code>WAVECAR</code> from the source.</p>
+<p>The <code>copy_files</code> keyword argument supports <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path.glob">glob patterns</a> for the filenames, such as <code>WAVECAR*</code> to copy all files that start with <code>WAVECAR</code> from the source.</p>
 </div>
 <h3 id="transfers-between-jobs">Transfers Between Jobs<a class="headerlink" href="#transfers-between-jobs" title="Permanent link">&para;</a></h3>
 <p>Sometimes, however, you may not necessarily know <em>a priori</em> where the source file is. For instance, perhaps you want to copy (and decompress) the file <code>WAVECAR.gz</code> from a previous job in your workflow that is stored in a unique directory only determined at runtime. In this scenario, you can still use the <code>copy_files</code> keyword argument, but you will need to fetch the prior job's directory.</p>
