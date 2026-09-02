@@ -9,6 +9,7 @@ from importlib.util import find_spec
 from logging import getLogger
 from pathlib import Path
 from shutil import copy, copytree
+from time import monotonic
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -166,6 +167,7 @@ class Runner(BaseRunner):
         run_kwargs: dict[str, Any] | None = None,
         filter_kwargs: dict[str, Any] | None = None,
         write_files: bool = True,
+        stop_condition: Callable[[Dynamics], bool] | None = None,
     ) -> Optimizer:
         """
         This is a wrapper around the optimizers in ASE.
@@ -198,6 +200,10 @@ class Runner(BaseRunner):
             Dictionary of kwargs for the `FrechetCellFilter` if relax_cell is True.
         write_files
             Whether to write the optimizer log, restart, and trajectory files.
+        stop_condition
+            A callable evaluated after each step. The run exits cleanly when it
+            returns True, allowing trajectory files and calculation outputs to be
+            finalized normally.
 
         Returns
         -------
@@ -248,6 +254,17 @@ class Runner(BaseRunner):
 
         # Run optimization
         try:
+            import signal
+            import threading
+
+            def sigterm_handler(_signum, _frame):
+                sigterm_handler.status = True
+
+            sigterm_handler.status = False
+
+            if threading.current_thread() is threading.main_thread():
+                signal.signal(signal.SIGTERM, sigterm_handler)
+
             with (
                 traj if traj is not None else nullcontext(),
                 optimizer(self.atoms, **merged_optimizer_kwargs) as dyn,
@@ -268,6 +285,10 @@ class Runner(BaseRunner):
                             )
                         if fn_hook:
                             fn_hook(dyn)
+                        if (
+                            stop_condition and stop_condition(dyn)
+                        ) or sigterm_handler.status:
+                            break
         except Exception as exception:
             terminate(self.tmpdir, exception)
 
@@ -323,6 +344,9 @@ class Runner(BaseRunner):
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None = None,
         set_com_stationary: bool = False,
         set_zero_rotation: bool = False,
+        stop_condition: Callable[[MolecularDynamics], bool] | None = None,
+        max_runtime: float | None = None,
+        stop_reason: str = "walltime",
     ) -> MolecularDynamics:
         """
         Run an ASE-based MD in a scratch directory and copy the results back to
@@ -347,6 +371,15 @@ class Runner(BaseRunner):
         set_zero_rotation
             Whether to set the total angular momentum to zero. This would be applied after
             any `MaxwellBoltzmannDistribution` is set.
+        stop_condition
+            A callable evaluated after each MD step. The run exits cleanly when it
+            returns True. This can be backed by a flag set from a scheduler signal
+            handler.
+        max_runtime
+            Maximum runtime in seconds. The MD run exits cleanly after the first
+            completed step at or beyond this limit.
+        stop_reason
+            Reason recorded on the dynamics object when the run is stopped early.
 
         Returns
         -------
@@ -366,12 +399,29 @@ class Runner(BaseRunner):
         if set_zero_rotation:
             ZeroRotation(self.atoms)
 
-        return self.run_opt(
+        start_time = monotonic()
+
+        def _should_stop(dyn: MolecularDynamics) -> bool:
+            return bool(
+                (stop_condition and stop_condition(dyn))
+                or (max_runtime is not None and monotonic() - start_time >= max_runtime)
+            )
+
+        dyn = self.run_opt(
             fmax=None,
             max_steps=steps,
             optimizer=dynamics,
             optimizer_kwargs=dynamics_kwargs,
+            stop_condition=_should_stop
+            if stop_condition or max_runtime is not None
+            else None,
         )
+        dyn.requested_steps = steps
+        dyn.completed_steps = dyn.nsteps
+        if dyn.nsteps < steps:
+            dyn.stop_reason = stop_reason
+
+        return dyn
 
     def run_neb(
         self,
