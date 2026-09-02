@@ -22,7 +22,7 @@ The [QMOF](https://doi.org/10.1016/j.matt.2021.02.015) Database is a collection 
 |---|---|---|
 | [QMOF](https://doi.org/10.1016/j.matt.2021.02.015) | [quacc.recipes.vasp.qmof.qmof_relax_job][] | none |
 
-A standalone QMOF-compatible static calculation can be run through [quacc.recipes.vasp.core.static_job][] directly, with `preset="`[`QMOFSet`](https://github.com/Quantum-Accelerators/quacc/blob/main/src/quacc/calculators/vasp/presets/QMOFSet.yaml)`"`.
+A standalone QMOF-compatible static calculation can be run through [quacc.recipes.vasp.core.static_job][] directly, with `preset="QMOFSet"` (see [QMOFSet.yaml](https://github.com/Quantum-Accelerators/quacc/blob/main/src/quacc/calculators/vasp/presets/QMOFSet.yaml)).
 
 ## A Representative Example
 
