@@ -4,7 +4,7 @@ Some materials databases are built from large collections of DFT calculations ru
 
 ## Materials Project
 
-The [Materials Project](https://materialsproject.org/) is a database of inorganic materials. It has used two generations of VASP workflows:
+The [Materials Project](https://materialsproject.org/) is a database of computed properties for inorganic materials. It has used two generations of VASP workflows:
 
 - **Legacy PBE(+U)**: the original PBE(+U) workflow used for the majority of the database.
 - **PBEsol/r2SCAN (MP24)**: the newer workflow, which pre-relaxes with PBEsol before a production r2SCAN relaxation and static calculation.
@@ -16,7 +16,7 @@ The [Materials Project](https://materialsproject.org/) is a database of inorgani
 
 ## QMOF Database
 
-The [QMOF](https://doi.org/10.1016/j.matt.2021.02.015) Database is a collection of metal-organic frameworks (MOFs). [quacc.recipes.vasp.qmof.qmof_relax_job][] reproduces the QMOF Database's multi-step relaxation workflow (an optional pre-relaxation, loose position/volume relaxations, a production-quality double relaxation, and a final static calculation) in a single job.
+The [QMOF](https://doi.org/10.1016/j.matt.2021.02.015) Database is a collection of computed properties for metal-organic frameworks (MOFs). [quacc.recipes.vasp.qmof.qmof_relax_job][] reproduces the QMOF Database's multi-step relaxation workflow (an optional pre-relaxation, loose position/volume relaxations, a production-quality double relaxation, and a final static calculation) in a single job.
 
 | Database | Relax Flow | Extra Dependencies |
 |---|---|---|
