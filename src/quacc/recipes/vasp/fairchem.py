@@ -81,7 +81,7 @@ def omat_static_job(
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[fairchem]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def omc_static_job(
     atoms: Atoms,
     copy_files: CopyFiles | None = None,

@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_gga_relax_job(
     atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
@@ -75,7 +75,7 @@ def mp_gga_relax_job(
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_gga_static_job(
     atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
@@ -159,7 +159,7 @@ def mp_relax_set_job(
 
 
 @flow
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_gga_relax_flow(
     atoms: Atoms,
     job_params: dict[str, dict[str, Any]] | None = None,
