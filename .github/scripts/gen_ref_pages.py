@@ -5,7 +5,13 @@ This is roughly equivalent to what the `mkdocs-gen-files` plugin would have done
 
 from __future__ import annotations
 
+import tomllib
 from pathlib import Path
+from urllib.parse import urljoin
+
+with Path("_zensical.toml").open("rb") as config_file:
+    config = tomllib.load(config_file)["project"]
+edit_base = urljoin(config["repo_url"], config["edit_uri"])
 
 out_dir = Path("docs/reference")
 out_dir.mkdir(parents=True, exist_ok=True)
@@ -24,7 +30,11 @@ for path in sorted(Path("src").rglob("*.py")):
         continue
 
     full_doc_path.parent.mkdir(parents=True, exist_ok=True)
-    full_doc_path.write_text(f"::: {'.'.join(parts)}\n")
+    # Reference pages are generated; edits belong in the Python source instead.
+    edit_url = urljoin(edit_base, f"../{path.as_posix()}")
+    full_doc_path.write_text(
+        f"---\nedit_url: {edit_url}\n---\n\n::: {'.'.join(parts)}\n"
+    )
 
     # Emit section headers for intermediate directories not yet seen
     for i in range(1, len(parts)):
