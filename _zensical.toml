@@ -67,6 +67,7 @@ nav = [
 ]
 
 [project.theme]
+custom_dir = "docs/overrides"
 favicon = "images/quacc_favicon.png"
 logo = "images/quacc_logo_wide.png"
 features = [

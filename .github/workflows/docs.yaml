@@ -29,7 +29,10 @@ jobs:
       - name: Install pip packages
         run: |
           pip install uv
-          uv pip install --system "quacc[docs] @ ."
+          uv pip install --system "quacc[docs] @ ." pytest
+
+      - name: Test reference edit links
+        run: python -m pytest --noconftest tests/docs
 
       - name: Generate reference pages
         run: python .github/scripts/gen_ref_pages.py
