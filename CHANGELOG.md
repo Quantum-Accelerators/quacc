@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.5.10]
 
+### Added
+
+- Added feature to stop an MD simulation before a certain length of time has been hit
+
 ### Changed
 
 - Changed the `mp` extra dependency list name to `atomate2`
