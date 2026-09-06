@@ -37,7 +37,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def matpes_static_job(
     atoms: Atoms,
     *,
@@ -134,7 +134,7 @@ def matpes_static_job(
 
 
 @flow
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def matpes_static_flow(
     atoms: Atoms,
     job_params: dict[str, dict[str, Any]] | None = None,
@@ -177,7 +177,7 @@ def matpes_static_flow(
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def fastpes_static_job(
     atoms: Atoms,
     hf_exchange: float = 0.0,

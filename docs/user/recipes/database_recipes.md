@@ -11,8 +11,8 @@ The [Materials Project](https://materialsproject.org/) is a database of computed
 
 | Workflow | Relax Flow | Static Job | Extra Dependencies |
 |---|---|---|---|
-| Legacy PBE(+U) | [quacc.recipes.vasp.mp_legacy.mp_gga_relax_flow][] | [quacc.recipes.vasp.mp_legacy.mp_gga_static_job][] | `quacc[mp]` |
-| PBEsol/r2SCAN (MP24) | [quacc.recipes.vasp.mp24.mp_metagga_relax_flow][] | [quacc.recipes.vasp.mp24.mp_metagga_static_job][] | `quacc[mp]` |
+| Legacy PBE(+U) | [quacc.recipes.vasp.mp_legacy.mp_gga_relax_flow][] | [quacc.recipes.vasp.mp_legacy.mp_gga_static_job][] | `quacc[atomate2]` |
+| PBEsol/r2SCAN (MP24) | [quacc.recipes.vasp.mp24.mp_metagga_relax_flow][] | [quacc.recipes.vasp.mp24.mp_metagga_static_job][] | `quacc[atomate2]` |
 
 ## QMOF Database
 
