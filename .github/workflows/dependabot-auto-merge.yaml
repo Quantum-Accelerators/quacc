@@ -1,4 +1,4 @@
-name: Dependabot auto-merge
+name: Dependency bot auto-merge
 
 on:
   workflow_run:
@@ -10,12 +10,12 @@ permissions:
   pull-requests: write
 
 jobs:
-  merge:
+  enable-auto-merge:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Merge current Dependabot PRs
+      - name: Enable auto-merge for current dependency bot PRs
         uses: actions/github-script@v9
         env:
           GH_TOKEN: ${{ github.token }}
@@ -23,6 +23,10 @@ jobs:
           script: |
             const { owner, repo } = context.repo;
             const candidates = context.payload.workflow_run.pull_requests ?? [];
+            const allowedBots = new Set([
+              "dependabot[bot]",
+              "pre-commit-ci[bot]",
+            ]);
 
             for (const candidate of candidates) {
               const { data: pullRequest } = await github.rest.pulls.get({
@@ -31,8 +35,8 @@ jobs:
                 pull_number: candidate.number,
               });
 
-              if (pullRequest.user.login !== "dependabot[bot]") {
-                core.info(`Skipping PR #${pullRequest.number}: not opened by Dependabot.`);
+              if (!allowedBots.has(pullRequest.user.login)) {
+                core.info(`Skipping PR #${pullRequest.number}: not opened by an allowed dependency bot.`);
                 continue;
               }
 
