@@ -12,10 +12,7 @@ The `copy_files` keyword argument takes a list of file-transfer specifications. 
 from ase.build import bulk
 from quacc.recipes.vasp.core import relax_job
 
-relax_job(
-    atoms,
-    copy_files=[{"source": "/my/folder", "filenames": "*"}],
-)
+relax_job(atoms, copy_files=[{"source": "/my/folder", "filenames": "*"}])
 ```
 
 For instance, if you have the files `CHGCAR.gz` and `WAVECAR.gz` stored in `/my/folder`, you can select them as follows:
@@ -27,22 +24,14 @@ from quacc.recipes.vasp.core import relax_job
 atoms = bulk("Cu")
 relax_job(
     atoms,
-    copy_files=[
-        {
-            "source": "/my/folder",
-            "filenames": ["CHGCAR.gz", "WAVECAR.gz"],
-        }
-    ],
+    copy_files=[{"source": "/my/folder", "filenames": ["CHGCAR.gz", "WAVECAR.gz"]}],
 )
 ```
 
 You can also copy a specific file from a directory while retaining the directory structure. For instance, if you have the file `/my/folder/WAVECAR.gz` and you want to copy it to the calculation's working directory as `folder/WAVECAR.gz`, you can do so as follows:
 
 ```python
-relax_job(
-    atoms,
-    copy_files=[{"source": "/my", "filenames": ["folder/WAVECAR.gz"]}],
-)
+relax_job(atoms, copy_files=[{"source": "/my", "filenames": ["folder/WAVECAR.gz"]}])
 ```
 
 !!! Tip "Glob Patterns"

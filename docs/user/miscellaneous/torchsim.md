@@ -132,7 +132,7 @@ result = static_job(
     model_type=TSModelType.LENNARD_JONES,
     model_path=None,
     trajectory_reporter_dict={
-        "prop_calculators": {1: ["potential_energy", "forces", "stress"]},
+        "prop_calculators": {1: ["potential_energy", "forces", "stress"]}
     },
     model_kwargs={"sigma": 2.5, "epsilon": 0.05, "compute_stress": True},
 )
@@ -243,9 +243,7 @@ atoms = bulk("Cu", "fcc", a=3.6, cubic=True)
 # Configure trajectory reporting
 trajectory_reporter = {
     "state_frequency": 10,  # Save state every 10 steps
-    "prop_calculators": {
-        5: ["potential_energy", "kinetic_energy", "temperature"],
-    },
+    "prop_calculators": {5: ["potential_energy", "kinetic_energy", "temperature"]},
 }
 
 result = md_job(
@@ -420,7 +418,7 @@ static_result = static_job(
     model_type=TSModelType.MACE,
     model_path=model_path,
     trajectory_reporter_dict={
-        "prop_calculators": {1: ["potential_energy", "forces", "stress"]},
+        "prop_calculators": {1: ["potential_energy", "forces", "stress"]}
     },
 )
 print(f"Final energy: {static_result['output']['energy'][0]:.4f} eV")
