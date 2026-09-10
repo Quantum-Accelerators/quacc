@@ -1628,8 +1628,105 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
     }
 
 
+def test_aqcat25(patch_nonmetallic_taskdoc):
+    from quacc.recipes.vasp.aqcat import aqcat25_static_job
+
+    atoms = bulk("Si")
+    output = aqcat25_static_job(atoms)
+    output["parameters"].pop("ncore")
+    assert output["parameters"] == {
+        "kpts": (15, 15, 1),
+        "ibrion": 2,
+        "nsw": 0,
+        "isif": 0,
+        "ispin": 1,
+        "isym": 0,
+        "algo": "normal",
+        "ismear": 0,
+        "sigma": 0.1,
+        "ediffg": -0.03,
+        "encut": 500.0,
+        "prec": "accurate",
+        "potim": 0.5,
+        "nelm": 250,
+        "lwave": False,
+        "lvhar": False,
+        "lcharg": False,
+        "laechg": False,
+        "lasph": False,
+        "ediff": 1e-4,
+        "symprec": 1e-10,
+        "lreal": "auto",
+        "gga": "RP",
+        "pp": "PBE",
+        "xc": "rpbe",
+        "pp_version": "54",
+    }
+
+    output = aqcat25_static_job(atoms, kpts=(3, 2, 1))
+    assert output["parameters"]["kpts"] == (3, 2, 1)
+
+
+@pytest.mark.parametrize(
+    ("cell", "expected"),
+    [
+        ([10, 16, 20], (4, 2, 1)),
+        ([[8, 6, 0], [0, 12, 0], [0, 0, 20]], (5, 3, 1)),
+        ([100, 100, 20], (1, 1, 1)),
+    ],
+)
+def test_aqcat25_slab_kpoints(monkeypatch, cell, expected):
+    from quacc.recipes.vasp.aqcat import aqcat25_static_job
+
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.aqcat.run_and_summarize", mock_run_and_summarize
+    )
+    atoms = bulk("Si")
+    atoms.set_cell(cell)
+    assert aqcat25_static_job(atoms)["parameters"]["kpts"] == expected
+
+
+def test_aqcat25_kspacing_override(monkeypatch):
+    from quacc.recipes.vasp.aqcat import aqcat25_static_job
+
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.aqcat.run_and_summarize", mock_run_and_summarize
+    )
+    assert "kpts" not in aqcat25_static_job(bulk("Si"), kspacing=0.2)["parameters"]
+
+
 def mock_run_and_summarize(atoms, *args, **kwargs):
     return {"parameters": kwargs["calc_defaults"]}
+
+
+def test_aqcat25_spin_polarized(monkeypatch):
+    from quacc.recipes.vasp.aqcat import aqcat25_static_job
+
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.aqcat.run_and_summarize", mock_run_and_summarize
+    )
+
+    parameters = aqcat25_static_job(bulk("Fe"))["parameters"]
+    assert parameters["ispin"] == 2
+    assert parameters["elemental_magmoms"] == {
+        "V": 5.0,
+        "Cr": 5.0,
+        "Mn": 5.0,
+        "Fe": 5.0,
+        "Co": 5.0,
+        "Ni": 5.0,
+        "Cu": 1.73,
+        "Mo": 5.0,
+        "Ru": 2.2,
+        "W": 5.0,
+        "Os": 2.2,
+        "Ce": 5.0,
+    }
+    assert parameters["preset_mag_default"] == 0.0
+
+    parameters = aqcat25_static_job(bulk("Si"))["parameters"]
+    assert parameters["ispin"] == 1
+    assert "elemental_magmoms" not in parameters
 
 
 def test_md_job_nvt(monkeypatch):
