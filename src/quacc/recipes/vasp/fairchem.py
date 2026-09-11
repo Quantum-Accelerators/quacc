@@ -285,9 +285,11 @@ def oc20_static_job(
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
+    from fairchem.data.oc.utils.vasp import calculate_surface_k_points
     from fairchem.data.oc.utils.vasp_flags import VASP_FLAGS
 
     calc_defaults = VASP_FLAGS | {
+        "kpts": calculate_surface_k_points(atoms),
         "xc": "RPBE",
         "pp_version": "54",
         "incar_copilot_mode": "critical",
