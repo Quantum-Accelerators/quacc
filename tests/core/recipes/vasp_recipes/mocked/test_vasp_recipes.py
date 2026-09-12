@@ -1625,6 +1625,7 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
         "pp": "PBE",
         "xc": "rpbe",
         "pp_version": "54",
+        "kpts": (15, 15, 1),
     }
 
 
