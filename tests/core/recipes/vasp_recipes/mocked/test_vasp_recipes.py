@@ -1686,13 +1686,23 @@ def test_aqcat25_slab_kpoints(monkeypatch, cell, expected):
     assert aqcat25_static_job(atoms)["parameters"]["kpts"] == expected
 
 
-def test_aqcat25_kspacing_override(monkeypatch):
+def test_aqcat25_kspacing_override(monkeypatch, tmp_path):
+    from quacc.calculators.vasp import Vasp
     from quacc.recipes.vasp.aqcat import aqcat25_static_job
+    from quacc.utils.dicts import recursive_dict_merge
+
+    def capture_calculator(atoms, calc_defaults, calc_swaps, **kwargs):
+        return Vasp(atoms, **recursive_dict_merge(calc_defaults, calc_swaps))
 
     monkeypatch.setattr(
-        "quacc.recipes.vasp.aqcat.run_and_summarize", mock_run_and_summarize
+        "quacc.recipes.vasp.aqcat.run_and_summarize", capture_calculator
     )
-    assert "kpts" not in aqcat25_static_job(bulk("Si"), kspacing=0.2)["parameters"]
+    atoms = bulk("Si")
+    calc = aqcat25_static_job(atoms, kspacing=0.2)
+    assert calc.float_params["kspacing"] == 0.2
+    # KSPACING in the INCAR takes precedence, so ASE writes no KPOINTS file.
+    calc.write_kpoints(atoms=atoms, directory=tmp_path)
+    assert not (tmp_path / "KPOINTS").exists()
 
 
 def mock_run_and_summarize(atoms, *args, **kwargs):

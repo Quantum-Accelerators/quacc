@@ -97,7 +97,14 @@ def aqcat25_static_job(
         elemental_overrides.get(atom.symbol, 0.0) != 0.0 for atom in atoms
     )
 
+    # Match fairchem's calculate_surface_k_points used by AQCat25.
+    cell = atoms.get_cell()
     calc_defaults = {
+        "kpts": (
+            max(1, round(40 / np.linalg.norm(cell[0], ord=np.inf))),
+            max(1, round(40 / np.linalg.norm(cell[1], ord=np.inf))),
+            1,
+        ),
         "ibrion": 2,
         "nsw": 0,
         "isif": 0,
@@ -126,14 +133,6 @@ def aqcat25_static_job(
     }
     if spin_polarized:
         calc_defaults["magmom"] = [magmoms.get(atom.symbol, 0.0) for atom in atoms]
-    if "kpts" not in calc_kwargs and "kspacing" not in calc_kwargs:
-        # Match fairchem's calculate_surface_k_points used by AQCat25.
-        cell = atoms.get_cell()
-        calc_defaults["kpts"] = (
-            max(1, round(40 / np.linalg.norm(cell[0], ord=np.inf))),
-            max(1, round(40 / np.linalg.norm(cell[1], ord=np.inf))),
-            1,
-        )
 
     return run_and_summarize(
         atoms,
