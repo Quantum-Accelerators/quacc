@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [1.5.11]
 
+### Added
+
+- Added AQCat25-compatible recipe
+
+### Fixed
+
 - Fixed K-point handling for oc20_static_job
 
 ## [1.5.10]
