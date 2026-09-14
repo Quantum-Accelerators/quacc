@@ -1788,7 +1788,12 @@ def test_aqcat25_magnetic_initialization(
         # Verify the MAGMOM text ASE writes uses the explicit values, even
         # when quacc has copied different moments from a previous calculator.
         _, incar = set_magmom(
-            2, True, calc.input_atoms, calc.list_float_params["magmom"], [0, 1, 2]
+            2,
+            True,
+            calc.input_atoms,
+            calc.list_float_params["magmom"],
+            [0, 1, 2],
+            False,
         )
         expected_line = (
             "1*3.0000 1*-3.0000 1*0.0000"
