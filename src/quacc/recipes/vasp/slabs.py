@@ -53,7 +53,6 @@ def static_job(
     """
     calc_defaults = {
         "auto_dipole": True,
-        "ismear": -5,
         "laechg": True,
         "lcharg": True,
         "lreal": False,
