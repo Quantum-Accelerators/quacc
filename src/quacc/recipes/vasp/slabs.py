@@ -112,7 +112,7 @@ def relax_job(
         "isym": 0,
         "lcharg": False,
         "lwave": False,
-        "nsw": 200,
+        "nsw": 500,
         "symprec": 1e-8,
     }
     return run_and_summarize(
