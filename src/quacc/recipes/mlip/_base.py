@@ -114,7 +114,11 @@ def pick_calculator(
     # Skip CUDA warning for rayserve batching mode (inference happens on remote GPU)
     use_ray_serve = library == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING
 
-    if not use_ray_serve and not cuda_is_available:
+    # Also skip for rootstock. Inference happens in a worker subprocess
+    # with its own environment, so PyTorch in this process is not informative
+    use_rootstock = library == "rootstock"
+
+    if not use_ray_serve and not use_rootstock and not cuda_is_available:
         LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if library == "matcalc":
