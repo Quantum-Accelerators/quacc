@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from importlib.util import find_spec
+from math import ceil
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
@@ -301,6 +302,85 @@ def oc20_static_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "OC20 Static"} | (additional_fields or {}),
+        copy_files=copy_files,
+    )
+
+
+@job
+def oc22_static_job(
+    atoms: Atoms,
+    copy_files: CopyFiles | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    **calc_kwargs: Any,
+) -> VaspSchema:
+    """
+    Carry out a static calculation with OC22 settings.
+
+    Follows the [OC22 input generator](https://github.com/Open-Catalyst-Project/Open-Catalyst-Dataset/blob/23cdca3e7f14f6f5d8c3971ef2dbdcdba9dfeee3/ocdata/oc22_dataset/sets.py).
+    Dipole corrections are enabled; pass ``ldipol=False`` for clean symmetric slabs.
+
+    Parameters
+    ----------
+    atoms
+        Oxide slab with its surface normal along z. Initial magnetic moments
+        are preserved; otherwise OC22 element defaults are used.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
+        Vasp calculator keyword arguments are supported.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
+        See the type-hint for the data structure.
+    """
+    from pymatgen.io.vasp.inputs import Kpoints
+    from pymatgen.io.vasp.sets import MVLSlabSet
+
+    a, b, _ = atoms.cell.lengths()
+    converter = MPtoASEConverter(atoms=atoms)
+    calc_defaults = converter.convert_input_set(
+        MVLSlabSet(
+            set_mix=False,
+            auto_dipole=True,
+            user_potcar_functional="PBE_54",
+            user_potcar_settings={"W": "W_sv"},
+            user_kpoints_settings=Kpoints.gamma_automatic(
+                (ceil(30 / a), ceil(30 / b), 1)
+            ),
+            user_incar_settings={
+                "GGA": "PE",
+                "ENCUT": 500,
+                "EDIFF": 1e-4,
+                "ISIF": 0,
+                "NSW": 0,
+                "SYMPREC": 1e-10,
+                "NCORE": 4,
+                "NELM": 60,
+                "LREAL": False,
+                "LASPH": False,
+                "MAGMOM": MVLSlabSet.CONFIG["INCAR"]["MAGMOM"] | {"Co": 5},
+            },
+        )
+    )
+    calc_defaults["magmom"] = (
+        atoms.get_initial_magnetic_moments().tolist()
+        if atoms.has("initial_magmoms")
+        else [calc_defaults["magmom"][i] for i in converter.ase_resort]
+    )
+    calc_defaults |= {"incar_copilot_mode": "off", "use_custodian": False}
+
+    return run_and_summarize(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "OC22 Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 

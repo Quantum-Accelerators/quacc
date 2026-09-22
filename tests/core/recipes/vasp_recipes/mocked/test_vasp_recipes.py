@@ -1629,6 +1629,60 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
     }
 
 
+@pytest.mark.parametrize("override", [False, True])
+@pytest.mark.parametrize(
+    ("element", "u", "magmom"), [("Ni", 6.2, 5), ("Co", 3.32, 5), ("Si", None, 0.6)]
+)
+def test_fairchem_oc22(patch_nonmetallic_taskdoc, override, element, u, magmom):
+    from ase import Atoms
+
+    from quacc.recipes.vasp.fairchem import oc22_static_job
+
+    atoms = Atoms(
+        f"O{element}O",
+        positions=[[0, 0, 5], [2, 0, 5], [4, 0, 5]],
+        cell=[8.2, 9.4, 20],
+        pbc=True,
+    )
+    calc_kwargs = {"ediff": 1e-6, "ldipol": False} if override else {}
+    magmoms = [0.1, 4.2, 0.3] if override else [0.6, magmom, 0.6]
+    if override:
+        atoms.set_initial_magnetic_moments(magmoms)
+    output = oc22_static_job(atoms, **calc_kwargs)
+    assert output["name"] == "OC22 Static"
+    assert output["atoms"].get_chemical_symbols() == ["O", element, "O"]
+    expected = {
+        "gga": "pe",
+        "encut": 500,
+        "ediff": 1e-6 if override else 1e-4,
+        "ispin": 2,
+        "nsw": 0,
+        "isif": 0,
+        "isym": 0,
+        "lasph": False,
+        "lreal": False,
+        "kpts": (4, 4, 1),
+        "gamma": True,
+        "pp_version": "54",
+        "setups": {"O": "", element: "_pv" if element == "Ni" else ""},
+        "magmom": magmoms,
+        "ldipol": not override,
+        "idipol": 3,
+    }
+    if u is not None:
+        expected |= {
+            "ldau": True,
+            "ldautype": 2,
+            "ldaul": [0, 2],
+            "ldauu": [0, u],
+            "ldauj": [0, 0],
+        }
+    else:
+        assert not any(output["parameters"].get("ldauu", []))
+    assert {key: output["parameters"][key] for key in expected} == expected
+    assert output["parameters"]["dipol"] == pytest.approx([2 / 8.2, 0, 0.25])
+
+
 @pytest.mark.skipif(not has_fairchem_oc, reason="fairchem not installed")
 @pytest.mark.parametrize(
     ("calc_kwargs", "ediff"), [({}, 1e-6), ({"ediff": 1e-4}, 1e-4)]
