@@ -77,7 +77,7 @@ def pick_calculator(
               `fairchem.core.pretrained_mlip.available_models` or a path to a
               checkpoint file, e.g. `name_or_path="uma-s-1p1"`.
             - `task_name` (required for UMA checkpoints): one of `"omol"`,
-              `"omat"`, `"oc20"`, `"odac"`, or `"omc"`.
+              `"omat"`, `"oc20"`, `"oc25"`, `"odac"`, or `"omc"`.
             - Optional: `inference_settings`, `overrides`, `device`, and
               `workers`; see `FAIRChemCalculator.from_model_checkpoint` for
               details.

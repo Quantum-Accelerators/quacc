@@ -303,3 +303,69 @@ def oc20_static_job(
         additional_fields={"name": "OC20 Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
+
+
+@job
+@requires(
+    has_fairchem_oc,
+    "fairchem-data-oc is not installed. Run `pip install quacc[fairchem]`",
+)
+def oc25_static_job(
+    atoms: Atoms,
+    copy_files: CopyFiles | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    **calc_kwargs: Any,
+) -> VaspSchema:
+    """
+    Carry out a static calculation with OC25 evaluation settings.
+
+    Uses ``ediff=1e-6`` for validation/test single points, following
+    [Section 2.2.4 of the OC25 paper](https://arxiv.org/html/2509.17862v1#S2.SS2.SSS4).
+    Pass ``ediff=1e-4`` to use the training-data electronic convergence threshold.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object for the interface, with the surface normal along z.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to
+        `None` to remove a pre-existing key entirely. For a list of available
+        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
+        Vasp calculator keyword arguments are supported.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
+        See the type-hint for the data structure.
+
+    References
+    ----------
+    - [OC25 paper](https://arxiv.org/abs/2509.17862)
+    - [OC25 input generation](https://github.com/facebookresearch/fairchem/issues/1616#issuecomment-3524048489)
+    """
+    from fairchem.data.oc.utils.vasp import calculate_surface_k_points
+    from fairchem.data.oc.utils.vasp_flags import SOLVENT_BASE_FLAGS
+
+    calc_defaults = SOLVENT_BASE_FLAGS | {
+        "ediff": 1e-6,
+        "nsw": 0,
+        "kpts": calculate_surface_k_points(atoms),
+        "xc": "RPBE",
+        "pp_version": "64",
+        "setups": "recommended",
+        "incar_copilot_mode": "off",
+        "use_custodian": False,
+    }
+
+    return run_and_summarize(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "OC25 Static"} | (additional_fields or {}),
+        copy_files=copy_files,
+    )

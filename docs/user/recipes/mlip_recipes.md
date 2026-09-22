@@ -7,6 +7,7 @@ Several popular datasets used to train machine-learned interatomic potentials (M
 | Dataset | Recipe | Extra Dependencies |
 |---|---|---|
 | [OC20](https://pubs.acs.org/accacs/article/11/10/6059/459430/Open-Catalyst-2020-OC20-Dataset-and-Community) | [quacc.recipes.vasp.fairchem.oc20_static_job][] | `quacc[fairchem]` |
+| [OC25](https://arxiv.org/abs/2509.17862) | [quacc.recipes.vasp.fairchem.oc25_static_job][] | `quacc[fairchem]` |
 | [OMat24](https://www.nature.com/articles/s43588-026-00996-w) | [quacc.recipes.vasp.fairchem.omat_static_job][] | `quacc[fairchem]` |
 | [OMC25](https://www.nature.com/articles/s41597-026-06628-2) | [quacc.recipes.vasp.fairchem.omc_static_job][] | `quacc[fairchem]` |
 | [OMol25](https://arxiv.org/abs/2505.08762) | [quacc.recipes.orca.fairchem.omol_static_job][] | `quacc[fairchem]` |

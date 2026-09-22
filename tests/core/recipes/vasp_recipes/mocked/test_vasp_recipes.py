@@ -1629,6 +1629,45 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
     }
 
 
+@pytest.mark.skipif(not has_fairchem_oc, reason="fairchem not installed")
+@pytest.mark.parametrize(
+    ("calc_kwargs", "ediff"), [({}, 1e-6), ({"ediff": 1e-4}, 1e-4)]
+)
+def test_fairchem_oc25(patch_nonmetallic_taskdoc, calc_kwargs, ediff):
+    from quacc.recipes.vasp.fairchem import oc25_static_job
+
+    output = oc25_static_job(bulk("Si"), **calc_kwargs)
+    assert output["name"] == "OC25 Static"
+    assert output["parameters"] == {
+        "prec": "normal",
+        "gga": "RP",
+        "pp": "PBE",
+        "xc": "rpbe",
+        "ivdw": 11,
+        "encut": 400,
+        "ediff": ediff,
+        "nelm": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "lcharg": True,
+        "lwave": False,
+        "isif": 0,
+        "ispin": 1,
+        "algo": "all",
+        "idipol": 3,
+        "ldipol": True,
+        "lasph": True,
+        "lreal": "auto",
+        "ncore": 4,
+        "dipol": [0.5, 0.5, 0.5],
+        "amin": 0.01,
+        "nsw": 0,
+        "kpts": (15, 15, 1),
+        "pp_version": "64",
+        "setups": "recommended",
+    }
+
+
 def test_aqcat25(patch_nonmetallic_taskdoc):
     from quacc.recipes.vasp.aqcat import aqcat25_static_job
 
