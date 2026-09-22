@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Added an OC25-compatible VASP static recipe and examples for using OC25-trained eSEN and UMA potentials with the existing MLIP recipes.
+
 ## [1.5.12]
 
 ### Changed
