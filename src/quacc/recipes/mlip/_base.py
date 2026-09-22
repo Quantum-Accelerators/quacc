@@ -75,14 +75,9 @@ def pick_calculator(
         - `fairchem`:
             - `name_or_path` (required): a model name from
               `fairchem.core.pretrained_mlip.available_models` or a path to a
-              checkpoint file, e.g. `name_or_path="uma-s-1p2"` or
-              `name_or_path="esen-sm-conserving-all-oc25"`.
-            - `task_name` (required for UMA checkpoints): a task supported
-              by the selected checkpoint, such as `"omol"`, `"omat"`,
-              `"oc20"`, `"oc22"`, `"oc25"`, `"odac"`, or `"omc"`.
-              The `"oc25"` task requires UMA 1.2 or later. For local
-              inference with a single-task checkpoint such as OC25 eSEN,
-              omit `task_name` to let FAIR-Chem select its only task.
+              checkpoint file, e.g. `name_or_path="uma-s-1p1"`.
+            - `task_name` (required for UMA checkpoints): one of `"omol"`,
+              `"omat"`, `"oc20"`, `"oc25"`, `"odac"`, or `"omc"`.
             - Optional: `inference_settings`, `overrides`, `device`, and
               `workers`; see `FAIRChemCalculator.from_model_checkpoint` for
               details.

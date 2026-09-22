@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added an OC25-compatible VASP static recipe and examples for using OC25-trained eSEN and UMA potentials with the existing MLIP recipes.
+- Added an OC25-compatible VASP static recipe.
 
 ## [1.5.12]
 

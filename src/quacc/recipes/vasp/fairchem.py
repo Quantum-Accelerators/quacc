@@ -319,11 +319,9 @@ def oc25_static_job(
     """
     Carry out a static calculation with OC25 evaluation settings.
 
-    Uses non-spin-polarized RPBE with D3 zero damping, a surface k-point mesh,
-    a dipole correction along z, and ASE's recommended VASP 6.4 potentials.
-    The electronic convergence threshold is 1e-6 eV, as used for OC25's
-    validation and test single points. Pass ``ediff=1e-4`` to use the training
-    data's electronic convergence threshold while retaining a static calculation.
+    Uses ``ediff=1e-6`` for validation/test single points, following
+    [Section 2.2.4 of the OC25 paper](https://arxiv.org/html/2509.17862v1#S2.SS2.SSS4).
+    Pass ``ediff=1e-4`` to use the training-data electronic convergence threshold.
 
     Parameters
     ----------
@@ -355,9 +353,9 @@ def oc25_static_job(
 
     calc_defaults = SOLVENT_BASE_FLAGS | {
         "ediff": 1e-6,
-        "ibrion": -1,
         "nsw": 0,
         "kpts": calculate_surface_k_points(atoms),
+        "xc": "RPBE",
         "pp_version": "64",
         "setups": "recommended",
         "incar_copilot_mode": "off",
