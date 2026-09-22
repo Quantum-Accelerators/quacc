@@ -1630,11 +1630,15 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
 
 
 @pytest.mark.parametrize("override", [False, True])
+@pytest.mark.parametrize("initial_magmoms", [None, [0.1, -4.2, 0.3], [0, 0, 0]])
 @pytest.mark.parametrize(
     ("element", "u", "magmom"), [("Ni", 6.2, 5), ("Co", 3.32, 5), ("Si", None, 0.6)]
 )
-def test_fairchem_oc22(patch_nonmetallic_taskdoc, override, element, u, magmom):
+def test_fairchem_oc22(
+    patch_nonmetallic_taskdoc, override, initial_magmoms, element, u, magmom
+):
     from ase import Atoms
+    from pymatgen.io.vasp import Incar
 
     from quacc.recipes.vasp.fairchem import oc22_static_job
 
@@ -1644,13 +1648,20 @@ def test_fairchem_oc22(patch_nonmetallic_taskdoc, override, element, u, magmom):
         cell=[8.2, 9.4, 20],
         pbc=True,
     )
-    calc_kwargs = {"ediff": 1e-6, "ldipol": False} if override else {}
-    magmoms = [0.1, 4.2, 0.3] if override else [0.6, magmom, 0.6]
-    if override:
-        atoms.set_initial_magnetic_moments(magmoms)
+    atoms.set_initial_magnetic_moments(initial_magmoms)
+    calc_kwargs = (
+        {"ediff": 1e-6, "ldipol": False, "magmom": [0.2, 3.1, 0.4]} if override else {}
+    )
+    magmoms = calc_kwargs.get("magmom", initial_magmoms or [0.6, magmom, 0.6])
     output = oc22_static_job(atoms, **calc_kwargs)
     assert output["name"] == "OC22 Static"
     assert output["atoms"].get_chemical_symbols() == ["O", element, "O"]
+    assert atoms.has("initial_magmoms") == (initial_magmoms is not None)
+    assert atoms.get_initial_magnetic_moments().tolist() == (
+        initial_magmoms or [0, 0, 0]
+    )
+    incar = Incar.from_file(Path(output["dir_name"]) / "INCAR.gz")
+    assert incar["MAGMOM"] == [magmoms[0], magmoms[2], magmoms[1]]
     expected = {
         "gga": "pe",
         "encut": 500,
@@ -1665,7 +1676,6 @@ def test_fairchem_oc22(patch_nonmetallic_taskdoc, override, element, u, magmom):
         "gamma": True,
         "pp_version": "54",
         "setups": {"O": "", element: "_pv" if element == "Ni" else ""},
-        "magmom": magmoms,
         "ldipol": not override,
         "idipol": 3,
     }

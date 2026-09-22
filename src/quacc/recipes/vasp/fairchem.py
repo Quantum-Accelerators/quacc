@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import job
+from quacc.atoms.core import copy_atoms
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 
@@ -322,8 +323,8 @@ def oc22_static_job(
     Parameters
     ----------
     atoms
-        Oxide slab with its surface normal along z. Initial magnetic moments
-        are preserved; otherwise OC22 element defaults are used.
+        Oxide slab with its surface normal along z. OC22 element defaults
+        initialize magnetic moments only when none are set on the atoms.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -343,9 +344,14 @@ def oc22_static_job(
     from pymatgen.io.vasp.inputs import Kpoints
     from pymatgen.io.vasp.sets import MVLSlabSet
 
+    atoms = copy_atoms(atoms)
+    if not atoms.has("initial_magmoms"):
+        magmoms = MVLSlabSet.CONFIG["INCAR"]["MAGMOM"] | {"Co": 5}
+        atoms.set_initial_magnetic_moments(
+            [magmoms.get(atom.symbol, 0.6) for atom in atoms]
+        )
     a, b, _ = atoms.cell.lengths()
-    converter = MPtoASEConverter(atoms=atoms)
-    calc_defaults = converter.convert_input_set(
+    calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(
         MVLSlabSet(
             set_mix=False,
             auto_dipole=True,
@@ -365,15 +371,10 @@ def oc22_static_job(
                 "NELM": 60,
                 "LREAL": False,
                 "LASPH": False,
-                "MAGMOM": MVLSlabSet.CONFIG["INCAR"]["MAGMOM"] | {"Co": 5},
             },
         )
     )
-    calc_defaults["magmom"] = (
-        atoms.get_initial_magnetic_moments().tolist()
-        if atoms.has("initial_magmoms")
-        else [calc_defaults["magmom"][i] for i in converter.ase_resort]
-    )
+    del calc_defaults["magmom"]
     calc_defaults |= {"incar_copilot_mode": "off", "use_custodian": False}
 
     return run_and_summarize(
