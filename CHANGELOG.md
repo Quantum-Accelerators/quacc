@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
+- Added an OC22-compatible VASP static recipe.
 - Added an OC25-compatible VASP static recipe.
 
 ## [1.5.12]
