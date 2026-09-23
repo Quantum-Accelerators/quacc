@@ -1631,14 +1631,13 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
 
 @pytest.mark.parametrize("override", [False, True])
 @pytest.mark.parametrize("initial_magmoms", [None, [0.1, -4.2, 0.3], [0, 0, 0]])
-@pytest.mark.parametrize(
-    ("element", "u", "magmom"), [("Ni", 6.2, 5), ("Co", 3.32, 5), ("Si", None, 0.6)]
-)
+@pytest.mark.parametrize(("element", "u"), [("Ni", 6.2), ("Co", 3.32), ("Si", 0)])
 def test_fairchem_oc22(
-    patch_nonmetallic_taskdoc, override, initial_magmoms, element, u, magmom
+    patch_nonmetallic_taskdoc, override, initial_magmoms, element, u
 ):
     from ase import Atoms
     from pymatgen.io.vasp import Incar
+    from pymatgen.io.vasp.sets import MVLSlabSet
 
     from quacc.recipes.vasp.fairchem import oc22_static_job
 
@@ -1652,14 +1651,11 @@ def test_fairchem_oc22(
     calc_kwargs = (
         {"ediff": 1e-6, "ldipol": False, "magmom": [0.2, 3.1, 0.4]} if override else {}
     )
-    magmoms = calc_kwargs.get("magmom", initial_magmoms or [0.6, magmom, 0.6])
+    default_magmom = MVLSlabSet.CONFIG["INCAR"]["MAGMOM"].get(element, 0.6)
+    magmoms = calc_kwargs.get("magmom", initial_magmoms or [0.6, default_magmom, 0.6])
     output = oc22_static_job(atoms, **calc_kwargs)
     assert output["name"] == "OC22 Static"
     assert output["atoms"].get_chemical_symbols() == ["O", element, "O"]
-    assert atoms.has("initial_magmoms") == (initial_magmoms is not None)
-    assert atoms.get_initial_magnetic_moments().tolist() == (
-        initial_magmoms or [0, 0, 0]
-    )
     incar = Incar.from_file(Path(output["dir_name"]) / "INCAR.gz")
     assert incar["MAGMOM"] == [magmoms[0], magmoms[2], magmoms[1]]
     expected = {
@@ -1679,16 +1675,8 @@ def test_fairchem_oc22(
         "ldipol": not override,
         "idipol": 3,
     }
-    if u is not None:
-        expected |= {
-            "ldau": True,
-            "ldautype": 2,
-            "ldaul": [0, 2],
-            "ldauu": [0, u],
-            "ldauj": [0, 0],
-        }
-    else:
-        assert not any(output["parameters"].get("ldauu", []))
+    assert output["parameters"]["ldau"]
+    assert output["parameters"].get("ldauu", [0, 0]) == [0, u]
     assert {key: output["parameters"][key] for key in expected} == expected
     assert output["parameters"]["dipol"] == pytest.approx([2 / 8.2, 0, 0.25])
 

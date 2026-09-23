@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import job
-from quacc.atoms.core import copy_atoms
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
 
@@ -323,8 +322,8 @@ def oc22_static_job(
     Parameters
     ----------
     atoms
-        Oxide slab with its surface normal along z. OC22 element defaults
-        initialize magnetic moments only when none are set on the atoms.
+        Oxide slab with its surface normal along z. Uses quacc's magnetic-moment
+        handling with pymatgen element defaults.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -341,15 +340,8 @@ def oc22_static_job(
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
-    from pymatgen.io.vasp.inputs import Kpoints
     from pymatgen.io.vasp.sets import MVLSlabSet
 
-    atoms = copy_atoms(atoms)
-    if not atoms.has("initial_magmoms"):
-        magmoms = MVLSlabSet.CONFIG["INCAR"]["MAGMOM"] | {"Co": 5}
-        atoms.set_initial_magnetic_moments(
-            [magmoms.get(atom.symbol, 0.6) for atom in atoms]
-        )
     a, b, _ = atoms.cell.lengths()
     calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(
         MVLSlabSet(
@@ -357,9 +349,6 @@ def oc22_static_job(
             auto_dipole=True,
             user_potcar_functional="PBE_54",
             user_potcar_settings={"W": "W_sv"},
-            user_kpoints_settings=Kpoints.gamma_automatic(
-                (ceil(30 / a), ceil(30 / b), 1)
-            ),
             user_incar_settings={
                 "GGA": "PE",
                 "ENCUT": 500,
@@ -367,15 +356,21 @@ def oc22_static_job(
                 "ISIF": 0,
                 "NSW": 0,
                 "SYMPREC": 1e-10,
-                "NCORE": 4,
+                "NCORE": 4,  # Match the OC22 generator; MVLSlabSet has no NCORE default.
                 "NELM": 60,
                 "LREAL": False,
                 "LASPH": False,
+                "MAGMOM": None,
             },
         )
     )
-    del calc_defaults["magmom"]
-    calc_defaults |= {"incar_copilot_mode": "off", "use_custodian": False}
+    calc_defaults |= {
+        "elemental_magmoms": MVLSlabSet.CONFIG["INCAR"]["MAGMOM"],
+        "preset_mag_default": 0.6,
+        "kpts": (ceil(30 / a), ceil(30 / b), 1),
+        "incar_copilot_mode": "off",
+        "use_custodian": False,
+    }
 
     return run_and_summarize(
         atoms,
