@@ -356,7 +356,6 @@ def oc22_static_job(
                 "ISIF": 0,
                 "NSW": 0,
                 "SYMPREC": 1e-10,
-                "NCORE": 4,  # Match the OC22 generator; MVLSlabSet has no NCORE default.
                 "NELM": 60,
                 "LREAL": False,
                 "LASPH": False,
