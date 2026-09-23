@@ -352,7 +352,6 @@ def oc25_static_job(
     from fairchem.data.oc.utils.vasp import calculate_surface_k_points
     from fairchem.data.oc.utils.vasp_flags import SOLVENT_BASE_FLAGS
 
-    del SOLVENT_BASE_FLAGS["ncore"]
     calc_defaults = SOLVENT_BASE_FLAGS | {
         "ediff": 1e-6,
         "nsw": 0,
@@ -360,6 +359,7 @@ def oc25_static_job(
         "xc": "RPBE",
         "pp_version": "64",
         "setups": "recommended",
+        "ncore": None,
         "incar_copilot_mode": "off",
         "use_custodian": False,
     }
