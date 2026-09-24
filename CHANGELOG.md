@@ -8,16 +8,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added an `nprocs` keyword argument to `omol_static_job`.
 - Added an `additional_fields` keyword argument to `mp_aloe_static_job`.
+- Added an `nprocs` keyword argument to `omol_static_job`, defaulting to the number of physical cores (previously hardcoded to 12 by fairchem).
 
 ### Fixed
 
 - `oc20_static_job` now runs a static calculation (`NSW = 0`) instead of inheriting the 2000-step relaxation settings from fairchem.
-- `omol_static_job` now copies fairchem's custom `def2-tzvpd.bas` basis file into the runtime directory, as required by its `%basis GTOName` block.
-- `omol_static_job` no longer fails at import time when fairchem is not installed and no longer mutates user-supplied input lists.
+- `orcasimpleinput`/`orcablocks` in `omol_static_job` are now merged with the OMol defaults as swaps (like the core ORCA recipes) rather than replacing them.
 - Corrected the extra dependency listed for `omc_static_job` (`quacc[atomate2]`, not `quacc[fairchem]`).
-- Clarified that `orcasimpleinput`/`orcablocks` in `omol_static_job` replace (rather than update) the OMol defaults, and documented the ODAC25 k-point correction in `odac_static_job`.
+- Documented the ODAC25 k-point correction in `odac_static_job`.
 
 ## [1.5.13]
 
