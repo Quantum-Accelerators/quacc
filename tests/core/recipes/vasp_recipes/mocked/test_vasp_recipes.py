@@ -1611,7 +1611,7 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
     output["parameters"].pop("ncore")
     assert output["parameters"] == {
         "ibrion": 2,
-        "nsw": 2000,
+        "nsw": 0,
         "isif": 0,
         "ispin": 1,
         "isym": 0,

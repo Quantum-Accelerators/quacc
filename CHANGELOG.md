@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.14]
+
+### Added
+
+- Added an `nprocs` keyword argument to `omol_static_job`.
+- Added an `additional_fields` keyword argument to `mp_aloe_static_job`.
+
+### Fixed
+
+- `oc20_static_job` now runs a static calculation (`NSW = 0`) instead of inheriting the 2000-step relaxation settings from fairchem.
+- `omol_static_job` now copies fairchem's custom `def2-tzvpd.bas` basis file into the runtime directory, as required by its `%basis GTOName` block.
+- `omol_static_job` no longer fails at import time when fairchem is not installed and no longer mutates user-supplied input lists.
+- Corrected the extra dependency listed for `omc_static_job` (`quacc[atomate2]`, not `quacc[fairchem]`).
+- Clarified that `orcasimpleinput`/`orcablocks` in `omol_static_job` replace (rather than update) the OMol defaults, and documented the ODAC25 k-point correction in `odac_static_job`.
+
 ## [1.5.13]
 
 ### Added

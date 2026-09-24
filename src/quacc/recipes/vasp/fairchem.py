@@ -82,7 +82,7 @@ def omat_static_job(
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[fairchem]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def omc_static_job(
     atoms: Atoms,
     copy_files: CopyFiles | None = None,
@@ -194,8 +194,12 @@ def odac_static_job(
     atoms
         Atoms object
     kpts
-        The k-point grid mesh. Please choose this carefully. The original
-        ODAC23 paper uses a 1x1x1 k-point grid, which is not generally suitable.
+        The k-point grid mesh. Please choose this carefully. The default 1x1x1
+        grid matches the raw ODAC23/ODAC25 DFT calculations, which is not
+        generally suitable. The reported ODAC25 energies were subsequently
+        corrected toward a ceil(K/a) x ceil(K/b) x ceil(K/c) grid with
+        K = 40 Å (see Section 2.1.2 of the ODAC25 paper), so a 1x1x1 grid
+        will not reproduce ODAC25 labels for MOFs with small unit cells.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -290,6 +294,7 @@ def oc20_static_job(
     from fairchem.data.oc.utils.vasp_flags import VASP_FLAGS
 
     calc_defaults = VASP_FLAGS | {
+        "nsw": 0,
         "kpts": calculate_surface_k_points(atoms),
         "xc": "RPBE",
         "pp_version": "54",
