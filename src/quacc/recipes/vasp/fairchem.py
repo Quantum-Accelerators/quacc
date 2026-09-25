@@ -188,7 +188,7 @@ def odac23_static_job(
     """
     Carry out a static calculation with ODAC23 settings.
 
-    Following the [ODAC23 paper](https://arxiv.org/abs/2311.00341), a 1x1x1
+    Following the [ODAC23 paper](https://doi.org/10.1021/acscentsci.3c01629), a 1x1x1
     Gamma-centered k-point grid is used. This is not generally converged for
     MOFs with small unit cells. Override with `kpts` in `calc_kwargs` if needed.
 
