@@ -6329,6 +6329,10 @@
 
 <h1 id="mlip-compatible-recipes">MLIP-Compatible Recipes<a class="headerlink" href="#mlip-compatible-recipes" title="Permanent link">&para;</a></h1>
 <p>Several popular datasets used to train machine-learned interatomic potentials (MLIPs) were built from large collections of DFT calculations run with a specific, fixed set of computational settings. To let users generate additional data that is consistent with one of these datasets (e.g. to extend a dataset or build an internally-consistent benchmark without introducing methodological drift), quacc ships a set of recipes that reproduce those settings.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>While these recipes aim to reproduce the settings of each dataset, you should still manually confirm that the resulting calculator settings are consistent with the source dataset for good measure.</p>
+</div>
 <h2 id="supported-datasets">Supported Datasets<a class="headerlink" href="#supported-datasets" title="Permanent link">&para;</a></h2>
 <table>
 <thead>
