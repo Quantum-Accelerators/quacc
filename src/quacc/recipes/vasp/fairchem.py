@@ -230,13 +230,25 @@ def odac25_static_job(
     **calc_kwargs: Any,
 ) -> VaspSchema:
     """
-    Carry out a static calculation with ODAC25 settings.
+    Carry out a static calculation with ODAC25 settings at the K = 40 Å
+    reference k-point density.
 
-    Following Section 2.1.2 of the [ODAC25 paper](https://arxiv.org/abs/2508.03162),
-    a ceil(K/a) x ceil(K/b) x ceil(K/c) Gamma-centered k-point grid is used,
-    where K = 40 Å and a, b, c are the lattice vector lengths. This is the
-    k-point density that the reported ODAC25 energies were corrected to.
-    Override with `kpts` in `calc_kwargs` if needed.
+    A ceil(K/a) x ceil(K/b) x ceil(K/c) Gamma-centered k-point grid is used,
+    where K = 40 Å and a, b, c are the lattice vector lengths. Override with
+    `kpts` in `calc_kwargs` if needed.
+
+    !!! Note
+
+        This does not exactly reproduce the ODAC25 labels. Per Section 2.1.2 of
+        the [ODAC25 paper](https://arxiv.org/abs/2508.03162), the ODAC25
+        trajectories were computed at a low k-point density. The k-point error
+        was then evaluated at K = 40 Å for only the initial and final frame of
+        each trajectory, and the average of those two errors was added to the
+        energy of every frame. The released energies are therefore
+        corrected low-k-point energies, and the forces are from the original
+        low-k-point calculations. This recipe instead computes the energy and
+        forces directly at K = 40 Å, which approximates the level of theory
+        that the ODAC25 energy correction targets.
 
     Parameters
     ----------
