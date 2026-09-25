@@ -6,8 +6,6 @@ from importlib.util import find_spec
 from typing import TYPE_CHECKING, Any
 
 import psutil
-from fairchem.data.omol.orca.calc import ORCA_BLOCKS, ORCA_SIMPLE_INPUT, Vertical
-from fairchem.data.omol.orca.recipes import single_point_calculation
 from monty.dev import requires
 
 from quacc import job
@@ -17,6 +15,7 @@ if TYPE_CHECKING:
     from typing import Literal
 
     from ase.atoms import Atoms
+    from fairchem.data.omol.orca.calc import Vertical
 
     from quacc.types import CopyFiles
 
@@ -37,7 +36,7 @@ def omol_static_job(
     atoms: Atoms,
     charge: int = 0,
     spin_multiplicity: int = 1,
-    vertical: Vertical = Vertical.Default,
+    vertical: Vertical | None = None,
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
@@ -56,7 +55,7 @@ def omol_static_job(
     spin_multiplicity
         Multiplicity of the system.
     vertical
-        Vertical of the OMol dataset to use.
+        Vertical of the OMol dataset to use. Defaults to `Vertical.Default`.
     orcasimpleinput
         List of `orcasimpleinput` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
@@ -77,13 +76,16 @@ def omol_static_job(
     dict
         Dictionary of results.
     """
+    from fairchem.data.omol.orca.calc import ORCA_BLOCKS, ORCA_SIMPLE_INPUT, Vertical
+    from fairchem.data.omol.orca.recipes import single_point_calculation
+
     nprocs = (psutil.cpu_count(logical=False) if nprocs == "max" else nprocs) or 1
 
     return single_point_calculation(
         atoms,
         charge,
         spin_multiplicity,
-        vertical=vertical,
+        vertical=Vertical.Default if vertical is None else vertical,
         orcasimpleinput=merge_list_params(ORCA_SIMPLE_INPUT, orcasimpleinput)
         if orcasimpleinput
         else None,

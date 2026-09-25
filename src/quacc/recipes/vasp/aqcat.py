@@ -22,16 +22,19 @@ def aqcat25_static_job(
     atoms: Atoms,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
+    bulk: bool = False,
     **calc_kwargs: Any,
 ) -> VaspSchema:
     """
-    Carry out a static calculation with AQCat25 slab settings.
+    Carry out a static calculation with AQCat25 slab or bulk settings.
 
-    By default, use the slab k-point sampling from the AQCat25 paper's
-    fairchem implementation: max(1, round(40 / L)) in each in-plane direction,
-    where L is the largest absolute Cartesian component of that cell vector
-    in angstroms, and one k-point along the third cell vector (vacuum).
-    Override this sampling with `kpts` or `kspacing` in `calc_kwargs`.
+    By default, use the slab settings and k-point sampling from the AQCat25
+    paper's fairchem implementation: max(1, round(40 / L)) in each in-plane
+    direction, where L is the largest absolute Cartesian component of that cell
+    vector in angstroms, and one k-point along the third cell vector (vacuum).
+    With `bulk=True`, the bulk settings from Table 4 of the AQCat25 paper are
+    used instead, and the same k-point rule is also applied to the third cell
+    vector. Override this sampling with `kpts` or `kspacing` in `calc_kwargs`.
 
     For spin-polarized systems, initial magnetic moments are chosen in this
     order: explicit `magmom` list > `elemental_magmoms` overrides > AQCat25
@@ -56,6 +59,8 @@ def aqcat25_static_job(
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
         Additional fields to add to the results dictionary.
+    bulk
+        Whether to use the AQCat25 bulk settings (True) or slab settings (False).
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -74,6 +79,7 @@ def aqcat25_static_job(
     >>> aqcat25_static_job(atoms, elemental_magmoms={"Fe": 3.0, "O": 0.5})
     >>> aqcat25_static_job(atoms, magmom=[2.0, -2.0, 0.0])
     >>> aqcat25_static_job(atoms, kpts=(4, 4, 1), ispin=1)
+    >>> aqcat25_static_job(bulk_atoms, bulk=True)
     """
     # Initial magnetic moments of the spin-polarized elements (AQCat25 paper, Table 6)
     magmoms = {
@@ -97,14 +103,14 @@ def aqcat25_static_job(
         elemental_overrides.get(atom.symbol, 0.0) != 0.0 for atom in atoms
     )
 
-    # Match fairchem's calculate_surface_k_points used by AQCat25.
+    # Match fairchem's calculate_surface_k_points used by AQCat25. For bulks,
+    # the same rule is also applied along the third cell vector.
     cell = atoms.get_cell()
+    kpts = [max(1, round(40 / np.linalg.norm(cell[i], ord=np.inf))) for i in range(3)]
+    if not bulk:
+        kpts[2] = 1
     calc_defaults = {
-        "kpts": (
-            max(1, round(40 / np.linalg.norm(cell[0], ord=np.inf))),
-            max(1, round(40 / np.linalg.norm(cell[1], ord=np.inf))),
-            1,
-        ),
+        "kpts": tuple(kpts),
         "ibrion": 2,
         "nsw": 0,
         "isif": 0,
@@ -131,6 +137,15 @@ def aqcat25_static_job(
         "incar_copilot_mode": "critical",
         "use_custodian": False,
     }
+    if bulk:
+        # AQCat25 paper, Table 4 (bulk column)
+        calc_defaults |= {
+            "ibrion": 1,
+            "isif": 7,
+            "ediffg": 1e-5,
+            "symprec": 1e-5,
+            "lreal": False,
+        }
     if spin_polarized:
         calc_defaults["magmom"] = [magmoms.get(atom.symbol, 0.0) for atom in atoms]
 
@@ -138,6 +153,7 @@ def aqcat25_static_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": "AQCat25 Static"} | (additional_fields or {}),
+        additional_fields={"name": "AQCat25 Bulk Static" if bulk else "AQCat25 Static"}
+        | (additional_fields or {}),
         copy_files=copy_files,
     )

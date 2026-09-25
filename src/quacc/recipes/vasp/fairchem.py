@@ -173,7 +173,6 @@ def _make_omc_inputs(atoms: Atoms) -> dict:
             "SIGMA": 0.1,
         },
         user_potcar_functional="PBE_54_W_HASH",
-        auto_kspacing=True,
     )
     return MPtoASEConverter(atoms=atoms).convert_input_generator(input_generator)
 
@@ -381,7 +380,8 @@ def oc20_static_job(
     from fairchem.data.oc.utils.vasp import calculate_surface_k_points
     from fairchem.data.oc.utils.vasp_flags import VASP_FLAGS
 
-    calc_defaults = VASP_FLAGS | {
+    # NCORE is a hardware-specific parallelization setting, so it is not inherited.
+    calc_defaults = {k: v for k, v in VASP_FLAGS.items() if k != "ncore"} | {
         "nsw": 0,
         "kpts": calculate_surface_k_points(atoms),
         "xc": "RPBE",
@@ -416,7 +416,9 @@ def oc22_static_job(
     ----------
     atoms
         Oxide slab with its surface normal along z. Uses quacc's magnetic-moment
-        handling with pymatgen element defaults.
+        handling with the `MVLSlabSet` element defaults, which matches the OC22
+        generation code (its crystal-field `set_bulk_magmoms` helper is never
+        called).
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -513,13 +515,14 @@ def oc25_static_job(
 
     References
     ----------
-    - [OC25 paper](https://arxiv.org/abs/2509.17862)
+    - [OC25 paper](https://arxiv.org/abs/2509.17862v1)
     - [OC25 input generation](https://github.com/facebookresearch/fairchem/issues/1616#issuecomment-3524048489)
     """
     from fairchem.data.oc.utils.vasp import calculate_surface_k_points
     from fairchem.data.oc.utils.vasp_flags import SOLVENT_BASE_FLAGS
 
-    calc_defaults = SOLVENT_BASE_FLAGS | {
+    # NCORE is a hardware-specific parallelization setting, so it is not inherited.
+    calc_defaults = {k: v for k, v in SOLVENT_BASE_FLAGS.items() if k != "ncore"} | {
         "ediff": 1e-6,
         "nsw": 0,
         "kpts": calculate_surface_k_points(atoms),

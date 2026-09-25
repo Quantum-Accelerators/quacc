@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added `odac23_static_job` and `odac25_static_job`, which use the 1x1x1 and ceil(40/a) x ceil(40/b) x ceil(40/c) k-point grids of the respective datasets.
+- Added a `bulk` option to `aqcat25_static_job` to use the AQCat25 bulk settings (Table 4 of the AQCat25 paper) and 3D k-point sampling.
 - Added an `additional_fields` keyword argument to `mp_aloe_static_job`.
 - Added an `nprocs` keyword argument to `omol_static_job`, defaulting to the number of physical cores (previously hardcoded to 12 by fairchem).
 
@@ -21,6 +22,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `oc20_static_job` now runs a static calculation (`NSW = 0`) instead of inheriting the 2000-step relaxation settings from fairchem.
 - `orcasimpleinput`/`orcablocks` in `omol_static_job` are now merged with the OMol defaults as swaps (like the core ORCA recipes) rather than replacing them.
 - Corrected the extra dependency listed for `omc_static_job` (`quacc[atomate2]`, not `quacc[fairchem]`).
+- `oc20_static_job` and `oc25_static_job` no longer inherit the hardware-specific `NCORE = 4` from fairchem.
+- `quacc.recipes.orca.fairchem` can now be imported without fairchem installed, so `omol_static_job` raises its intended missing-dependency error.
+- Removed the no-op `auto_kspacing` setting from `omc_static_job`.
+- Fixed the OC20 and OC25 paper links in the MLIP recipe docs (the unversioned OC25 arXiv ID now resolves to a different paper, so it is pinned to v1).
 
 ## [1.5.13]
 
