@@ -2,6 +2,10 @@
 
 Several popular datasets used to train machine-learned interatomic potentials (MLIPs) were built from large collections of DFT calculations run with a specific, fixed set of computational settings. To let users generate additional data that is consistent with one of these datasets (e.g. to extend a dataset or build an internally-consistent benchmark without introducing methodological drift), quacc ships a set of recipes that reproduce those settings.
 
+!!! Note
+
+    While these recipes aim to reproduce the settings of each dataset, you should still manually confirm that the resulting calculator settings are consistent with the source dataset for good measure.
+
 ## Supported Datasets
 
 | Dataset | Recipe | Extra Dependencies |
