@@ -230,12 +230,13 @@ def odac25_static_job(
     **calc_kwargs: Any,
 ) -> VaspSchema:
     """
-    Carry out a static calculation with ODAC25 settings at the K = 40 Å
-    reference k-point density.
+    Carry out a static calculation with ODAC25 settings.
 
-    A ceil(K/a) x ceil(K/b) x ceil(K/c) Gamma-centered k-point grid is used,
-    where K = 40 Å and a, b, c are the lattice vector lengths. Override with
-    `kpts` in `calc_kwargs` if needed.
+    Following Section 2.1.2 of the [ODAC25 paper](https://arxiv.org/abs/2508.03162),
+    a ceil(K/a) x ceil(K/b) x ceil(K/c) Gamma-centered k-point grid is used,
+    where K = 40 Å and a, b, c are the lattice vector lengths. This is the
+    k-point density that the reported ODAC25 energies were corrected to.
+    Override with `kpts` in `calc_kwargs` if needed.
 
     !!! Note
 

@@ -12,10 +12,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Added an `additional_fields` keyword argument to `mp_aloe_static_job`.
 - Added an `nprocs` keyword argument to `omol_static_job`, defaulting to the number of physical cores (previously hardcoded to 12 by fairchem).
 
-### Changed
-
-- Clarified in the `odac25_static_job` docstring and the MLIP recipe docs that the K = 40 Å k-point grid is the reference density for ODAC25's energy correction, not an exact reproduction of the released ODAC25 labels.
-
 ### Removed
 
 - Removed `odac_static_job` in favor of `odac23_static_job` and `odac25_static_job`.

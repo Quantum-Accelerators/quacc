@@ -19,10 +19,6 @@ Several popular datasets used to train machine-learned interatomic potentials (M
 | [MatPES](https://arxiv.org/abs/2503.04070) | [quacc.recipes.vasp.matpes.matpes_static_job][] | `quacc[atomate2]` |
 | [MP-ALOE](https://www.nature.com/articles/s41524-025-01834-9) | [quacc.recipes.vasp.mp_aloe.mp_aloe_static_job][] | none |
 
-!!! Note "ODAC25"
-
-    [quacc.recipes.vasp.fairchem.odac25_static_job][] runs single points at the K = 40 Å reference k-point density that ODAC25 used to build its energy corrections. It does not exactly reproduce the released ODAC25 labels. Those energies are low-k-point energies shifted by a per-trajectory correction, and the forces come from the original low-k-point calculations.
-
 ## A Representative Example
 
 ```python
