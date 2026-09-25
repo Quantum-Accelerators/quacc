@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.14]
+
+### Added
+
+- Added an `additional_fields` keyword argument to `mp_aloe_static_job`.
+- Added an `nprocs` keyword argument to `omol_static_job`, defaulting to the number of physical cores (previously hardcoded to 12 by fairchem).
+
+### Fixed
+
+- `oc20_static_job` now runs a static calculation (`NSW = 0`) instead of inheriting the 2000-step relaxation settings from fairchem.
+- `orcasimpleinput`/`orcablocks` in `omol_static_job` are now merged with the OMol defaults as swaps (like the core ORCA recipes) rather than replacing them.
+- Corrected the extra dependency listed for `omc_static_job` (`quacc[atomate2]`, not `quacc[fairchem]`).
+- Documented the ODAC25 k-point correction in `odac_static_job`.
+
 ## [1.5.13]
 
 ### Added

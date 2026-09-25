@@ -213,3 +213,26 @@ def test_fairchem_omol(tmp_path, monkeypatch):
         output["parameters"]["orcasimpleinput"]
         == "allpop def2-tzvpd def2/j defgrid3 diis engrad nonbo nonpa normalconv nososcf nousesym rijcosx wb97m-v xyzfile"
     )
+
+
+@pytest.mark.skipif(not has_fairchem_omol, reason="fairchem not installed")
+def test_fairchem_omol_swaps(tmp_path, monkeypatch):
+    from quacc.recipes.orca.fairchem import omol_static_job
+
+    monkeypatch.chdir(tmp_path)
+
+    output = omol_static_job(
+        molecule("H2"),
+        orcasimpleinput=["TightSCF", "#DEFGRID3"],
+        orcablocks=["%maxcore 1000"],
+        nprocs=2,
+    )
+    assert (
+        output["parameters"]["orcasimpleinput"]
+        == "allpop def2-tzvpd def2/j diis engrad nonbo nonpa normalconv nososcf nousesym rijcosx tightscf wb97m-v xyzfile"
+    )
+    assert "%maxcore 1000" in output["parameters"]["orcablocks"]
+    assert "%pal nprocs 2 end" in output["parameters"]["orcablocks"]
+    assert (
+        "%scf convergence tight maxiter 300 end" in output["parameters"]["orcablocks"]
+    )

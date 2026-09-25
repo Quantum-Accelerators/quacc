@@ -18,7 +18,10 @@ if TYPE_CHECKING:
 
 @job
 def mp_aloe_static_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
+    atoms: Atoms,
+    prev_dir: SourceDirectory | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Run a static calculation with MP-ALOE settings.
@@ -32,6 +35,8 @@ def mp_aloe_static_job(
         Atoms object.
     prev_dir
         A previous directory for a prior step in the workflow.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to ``None`` to
         remove a pre-existing key entirely. User values take precedence over
@@ -54,7 +59,7 @@ def mp_aloe_static_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
-        additional_fields={"name": "MP-ALOE Static"},
+        additional_fields={"name": "MP-ALOE Static"} | (additional_fields or {}),
         copy_files=[{"source": prev_dir, "filenames": ["CHGCAR*", "WAVECAR*"]}]
         if prev_dir
         else None,
