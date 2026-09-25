@@ -1562,22 +1562,14 @@ def test_fairchem_omc(patch_metallic_taskdoc):
     }
 
 
-@pytest.mark.parametrize(
-    ("recipe", "name", "kpts"),
-    [
-        ("odac23_static_job", "ODAC23 Static", (1, 1, 1)),
-        ("odac25_static_job", "ODAC25 Static", (11, 11, 11)),
-    ],
-)
-def test_fairchem_odac(patch_nonmetallic_taskdoc, recipe, name, kpts):
-    from quacc.recipes.vasp import fairchem
+def test_fairchem_odac(patch_nonmetallic_taskdoc):
+    from quacc.recipes.vasp.fairchem import odac_static_job
 
     atoms = bulk("Si")
-    output = getattr(fairchem, recipe)(atoms)
-    assert output["name"] == name
+    output = odac_static_job(atoms)
     output["parameters"].pop("ncore")
     assert output["parameters"] == {
-        "kpts": kpts,
+        "kpts": (1, 1, 1),
         "ediffg": -0.05,
         "ibrion": 2,
         "nwrite": 2,
@@ -1608,14 +1600,6 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc, recipe, name, kpts):
         "pp": "PBE",
         "pp_version": "54",
     }
-
-
-def test_fairchem_odac25_kpts_override(patch_nonmetallic_taskdoc):
-    from quacc.recipes.vasp.fairchem import odac25_static_job
-
-    atoms = bulk("Si", cubic=True).repeat((2, 3, 10))
-    assert odac25_static_job(atoms)["parameters"]["kpts"] == (4, 3, 1)
-    assert odac25_static_job(atoms, kpts=(2, 2, 2))["parameters"]["kpts"] == (2, 2, 2)
 
 
 @pytest.mark.skipif(not has_fairchem_oc, reason="fairchem not installed")

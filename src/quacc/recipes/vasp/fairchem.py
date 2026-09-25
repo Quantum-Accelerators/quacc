@@ -179,23 +179,27 @@ def _make_omc_inputs(atoms: Atoms) -> dict:
 
 
 @job
-def odac23_static_job(
+def odac_static_job(
     atoms: Atoms,
+    kpts: tuple = (1, 1, 1),
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
 ) -> VaspSchema:
     """
-    Carry out a static calculation with ODAC23 settings.
-
-    Following the [ODAC23 paper](https://doi.org/10.1021/acscentsci.3c01629), a 1x1x1
-    Gamma-centered k-point grid is used. This is not generally converged for
-    MOFs with small unit cells. Override with `kpts` in `calc_kwargs` if needed.
+    Carry out a static calculation with ODAC settings.
 
     Parameters
     ----------
     atoms
         Atoms object
+    kpts
+        The k-point grid mesh. Please choose this carefully. The default 1x1x1
+        grid matches the raw ODAC23/ODAC25 DFT calculations, which is not
+        generally suitable. The reported ODAC25 energies were subsequently
+        corrected toward a ceil(K/a) x ceil(K/b) x ceil(K/c) grid with
+        K = 40 Å (see Section 2.1.2 of the ODAC25 paper), so a 1x1x1 grid
+        will not reproduce ODAC25 labels for MOFs with small unit cells.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -212,113 +216,9 @@ def odac23_static_job(
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
         See the type-hint for the data structure.
     """
-    return _odac_static(
-        atoms,
-        default_kpts=(1, 1, 1),
-        name="ODAC23 Static",
-        copy_files=copy_files,
-        additional_fields=additional_fields,
-        **calc_kwargs,
-    )
 
-
-@job
-def odac25_static_job(
-    atoms: Atoms,
-    copy_files: CopyFiles | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: Any,
-) -> VaspSchema:
-    """
-    Carry out a static calculation with ODAC25 settings.
-
-    Following Section 2.1.2 of the [ODAC25 paper](https://arxiv.org/abs/2508.03162),
-    a ceil(K/a) x ceil(K/b) x ceil(K/c) Gamma-centered k-point grid is used,
-    where K = 40 Å and a, b, c are the lattice vector lengths. This is the
-    k-point density that the reported ODAC25 energies were corrected to.
-    Override with `kpts` in `calc_kwargs` if needed.
-
-    !!! Note
-
-        This does not exactly reproduce the ODAC25 labels. Per Section 2.1.2 of
-        the [ODAC25 paper](https://arxiv.org/abs/2508.03162), the ODAC25
-        trajectories were computed at a low k-point density. The k-point error
-        was then evaluated at K = 40 Å for only the initial and final frame of
-        each trajectory, and the average of those two errors was added to the
-        energy of every frame. The released energies are therefore
-        corrected low-k-point energies, and the forces are from the original
-        low-k-point calculations. This recipe instead computes the energy and
-        forces directly at K = 40 Å, which approximates the level of theory
-        that the ODAC25 energy correction targets.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-    additional_fields
-        Additional fields to add to the results dictionary.
-    **calc_kwargs
-        Custom kwargs for the Vasp calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
-        Vasp calculator keyword arguments are supported.
-
-    Returns
-    -------
-    VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
-        See the type-hint for the data structure.
-    """
-    a, b, c = atoms.cell.lengths()
-    return _odac_static(
-        atoms,
-        default_kpts=(ceil(40 / a), ceil(40 / b), ceil(40 / c)),
-        name="ODAC25 Static",
-        copy_files=copy_files,
-        additional_fields=additional_fields,
-        **calc_kwargs,
-    )
-
-
-def _odac_static(
-    atoms: Atoms,
-    default_kpts: tuple[int, int, int],
-    name: str,
-    copy_files: CopyFiles | None = None,
-    additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs: Any,
-) -> VaspSchema:
-    """
-    Shared static calculation with ODAC settings.
-
-    Parameters
-    ----------
-    atoms
-        Atoms object
-    default_kpts
-        The default k-point grid mesh, which can be overridden via `calc_kwargs`.
-    name
-        Name to store in the results dictionary.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-    additional_fields
-        Additional fields to add to the results dictionary.
-    **calc_kwargs
-        Custom kwargs for the Vasp calculator. Set a value to
-        `None` to remove a pre-existing key entirely. For a list of available
-        keys, refer to [quacc.calculators.vasp.vasp.Vasp][]. All of the ASE
-        Vasp calculator keyword arguments are supported.
-
-    Returns
-    -------
-    VaspSchema
-        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
-        See the type-hint for the data structure.
-    """
     calc_defaults = {
-        "kpts": default_kpts,
+        "kpts": kpts,
         "nwrite": 2,
         "xc": "pbe",
         "ivdw": 12,
@@ -345,14 +245,13 @@ def _odac_static(
         "gamma": True,
         "isym": 0,
         "pp_version": "54",
-        "incar_copilot_mode": "critical",
-        "use_custodian": False,
     }
+    calc_defaults |= {"incar_copilot_mode": "critical", "use_custodian": False}
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        additional_fields={"name": name} | (additional_fields or {}),
+        additional_fields={"name": "ODAC Static"} | (additional_fields or {}),
         copy_files=copy_files,
     )
 
