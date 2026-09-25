@@ -380,8 +380,7 @@ def oc20_static_job(
     from fairchem.data.oc.utils.vasp import calculate_surface_k_points
     from fairchem.data.oc.utils.vasp_flags import VASP_FLAGS
 
-    # NCORE is a hardware-specific parallelization setting, so it is not inherited.
-    calc_defaults = {k: v for k, v in VASP_FLAGS.items() if k != "ncore"} | {
+    calc_defaults = VASP_FLAGS | {
         "nsw": 0,
         "kpts": calculate_surface_k_points(atoms),
         "xc": "RPBE",
@@ -389,6 +388,7 @@ def oc20_static_job(
         "incar_copilot_mode": "critical",
         "use_custodian": False,
     }
+    del calc_defaults["ncore"]  # hardware-specific, so not inherited
 
     return run_and_summarize(
         atoms,
@@ -521,8 +521,7 @@ def oc25_static_job(
     from fairchem.data.oc.utils.vasp import calculate_surface_k_points
     from fairchem.data.oc.utils.vasp_flags import SOLVENT_BASE_FLAGS
 
-    # NCORE is a hardware-specific parallelization setting, so it is not inherited.
-    calc_defaults = {k: v for k, v in SOLVENT_BASE_FLAGS.items() if k != "ncore"} | {
+    calc_defaults = SOLVENT_BASE_FLAGS | {
         "ediff": 1e-6,
         "nsw": 0,
         "kpts": calculate_surface_k_points(atoms),
@@ -532,6 +531,7 @@ def oc25_static_job(
         "incar_copilot_mode": "off",
         "use_custodian": False,
     }
+    del calc_defaults["ncore"]  # hardware-specific, so not inherited
 
     return run_and_summarize(
         atoms,
