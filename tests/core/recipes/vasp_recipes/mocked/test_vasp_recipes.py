@@ -1787,23 +1787,6 @@ def test_aqcat25(patch_nonmetallic_taskdoc):
     assert output["parameters"]["kpts"] == (3, 2, 1)
 
 
-def test_aqcat25_bulk(patch_nonmetallic_taskdoc):
-    from quacc.recipes.vasp.aqcat import aqcat25_static_job
-
-    output = aqcat25_static_job(bulk("Si"), bulk=True)
-    assert output["name"] == "AQCat25 Bulk Static"
-    parameters = output["parameters"]
-    assert parameters["kpts"] == (15, 15, 15)
-    assert parameters["ibrion"] == 1
-    assert parameters["isif"] == 7
-    assert parameters["ediffg"] == 1e-5
-    assert parameters["symprec"] == 1e-5
-    assert parameters["lreal"] is False
-    assert parameters["nsw"] == 0
-    assert parameters["encut"] == 500.0
-    assert parameters["ediff"] == 1e-4
-
-
 @pytest.mark.parametrize(
     ("cell", "expected"),
     [

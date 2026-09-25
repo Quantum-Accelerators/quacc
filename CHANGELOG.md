@@ -9,7 +9,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Added `odac23_static_job` and `odac25_static_job`, which use the 1x1x1 and ceil(40/a) x ceil(40/b) x ceil(40/c) k-point grids of the respective datasets.
-- Added a `bulk` option to `aqcat25_static_job` to use the AQCat25 bulk settings (Table 4 of the AQCat25 paper) and 3D k-point sampling.
 - Added an `additional_fields` keyword argument to `mp_aloe_static_job`.
 - Added an `nprocs` keyword argument to `omol_static_job`, defaulting to the number of physical cores (previously hardcoded to 12 by fairchem).
 
