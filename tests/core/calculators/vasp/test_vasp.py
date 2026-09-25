@@ -21,7 +21,11 @@ from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp import vasp as vasp_module
-from quacc.calculators.vasp.params import MPtoASEConverter, get_param_swaps
+from quacc.calculators.vasp.params import (
+    MPtoASEConverter,
+    _get_param_swaps,
+    get_param_swaps,
+)
 from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
@@ -1210,6 +1214,9 @@ def test_lorbit():
 
 def test_dispersion():
     atoms = bulk("Cu")
+    _, report = _get_param_swaps({"xc": "r2scan"}, atoms)
+    assert all(change.parameter != "metagga" for change in report.changes)
+
     calc = Vasp(atoms, xc="r2scan", ivdw=13)
     assert calc.parameters["vdw_s6"] == 1.0
     assert calc.parameters["vdw_s8"] == 0.60187490
