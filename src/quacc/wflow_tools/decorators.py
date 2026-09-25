@@ -559,7 +559,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Subflow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "jobflow":
-        return _get_jobflow_wrapped_func(_func, **kwargs)
+        return _get_jobflow_wrapped_subflow(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
@@ -666,6 +666,23 @@ def _get_jobflow_wrapped_func(
     from jobflow import job as jf_job
 
     return jf_job(method, **job_kwargs)
+
+
+def _get_jobflow_wrapped_subflow(method: Callable, **job_kwargs: Any) -> Callable:
+    from jobflow import Flow
+    from jobflow import job as jf_job
+    from jobflow.core.flow import flow_build_context
+    from jobflow.utils import replace_job_or_flow_with_output
+
+    @jf_job(**job_kwargs)
+    @wraps(method)
+    def wrapped(*args: Any, **kwargs: Any) -> Flow:
+        children = []
+        with flow_build_context(children):
+            output = method(*args, **kwargs)
+        return Flow(jobs=children, output=replace_job_or_flow_with_output(output))
+
+    return wrapped
 
 
 def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
