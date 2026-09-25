@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.64">
+      <meta name="generator" content="zensical-0.0.65">
     
     
       
@@ -6684,7 +6684,7 @@
   </span>
 
 <a href="#quacc.schemas.vasp.LOGGER" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">LOGGER</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="logging.getLogger" href="https://docs.python.org/3/library/logging.html#logging.getLogger">getLogger</a></span><span class="p">(</span><span class="n"><span title="__name__">__name__</span></span><span class="p">)</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">LOGGER</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;logging.getLogger&lt;/code&gt;" href="https://docs.python.org/3/library/logging.html#logging.getLogger">getLogger</a></span><span class="p">(</span><span class="n"><span title="__name__">__name__</span></span><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6705,13 +6705,13 @@
 
 <a href="#quacc.schemas.vasp.VaspSummarize" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">VaspSummarize</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">directory</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">directory</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">move_magmoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">run_bader</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt;" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></span> <span class="o">=</span> <span class="n"><span title="quacc.QuaccDefault">QuaccDefault</span></span><span class="p">,</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">run_chargemol</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt;" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></span> <span class="o">=</span> <span class="n"><span title="quacc.QuaccDefault">QuaccDefault</span></span><span class="p">,</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">check_convergence</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt;" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></span> <span class="o">=</span> <span class="n"><span title="quacc.QuaccDefault">QuaccDefault</span></span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">run_bader</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt; (&lt;code&gt;quacc.types.DefaultSetting&lt;/code&gt;)" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></span> <span class="o">=</span> <span class="n"><span title="quacc.QuaccDefault">QuaccDefault</span></span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">run_chargemol</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt; (&lt;code&gt;quacc.types.DefaultSetting&lt;/code&gt;)" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></span> <span class="o">=</span> <span class="n"><span title="quacc.QuaccDefault">QuaccDefault</span></span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">check_convergence</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt; (&lt;code&gt;quacc.types.DefaultSetting&lt;/code&gt;)" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></span> <span class="o">=</span> <span class="n"><span title="quacc.QuaccDefault">QuaccDefault</span></span><span class="p">,</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">report_mp_corrections</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a></span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">additional_fields</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">additional_fields</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;typing.Any&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">)</span>
 </span></code></pre></div>
 
@@ -6727,7 +6727,7 @@
     <ul>
         <li class="doc-section-item field-body">
             <b><code>directory</code></b>
-              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a> | <a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a> | None</code>, default:
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a> | <a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a> | None</code>, default:
                   <code>None</code>
 )
           –
@@ -6748,7 +6748,7 @@ initial magmoms of the returned Atoms object.</p>
         </li>
         <li class="doc-section-item field-body">
             <b><code>run_bader</code></b>
-              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a> | <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt;" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></code>, default:
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a> | <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt; (&lt;code&gt;quacc.types.DefaultSetting&lt;/code&gt;)" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></code>, default:
                   <code><span title="quacc.QuaccDefault">QuaccDefault</span></code>
 )
           –
@@ -6760,7 +6760,7 @@ VASP_BADER in settings.</p>
         </li>
         <li class="doc-section-item field-body">
             <b><code>run_chargemol</code></b>
-              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a> | <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt;" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></code>, default:
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a> | <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt; (&lt;code&gt;quacc.types.DefaultSetting&lt;/code&gt;)" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></code>, default:
                   <code><span title="quacc.QuaccDefault">QuaccDefault</span></code>
 )
           –
@@ -6772,7 +6772,7 @@ VASP_CHARGEMOL in settings.</p>
         </li>
         <li class="doc-section-item field-body">
             <b><code>check_convergence</code></b>
-              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a> | <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt;" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></code>, default:
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#bool">bool</a> | <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;DefaultSetting&lt;/span&gt; (&lt;code&gt;quacc.types.DefaultSetting&lt;/code&gt;)" href="../types.html#quacc.types.DefaultSetting">DefaultSetting</a></code>, default:
                   <code><span title="quacc.QuaccDefault">QuaccDefault</span></code>
 )
           –
@@ -6793,7 +6793,7 @@ settings.</p>
         </li>
         <li class="doc-section-item field-body">
             <b><code>additional_fields</code></b>
-              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>, <a class="autorefs autorefs-external" title="typing.Any" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>] | None</code>, default:
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>, <a class="autorefs autorefs-external" title="&lt;code&gt;typing.Any&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>] | None</code>, default:
                   <code>None</code>
 )
           –
@@ -7098,9 +7098,9 @@ settings.</p>
 
 <a href="#quacc.schemas.vasp.VaspSummarize.ase_opt" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">ase_opt</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">optimizer</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.optimize.optimize.Optimizer" href="https://docs.ase-lib.org/ase/optimize.html#ase.optimize.optimize.Optimizer">Optimizer</a></span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">trajectory</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;VaspASEOptSchema&lt;/span&gt;" href="../types.html#quacc.types.VaspASEOptSchema">VaspASEOptSchema</a></span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">optimizer</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;ase.optimize.optimize.Optimizer&lt;/code&gt;" href="https://docs.ase-lib.org/ase/optimize.html#ase.optimize.optimize.Optimizer">Optimizer</a></span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">trajectory</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;ase.atoms.Atoms&lt;/code&gt;" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;VaspASEOptSchema&lt;/span&gt; (&lt;code&gt;quacc.types.VaspASEOptSchema&lt;/code&gt;)" href="../types.html#quacc.types.VaspASEOptSchema">VaspASEOptSchema</a></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7112,7 +7112,7 @@ settings.</p>
     <ul>
         <li class="doc-section-item field-body">
             <b><code>optimizer</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.optimize.optimize.Optimizer" href="https://docs.ase-lib.org/ase/optimize.html#ase.optimize.optimize.Optimizer">Optimizer</a></code>)
+              (<code><a class="autorefs autorefs-external" title="&lt;code&gt;ase.optimize.optimize.Optimizer&lt;/code&gt;" href="https://docs.ase-lib.org/ase/optimize.html#ase.optimize.optimize.Optimizer">Optimizer</a></code>)
           –
           <div class="doc-md-description">
             <p>The ASE optimizer object</p>
@@ -7120,7 +7120,7 @@ settings.</p>
         </li>
         <li class="doc-section-item field-body">
             <b><code>trajectory</code></b>
-              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a>] | None</code>, default:
+              (<code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" title="&lt;code&gt;ase.atoms.Atoms&lt;/code&gt;" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a>] | None</code>, default:
                   <code>None</code>
 )
           –
@@ -7135,7 +7135,7 @@ None, the trajectory must be found in dyn.trajectory.filename.</p>
 <p><span class="doc-section-title">Returns:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;VaspASEOptSchema&lt;/span&gt;" href="../types.html#quacc.types.VaspASEOptSchema">VaspASEOptSchema</a></code>
+              <code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;VaspASEOptSchema&lt;/span&gt; (&lt;code&gt;quacc.types.VaspASEOptSchema&lt;/code&gt;)" href="../types.html#quacc.types.VaspASEOptSchema">VaspASEOptSchema</a></code>
           –
           <div class="doc-md-description">
             <p>Dictionary representation of the task document</p>
@@ -7225,7 +7225,7 @@ None, the trajectory must be found in dyn.trajectory.filename.</p>
 
 
 <a href="#quacc.schemas.vasp.VaspSummarize.run" class="headerlink" title="Permanent link">&para;</a></h3>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">run</span><span class="p">(</span><span class="n">final_atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;VaspSchema&lt;/span&gt;" href="../types.html#quacc.types.VaspSchema">VaspSchema</a></span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">run</span><span class="p">(</span><span class="n">final_atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;ase.atoms.Atoms&lt;/code&gt;" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;VaspSchema&lt;/span&gt; (&lt;code&gt;quacc.types.VaspSchema&lt;/code&gt;)" href="../types.html#quacc.types.VaspSchema">VaspSchema</a></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7237,7 +7237,7 @@ None, the trajectory must be found in dyn.trajectory.filename.</p>
     <ul>
         <li class="doc-section-item field-body">
             <b><code>final_atoms</code></b>
-              (<code><a class="autorefs autorefs-external" title="ase.atoms.Atoms" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
+              (<code><a class="autorefs autorefs-external" title="&lt;code&gt;ase.atoms.Atoms&lt;/code&gt;" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
           –
           <div class="doc-md-description">
             <p>ASE Atoms object following a calculation.</p>
@@ -7249,7 +7249,7 @@ None, the trajectory must be found in dyn.trajectory.filename.</p>
 <p><span class="doc-section-title">Returns:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;VaspSchema&lt;/span&gt;" href="../types.html#quacc.types.VaspSchema">VaspSchema</a></code>
+              <code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;VaspSchema&lt;/span&gt; (&lt;code&gt;quacc.types.VaspSchema&lt;/code&gt;)" href="../types.html#quacc.types.VaspSchema">VaspSchema</a></code>
           –
           <div class="doc-md-description">
             <p>Dictionary representation of the task document</p>
@@ -7490,7 +7490,7 @@ None, the trajectory must be found in dyn.trajectory.filename.</p>
 
 
 <a href="#quacc.schemas.vasp.bader_runner" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">bader_runner</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;BaderSchema&lt;/span&gt;" href="../types.html#quacc.types.BaderSchema">BaderSchema</a></span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">bader_runner</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;BaderSchema&lt;/span&gt; (&lt;code&gt;quacc.types.BaderSchema&lt;/code&gt;)" href="../types.html#quacc.types.BaderSchema">BaderSchema</a></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7505,7 +7505,7 @@ your PATH environment variable. See
     <ul>
         <li class="doc-section-item field-body">
             <b><code>path</code></b>
-              (<code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a> | <a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></code>)
+              (<code><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a> | <a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></code>)
           –
           <div class="doc-md-description">
             <p>The path where the VASP output files are located. Must include CHGCAR,
@@ -7519,7 +7519,7 @@ it doesn't matter. If None, the current working directory is used.</p>
 <p><span class="doc-section-title">Returns:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;BaderSchema&lt;/span&gt;" href="../types.html#quacc.types.BaderSchema">BaderSchema</a></code>
+              <code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;BaderSchema&lt;/span&gt; (&lt;code&gt;quacc.types.BaderSchema&lt;/code&gt;)" href="../types.html#quacc.types.BaderSchema">BaderSchema</a></code>
           –
           <div class="doc-md-description">
             <p>Dictionary containing the Bader analysis summary</p>
@@ -7626,9 +7626,9 @@ it doesn't matter. If None, the current working directory is used.</p>
 
 <a href="#quacc.schemas.vasp.chargemol_runner" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">chargemol_runner</span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">path</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">,</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">path</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">atomic_densities_path</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;ChargemolSchema&lt;/span&gt;" href="../types.html#quacc.types.ChargemolSchema">ChargemolSchema</a></span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;ChargemolSchema&lt;/span&gt; (&lt;code&gt;quacc.types.ChargemolSchema&lt;/code&gt;)" href="../types.html#quacc.types.ChargemolSchema">ChargemolSchema</a></span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -7645,7 +7645,7 @@ the Chargemol code.</p>
     <ul>
         <li class="doc-section-item field-body">
             <b><code>path</code></b>
-              (<code><a class="autorefs autorefs-external" title="pathlib.Path" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a> | <a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></code>)
+              (<code><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a> | <a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></code>)
           –
           <div class="doc-md-description">
             <p>The path where the VASP output files are located. Must include CHGCAR,
@@ -7672,7 +7672,7 @@ documentation for more information.</p>
 <p><span class="doc-section-title">Returns:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;ChargemolSchema&lt;/span&gt;" href="../types.html#quacc.types.ChargemolSchema">ChargemolSchema</a></code>
+              <code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;ChargemolSchema&lt;/span&gt; (&lt;code&gt;quacc.types.ChargemolSchema&lt;/code&gt;)" href="../types.html#quacc.types.ChargemolSchema">ChargemolSchema</a></code>
           –
           <div class="doc-md-description">
             <p>Dictionary containing the Chargemol analysis summary</p>

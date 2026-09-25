@@ -25,7 +25,7 @@
       
       
       <link rel="icon" href="../../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.64">
+      <meta name="generator" content="zensical-0.0.65">
     
     
       
@@ -6848,7 +6848,7 @@
   </span>
 
 <a href="#quacc.schemas.torchsim.CONVERGENCE_FN_REGISTRY" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">CONVERGENCE_FN_REGISTRY</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="collections.abc.Callable" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">CONVERGENCE_FN_REGISTRY</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;collections.abc.Callable&lt;/code&gt;" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="s2">"energy"</span><span class="p">:</span> <span class="n"><span title="torch_sim">ts</span></span><span class="o">.</span><span class="n"><span title="torch_sim.generate_energy_convergence_fn">generate_energy_convergence_fn</span></span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s2">"force"</span><span class="p">:</span> <span class="n"><span title="torch_sim">ts</span></span><span class="o">.</span><span class="n"><span title="torch_sim.generate_force_convergence_fn">generate_force_convergence_fn</span></span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">}</span>
@@ -6873,7 +6873,7 @@
   </span>
 
 <a href="#quacc.schemas.torchsim.PROPERTY_FN_REGISTRY" class="headerlink" title="Permanent link">&para;</a></h2>
-<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">PROPERTY_FN_REGISTRY</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="collections.abc.Callable" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">PROPERTY_FN_REGISTRY</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;collections.abc.Callable&lt;/code&gt;" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="s2">"potential_energy"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.energy">energy</span></span><span class="p">,</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="s2">"forces"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.forces">forces</span></span><span class="p">,</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="s2">"stress"</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">state</span><span class="p">:</span> <span class="n"><span title="state">state</span></span><span class="o">.</span><span class="n"><span title="state.stress">stress</span></span><span class="p">,</span>
@@ -6906,7 +6906,7 @@
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="enum.StrEnum" href="https://docs.python.org/3/library/enum.html#enum.StrEnum">StrEnum</a></code></p>
+              Bases: <code><a class="autorefs autorefs-external" title="&lt;code&gt;enum.StrEnum&lt;/code&gt;" href="https://docs.python.org/3/library/enum.html#enum.StrEnum">StrEnum</a></code></p>
 
 
 
@@ -7095,7 +7095,7 @@ compatibility.</p>
 
     <div class="doc doc-contents ">
             <p class="doc doc-class-bases">
-              Bases: <code><a class="autorefs autorefs-external" title="enum.StrEnum" href="https://docs.python.org/3/library/enum.html#enum.StrEnum">StrEnum</a></code></p>
+              Bases: <code><a class="autorefs autorefs-external" title="&lt;code&gt;enum.StrEnum&lt;/code&gt;" href="https://docs.python.org/3/library/enum.html#enum.StrEnum">StrEnum</a></code></p>
 
 
 
