@@ -389,6 +389,7 @@ def oc20_static_job(
         "incar_copilot_mode": "critical",
         "use_custodian": False,
     }
+    del calc_defaults["ncore"]  # hardware-specific, so not inherited
 
     return run_and_summarize(
         atoms,
@@ -416,7 +417,9 @@ def oc22_static_job(
     ----------
     atoms
         Oxide slab with its surface normal along z. Uses quacc's magnetic-moment
-        handling with pymatgen element defaults.
+        handling with the `MVLSlabSet` element defaults, which matches the OC22
+        generation code (its crystal-field `set_bulk_magmoms` helper is never
+        called).
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -513,7 +516,7 @@ def oc25_static_job(
 
     References
     ----------
-    - [OC25 paper](https://arxiv.org/abs/2509.17862)
+    - [OC25 paper](https://arxiv.org/abs/2509.17862v1)
     - [OC25 input generation](https://github.com/facebookresearch/fairchem/issues/1616#issuecomment-3524048489)
     """
     from fairchem.data.oc.utils.vasp import calculate_surface_k_points
@@ -529,6 +532,7 @@ def oc25_static_job(
         "incar_copilot_mode": "off",
         "use_custodian": False,
     }
+    del calc_defaults["ncore"]  # hardware-specific, so not inherited
 
     return run_and_summarize(
         atoms,

@@ -1624,7 +1624,7 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
 
     atoms = bulk("Si")
     output = oc20_static_job(atoms)
-    output["parameters"].pop("ncore")
+    output["parameters"].pop("ncore", None)
     assert output["parameters"] == {
         "ibrion": 2,
         "nsw": 0,
@@ -1643,6 +1643,18 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
         "pp_version": "54",
         "kpts": (15, 15, 1),
     }
+
+
+@pytest.mark.skipif(not has_fairchem_oc, reason="fairchem not installed")
+@pytest.mark.parametrize("recipe", ["oc20_static_job", "oc25_static_job"])
+def test_fairchem_oc_no_hardcoded_ncore(patch_nonmetallic_taskdoc, monkeypatch, recipe):
+    from quacc.recipes.vasp import fairchem
+
+    monkeypatch.setattr(
+        "quacc.calculators.vasp.params.psutil.cpu_count", lambda logical=False: 1
+    )
+    output = getattr(fairchem, recipe)(bulk("Si"))
+    assert "ncore" not in output["parameters"]
 
 
 @pytest.mark.parametrize("override", [False, True])
@@ -1706,6 +1718,7 @@ def test_fairchem_oc25(patch_nonmetallic_taskdoc, calc_kwargs, ediff):
 
     output = oc25_static_job(bulk("Si"), **calc_kwargs)
     assert output["name"] == "OC25 Static"
+    output["parameters"].pop("ncore", None)
     assert output["parameters"] == {
         "prec": "normal",
         "gga": "RP",
@@ -1726,7 +1739,6 @@ def test_fairchem_oc25(patch_nonmetallic_taskdoc, calc_kwargs, ediff):
         "ldipol": True,
         "lasph": True,
         "lreal": "auto",
-        "ncore": 4,
         "dipol": [0.5, 0.5, 0.5],
         "amin": 0.01,
         "nsw": 0,

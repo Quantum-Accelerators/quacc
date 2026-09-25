@@ -21,6 +21,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - `oc20_static_job` now runs a static calculation (`NSW = 0`) instead of inheriting the 2000-step relaxation settings from fairchem.
 - `orcasimpleinput`/`orcablocks` in `omol_static_job` are now merged with the OMol defaults as swaps (like the core ORCA recipes) rather than replacing them.
 - Corrected the extra dependency listed for `omc_static_job` (`quacc[atomate2]`, not `quacc[fairchem]`).
+- `oc20_static_job` and `oc25_static_job` no longer inherit the hardware-specific `NCORE = 4` from fairchem.
+- `quacc.recipes.orca.fairchem` can now be imported without fairchem installed, so `omol_static_job` raises its intended missing-dependency error.
+- Fixed the OC20 and OC25 paper links in the MLIP recipe docs (the unversioned OC25 arXiv ID now resolves to a different paper, so it is pinned to v1).
 
 ## [1.5.13]
 
