@@ -23,7 +23,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Corrected the extra dependency listed for `omc_static_job` (`quacc[atomate2]`, not `quacc[fairchem]`).
 - `oc20_static_job` and `oc25_static_job` no longer inherit the hardware-specific `NCORE = 4` from fairchem.
 - `quacc.recipes.orca.fairchem` can now be imported without fairchem installed, so `omol_static_job` raises its intended missing-dependency error.
-- Removed the no-op `auto_kspacing` setting from `omc_static_job`.
 - Fixed the OC20 and OC25 paper links in the MLIP recipe docs (the unversioned OC25 arXiv ID now resolves to a different paper, so it is pinned to v1).
 
 ## [1.5.13]

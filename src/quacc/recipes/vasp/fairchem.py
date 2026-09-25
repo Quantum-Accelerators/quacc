@@ -173,6 +173,7 @@ def _make_omc_inputs(atoms: Atoms) -> dict:
             "SIGMA": 0.1,
         },
         user_potcar_functional="PBE_54_W_HASH",
+        auto_kspacing=True,
     )
     return MPtoASEConverter(atoms=atoms).convert_input_generator(input_generator)
 
