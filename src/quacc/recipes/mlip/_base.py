@@ -162,10 +162,7 @@ def pick_calculator(
             # Use Ray Serve multiplexed deployment for inference. The deployment
             # is expected to already be running on the cluster (typically started
             # by get_local_inference_raycluster / get_slurm_inference_raycluster with
-            # setup_multiplexed_batch_predict_server). We connect by deployment
-            # name and route requests to the appropriate model via the
-            # multiplexed_model_id, which has the form
-            # "<checkpoint_name_or_path>:<inference_settings>".
+            # setup_multiplexed_batch_predict_server).
             from fairchem.core.units.mlip_unit.predict import BatchServerPredictUnit
 
             calc_kwargs = calc_kwargs.copy()  # Don't modify the original kwargs
@@ -183,16 +180,30 @@ def pick_calculator(
             inference_settings = calc_kwargs.pop("inference_settings", "default")
             task_name = calc_kwargs.pop("task_name")
 
-            # Drop kwargs only meaningful when loading the checkpoint locally
-            calc_kwargs.pop("device", None)
-            calc_kwargs.pop("overrides", None)
+            device = calc_kwargs.pop("device", None)
+            overrides = calc_kwargs.pop("overrides", None)
             calc_kwargs.pop("seed", None)
 
-            multiplexed_model_id = f"{checkpoint_id}:{inference_settings}"
+            # fairchem-core 2.23 replaced multiplexed_model_id with ModelSpec.
+            # Retain the old call for the minimum supported FairChem release.
+            try:
+                from fairchem.core.units.mlip_unit.api.model_spec import ModelSpec
+            except ImportError:
+                connection_kwargs = {
+                    "multiplexed_model_id": f"{checkpoint_id}:{inference_settings}"
+                }
+            else:
+                connection_kwargs = {
+                    "model_spec": ModelSpec(
+                        checkpoint=str(checkpoint_id),
+                        inference_settings=inference_settings,
+                        device=device,
+                        overrides=dict(overrides) if overrides is not None else None,
+                    )
+                }
 
             mlip_unit = BatchServerPredictUnit.from_deployment_connection_info(
-                deployment_name="multiplexed-predict-server",
-                multiplexed_model_id=multiplexed_model_id,
+                deployment_name="multiplexed-predict-server", **connection_kwargs
             )
 
             calc = FAIRChemCalculator(predict_unit=mlip_unit, task_name=task_name)
