@@ -9,6 +9,72 @@ cff-version: 1.2.0
 doi: 10.5281/zenodo.7720998
 message: >-
   Please cite this work as follows if you use quacc.
+preferred-citation:
+  authors:
+    - family-names: Rosen
+      given-names: Andrew S.
+      orcid: "https://orcid.org/0000-0002-0141-7006"
+    - family-names: Goyal
+      given-names: N.
+    - family-names: Ayers
+      given-names: B.
+    - family-names: Bansal
+      given-names: V.
+    - family-names: Baratta
+      given-names: J.H.
+    - family-names: Blau
+      given-names: S.M.
+    - family-names: Chiang
+      given-names: Y.
+    - family-names: Choi
+      given-names: S.
+    - family-names: Cohen
+      given-names: O.A.
+    - family-names: Dallmann
+      given-names: B.
+    - family-names: Demeyere
+      given-names: T.
+    - family-names: Engler
+      given-names: W.
+    - family-names: Fang
+      given-names: Y.-W.
+    - family-names: Furrick
+      given-names: I.
+    - family-names: Huerta
+      given-names: E.
+    - family-names: Kim
+      given-names: H.
+    - family-names: Kondo
+      given-names: H.
+    - family-names: Kumar
+      given-names: A.
+    - family-names: Kwon
+      given-names: J.
+    - family-names: Musgrave
+      given-names: C.B.
+      name-suffix: III
+    - family-names: Mamun
+      given-names: O.
+    - family-names: Oliaei
+      given-names: H.
+    - family-names: Sahau
+      given-names: A.
+    - family-names: Sarpa
+      given-names: D.
+    - family-names: Shi
+      given-names: B.X.
+    - family-names: Shi
+      given-names: Y.
+    - family-names: Wang
+      given-names: X.
+    - family-names: Wexler
+      given-names: R.B.
+  journal: arXiv
+  title: >-
+    Democratizing Atomistic Simulation Workflows for the AI Era with the
+    Quantum Accelerator
+  type: article
+  year: 2026
 title: >-
   quacc – The Quantum Accelerator
 url: https://github.com/Quantum-Accelerators/quacc
