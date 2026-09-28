@@ -34,7 +34,12 @@
 
 If you use `quacc` in your work, please cite it as follows:
 
-- quacc – The Quantum Accelerator, https://doi.org/10.5281/zenodo.7720998.
+**A.S. Rosen**\*, N. Goyal, B. Ayers, V. Bansal, J.H. Baratta, S.M. Blau,
+Y. Chiang, S. Choi, O.A. Cohen, B. Dallmann, T. Demeyere, W. Engler,
+Y.-W. Fang, I. Furrick, E. Huerta, H. Kim, H. Kondo, A. Kumar, J. Kwon,
+C.B. Musgrave III, O. Mamun, H. Oliaei, A. Sahau, D. Sarpa, B.X. Shi,
+Y. Shi, X. Wang, R.B. Wexler. Democratizing Atomistic Simulation Workflows for
+the AI Era with the Quantum Accelerator. arXiv (2026).
 
 ## License ⚖️
 
