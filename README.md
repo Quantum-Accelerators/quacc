@@ -34,7 +34,7 @@
 
 If you use `quacc` in your work, please cite it as follows:
 
-**A.S. Rosen**\*, N. Goyal, B. Ayers, V. Bansal, J.H. Baratta, S.M. Blau,
+A.S. Rosen, N. Goyal, B. Ayers, V. Bansal, J.H. Baratta, S.M. Blau,
 Y. Chiang, S. Choi, O.A. Cohen, B. Dallmann, T. Demeyere, W. Engler,
 Y.-W. Fang, I. Furrick, E. Huerta, H. Kim, H. Kondo, A. Kumar, J. Kwon,
 C.B. Musgrave III, O. Mamun, H. Oliaei, A. Sahau, D. Sarpa, B.X. Shi,
