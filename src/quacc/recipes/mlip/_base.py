@@ -162,10 +162,8 @@ def pick_calculator(
             # Use Ray Serve multiplexed deployment for inference. The deployment
             # is expected to already be running on the cluster (typically started
             # by get_local_inference_raycluster / get_slurm_inference_raycluster with
-            # setup_multiplexed_batch_predict_server). We connect by deployment
-            # name and route requests to the appropriate model via the
-            # multiplexed_model_id, which has the form
-            # "<checkpoint_name_or_path>:<inference_settings>".
+            # setup_multiplexed_batch_predict_server).
+            from fairchem.core.units.mlip_unit.api.model_spec import ModelSpec
             from fairchem.core.units.mlip_unit.predict import BatchServerPredictUnit
 
             calc_kwargs = calc_kwargs.copy()  # Don't modify the original kwargs
@@ -183,16 +181,19 @@ def pick_calculator(
             inference_settings = calc_kwargs.pop("inference_settings", "default")
             task_name = calc_kwargs.pop("task_name")
 
-            # Drop kwargs only meaningful when loading the checkpoint locally
-            calc_kwargs.pop("device", None)
-            calc_kwargs.pop("overrides", None)
+            device = calc_kwargs.pop("device", None)
+            overrides = calc_kwargs.pop("overrides", None)
             calc_kwargs.pop("seed", None)
 
-            multiplexed_model_id = f"{checkpoint_id}:{inference_settings}"
+            model_spec = ModelSpec(
+                checkpoint=str(checkpoint_id),
+                inference_settings=inference_settings,
+                device=device,
+                overrides=dict(overrides) if overrides is not None else None,
+            )
 
             mlip_unit = BatchServerPredictUnit.from_deployment_connection_info(
-                deployment_name="multiplexed-predict-server",
-                multiplexed_model_id=multiplexed_model_id,
+                deployment_name="multiplexed-predict-server", model_spec=model_spec
             )
 
             calc = FAIRChemCalculator(predict_unit=mlip_unit, task_name=task_name)

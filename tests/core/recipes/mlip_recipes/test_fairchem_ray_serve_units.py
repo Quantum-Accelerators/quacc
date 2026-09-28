@@ -19,6 +19,8 @@ pytest.importorskip("fairchem")
 pytest.importorskip("fairchem.core")
 pytest.importorskip("ray")
 
+from fairchem.core.units.mlip_unit.api.model_spec import ModelSpec
+
 from quacc import get_settings
 from quacc.recipes.mlip._base import pick_calculator
 
@@ -121,7 +123,7 @@ def test_serve_branch_uses_name_or_path(monkeypatch, stub_serve_unit):
     pick_calculator(
         library="fairchem", name_or_path="my/local/ckpt.pt", task_name="oc20"
     )
-    assert stub_serve_unit["multiplexed_model_id"] == "my/local/ckpt.pt:default"
+    assert stub_serve_unit["model_spec"].checkpoint == "my/local/ckpt.pt"
     assert stub_serve_unit["deployment_name"] == "multiplexed-predict-server"
 
 
@@ -133,10 +135,10 @@ def test_serve_branch_uses_model_id(monkeypatch, stub_serve_unit):
     pick_calculator(
         library="fairchem",
         model_id="uma-s-2",
-        inference_settings="fast",
+        inference_settings="default",
         task_name="omat",
     )
-    assert stub_serve_unit["multiplexed_model_id"] == "uma-s-2:fast"
+    assert stub_serve_unit["model_spec"].checkpoint == "uma-s-2"
 
 
 @pytest.mark.usefixtures("enable_batching")
@@ -146,21 +148,15 @@ def test_serve_branch_default_checkpoint(monkeypatch, stub_serve_unit):
     monkeypatch.setattr(ray, "is_initialized", lambda: True)
     # Neither name_or_path, model_id, nor checkpoint provided → default
     pick_calculator(library="fairchem", task_name="omat")
-    assert stub_serve_unit["multiplexed_model_id"] == "uma-s-1p1:default"
+    assert stub_serve_unit["model_spec"].checkpoint == "uma-s-1p1"
 
 
 @pytest.mark.usefixtures("enable_batching")
-def test_serve_branch_drops_local_only_kwargs(monkeypatch, stub_serve_unit):
-    """``device``/``overrides``/``seed`` must be stripped before reaching
-    the Ray Serve helper (it doesn't accept them)."""
+def test_serve_branch_builds_model_spec(monkeypatch, stub_serve_unit):
+    """Model-loading kwargs are represented by FairChem's ``ModelSpec``."""
     import ray
 
     monkeypatch.setattr(ray, "is_initialized", lambda: True)
-    # If the kwargs were not popped, FAIRChemCalculator stub would
-    # receive them and the test would still pass — but the important
-    # thing is that the serve helper itself doesn't get them. The
-    # fixture's _capture only collects deployment_name/multiplexed_model_id,
-    # so it implicitly verifies no extra kwargs leak through.
     pick_calculator(
         library="fairchem",
         name_or_path="uma-s-1p1",
@@ -169,4 +165,8 @@ def test_serve_branch_drops_local_only_kwargs(monkeypatch, stub_serve_unit):
         overrides={"foo": 1},
         seed=42,
     )
-    assert stub_serve_unit["multiplexed_model_id"] == "uma-s-1p1:default"
+    model_spec = stub_serve_unit["model_spec"]
+    assert isinstance(model_spec, ModelSpec)
+    assert model_spec.checkpoint == "uma-s-1p1"
+    assert model_spec.device == "cpu"
+    assert model_spec.overrides == {"foo": 1}
