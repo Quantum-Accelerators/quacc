@@ -1,2 +1,2 @@
-ray==2.58.0
+ray[serve]==2.58.0
 protobuf==7.36.2
