@@ -1,67 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/index.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/about/changelog.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/install/install.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/about/conduct.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/about/contributors.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/about/faq.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/about/license.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/dev/contributing.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/dev/docs.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/dev/recipes/flows.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/dev/recipes/jobs.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/index.html</loc>
       </url>
       <url>
         <loc>https://quantum-accelerators.github.io/quacc/install/codes.html</loc>
       </url>
       <url>
+        <loc>https://quantum-accelerators.github.io/quacc/install/install.html</loc>
+      </url>
+      <url>
         <loc>https://quantum-accelerators.github.io/quacc/install/wflow_engines.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/recipes_intro.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/maintainers/internal.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/workflows.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/file_transfers.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/mlip_recipes.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/database_recipes.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/settings/settings.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/settings/file_management.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/settings/settings_list.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/basics/wflow_decorators.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/basics/wflow_syntax.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/wflow_engine/wflow_engines1.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/wflow_engine/wflow_engines2.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/wflow_engine/executors.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/db/context.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/db/basics.html</loc>
-      </url>
-      <url>
-        <loc>https://quantum-accelerators.github.io/quacc/user/miscellaneous/torchsim.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/reference/SUMMARY.html</loc>
       </url>
       <url>
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/atoms/core.html</loc>
@@ -355,33 +337,54 @@
         <loc>https://quantum-accelerators.github.io/quacc/reference/quacc/wflow_tools/job_patterns.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/dev/contributing.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/user/basics/wflow_decorators.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/dev/docs.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/user/basics/wflow_overview.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/dev/recipes/jobs.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/user/basics/wflow_syntax.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/dev/recipes/flows.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/user/db/basics.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/maintainers/internal.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/user/db/context.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/about/faq.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/user/miscellaneous/torchsim.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/about/contributors.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/database_recipes.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/about/changelog.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/file_transfers.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/about/conduct.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/mlip_recipes.html</loc>
       </url>
       <url>
-        <loc>https://quantum-accelerators.github.io/quacc/about/license.html</loc>
+        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/recipes_intro.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/user/recipes/workflows.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/user/settings/file_management.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/user/settings/settings.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/user/settings/settings_list.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/user/wflow_engine/executors.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/user/wflow_engine/wflow_engines1.html</loc>
+      </url>
+      <url>
+        <loc>https://quantum-accelerators.github.io/quacc/user/wflow_engine/wflow_engines2.html</loc>
       </url>
 </urlset>
