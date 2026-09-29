@@ -38,8 +38,8 @@ A.S. Rosen, N. Goyal, B. Ayers, V. Bansal, J.H. Baratta, S.M. Blau,
 Y. Chiang, S. Choi, O.A. Cohen, B. Dallmann, T. Demeyere, W. Engler,
 Y.-W. Fang, I. Furrick, E. Huerta, H. Kim, H. Kondo, A. Kumar, J. Kwon,
 C.B. Musgrave III, O. Mamun, H. Oliaei, A. Sahau, D. Sarpa, B.X. Shi,
-Y. Shi, X. Wang, R.B. Wexler. Democratizing Atomistic Simulation Workflows for
-the AI Era with the Quantum Accelerator. arXiv:2609.33823 (2026).
+Y. Shi, X. Wang, R.B. Wexler. [Democratizing Atomistic Simulation Workflows for
+the AI Era with the Quantum Accelerator](https://arxiv.org/abs/2609.33823). arXiv:2609.33823 (2026).
 
 ## License ⚖️
 
