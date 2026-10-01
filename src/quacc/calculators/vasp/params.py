@@ -396,7 +396,8 @@ def get_param_swaps(
             change_reasons.get(k, "General INCAR compatibility rule was applied."),
         )
         for k in sorted(new_parameters)
-        if _params_differ(user_calc_params.get(k), new_parameters[k])
+        if k in change_reasons
+        and _params_differ(user_calc_params.get(k), new_parameters[k])
     ]
 
     overridden_user_params = {
