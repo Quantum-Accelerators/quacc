@@ -150,6 +150,27 @@ def update_parameters(
     return partial_fn
 
 
+def _get_parameter_update_decorator(
+    func: Callable,
+) -> Literal["job", "flow", "subflow"]:
+    """Get the quacc decorator to preserve when updating parameters."""
+    from quacc import get_settings
+
+    if get_settings().WORKFLOW_ENGINE == "dask":
+        from dask.delayed import Delayed
+
+        from quacc.wflow_tools.decorators import Delayed_
+
+        if isinstance(func, Delayed_):
+            return "job"
+        if isinstance(func, Delayed):
+            return "subflow"
+        if hasattr(func, "original"):
+            return "flow"
+
+    return "job"
+
+
 def customize_jobs(
     jobs: dict[str, Callable],
     param_defaults: dict[str, dict[str, Any]] | None = None,
@@ -208,9 +229,13 @@ def customize_jobs(
         if name in decorators:
             func_ = redecorate(func_, decorators[name])
         if params := parameters.get("all"):
-            func_ = update_parameters(func_, params)
+            func_ = update_parameters(
+                func_, params, decorator=_get_parameter_update_decorator(func_)
+            )
         if params := parameters.get(name):
-            func_ = update_parameters(func_, params)
+            func_ = update_parameters(
+                func_, params, decorator=_get_parameter_update_decorator(func_)
+            )
         updated_jobs[name] = func_
 
     return updated_jobs
