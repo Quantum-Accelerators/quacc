@@ -1,5 +1,5 @@
 ase @ git+https://gitlab.com/ase/ase.git
-custodian==2026.10.9
+custodian==2026.10.11
 emmet-core==0.87.3
 frozendict==2.4.7
 monty==2026.7.16
