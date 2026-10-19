@@ -498,6 +498,14 @@ if TYPE_CHECKING:
         trajectory: list[Atoms]
         trajectory_results: list[Results]
 
+    class NebResultSchema(AtomsSchema):
+        """Results from [quacc.schemas.ase.Summarize.neb][]."""
+
+        parameters_opt: ParametersDyn
+        trajectory: list[Atoms]
+        trajectory_results: list[Results]
+        ts_atoms: Atoms
+
     class DynSchema(RunSchema):
         """Schema for [quacc.schemas.ase.Summarize.md][]"""
 
@@ -591,7 +599,7 @@ if TYPE_CHECKING:
         weights: NDArray
         frequencies: NDArray
         eigenvectors: NDArray
-        group_velocities: NDArray
+        group_velocities: NotRequired[NDArray]
 
     class DosProperties(TypedDict):
         """Type hint associated with PhononSchema."""
@@ -613,9 +621,9 @@ if TYPE_CHECKING:
     class PhononSchema(AtomsSchema):
         """Type hint associated with [quacc.schemas.phonons.summarize_phonopy][]"""
 
-        parameters: dict[str, Any] | None
+        parameters: NotRequired[dict[str, Any]]
         nid: str
-        dir_name: str
+        dir_name: str | Path
         phonopy_metadata: PhonopyMetadata
         results: PhononResults
         quacc_version: str
@@ -625,7 +633,7 @@ if TYPE_CHECKING:
     class BaderSchema(TypedDict, total=False):
         """Type hint associated with quacc.schemas.vasp._bader_runner."""
 
-        atomic_volume: float
+        atomic_volume: list[float]
         partial_charges: list[float]
         spin_moments: list[float]
         bader_version: float
@@ -716,13 +724,13 @@ if TYPE_CHECKING:
         relax_reactant: OptSchema
         relax_product: OptSchema
         initial_images: list[Atoms]
-        neb_results: dict
+        neb_results: NebResultSchema
 
     class NebTsSchema(TypedDict):
         relax_reactant: OptSchema
         relax_product: OptSchema
         initial_images: list[Atoms]
-        neb_results: dict
+        neb_results: NebResultSchema
         ts_results: OptSchema
 
     # ----------- Recipe (Q-Chem) type hints -----------

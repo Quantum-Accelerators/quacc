@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from ase.calculators.emt import EMT
     from ase.md.md import MolecularDynamics
     from ase.md.verlet import VelocityVerlet
+    from ase.optimize.optimize import Optimizer
     from pymatgen.core.structure import Structure
 
     from quacc.atoms.slabs import flip_atoms
@@ -20,9 +21,11 @@ if TYPE_CHECKING:
     from quacc.recipes.vasp.qmof import QMOFRelaxSchema
     from quacc.recipes.vasp.slabs import relax_job, static_job
     from quacc.runners.ase import Runner
+    from quacc.schemas.ase import Summarize
     from quacc.types import (
         DynSchema,
         MDParams,
+        NebResultSchema,
         OptParams,
         OptSchema,
         RunSchema,
@@ -44,6 +47,9 @@ if TYPE_CHECKING:
         assert_type(find_recent_logfile(".", ".log"), Path | None)
         assert_type(Runner(atoms, EMT()).run_calc(), Atoms)
         assert_type(Runner([atoms, atoms.copy()], EMT()).atoms, list[Atoms])
+        assert_type(Runner([atoms, atoms.copy()], EMT()).run_neb(), Optimizer)
+        neb: NebResultSchema = Summarize().neb(Optimizer(atoms), n_images=2)
+        assert_type(neb["ts_atoms"], Atoms)
 
         md_params: MDParams = {"dynamics": VelocityVerlet}
         opt_params: OptParams = {"optimizer": VelocityVerlet, "relax_cell": False}

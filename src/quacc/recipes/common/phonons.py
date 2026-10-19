@@ -94,7 +94,7 @@ def phonon_subflow(
 
     displaced_atoms, non_displaced_atoms = atoms[~mask_to_fix], atoms[mask_to_fix]
 
-    get_phonopy_kwargs = {
+    get_phonopy_kwargs: dict[str, Any] = {
         "min_lengths": min_lengths,
         "supercell_matrix": supercell_matrix,
         "symprec": symprec,
@@ -110,9 +110,11 @@ def phonon_subflow(
     else:
         non_displaced_atoms_supercell = Atoms()
 
+    displaced_supercells = phonopy.supercells_with_displacements
+    assert displaced_supercells is not None
     supercells = [
         phonopy_atoms_to_ase_atoms(s) + non_displaced_atoms_supercell
-        for s in phonopy.supercells_with_displacements
+        for s in displaced_supercells
     ]
 
     @subflow
@@ -139,7 +141,8 @@ def phonon_subflow(
             output["results"]["forces"][: len(phonopy.supercell)]
             for output in force_job_results
         ]
-        phonopy_results = PhonopyRunner().run_phonopy(
+        runner = PhonopyRunner()
+        runner.run_phonopy(
             phonopy,
             forces,
             symmetrize=bool(non_displaced_atoms),
@@ -151,7 +154,7 @@ def phonon_subflow(
         return summarize_phonopy(
             phonopy,
             atoms,
-            phonopy_results.directory,
+            runner.job_results_dir,
             parameters=parameters,
             additional_fields=additional_fields,
         )

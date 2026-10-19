@@ -102,7 +102,7 @@ def make_defects_from_bulk(
         # Generate the supercell for a defect
         defect_supercell = defect.get_supercell_structure(
             sc_mat=sc_mat,
-            dummy_species=DummySpecies(),
+            dummy_species=str(DummySpecies()),
             min_atoms=min_atoms,
             max_atoms=max_atoms,
             min_length=min_length,
@@ -184,5 +184,9 @@ def get_defect_entry_from_defect(
         defect=defect,
         charge_state=defect_charge,
         sc_entry=computed_structure_entry,
-        sc_defect_frac_coords=dummy_site.frac_coords,
+        sc_defect_frac_coords=(
+            dummy_site.frac_coords[0],
+            dummy_site.frac_coords[1],
+            dummy_site.frac_coords[2],
+        ),
     )

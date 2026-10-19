@@ -275,7 +275,7 @@ def bader_runner(path: Path | str) -> BaderSchema:
 
 
 def chargemol_runner(
-    path: Path | str, atomic_densities_path: str | None = None
+    path: Path | str, atomic_densities_path: str | Path | None = None
 ) -> ChargemolAnalysis:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
