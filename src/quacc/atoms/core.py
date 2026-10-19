@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from hashlib import _Hash
 
     from ase.atoms import Atoms
+    from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Dynamics
     from numpy.typing import NDArray
 
@@ -170,7 +171,9 @@ def get_spin_multiplicity_attribute(atoms: Atoms) -> int | None:
     return 1
 
 
-def get_final_atoms_from_dynamics(dynamics: Dynamics | Filter) -> Atoms:
+def get_final_atoms_from_dynamics(
+    dynamics: Dynamics | MolecularDynamics | Filter,
+) -> Atoms:
     """
     Get the final atoms object from a dynamics run.
 

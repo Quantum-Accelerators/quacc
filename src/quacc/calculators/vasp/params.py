@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from importlib.util import find_spec
 from logging import INFO, WARNING, getLogger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 import psutil
@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.atoms import Atoms
+    from pymatgen.core.structure import Structure
     from pymatgen.io.vasp.sets import VaspInputSet
 
     from quacc.types import PmgKpts, SourceDirectory
@@ -91,7 +92,7 @@ def log_copilot_report(report: CopilotReport) -> None:
 def get_param_swaps(
     user_calc_params: dict[str, Any],
     input_atoms: Atoms,
-    pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float] | None = None,
+    pmg_kpts: PmgKpts | None = None,
     incar_copilot_mode: Literal[
         "off", "critical", "standard", "aggressive"
     ] = "standard",
@@ -542,9 +543,7 @@ def set_auto_dipole(
 
 
 def set_pmg_kpts(
-    user_calc_params: PmgKpts,
-    pmg_kpts: dict[Literal["line_density", "kppvol", "kppa"], float],
-    input_atoms: Atoms,
+    user_calc_params: dict[str, Any], pmg_kpts: PmgKpts, input_atoms: Atoms
 ) -> dict[str, Any]:
     """
     Shortcuts for pymatgen k-point generation schemes.
@@ -601,6 +600,7 @@ class MPtoASEConverter:
         """
         if atoms is None and prev_dir is None:
             raise ValueError("Either atoms or prev_dir must be provided.")
+        self.structure: Structure | None
         self.atoms = atoms
         self.prev_dir = prev_dir
         if self.atoms:
@@ -693,6 +693,7 @@ class MPtoASEConverter:
             The ASE VASP parameters.
         """
         self.incar_dict = {k.lower(): v for k, v in self.incar_dict.items()}
+        assert self.potcar_functional is not None
         parts = self.potcar_functional.split("_")
         pp = parts[0]
         pp_version = parts[1] if len(parts) > 1 else "original"
@@ -721,7 +722,7 @@ class MPtoASEConverter:
 def _params_differ(a: object, b: object) -> bool:
     """Compare two parameter values, handling NumPy arrays."""
     if isinstance(a, np.ndarray) or isinstance(b, np.ndarray):
-        return not np.array_equal(a, b)
+        return not np.array_equal(cast("Any", a), cast("Any", b))
     elif isinstance(a, str) and isinstance(b, str):
         return a.lower() != b.lower()
     return a != b

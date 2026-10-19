@@ -28,7 +28,7 @@ if TYPE_CHECKING:
 def md_job(
     atoms: Atoms,
     library: Literal["fairchem", "matcalc", "rootstock"],
-    dynamics: MolecularDynamics | MDEnsemble = "nve",
+    dynamics: type[MolecularDynamics] | MDEnsemble = "nve",
     steps: int = 20000,
     timestep_fs: float = 0.5,
     temperature_K: float | None = None,
@@ -139,10 +139,10 @@ def md_job(
     md_defaults = {"steps": steps, "dynamics_kwargs": dynamics_defaults}
     if temperature_K is not None and not atoms.get_momenta().any():
         md_defaults["maxwell_boltzmann_kwargs"] = {"temperature_K": temperature_K}
-    md_params = recursive_dict_merge(md_defaults, md_params)
+    merged_md_params = recursive_dict_merge(md_defaults, md_params)
 
     calc = pick_calculator(library, **calc_kwargs)
-    dyn = Runner(atoms, calc).run_md(dynamics, **md_params)
+    dyn = Runner(atoms, calc).run_md(dynamics, **merged_md_params)
 
     return Summarize(
         additional_fields={"name": f"{library} MD"} | (additional_fields or {})

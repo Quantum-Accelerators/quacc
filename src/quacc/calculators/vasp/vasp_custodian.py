@@ -25,13 +25,13 @@ from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
 from quacc import QuaccDefault, get_settings
+from quacc.types import DefaultSetting
 
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from src.quacc.settings import QuaccSettings
-
-    from quacc.types import DefaultSetting, VaspCustodianKwargs, VaspJobKwargs
+    from quacc.settings import QuaccSettings
+    from quacc.types import VaspCustodianKwargs, VaspJobKwargs
 
 
 def run_custodian(
@@ -39,7 +39,7 @@ def run_custodian(
     vasp_cmd: str | DefaultSetting = QuaccDefault,
     vasp_gamma_cmd: str | DefaultSetting = QuaccDefault,
     vasp_custodian_max_errors: int | DefaultSetting = QuaccDefault,
-    vasp_custodian_wall_time: float | DefaultSetting = QuaccDefault,
+    vasp_custodian_wall_time: float | DefaultSetting | None = QuaccDefault,
     vtst_fixes: bool | DefaultSetting = QuaccDefault,
     vasp_custodian_handlers: list[str] | DefaultSetting | None = QuaccDefault,
     vasp_custodian_error_exclude: list[str] | DefaultSetting = QuaccDefault,
@@ -96,40 +96,44 @@ def run_custodian(
     # Set defaults
     vasp_parallel_cmd = os.path.expandvars(
         settings.VASP_PARALLEL_CMD
-        if vasp_parallel_cmd == QuaccDefault
+        if isinstance(vasp_parallel_cmd, DefaultSetting)
         else vasp_parallel_cmd
     )
-    vasp_cmd = settings.VASP_CMD if vasp_cmd == QuaccDefault else vasp_cmd
+    vasp_cmd = settings.VASP_CMD if isinstance(vasp_cmd, DefaultSetting) else vasp_cmd
     vasp_gamma_cmd = (
-        settings.VASP_GAMMA_CMD if vasp_gamma_cmd == QuaccDefault else vasp_gamma_cmd
+        settings.VASP_GAMMA_CMD
+        if isinstance(vasp_gamma_cmd, DefaultSetting)
+        else vasp_gamma_cmd
     )
     vasp_custodian_max_errors = (
         settings.VASP_CUSTODIAN_MAX_ERRORS
-        if vasp_custodian_max_errors == QuaccDefault
+        if isinstance(vasp_custodian_max_errors, DefaultSetting)
         else vasp_custodian_max_errors
     )
     vasp_custodian_wall_time = (
         settings.VASP_CUSTODIAN_WALL_TIME
-        if vasp_custodian_wall_time == QuaccDefault
+        if isinstance(vasp_custodian_wall_time, DefaultSetting)
         else vasp_custodian_wall_time
     )
     vtst_fixes = (
-        settings.VASP_CUSTODIAN_VTST if vtst_fixes == QuaccDefault else vtst_fixes
+        settings.VASP_CUSTODIAN_VTST
+        if isinstance(vtst_fixes, DefaultSetting)
+        else vtst_fixes
     )
     vasp_custodian_handlers = (
         settings.VASP_CUSTODIAN_HANDLERS
-        if vasp_custodian_handlers == QuaccDefault
+        if isinstance(vasp_custodian_handlers, DefaultSetting)
         else vasp_custodian_handlers
     )
     vasp_custodian_error_exclude = (
         settings.VASP_CUSTODIAN_ERROR_EXCLUDE
-        if vasp_custodian_error_exclude == QuaccDefault
+        if isinstance(vasp_custodian_error_exclude, DefaultSetting)
         else vasp_custodian_error_exclude
     )
 
     vasp_custodian_validators = (
         settings.VASP_CUSTODIAN_VALIDATORS
-        if vasp_custodian_validators == QuaccDefault
+        if isinstance(vasp_custodian_validators, DefaultSetting)
         else vasp_custodian_validators
     )
 

@@ -8,11 +8,10 @@ from typing import TYPE_CHECKING
 from monty.dev import requires
 
 from quacc import QuaccDefault, get_settings
+from quacc.types import DefaultSetting
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    from quacc.types import DefaultSetting
 
 
 has_ob = bool(find_spec("openbabel"))
@@ -27,7 +26,7 @@ def run_custodian(
     qchem_local_scratch: str | Path | DefaultSetting = QuaccDefault,
     qchem_use_error_handlers: bool | DefaultSetting = QuaccDefault,
     qchem_custodian_max_errors: int | DefaultSetting = QuaccDefault,
-    qchem_nbo_exe: str | Path | DefaultSetting = QuaccDefault,
+    qchem_nbo_exe: str | Path | DefaultSetting | None = QuaccDefault,
     directory: str | Path | None = None,
 ) -> list[list[dict]]:
     """
@@ -66,26 +65,32 @@ def run_custodian(
 
     # Set defaults
     qchem_cores = (
-        settings.QCHEM_NUM_CORES if qchem_cores == QuaccDefault else qchem_cores
+        settings.QCHEM_NUM_CORES
+        if isinstance(qchem_cores, DefaultSetting)
+        else qchem_cores
     )
-    qchem_cmd = settings.QCHEM_CMD if qchem_cmd == QuaccDefault else qchem_cmd
+    qchem_cmd = (
+        settings.QCHEM_CMD if isinstance(qchem_cmd, DefaultSetting) else qchem_cmd
+    )
     qchem_local_scratch = (
         settings.QCHEM_LOCAL_SCRATCH
-        if qchem_local_scratch == QuaccDefault
+        if isinstance(qchem_local_scratch, DefaultSetting)
         else qchem_local_scratch
     )
     qchem_use_error_handlers = (
         settings.QCHEM_USE_ERROR_HANDLERS
-        if qchem_use_error_handlers == QuaccDefault
+        if isinstance(qchem_use_error_handlers, DefaultSetting)
         else qchem_use_error_handlers
     )
     qchem_custodian_max_errors = (
         settings.QCHEM_CUSTODIAN_MAX_ERRORS
-        if qchem_custodian_max_errors == QuaccDefault
+        if isinstance(qchem_custodian_max_errors, DefaultSetting)
         else qchem_custodian_max_errors
     )
     qchem_nbo_exe = (
-        settings.QCHEM_NBO_EXE if qchem_nbo_exe == QuaccDefault else qchem_nbo_exe
+        settings.QCHEM_NBO_EXE
+        if isinstance(qchem_nbo_exe, DefaultSetting)
+        else qchem_nbo_exe
     )
 
     # Error handlers for Q-Chem

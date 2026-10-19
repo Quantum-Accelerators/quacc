@@ -5,7 +5,7 @@ Base class for runners.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from quacc.runners.prep import calc_cleanup, calc_setup
 
@@ -15,8 +15,11 @@ if TYPE_CHECKING:
     from quacc.types import CopyFiles
 
 
+AtomsT = TypeVar("AtomsT", "Atoms", "list[Atoms]")
+
+
 @dataclass
-class BaseRunner:
+class BaseRunner(Generic[AtomsT]):
     """
     A base class for runners that sets up the calculation and cleans up the scratch directory.
 
@@ -26,9 +29,9 @@ class BaseRunner:
         Atoms object with calculator attached (or no Atoms object at all).
     """
 
-    atoms: Atoms | None = None
+    atoms: AtomsT | None = None
 
-    def setup(self, copy_files: CopyFiles | None = None) -> None:
+    def setup(self: BaseRunner[Atoms], copy_files: CopyFiles | None = None) -> None:
         """
         Perform setup operations on the runtime directory.
 
@@ -45,7 +48,7 @@ class BaseRunner:
             self.atoms, copy_files=copy_files
         )
 
-    def cleanup(self) -> None:
+    def cleanup(self: BaseRunner[Atoms]) -> None:
         """
         Perform cleanup operations on the runtime directory.
 

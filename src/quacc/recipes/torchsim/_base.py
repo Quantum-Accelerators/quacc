@@ -54,9 +54,9 @@ class TorchSimSchema(TypedDict):
 
 
 class TrajectoryReporterDict(TypedDict, total=False):
-    filenames: str | pathlib.Path | list[str | pathlib.Path]
+    filenames: list[str | pathlib.Path]
     state_frequency: int | None
-    prop_calculators: dict[int, list[PropertyFn]] | None
+    prop_calculators: dict[int, list[PropertyFn]]
     state_kwargs: dict[str, Any] | None
     metadata: dict[str, str] | None
     trajectory_kwargs: dict[str, Any] | None
@@ -209,7 +209,7 @@ def process_trajectory_reporter_dict(
         **trajectory_reporter_dict, prop_calculators=prop_calculators_functions
     )
 
-    reporter_details = {
+    reporter_details: TrajectoryReporterDetails = {
         "state_frequency": trajectory_reporter.state_frequency,
         "trajectory_kwargs": trajectory_reporter.trajectory_kwargs,
         "prop_calculators": prop_calculators,

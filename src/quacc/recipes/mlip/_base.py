@@ -5,7 +5,7 @@ from __future__ import annotations
 from functools import lru_cache, wraps
 from importlib.util import find_spec
 from logging import getLogger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from monty.dev import requires
 
@@ -43,7 +43,7 @@ def freezeargs(func: Callable) -> Callable:
 
     @wraps(func)
     def wrapped(*args: Any, **kwargs: Any) -> Any:
-        args = (frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
+        args = tuple(frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
         kwargs = {
             k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()
         }
@@ -109,7 +109,7 @@ def pick_calculator(
         cuda_is_available = False
 
     settings = get_settings()
-    library = library.lower()
+    library = cast("Literal['fairchem', 'matcalc', 'rootstock']", library.lower())
 
     # Skip CUDA warning for rayserve batching mode (inference happens on remote GPU)
     use_ray_serve = library == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING

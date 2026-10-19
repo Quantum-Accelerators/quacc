@@ -4,11 +4,11 @@ from __future__ import annotations
 
 from copy import deepcopy
 from logging import getLogger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast, overload
 
 import numpy as np
 from pymatgen.analysis.adsorption import AdsorbateSiteFinder
-from pymatgen.core.structure import Structure
+from pymatgen.core.structure import IStructure, Structure
 from pymatgen.core.surface import Slab, center_slab, generate_all_slabs
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -25,7 +25,25 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
-def flip_atoms(atoms: Atoms, return_struct: bool = False) -> Atoms:
+@overload
+def flip_atoms(
+    atoms: Atoms | IStructure, return_struct: Literal[False] = False
+) -> Atoms: ...
+
+
+@overload
+def flip_atoms(
+    atoms: Atoms | IStructure, return_struct: Literal[True]
+) -> Structure: ...
+
+
+@overload
+def flip_atoms(atoms: Atoms | IStructure, return_struct: bool) -> Atoms | Structure: ...
+
+
+def flip_atoms(
+    atoms: Atoms | IStructure, return_struct: bool = False
+) -> Atoms | Structure:
     """
     Convenience function for vertically flipping periodic atoms.
 
@@ -40,18 +58,18 @@ def flip_atoms(atoms: Atoms, return_struct: bool = False) -> Atoms:
         Inverted slab
     """
     new_atoms = (
-        atoms.to_ase_atoms() if isinstance(atoms, Structure) else copy_atoms(atoms)
+        atoms.to_ase_atoms() if isinstance(atoms, IStructure) else copy_atoms(atoms)
     )
     new_atoms.rotate(180, "x")
     new_atoms.wrap()
 
     if return_struct:
-        new_atoms = AseAtomsAdaptor.get_structure(new_atoms)
+        return AseAtomsAdaptor.get_structure(new_atoms)
 
     return new_atoms
 
 
-def flip_structure(struct: Structure | Slab) -> Structure | Slab:
+def flip_structure(struct: IStructure) -> Structure:
     """
     Convenience function for vertically flipping periodic structures.
 
@@ -133,7 +151,7 @@ def make_slabs_from_bulk(
     # If the two terminations are not equivalent, make new slab by inverting the
     # original slab and add it to the list
     if flip_asymmetric:
-        new_slabs = []
+        new_slabs: list[Slab] = []
         for slab in slabs:
             if not slab.is_symmetric():
                 # Flip the slab and its oriented unit cell
@@ -155,7 +173,7 @@ def make_slabs_from_bulk(
 
                 # It looks better to center the inverted slab so we do that
                 # here.
-                new_slab = center_slab(new_slab)
+                new_slab = cast("Slab", center_slab(new_slab))
 
                 # Add the new slab to the list
                 new_slabs.append(new_slab)

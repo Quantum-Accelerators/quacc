@@ -46,20 +46,20 @@ if TYPE_CHECKING:
 @requires(has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]")
 def bulk_to_defects_flow(
     atoms: Atoms,
-    defect_gen: (
+    defect_gen: type[
         AntiSiteGenerator
         | ChargeInterstitialGenerator
         | InterstitialGenerator
         | SubstitutionGenerator
         | VacancyGenerator
         | VoronoiInterstitialGenerator
-    ) = VacancyGenerator,
+    ] = VacancyGenerator,
     defect_charge: int = 0,
     run_static: bool = True,
     make_defects_kwargs: dict[str, Any] | None = None,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-) -> list[RunSchema | OptSchema]:
+) -> dict[str, list[RunSchema | OptSchema]]:
     """
     Workflow consisting of:
 
@@ -95,9 +95,9 @@ def bulk_to_defects_flow(
 
     Returns
     -------
-    list[RunSchema | OptSchema]
-        List of dictionary of results from [quacc.schemas.ase.Summarize.run][]
-        or [quacc.schemas.ase.Summarize.opt][].
+    dict[str, list[RunSchema | OptSchema]]
+        Relaxation and static results, grouped under "relax" and "static".
+        The "static" list is empty when run_static is False.
         See the return type-hint for the data structure.
     """
     relax_job_, static_job_ = customize_jobs(

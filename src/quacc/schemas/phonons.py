@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from importlib.util import find_spec
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from monty.dev import requires
 
@@ -76,4 +76,4 @@ def summarize_phonopy(
 
     atoms_metadata = atoms_to_metadata(input_atoms)
     unsorted_task_doc = atoms_metadata | inputs | results | additional_fields
-    return clean_dict(unsorted_task_doc)
+    return cast("PhononSchema", clean_dict(unsorted_task_doc))
