@@ -9,7 +9,7 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import run_and_summarize
 from quacc.recipes.espresso.core import non_scf_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -18,21 +18,21 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import (
+        CopyFiles,
         EspressoDosSchema,
         EspressoProjwfcSchema,
         RunSchema,
         SourceDirectory,
     )
-    from quacc.wflow_tools.job_argument import Copy
 
 
 @job
 def dos_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic dos.x calculation (density of states).
@@ -43,11 +43,8 @@ def dos_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -80,11 +77,11 @@ def dos_job(
 
 @job
 def projwfc_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic projwfc.x calculation.
@@ -95,11 +92,8 @@ def projwfc_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -188,13 +182,12 @@ def dos_flow(
         ),
     }
 
-    static_job_, non_scf_job_, dos_job_ = customize_funcs(
-        ["static_job", "non_scf_job", "dos_job"],
-        [static_job, non_scf_job, dos_job],
+    static_job_, non_scf_job_, dos_job_ = customize_jobs(
+        {"static_job": static_job, "non_scf_job": non_scf_job, "dos_job": dos_job},
         param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     static_results = static_job_(atoms)
     static_results_dir = static_results["dir_name"]
@@ -265,13 +258,16 @@ def projwfc_flow(
             },
         ),
     }
-    static_job_, non_scf_job_, projwfc_job_ = customize_funcs(
-        ["static_job", "non_scf_job", "projwfc_job"],
-        [static_job, non_scf_job, projwfc_job],
+    static_job_, non_scf_job_, projwfc_job_ = customize_jobs(
+        {
+            "static_job": static_job,
+            "non_scf_job": non_scf_job,
+            "projwfc_job": projwfc_job,
+        },
         param_defaults=default_job_params,
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     static_results = static_job_(atoms)
     static_results_dir = static_results["dir_name"]

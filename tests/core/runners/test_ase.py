@@ -19,15 +19,16 @@ from ase import Atoms
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
 from ase.calculators.lj import LennardJones
-from ase.io import read
+from ase.io import read, write
+from ase.md.verlet import VelocityVerlet
 from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyFminBFGS
+from ase.units import fs
 
 from quacc import JobFailure, change_settings, get_settings
 from quacc.runners._base import BaseRunner
 from quacc.runners.ase import Runner
-from quacc.wflow_tools.job_argument import Copy
 
 test_files_path = Path(__file__).parent / "test_files"
 
@@ -125,7 +126,7 @@ def test_base_runner2(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_calc(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -148,7 +149,7 @@ def test_run_calc(tmp_path, monkeypatch, copy_files):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_calc_no_gzip(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -169,8 +170,19 @@ def test_run_calc_no_gzip(tmp_path, monkeypatch, copy_files):
         assert np.array_equal(new_atoms.cell.array, atoms.cell.array) is True
 
 
+def test_run_calc_rejects_mismatched_geom_file(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    runner = Runner(molecule("H2"), LennardJones())
+    write(runner.tmpdir / "final.xyz", molecule("O2"))
+
+    with pytest.raises(
+        ValueError, match="Atomic numbers do not match between atoms and geom_file"
+    ):
+        runner.run_calc(geom_file="final.xyz")
+
+
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_opt1(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -194,7 +206,7 @@ def test_run_opt1(tmp_path, monkeypatch, copy_files):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_opt2(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -214,6 +226,22 @@ def test_run_opt2(tmp_path, monkeypatch, copy_files):
     assert traj[-1].calc.results is not None
 
 
+def test_run_opt_without_files(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    atoms = bulk("Cu") * (2, 1, 1)
+    atoms[0].position += 0.1
+
+    dyn = Runner(atoms, EMT()).run_opt(write_files=False)
+    results_dir = Path(_find_results_dir())
+
+    assert dyn.trajectory is None
+    assert dyn.todict().get("logfile") is None
+    assert dyn.todict().get("restart") is None
+    assert not (results_dir / "opt.log.gz").exists()
+    assert not (results_dir / "opt.json.gz").exists()
+    assert not (results_dir / "opt.traj.gz").exists()
+
+
 def test_run_scipy_opt(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu") * (2, 1, 1)
@@ -225,7 +253,7 @@ def test_run_scipy_opt(tmp_path, monkeypatch):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_run_vib(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -242,8 +270,21 @@ def test_run_vib(tmp_path, monkeypatch, copy_files):
     assert os.path.exists(os.path.join(results_dir, "test_file.txt.gz"))
 
 
+def test_run_vib_failure(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    def raise_error(_self):
+        raise RuntimeError("vibration failed")
+
+    monkeypatch.setattr("quacc.runners.ase.Vibrations.run", raise_error)
+
+    with pytest.raises(JobFailure, match="Calculation failed") as err:
+        Runner(molecule("H2"), LennardJones()).run_vib()
+    assert isinstance(err.value.parent_error, RuntimeError)
+
+
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_bad_runs(tmp_path, monkeypatch, caplog, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -273,7 +314,7 @@ def test_bad_runs(tmp_path, monkeypatch, caplog, copy_files):
 
 
 @pytest.mark.parametrize(
-    "copy_files", [{Path(): "test_file.txt"}, Copy({Path(): "test_file.txt"})]
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
 )
 def test_unique_workdir(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
@@ -311,6 +352,38 @@ def test_fn_hook(tmp_path, monkeypatch):
         raise err.value.parent_error
 
 
+def test_run_md_stop_condition(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    dyn = Runner(molecule("H2"), LennardJones()).run_md(
+        VelocityVerlet,
+        dynamics_kwargs={"timestep": fs},
+        steps=10,
+        stop_condition=lambda dyn: dyn.nsteps >= 3,
+    )
+
+    assert dyn.nsteps == 3
+    assert dyn.requested_steps == 10
+    assert dyn.completed_steps == 3
+    assert dyn.stop_reason == "walltime"
+    assert len(read(dyn.trajectory.filename, index=":")) == 4
+
+
+def test_copy_intermediate_files_copies_files_and_directories(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    runner = Runner(molecule("H2"), LennardJones())
+    (runner.tmpdir / "output.txt").write_text("output")
+    nested_dir = runner.tmpdir / "nested"
+    nested_dir.mkdir()
+    (nested_dir / "output.txt").write_text("nested output")
+
+    runner._copy_intermediate_files(0)
+
+    assert (runner.tmpdir / "step0" / "output.txt").read_text() == "output"
+    assert (
+        runner.tmpdir / "step0" / "nested" / "output.txt"
+    ).read_text() == "nested output"
+
+
 def test_run_neb(monkeypatch, tmp_path):
     monkeypatch.chdir(tmp_path)
     neb_path = test_files_path / "neb_path.xyz"
@@ -322,6 +395,30 @@ def test_run_neb(monkeypatch, tmp_path):
 
     assert traj[-1].calc.results is not None
     assert not os.path.exists(tmp_path / "opt.log")
+
+
+@pytest.mark.parametrize(
+    "copy_files", [[{"source": Path(), "filenames": "test_file.txt"}]]
+)
+def test_run_neb_copy_files(monkeypatch, tmp_path, copy_files):
+    monkeypatch.chdir(tmp_path)
+    prep_files()
+    images = read(test_files_path / "neb_path.xyz", index=":")
+
+    with change_settings({"RESULTS_DIR": tmp_path, "GZIP_FILES": False}):
+        Runner(images, EMT(), copy_files=copy_files).run_neb()
+        results_dir = _find_results_dir()
+
+    assert (Path(results_dir) / "test_file.txt").exists()
+
+
+def test_run_neb_relax_cell():
+    images = read(test_files_path / "neb_path.xyz", index=":")
+
+    with pytest.raises(
+        ValueError, match="Cell relaxation is not supported for NEB calculations"
+    ):
+        Runner(images, EMT()).run_neb(relax_cell=True)
 
 
 def test_run_neb2():

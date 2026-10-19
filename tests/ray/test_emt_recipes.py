@@ -9,7 +9,6 @@ from ase.build import bulk
 from quacc import flow, job
 from quacc.recipes.emt.core import relax_job  # skipcq: PYL-C0412
 from quacc.recipes.emt.slabs import bulk_to_slabs_flow  # skipcq: PYL-C0412
-from quacc.wflow_tools.job_argument import Copy
 
 
 @pytest.mark.parametrize("job_decorators", [None, {"relax_job": job()}])
@@ -36,7 +35,8 @@ def test_copy_files(tmp_path, monkeypatch):
     def myflow(atoms):
         result1 = (relax_job(atoms)).result()
         return relax_job(
-            result1["atoms"], copy_files=Copy({result1["dir_name"]: "opt.*"})
+            result1["atoms"],
+            copy_files=[{"source": result1["dir_name"], "filenames": "opt.*"}],
         )
 
     assert "atoms" in (myflow(atoms)).result()

@@ -204,10 +204,7 @@ If you haven't done so already:
         account=account,
         walltime="00:10:00",
         job_mem="0",
-        job_script_prologue=[
-            "source ~/.bashrc",
-            env_vars,
-        ],
+        job_script_prologue=["source ~/.bashrc", env_vars],
         job_directives_skip=["-n", "--cpus-per-task"],  # (3)!
         job_extra_directives=["-q debug", "-C cpu"],  # (4)!
     )
@@ -228,9 +225,11 @@ If you haven't done so already:
 
     ```python
     from ase.collections import g2
+    from quacc import flow
     from quacc.recipes.tblite.core import relax_job, freq_job
 
 
+    @flow
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return freq_job(relax_output["atoms"], energy=relax_output["results"]["energy"])
@@ -245,9 +244,7 @@ If you haven't done so already:
     results = client.gather(futures)
     for result in results:
         print(
-            result["formula_pretty"],
-            result["results"]["gibbs_energy"],
-            result["dir_name"],
+            result["formula_pretty"], result["results"]["gibbs_energy"], result["dir_name"]
         )
     ```
 
@@ -420,9 +417,11 @@ If you haven't done so already:
     from ase.collections import g2
     from concurrent.futures import as_completed
     from tqdm import tqdm
+    from quacc import flow
     from quacc.recipes.tblite.core import relax_job, freq_job
 
 
+    @flow
     def workflow(atoms):
         relax_output = relax_job(atoms)
         return freq_job(relax_output["atoms"], energy=relax_output["results"]["energy"])
@@ -438,9 +437,7 @@ If you haven't done so already:
     for future in tqdm(as_completed(futures), total=len(futures)):
         result = future.result()
         print(
-            result["formula_pretty"],
-            result["results"]["gibbs_energy"],
-            result["dir_name"],
+            result["formula_pretty"], result["results"]["gibbs_energy"], result["dir_name"]
         )
     ```
 
@@ -482,10 +479,7 @@ If you haven't done so already:
         "account": account,
         "walltime": "00:10:00",
         "job_mem": "0",
-        "job_script_prologue": [
-            "source ~/.bashrc",
-            env_vars,
-        ],
+        "job_script_prologue": ["source ~/.bashrc", env_vars],
         "job_directives_skip": ["-n", "--cpus-per-task"],  # (3)!
         "job_extra_directives": ["-q debug", "-C cpu"],  # (4)!
     }
@@ -566,9 +560,11 @@ If you haven't done so already:
 
     ```python
     from ase.collections import g2
+    from quacc import flow
     from quacc.recipes.tblite.core import freq_job, relax_job
 
 
+    @flow
     def workflow(atoms_objects):
         futures = []
         for atoms in atoms_objects:
@@ -634,9 +630,11 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
 
     ```python
     from ase.build import bulk
+    from quacc import flow
     from quacc.recipes.vasp.core import relax_job, static_job
 
 
+    @flow
     def workflow(atoms):
         relax_output = relax_job(atoms, kpts=[3, 3, 3])
         return static_job(relax_output["atoms"], kpts=[3, 3, 3])
@@ -817,9 +815,11 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
 
     ```python
     from ase.build import bulk
+    from quacc import flow
     from quacc.recipes.vasp.core import relax_job, static_job
 
 
+    @flow
     def workflow(atoms):
         relax_output = relax_job(atoms, kpts=[3, 3, 3])
         return static_job(relax_output["atoms"], kpts=[3, 3, 3])
@@ -923,13 +923,14 @@ Once you have ensured that you can run VASP with quacc by following the [Calcula
 
     ```python
     from ase.build import bulk
-    from quacc import job, redecorate
+    from quacc import flow, job, redecorate
     from quacc.recipes.vasp.core import relax_job, static_job
 
     relax_job_ = redecorate(relax_job, job(num_cpus=cores_per_node))  # (1)!
     static_job_ = redecorate(static_job, job(num_cpus=cores_per_node))
 
 
+    @flow
     def workflow(list_of_atoms):
         futures = []
         for atoms in list_of_atoms:

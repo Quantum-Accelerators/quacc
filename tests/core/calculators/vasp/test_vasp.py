@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import os
 from copy import deepcopy
+from io import StringIO
 from logging import INFO, WARNING, getLogger
 from pathlib import Path
 from shutil import which
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
@@ -18,7 +20,8 @@ from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
-from quacc.calculators.vasp.params import MPtoASEConverter
+from quacc.calculators.vasp import vasp as vasp_module
+from quacc.calculators.vasp.params import MPtoASEConverter, get_param_swaps
 from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
@@ -44,20 +47,20 @@ def atoms_nospin():
 
 def test_vanilla_vasp():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, incar_copilot="off")
+    calc = Vasp(atoms, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, use_custodian=False, incar_copilot="off")
+    calc = Vasp(atoms, use_custodian=False, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot="off")
+    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot_mode="off")
     assert calc.parameters.get("gamma") is None
     assert calc.kpts is None
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, encut=None, incar_copilot="off")
+    calc = Vasp(atoms, encut=None, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
 
@@ -691,7 +694,7 @@ def test_kspacing():
 
 
 def test_kspacing_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, kspacing=0.1, ismear=-5)
         assert calc.parameters["ismear"] == -5
@@ -967,7 +970,7 @@ def test_lasph():
 
 
 def test_lasph_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, xc="rpbe")
@@ -997,7 +1000,7 @@ def test_algo():
 
 
 def test_algo_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, xc="rpbe")
@@ -1019,7 +1022,7 @@ def test_kpar():
     calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
     assert calc.parameters["kpar"] == 4
 
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         calc = Vasp(atoms, kpts=[2, 2, 1], kpar=4)
         assert calc.parameters["kpar"] == 4
 
@@ -1028,7 +1031,7 @@ def test_kpar():
 
 
 def test_isym_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, isym=2)
@@ -1048,7 +1051,7 @@ def test_isym_aggressive():
 
 
 def test_ncore_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         atoms *= (2, 2, 2)
@@ -1064,7 +1067,7 @@ def test_ncore_aggressive():
 
 
 def test_ismear_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, nsw=10)
@@ -1119,7 +1122,7 @@ def test_ismear_aggressive():
 
 
 def test_laechg_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, nsw=10, laechg=True)
         assert not calc.parameters["laechg"]
@@ -1145,7 +1148,7 @@ def test_ldauprint():
 
 
 def test_ldauprint_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
 
         calc = Vasp(atoms, ldau=True)
@@ -1169,7 +1172,7 @@ def test_lreal():
 
 
 def test_lreal_aggressive():
-    with change_settings({"VASP_INCAR_COPILOT": "aggressive"}):
+    with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
         calc = Vasp(atoms, lreal=True, nsw=0)
         assert calc.parameters["lreal"] is False
@@ -1384,44 +1387,95 @@ def test_logging(caplog):
     atoms = bulk("Cu")
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
-    assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending NCORE" in caplog.text
-    assert "The following parameters were added" in caplog.text
-    assert "'lmaxmix': 4" in caplog.text
-    assert "'ncore':" in caplog.text
+    assert "================ VASP INCAR COPILOT ================" in caplog.text
+    copilot_record = next(
+        record
+        for record in caplog.records
+        if "VASP INCAR COPILOT" in record.getMessage()
+    )
+    assert copilot_record.getMessage().startswith(
+        "\n================ VASP INCAR COPILOT ================\nApplied changes:"
+    )
+    header = "================ VASP INCAR COPILOT ================"
+    assert copilot_record.getMessage().endswith("=" * len(header))
+    assert f"\n\n{'=' * len(header)}" not in copilot_record.getMessage()
+    assert "LMAXMIX: None -> 4" in caplog.text
+    assert "Reason: d electrons were detected." in caplog.text
+    assert "NCORE: None ->" in caplog.text
+    assert "VASP command = vasp_std" in caplog.text
     caplog.clear()
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
-    assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending SIGMA = 0.05" in caplog.text
-    assert "Recommending NCORE" in caplog.text
-    assert "The following parameters were added" in caplog.text
-    assert "'lmaxmix': 4" in caplog.text
-    assert "'ncore':" in caplog.text
+    assert "================ VASP INCAR COPILOT ================" in caplog.text
+    assert "  ISMEAR:" not in caplog.text
+    assert "LMAXMIX: None -> 4" in caplog.text
+    assert "NCORE: None ->" in caplog.text
+    assert "SIGMA: None -> 0.05" in caplog.text
     caplog.clear()
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=-5, algo="all", lmaxmix=1)
-    assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending NCORE" in caplog.text
-    assert "The following parameters were added" in caplog.text
-    assert "'isearch': 1" in caplog.text
-    assert "'ncore':" in caplog.text
+    assert "================ VASP INCAR COPILOT ================" in caplog.text
+    assert "ISEARCH: None -> 1" in caplog.text
+    assert "NCORE: None ->" in caplog.text
     assert "ALGO was changed from 'all' to 'normal'" in caplog.text
-    assert "LMAXMIX was *not* changed from 1 to 4" in caplog.text
+    assert "LMAXMIX was not changed from 1 to 4" in caplog.text
+    assert (
+        "  LMAXMIX was not changed from 1 to 4, but should be modified.\n"
+        "    Reason: d electrons were detected."
+    ) in caplog.text
+    assert "⚠️ Attention required:" in caplog.text
+    assert caplog.text.index("⚠️ Attention required:") < caplog.text.index(
+        "Applied changes:"
+    )
+    assert (
+        sum("VASP INCAR COPILOT" in record.getMessage() for record in caplog.records)
+        == 1
+    )
     caplog.clear()
+
+    with caplog.at_level(INFO):
+        params = get_param_swaps({}, atoms, incar_copilot_mode="off")
+    assert isinstance(params, dict)
+    assert "INCAR copilot" not in caplog.text
+
+
+def test_ediff_warning(caplog):
+    atoms = bulk("Cu")
+
+    with caplog.at_level(INFO):
+        calc = Vasp(atoms, ediff=1e-3)
+    assert calc.parameters["ediff"] == 1e-3
+    assert "EDIFF=0.001 is greater than 1e-4" in caplog.text
+    assert "results are likely unconverged" in caplog.text
+    caplog.clear()
+
+    with caplog.at_level(INFO):
+        calc = Vasp(atoms, ediff=1e-4)
+    assert calc.parameters["ediff"] == 1e-4
+    assert "results are likely unconverged" not in caplog.text
+
+
+def test_copilot_recommendation_label(caplog):
+    with caplog.at_level(INFO):
+        Vasp(bulk("Cu"), isif=3, nsw=2)
+
+    assert "Recommendation: Re-relax the final structure" in caplog.text
 
 
 def test_bad_pmg_converter():
     with pytest.raises(ValueError, match="Either atoms or prev_dir must be provided"):
         MPtoASEConverter()
 
+    converter = MPtoASEConverter(prev_dir="previous-run")
+    assert converter.structure is None
+
 
 def test_pmg_input_set():
     atoms = bulk("Cu")
     parameters = MPtoASEConverter(atoms=atoms).convert_input_set(MPRelaxSet())
-    calc = Vasp(atoms, incar_copilot="off", **parameters)
+    calc = Vasp(atoms, incar_copilot_mode="off", **parameters)
     assert calc.parameters == {
         "algo": "fast",
         "ediff": 5e-05,
@@ -1452,7 +1506,7 @@ def test_pmg_input_set2():
     atoms = bulk("Fe") * (2, 1, 1)
     atoms[0].symbol = "O"
     parameters = MPtoASEConverter(atoms=atoms).convert_input_set(MPRelaxSet())
-    calc = Vasp(atoms, incar_copilot="off", **parameters)
+    calc = Vasp(atoms, incar_copilot_mode="off", **parameters)
     assert calc.parameters == {
         "algo": "fast",
         "ediff": 0.0001,
@@ -1512,6 +1566,7 @@ def test_logger(caplog):
     with change_settings({"VASP_PP_PATH": "/path/to/pseudos"}):
         with caplog.at_level(INFO):
             Vasp(atoms)
+        assert "PAW potentials = /path/to/pseudos/potpaw_PBE" in caplog.text
         assert "/path/to/pseudos/potpaw_PBE" in caplog.text
         caplog.clear()
 
@@ -1568,3 +1623,55 @@ def test_run(monkeypatch, tmp_path):
     calc = Vasp(atoms, xc="PBE", use_custodian=True)
     with pytest.raises(FileNotFoundError):
         calc._run()
+
+
+def test_run_backends(monkeypatch, tmp_path):
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, xc="PBE", use_custodian=True)
+    calls = []
+
+    def mock_run_custodian(*, directory):
+        calls.append(directory)
+
+    monkeypatch.setattr(vasp_module, "run_custodian", mock_run_custodian)
+
+    assert calc._run(directory=tmp_path) == (0, None)
+    assert calls == [tmp_path]
+
+    calc.use_custodian = False
+    monkeypatch.setattr(
+        vasp_module.subprocess,
+        "run",
+        lambda *args, **kwargs: SimpleNamespace(
+            stdout="VASP output", stderr=None, returncode=0
+        ),
+    )
+    output = StringIO()
+
+    assert calc._run(command="vasp", directory=tmp_path, out=output) == (0, None)
+    assert output.getvalue() == "VASP output"
+
+
+def test_run_aimd_custodian_handlers(monkeypatch, tmp_path):
+    custodian_kwargs = {}
+
+    def mock_run_custodian(**kwargs):
+        custodian_kwargs.update(kwargs)
+
+    monkeypatch.setattr("quacc.calculators.vasp.vasp.run_custodian", mock_run_custodian)
+
+    calc = Vasp(bulk("Cu"), ibrion=0, nsw=10)
+    calc._run(directory=tmp_path)
+
+    assert custodian_kwargs == {
+        "directory": tmp_path,
+        "vasp_custodian_handlers": [
+            "VaspErrorHandler",
+            "MeshSymmetryErrorHandler",
+            "PositiveEnergyErrorHandler",
+            "FrozenJobErrorHandler",
+            "StdErrHandler",
+            "LargeSigmaHandler",
+            "IncorrectSmearingHandler",
+        ],
+    }

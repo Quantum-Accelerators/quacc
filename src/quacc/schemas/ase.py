@@ -158,11 +158,12 @@ class Summarize:
         )
 
         # Get trajectory
-        atoms_trajectory = (
-            trajectory or read(dyn.trajectory, index=":")
-            if isinstance(dyn.trajectory, (str, Path))
-            else read(dyn.trajectory.filename, index=":")
-        )
+        if trajectory is not None:
+            atoms_trajectory = trajectory
+        elif isinstance(dyn.trajectory, (str, Path)):
+            atoms_trajectory = read(dyn.trajectory, index=":")
+        else:
+            atoms_trajectory = read(dyn.trajectory.filename, index=":")
         trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
 
         initial_atoms = atoms_trajectory[0]
@@ -235,6 +236,16 @@ class Summarize:
             )
 
         md_fields = {"parameters_md": parameters_md, "trajectory_log": trajectory_log}
+        requested_steps = getattr(dyn, "requested_steps", dyn.nsteps)
+        completed_steps = getattr(dyn, "completed_steps", dyn.nsteps)
+        is_partial = completed_steps < requested_steps
+        md_fields |= {
+            "state": "partial" if is_partial else "completed",
+            "requested_steps": requested_steps,
+            "completed_steps": completed_steps,
+        }
+        if is_partial and (stop_reason := getattr(dyn, "stop_reason", None)):
+            md_fields["stop_reason"] = stop_reason
 
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | md_fields | self.additional_fields

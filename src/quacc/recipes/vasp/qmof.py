@@ -16,10 +16,11 @@ from quacc import job
 from quacc.recipes.vasp._base import run_and_summarize, run_and_summarize_opt
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, OptSchema, SourceDirectory, VaspSchema
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, OptSchema, VaspSchema
 
     class QMOFRelaxSchema(VaspSchema):
         """Type hint associated with the QMOF relaxation jobs."""
@@ -38,8 +39,8 @@ def qmof_relax_job(
     atoms: Atoms,
     relax_cell: bool = True,
     run_prerelax: bool = True,
-    copy_files: SourceDirectory | Copy | None = None,
-    **calc_kwargs,
+    copy_files: CopyFiles | None = None,
+    **calc_kwargs: Any,
 ) -> QMOFRelaxSchema:
     """
     Relax a structure in a multi-step process for increased computational efficiency.
@@ -86,18 +87,18 @@ def qmof_relax_job(
     if run_prerelax:
         summary1 = _prerelax(atoms, **calc_kwargs)
         atoms = summary1["atoms"]
-        copy_files = {summary1["dir_name"]: ["WAVECAR*"]}
+        copy_files = [{"source": summary1["dir_name"], "filenames": ["WAVECAR*"]}]
 
     # 2. Position relaxation (loose)
     summary2 = _loose_relax_positions(atoms, copy_files=copy_files, **calc_kwargs)
     atoms = summary2["atoms"]
-    copy_files = {summary2["dir_name"]: ["WAVECAR*"]}
+    copy_files = [{"source": summary2["dir_name"], "filenames": ["WAVECAR*"]}]
 
     # 3. Optional: Volume relaxation (loose)
     if relax_cell:
         summary3 = _loose_relax_cell(atoms, copy_files=copy_files, **calc_kwargs)
         atoms = summary3["atoms"]
-        copy_files = {summary3["dir_name"]: ["WAVECAR*"]}
+        copy_files = [{"source": summary3["dir_name"], "filenames": ["WAVECAR*"]}]
 
     # 4. Double Relaxation
     # This is done for two reasons: a) because it can
@@ -107,7 +108,7 @@ def qmof_relax_job(
         atoms, relax_cell=relax_cell, copy_files=copy_files, **calc_kwargs
     )
     atoms = summary4[-1]["atoms"]
-    copy_files = {summary4[-1]["dir_name"]: ["WAVECAR*"]}
+    copy_files = [{"source": summary4[-1]["dir_name"], "filenames": ["WAVECAR*"]}]
 
     # 5. Static Calculation
     summary5 = _static(atoms, copy_files=copy_files, **calc_kwargs)
@@ -120,9 +121,7 @@ def qmof_relax_job(
 
 
 def _prerelax(
-    atoms: Atoms,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    **calc_kwargs,
+    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs: Any
 ) -> OptSchema:
     """
     A "pre-relaxation" with BFGSLineSearch to resolve very high forces.
@@ -167,7 +166,7 @@ def _prerelax(
 
 
 def _loose_relax_positions(
-    atoms: Atoms, copy_files: SourceDirectory | Copy | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Position relaxation with default ENCUT and coarse k-point grid.
@@ -213,7 +212,7 @@ def _loose_relax_positions(
 
 
 def _loose_relax_cell(
-    atoms: Atoms, copy_files: SourceDirectory | Copy | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Volume relaxation with coarse k-point grid.
@@ -258,9 +257,9 @@ def _loose_relax_cell(
 
 def _double_relax(
     atoms: Atoms,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     relax_cell: bool = True,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> list[VaspSchema]:
     """
     Double relaxation using production-quality settings.
@@ -319,13 +318,13 @@ def _double_relax(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "QMOF DoubleRelax 2"},
-        copy_files={summary1["dir_name"]: ["WAVECAR*"]},
+        copy_files=[{"source": summary1["dir_name"], "filenames": ["WAVECAR*"]}],
     )
     return [summary1, summary2]
 
 
 def _static(
-    atoms: Atoms, copy_files: SourceDirectory | Copy | None = None, **calc_kwargs
+    atoms: Atoms, copy_files: CopyFiles | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Static calculation using production-quality settings.

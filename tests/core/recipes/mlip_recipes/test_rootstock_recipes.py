@@ -67,7 +67,7 @@ def _make_rootstock_module() -> types.ModuleType:
 @pytest.fixture(autouse=True)
 def _clear_cache():
     """Clear pick_calculator's lru_cache before and after every test."""
-    from quacc.recipes.mlp._base import pick_calculator
+    from quacc.recipes.mlip._base import pick_calculator
 
     pick_calculator.__wrapped__.cache_clear()
     yield
@@ -84,7 +84,7 @@ def rootstock_module(monkeypatch):
 
 def test_pick_calculator_rootstock(rootstock_module):
     """pick_calculator returns an entered RootstockCalculator."""
-    from quacc.recipes.mlp._base import pick_calculator
+    from quacc.recipes.mlip._base import pick_calculator
 
     calc = pick_calculator(
         "rootstock", cluster="della", checkpoint="mace-mp-0-medium", device="cuda"
@@ -110,7 +110,7 @@ def test_pick_calculator_rootstock_cached(rootstock_module, monkeypatch):
 
     monkeypatch.setattr(_StubRootstockCalculator, "__init__", counting_init)
 
-    from quacc.recipes.mlp._base import pick_calculator
+    from quacc.recipes.mlip._base import pick_calculator
 
     pick_calculator("rootstock", cluster="della", checkpoint="mace-mp-0-medium")
     pick_calculator("rootstock", cluster="della", checkpoint="mace-mp-0-medium")
@@ -120,7 +120,7 @@ def test_pick_calculator_rootstock_cached(rootstock_module, monkeypatch):
 
 def test_pick_calculator_rootstock_setup_kwargs(rootstock_module):
     """setup_kwargs are forwarded as a top-level kwarg to RootstockCalculator."""
-    from quacc.recipes.mlp._base import pick_calculator
+    from quacc.recipes.mlip._base import pick_calculator
 
     pick_calculator(
         "rootstock",
@@ -136,7 +136,7 @@ def test_static_job_rootstock(tmp_path, monkeypatch, rootstock_module):
     """static_job runs end-to-end with a stubbed RootstockCalculator."""
     monkeypatch.chdir(tmp_path)
 
-    from quacc.recipes.mlp.core import static_job
+    from quacc.recipes.mlip.core import static_job
 
     atoms = bulk("Cu")
     output = static_job(
@@ -154,7 +154,7 @@ def test_static_job_rootstock(tmp_path, monkeypatch, rootstock_module):
 
 def test_pick_calculator_rootstock_missing_package(monkeypatch):
     """pick_calculator raises ImportError when rootstock is not installed."""
-    from quacc.recipes.mlp._base import pick_calculator
+    from quacc.recipes.mlip._base import pick_calculator
 
     monkeypatch.setitem(sys.modules, "rootstock", None)
 
@@ -164,7 +164,7 @@ def test_pick_calculator_rootstock_missing_package(monkeypatch):
 
 def test_pick_calculator_unknown_library():
     """pick_calculator raises ValueError for an unrecognised library string."""
-    from quacc.recipes.mlp._base import pick_calculator
+    from quacc.recipes.mlip._base import pick_calculator
 
     with pytest.raises(ValueError, match="Unrecognized"):
         pick_calculator("nonexistent-mlip")

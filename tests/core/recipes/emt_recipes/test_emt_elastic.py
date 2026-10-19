@@ -12,6 +12,9 @@ def test_elastic_jobs(tmp_path, monkeypatch):
     atoms = bulk("Cu")
 
     outputs = elastic_tensor_flow(atoms, run_static=False)
+    assert outputs["undeformed_result"]["atoms"].get_volume() != pytest.approx(
+        atoms.get_volume()
+    )
     assert outputs["deformed_results"]["relax"][0][
         "atoms"
     ].get_volume() != pytest.approx(atoms.get_volume())
@@ -26,9 +29,9 @@ def test_elastic_jobs(tmp_path, monkeypatch):
     outputs = elastic_tensor_flow(
         atoms, run_static=True, job_params={"static_job": {"asap_cutoff": True}}
     )
-    assert outputs["deformed_results"]["static"][0][
-        "atoms"
-    ].get_volume() != pytest.approx(atoms.get_volume())
+    assert outputs["undeformed_result"]["atoms"].get_volume() != pytest.approx(
+        atoms.get_volume()
+    )
     assert outputs["deformed_results"]["static"][0][
         "atoms"
     ].get_volume() != pytest.approx(atoms.get_volume())

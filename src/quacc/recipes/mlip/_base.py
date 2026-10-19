@@ -14,7 +14,7 @@ has_torch = bool(find_spec("torch"))
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from typing import Literal
+    from typing import Any, Literal
 
     from ase.calculators.calculator import BaseCalculator
 
@@ -42,7 +42,7 @@ def freezeargs(func: Callable) -> Callable:
     from frozendict import frozendict
 
     @wraps(func)
-    def wrapped(*args, **kwargs):
+    def wrapped(*args: Any, **kwargs: Any) -> Any:
         args = (frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
         kwargs = {
             k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()
@@ -55,9 +55,10 @@ def freezeargs(func: Callable) -> Callable:
 @freezeargs
 @lru_cache
 def pick_calculator(
-    library: Literal["fairchem", "matcalc", "rootstock"], **calc_kwargs
+    library: Literal["fairchem", "matcalc", "rootstock"], **calc_kwargs: Any
 ) -> BaseCalculator:
     """
+    Instantiate an ASE calculator from one of the supported MLIP libraries.
 
     Parameters
     ----------
@@ -67,7 +68,30 @@ def pick_calculator(
         - `matcalc` passes `**calc_kwargs` to `matcalc.load_fp()`
         - `rootstock` passes `**calc_kwargs` to `rootstock.RootstockCalculator()`
     **calc_kwargs
-        Custom kwargs for the underlying MLIP library.
+        Keyword arguments forwarded to the loader function listed above for
+        the given `library`. Every argument must be passed by keyword, even
+        ones that are positional in the underlying function. Per library:
+
+        - `fairchem`:
+            - `name_or_path` (required): a model name from
+              `fairchem.core.pretrained_mlip.available_models` or a path to a
+              checkpoint file, e.g. `name_or_path="uma-s-1p1"`.
+            - `task_name` (required for UMA checkpoints): one of `"omol"`,
+              `"omat"`, `"oc20"`, `"oc22"`, `"oc25"`, `"odac"`, or `"omc"`.
+            - Optional: `inference_settings`, `overrides`, `device`, and
+              `workers`; see `FAIRChemCalculator.from_model_checkpoint` for
+              details.
+            - Downloading gated checkpoints requires Hugging Face
+              authentication.
+        - `matcalc`:
+            - `name` (required): the name of the foundation potential, e.g.
+              `name="TensorNet-MatPES-PBE-2025.2"`. The supported names are
+              the entries of `matcalc.UNIVERSAL_CALCULATOR_NAMES`
+              (case-insensitive; common aliases are also accepted).
+        - `rootstock`:
+            - `checkpoint` (required): the checkpoint identifier, e.g.
+              `checkpoint="mace-mp-0-medium"`. The corresponding environment
+              must be pre-built via `rootstock install`.
 
     Returns
     -------
@@ -90,7 +114,11 @@ def pick_calculator(
     # Skip CUDA warning for rayserve batching mode (inference happens on remote GPU)
     use_ray_serve = library == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING
 
-    if not use_ray_serve and not cuda_is_available:
+    # Also skip for rootstock. Inference happens in a worker subprocess
+    # with its own environment, so PyTorch in this process is not informative
+    use_rootstock = library == "rootstock"
+
+    if not use_ray_serve and not use_rootstock and not cuda_is_available:
         LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if library == "matcalc":
@@ -134,10 +162,8 @@ def pick_calculator(
             # Use Ray Serve multiplexed deployment for inference. The deployment
             # is expected to already be running on the cluster (typically started
             # by get_local_inference_raycluster / get_slurm_inference_raycluster with
-            # setup_multiplexed_batch_predict_server). We connect by deployment
-            # name and route requests to the appropriate model via the
-            # multiplexed_model_id, which has the form
-            # "<checkpoint_name_or_path>:<inference_settings>".
+            # setup_multiplexed_batch_predict_server).
+            from fairchem.core.units.mlip_unit.api.model_spec import ModelSpec
             from fairchem.core.units.mlip_unit.predict import BatchServerPredictUnit
 
             calc_kwargs = calc_kwargs.copy()  # Don't modify the original kwargs
@@ -155,16 +181,19 @@ def pick_calculator(
             inference_settings = calc_kwargs.pop("inference_settings", "default")
             task_name = calc_kwargs.pop("task_name")
 
-            # Drop kwargs only meaningful when loading the checkpoint locally
-            calc_kwargs.pop("device", None)
-            calc_kwargs.pop("overrides", None)
+            device = calc_kwargs.pop("device", None)
+            overrides = calc_kwargs.pop("overrides", None)
             calc_kwargs.pop("seed", None)
 
-            multiplexed_model_id = f"{checkpoint_id}:{inference_settings}"
+            model_spec = ModelSpec(
+                checkpoint=str(checkpoint_id),
+                inference_settings=inference_settings,
+                device=device,
+                overrides=dict(overrides) if overrides is not None else None,
+            )
 
             mlip_unit = BatchServerPredictUnit.from_deployment_connection_info(
-                deployment_name="multiplexed-predict-server",
-                multiplexed_model_id=multiplexed_model_id,
+                deployment_name="multiplexed-predict-server", model_spec=model_spec
             )
 
             calc = FAIRChemCalculator(predict_unit=mlip_unit, task_name=task_name)

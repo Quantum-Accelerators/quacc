@@ -10,7 +10,7 @@ from monty.dev import requires
 from quacc import flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 has_atomate2 = bool(find_spec("atomate2"))
 
@@ -32,9 +32,9 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_prerelax_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Function to pre-relax a structure with Materials Project r2SCAN workflow settings. By default, this
@@ -63,21 +63,23 @@ def mp_prerelax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24PreRelaxMaker()
     )
-    calc_defaults["incar_copilot"] = "critical"
+    calc_defaults["incar_copilot_mode"] = "critical"
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP PBESol Pre-Relax"},
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]} if prev_dir else None,
+        copy_files=[{"source": prev_dir, "filenames": ["CHGCAR*", "WAVECAR*"]}]
+        if prev_dir
+        else None,
     )
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_metagga_relax_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Function to relax a structure with Materials Project r2SCAN workflow settings. By default, this uses
@@ -105,21 +107,23 @@ def mp_metagga_relax_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24RelaxMaker()
     )
-    calc_defaults["incar_copilot"] = "critical"
+    calc_defaults["incar_copilot_mode"] = "critical"
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP r2SCAN Relax"},
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]} if prev_dir else None,
+        copy_files=[{"source": prev_dir, "filenames": ["CHGCAR*", "WAVECAR*"]}]
+        if prev_dir
+        else None,
     )
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_metagga_static_job(
-    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs
+    atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Function to run a static calculation on a structure with r2SCAN workflow Materials Project settings.
@@ -147,19 +151,21 @@ def mp_metagga_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms, prev_dir=prev_dir).convert_maker(
         MP24StaticMaker()
     )
-    calc_defaults["incar_copilot"] = "critical"
+    calc_defaults["incar_copilot_mode"] = "critical"
     return run_and_summarize(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         report_mp_corrections=True,
         additional_fields={"name": "MP r2SCAN Static"},
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]} if prev_dir else None,
+        copy_files=[{"source": prev_dir, "filenames": ["CHGCAR*", "WAVECAR*"]}]
+        if prev_dir
+        else None,
     )
 
 
 @flow
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_metagga_relax_flow(
     atoms: Atoms,
     job_params: dict[str, dict[str, Any]] | None = None,
@@ -169,7 +175,7 @@ def mp_metagga_relax_flow(
     Materials Project r2SCAN workflow consisting of:
 
     1. MP-compatible pre-relax
-        - name: "mpa_prerelax_job"
+        - name: "mp_prerelax_job"
         - job: [quacc.recipes.vasp.mp24.mp_prerelax_job][]
 
     2. MP-compatible relax
@@ -196,12 +202,15 @@ def mp_metagga_relax_flow(
     MPMetaGGARelaxFlowSchema
         Dictionary of results. See the type-hint for the data structure.
     """
-    (mp_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = customize_funcs(
-        ["mp_prerelax_job", "mp_metagga_relax_job", "mp_metagga_static_job"],
-        [mp_prerelax_job, mp_metagga_relax_job, mp_metagga_static_job],
+    (mp_prerelax_job_, mp_metagga_relax_job_, mp_metagga_static_job_) = customize_jobs(
+        {
+            "mp_prerelax_job": mp_prerelax_job,
+            "mp_metagga_relax_job": mp_metagga_relax_job,
+            "mp_metagga_static_job": mp_metagga_static_job,
+        },
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     # Run the prerelax
     prerelax_results = mp_prerelax_job_(atoms)

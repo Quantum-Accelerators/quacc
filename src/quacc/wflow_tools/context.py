@@ -22,14 +22,19 @@ from contextvars import ContextVar
 from enum import Enum
 from functools import wraps
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ParamSpec, TypeVar
 
 from monty.json import MSONable
 
 from quacc.utils.files import make_unique_name
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Generator
+    from contextlib import AbstractContextManager
+    from typing import Any
+
+P = ParamSpec("P")
+R = TypeVar("R")
 
 
 class NodeType(Enum):
@@ -49,7 +54,7 @@ class ContextNode(MSONable):
     context is passed across process boundaries.
     """
 
-    def __init__(self, name: str, node_type: NodeType):
+    def __init__(self, name: str, node_type: NodeType) -> None:
         self.name = name
         self.node_type = node_type
 
@@ -92,7 +97,7 @@ def get_context_path() -> str:
 
 
 @contextmanager
-def _push_context(name: str, node_type: NodeType):
+def _push_context(name: str, node_type: NodeType) -> Generator[None]:
     """Push a new node onto the execution-context stack for the duration of
     the ``with`` block, then restore the previous stack on exit."""
     old = _execution_context.get()
@@ -105,7 +110,7 @@ def _push_context(name: str, node_type: NodeType):
 
 
 @contextmanager
-def _push_directory_context(directory_path: str):
+def _push_directory_context(directory_path: str) -> Generator[None]:
     """Temporarily set the root output directory for the current invocation."""
     token = _directory_context.set(directory_path)
     try:
@@ -114,12 +119,12 @@ def _push_directory_context(directory_path: str):
         _directory_context.reset(token)
 
 
-def directory_context(directory_path: str):
+def directory_context(directory_path: str) -> AbstractContextManager[None]:
     """Public convenience wrapper around ``_push_directory_context``."""
     return _push_directory_context(directory_path)
 
 
-def tracked(node_type: NodeType):
+def tracked(node_type: NodeType) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """
     Decorator factory that wraps a function to track its execution context.
 
@@ -130,7 +135,7 @@ def tracked(node_type: NodeType):
     (_quacc_ctx, _quacc_dir) which are extracted and restored before execution.
     """
 
-    def decorator(func: Callable) -> Callable:
+    def decorator(func: Callable[P, R]) -> Callable[P, R]:
         # Preserve the true original (pre-decoration) function so that
         # strip_decorator() can fully unwrap back to the user's code.
         original = getattr(func, "original", func)
@@ -138,13 +143,13 @@ def tracked(node_type: NodeType):
         if asyncio.iscoroutinefunction(func):
 
             @wraps(func)
-            async def wrapper(*args, **kwargs):
+            async def wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
                 return await _tracked_call(func, node_type, args, kwargs)
 
         else:
 
             @wraps(func)
-            def wrapper(*args, **kwargs):
+            def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
                 return _tracked_call(func, node_type, args, kwargs)
 
         # Attach the original unwrapped function so it can be recovered later.
@@ -154,7 +159,12 @@ def tracked(node_type: NodeType):
     return decorator
 
 
-def _tracked_call(func, node_type, args, kwargs):
+def _tracked_call(
+    func: Callable[P, R],
+    node_type: NodeType,
+    args: tuple[object, ...],
+    kwargs: dict[str, object],
+) -> R:
     """Shared tracking logic for both sync and async tracked wrappers.
 
     For async functions, the caller must ``await`` the return value.

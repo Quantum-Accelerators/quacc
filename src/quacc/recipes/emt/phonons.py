@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.emt.core import static_job
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -88,13 +88,12 @@ def phonon_flow(
         Dictionary of results from [quacc.schemas.phonons.summarize_phonopy][].
         See the return type-hint for the data structure.
     """
-    static_job_ = customize_funcs(
-        ["static_job"],
-        [static_job],
+    static_job_ = customize_jobs(
+        {"static_job": static_job},
         param_defaults=None,
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    )["static_job"]
 
     return phonon_subflow(
         atoms,

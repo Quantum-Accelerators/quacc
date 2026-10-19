@@ -3,11 +3,13 @@
 from __future__ import annotations
 
 from collections.abc import Callable
+from contextlib import nullcontext
 from copy import deepcopy
 from importlib.util import find_spec
 from logging import getLogger
 from pathlib import Path
 from shutil import copy, copytree
+from time import monotonic
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -46,12 +48,7 @@ if TYPE_CHECKING:
     from ase.calculators.calculator import BaseCalculator
     from ase.optimize.optimize import Dynamics, Optimizer
 
-    from quacc.types import (
-        MaxwellBoltzmanDistributionKwargs,
-        SourceDirectory,
-        VibKwargs,
-    )
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, MaxwellBoltzmanDistributionKwargs, VibKwargs
 
 
 class Runner(BaseRunner):
@@ -64,7 +61,7 @@ class Runner(BaseRunner):
         self,
         atoms: Atoms | list[Atoms],
         calculator: BaseCalculator,
-        copy_files: SourceDirectory | Copy | None = None,
+        copy_files: CopyFiles | None = None,
     ) -> None:
         """
         Initialize the Runner object.
@@ -84,6 +81,7 @@ class Runner(BaseRunner):
         """
         if isinstance(atoms, list):
             self.atoms = [image.copy() for image in atoms]
+            self.copy_files = copy_files
             for image in self.atoms:
                 image.calc = deepcopy(calculator)
         else:
@@ -168,6 +166,8 @@ class Runner(BaseRunner):
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
         filter_kwargs: dict[str, Any] | None = None,
+        write_files: bool = True,
+        stop_condition: Callable[[Dynamics], bool] | None = None,
     ) -> Optimizer:
         """
         This is a wrapper around the optimizers in ASE.
@@ -198,6 +198,12 @@ class Runner(BaseRunner):
             Dictionary of kwargs for the `run()` method of the optimizer.
         filter_kwargs
             Dictionary of kwargs for the `FrechetCellFilter` if relax_cell is True.
+        write_files
+            Whether to write the optimizer log, restart, and trajectory files.
+        stop_condition
+            A callable evaluated after each step. The run exits cleanly when it
+            returns True, allowing trajectory files and calculation outputs to be
+            finalized normally.
 
         Returns
         -------
@@ -207,8 +213,8 @@ class Runner(BaseRunner):
         # Set defaults
         merged_optimizer_kwargs = recursive_dict_merge(
             {
-                "logfile": self.tmpdir / "opt.log",
-                "restart": str(self.tmpdir / "opt.json"),
+                "logfile": self.tmpdir / "opt.log" if write_files else None,
+                "restart": str(self.tmpdir / "opt.json") if write_files else None,
             },
             optimizer_kwargs,
         )
@@ -233,8 +239,8 @@ class Runner(BaseRunner):
             self._set_sella_kwargs(merged_optimizer_kwargs)
 
         # Define the Trajectory object
-        traj_file = self.tmpdir / traj_filename
-        traj = Trajectory(traj_file, "w", atoms=self.atoms)
+        traj_file = self.tmpdir / traj_filename if write_files else None
+        traj = Trajectory(traj_file, "w", atoms=self.atoms) if traj_file else None
         merged_optimizer_kwargs["trajectory"] = traj
 
         # Set volume relaxation constraints, if relevant
@@ -248,7 +254,10 @@ class Runner(BaseRunner):
 
         # Run optimization
         try:
-            with traj, optimizer(self.atoms, **merged_optimizer_kwargs) as dyn:
+            with (
+                traj if traj is not None else nullcontext(),
+                optimizer(self.atoms, **merged_optimizer_kwargs) as dyn,
+            ):
                 if issubclass(optimizer, SciPyOptimizer):
                     # https://gitlab.com/ase/ase/-/issues/1475
                     dyn.run(**full_run_kwargs)
@@ -265,12 +274,15 @@ class Runner(BaseRunner):
                             )
                         if fn_hook:
                             fn_hook(dyn)
+                        if stop_condition and stop_condition(dyn):
+                            break
         except Exception as exception:
             terminate(self.tmpdir, exception)
 
         # Perform cleanup operations
         self.cleanup()
-        traj.filename = zpath(str(self.job_results_dir / traj_filename))
+        if traj is not None:
+            traj.filename = zpath(str(self.job_results_dir / traj_filename))
         dyn.trajectory = traj
 
         return dyn
@@ -319,6 +331,9 @@ class Runner(BaseRunner):
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None = None,
         set_com_stationary: bool = False,
         set_zero_rotation: bool = False,
+        stop_condition: Callable[[MolecularDynamics], bool] | None = None,
+        max_runtime: float | None = None,
+        stop_reason: str = "walltime",
     ) -> MolecularDynamics:
         """
         Run an ASE-based MD in a scratch directory and copy the results back to
@@ -343,6 +358,15 @@ class Runner(BaseRunner):
         set_zero_rotation
             Whether to set the total angular momentum to zero. This would be applied after
             any `MaxwellBoltzmannDistribution` is set.
+        stop_condition
+            A callable evaluated after each MD step. The run exits cleanly when it
+            returns True. This can be backed by a flag set from a scheduler signal
+            handler.
+        max_runtime
+            Maximum runtime in seconds. The MD run exits cleanly after the first
+            completed step at or beyond this limit.
+        stop_reason
+            Reason recorded on the dynamics object when the run is stopped early.
 
         Returns
         -------
@@ -362,12 +386,29 @@ class Runner(BaseRunner):
         if set_zero_rotation:
             ZeroRotation(self.atoms)
 
-        return self.run_opt(
+        start_time = monotonic()
+
+        def _should_stop(dyn: MolecularDynamics) -> bool:
+            return bool(
+                (stop_condition and stop_condition(dyn))
+                or (max_runtime is not None and monotonic() - start_time >= max_runtime)
+            )
+
+        dyn = self.run_opt(
             fmax=None,
             max_steps=steps,
             optimizer=dynamics,
             optimizer_kwargs=dynamics_kwargs,
+            stop_condition=_should_stop
+            if stop_condition or max_runtime is not None
+            else None,
         )
+        dyn.requested_steps = steps
+        dyn.completed_steps = dyn.nsteps
+        if dyn.nsteps < steps:
+            dyn.stop_reason = stop_reason
+
+        return dyn
 
     def run_neb(
         self,
@@ -404,14 +445,24 @@ class Runner(BaseRunner):
         -------
         Dynamics
             The ASE Dynamics object following an NEB calculation.
+
+        Raises
+        ------
+        ValueError
+            If cell relaxation is requested because ASE NEB images do not support
+            cell filters.
         """
+        if relax_cell:
+            msg = "Cell relaxation is not supported for NEB calculations."
+            raise ValueError(msg)
+
         images = self.atoms
         run_kwargs = run_kwargs or {}
         neb_kwargs = neb_kwargs or {}
         traj_filename = "opt.traj"
 
         # Create a parent temporary directory for the NEB run
-        neb_tmpdir, neb_results_dir = calc_setup(None)
+        neb_tmpdir, neb_results_dir = calc_setup(None, copy_files=self.copy_files)
 
         # Adjust optimizer_kwargs to use the parent directory
         optimizer_kwargs = recursive_dict_merge(
@@ -441,12 +492,6 @@ class Runner(BaseRunner):
         # Define the Trajectory object
         traj_file = neb_tmpdir / traj_filename
         traj = Trajectory(traj_file, "w", atoms=neb)
-
-        # Set volume relaxation constraints, if relevant
-        if relax_cell:
-            for i in range(len(images)):
-                if images[i].pbc.any():
-                    images[i] = FrechetCellFilter(images[i])
 
         dyn = optimizer(neb, **optimizer_kwargs)
         dyn.attach(traj.write)

@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
+from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.recipes.mlip._base import pick_calculator
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize
@@ -23,7 +24,7 @@ def static_job(
     atoms: Atoms,
     library: Literal["fairchem", "matcalc", "rootstock"],
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Carry out a single-point calculation.
@@ -40,13 +41,23 @@ def static_job(
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
-        Custom kwargs for the underlying MLIP library.
+        Custom kwargs for the underlying MLIP library, all passed by keyword.
+        `matcalc` requires `name`, `rootstock` requires `checkpoint`, and
+        `fairchem` requires `name_or_path` (plus `task_name` for UMA
+        checkpoints). See [quacc.recipes.mlip._base.pick_calculator][] for
+        details and examples.
 
     Returns
     -------
     RunSchema
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
+
+    Examples
+    --------
+    >>> static_job(atoms, "fairchem", name_or_path="uma-s-1p1", task_name="omat")
+    >>> static_job(atoms, "matcalc", name="TensorNet-MatPES-PBE-2025.2")
+    >>> static_job(atoms, "rootstock", checkpoint="mace-mp-0-medium")
     """
     calc = pick_calculator(library, **calc_kwargs)
     final_atoms = Runner(atoms, calc).run_calc()
@@ -61,8 +72,9 @@ def relax_job(
     library: Literal["fairchem", "matcalc", "rootstock"],
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
+    write_files: bool = True,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> OptSchema:
     """
     Relax a structure.
@@ -81,24 +93,43 @@ def relax_job(
     opt_params
         Dictionary of custom kwargs for the optimization process. For a list
         of available keys, refer to [quacc.runners.ase.Runner.run_opt][].
+    write_files
+        Whether to write optimizer log, restart, and trajectory files. Set to
+        `False` to avoid file I/O during the optimization.
     additional_fields
         Additional fields to add to the results dictionary.
     **calc_kwargs
-        Custom kwargs for the underlying MLIP library.
+        Custom kwargs for the underlying MLIP library, all passed by keyword.
+        `matcalc` requires `name`, `rootstock` requires `checkpoint`, and
+        `fairchem` requires `name_or_path` (plus `task_name` for UMA
+        checkpoints). See [quacc.recipes.mlip._base.pick_calculator][] for
+        details and examples.
 
     Returns
     -------
     OptSchema
         Dictionary of results from [quacc.schemas.ase.Summarize.opt][].
         See the type-hint for the data structure.
+
+    Examples
+    --------
+    >>> relax_job(atoms, "fairchem", name_or_path="uma-s-1p1", task_name="omat")
+    >>> relax_job(atoms, "matcalc", name="TensorNet-MatPES-PBE-2025.2", relax_cell=True)
+    >>> relax_job(
+    ...     atoms, "rootstock", checkpoint="mace-mp-0-medium", opt_params={"fmax": 0.05}
+    ... )
     """
     opt_defaults = {"fmax": 0.01}
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
     calc = pick_calculator(library, **calc_kwargs)
 
-    dyn = Runner(atoms, calc).run_opt(relax_cell=relax_cell, **opt_flags)
+    dyn = Runner(atoms, calc).run_opt(
+        relax_cell=relax_cell, write_files=write_files, **opt_flags
+    )
+
+    trajectory = None if write_files else [get_final_atoms_from_dynamics(dyn)]
 
     return Summarize(
         additional_fields={"name": f"{library} Relax"} | (additional_fields or {})
-    ).opt(dyn)
+    ).opt(dyn, trajectory=trajectory)

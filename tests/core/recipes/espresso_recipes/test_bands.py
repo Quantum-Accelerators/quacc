@@ -33,7 +33,12 @@ def test_bands_flow(tmp_path, monkeypatch):
         "fermi_surface_job": {"input_data": {"fermi": {}}},
     }
 
-    output = bands_flow(atoms, tmp_path, line_density=1, job_params=job_params)
+    output = bands_flow(
+        atoms,
+        [{"source": tmp_path, "filenames": "*"}],
+        line_density=1,
+        job_params=job_params,
+    )
     assert (
         output["bands_pw"]["parameters"]["input_data"]["control"]["calculation"]
         == "bands"
@@ -70,7 +75,7 @@ def test_bands_flow_with_fermi(tmp_path, monkeypatch):
 
     output = bands_flow(
         atoms,
-        tmp_path,
+        [{"source": tmp_path, "filenames": "*"}],
         run_fermi_surface=True,
         make_bandpath=False,
         run_bands_pp=False,

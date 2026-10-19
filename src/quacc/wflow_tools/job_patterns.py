@@ -110,7 +110,9 @@ def map_partitioned_lists(
 
 @job
 def map_partition(
-    func: Callable, unmapped_kwargs: dict[str, Any] | None = None, **mapped_kwargs
+    func: Callable,
+    unmapped_kwargs: dict[str, Any] | None = None,
+    **mapped_kwargs: list[Any],
 ) -> list[Any]:
     """
     Job to apply a function to each set of elements in mapped_kwargs.
@@ -134,7 +136,9 @@ def map_partition(
 
 
 def kwarg_map(
-    func: Callable, unmapped_kwargs: dict[str, Any] | None = None, **mapped_kwargs
+    func: Callable,
+    unmapped_kwargs: dict[str, Any] | None = None,
+    **mapped_kwargs: list[Any],
 ) -> list[Any]:
     """
     A helper function for when you want to construct a chain of objects with individual arguments for each one.  Can

@@ -1,0 +1,57 @@
+name: Dependency bot auto-merge
+
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  enable-auto-merge:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Enable auto-merge for current dependency bot PRs
+        uses: actions/github-script@v9
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const candidates = context.payload.workflow_run.pull_requests ?? [];
+            const allowedBots = new Set([
+              "dependabot[bot]",
+              "pre-commit-ci[bot]",
+            ]);
+
+            for (const candidate of candidates) {
+              const { data: pullRequest } = await github.rest.pulls.get({
+                owner,
+                repo,
+                pull_number: candidate.number,
+              });
+
+              if (!allowedBots.has(pullRequest.user.login)) {
+                core.info(`Skipping PR #${pullRequest.number}: not opened by an allowed dependency bot.`);
+                continue;
+              }
+
+              if (pullRequest.head.sha !== context.payload.workflow_run.head_sha) {
+                core.info(`Skipping PR #${pullRequest.number}: a newer commit is awaiting tests.`);
+                continue;
+              }
+
+              await exec.exec("gh", [
+                "pr",
+                "merge",
+                String(pullRequest.number),
+                "--repo",
+                `${owner}/${repo}`,
+                "--squash",
+                "--auto",
+              ]);
+            }

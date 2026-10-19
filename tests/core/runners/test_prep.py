@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from logging import INFO
 from pathlib import Path
 
 import pytest
@@ -9,7 +10,6 @@ from ase.calculators.emt import EMT
 
 from quacc import JobFailure, change_settings, get_settings
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
-from quacc.wflow_tools.job_argument import Copy
 
 
 def make_files():
@@ -32,7 +32,7 @@ def make_files3():
         f.write("file2")
 
 
-def test_calc_setup(tmp_path, monkeypatch):
+def test_calc_setup(tmp_path, monkeypatch, caplog):
     monkeypatch.chdir(tmp_path)
     make_files()
 
@@ -41,9 +41,12 @@ def test_calc_setup(tmp_path, monkeypatch):
         atoms.calc = EMT()
         settings = get_settings()
 
-        tmpdir, results_dir = calc_setup(atoms)
+        with caplog.at_level(INFO):
+            tmpdir, results_dir = calc_setup(atoms)
 
         assert tmpdir.is_dir()
+        assert f"Run directory = {tmpdir}" in caplog.text
+        assert "Calculation will run at" not in caplog.text
         assert "tmp" in str(tmpdir)
         assert results_dir.name == tmpdir.name.split("tmp-")[-1]
         assert str(settings.RESULTS_DIR) in str(results_dir)
@@ -59,12 +62,9 @@ def test_calc_setup(tmp_path, monkeypatch):
 @pytest.mark.parametrize(
     "copy_files",
     [
-        {Path(): ["file1.txt"]},
-        {Path(): "file1.txt"},
-        {Path(): "file1*"},
-        Copy({Path(): ["file1.txt"]}),
-        Copy({Path(): "file1.txt"}),
-        Copy({Path(): "file1*"}),
+        [{"source": Path(), "filenames": ["file1.txt"]}],
+        [{"source": Path(), "filenames": "file1.txt"}],
+        [{"source": Path(), "filenames": "file1*"}],
     ],
 )
 def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
@@ -90,14 +90,10 @@ def test_calc_setup_v2(tmp_path, monkeypatch, copy_files):
 @pytest.mark.parametrize(
     "copy_files",
     [
-        {Path("saved"): "file1.txt"},
-        {"saved": "file1.txt"},
-        {"saved": "file1*"},
-        {"saved": ["file1.txt"]},
-        Copy({Path("saved"): "file1.txt"}),
-        Copy({"saved": "file1.txt"}),
-        Copy({"saved": "file1*"}),
-        Copy({"saved": ["file1.txt"]}),
+        [{"source": Path("saved"), "filenames": "file1.txt"}],
+        [{"source": "saved", "filenames": "file1.txt"}],
+        [{"source": "saved", "filenames": "file1*"}],
+        [{"source": "saved", "filenames": ["file1.txt"]}],
     ],
 )
 def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
@@ -124,10 +120,8 @@ def test_calc_setup_v3(tmp_path, monkeypatch, copy_files):
 @pytest.mark.parametrize(
     "copy_files",
     [
-        {"saved": "*"},
-        {Path("saved"): "*"},
-        Copy({"saved": "*"}),
-        Copy({Path("saved"): "*"}),
+        [{"source": "saved", "filenames": "*"}],
+        [{"source": Path("saved"), "filenames": "*"}],
     ],
 )
 def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
@@ -151,7 +145,7 @@ def test_calc_setup_v3_2(tmp_path, monkeypatch, copy_files):
         assert "file2.txt" in os.listdir(tmpdir)
 
 
-@pytest.mark.parametrize("copy_files", [{"saved": "*"}, Copy({"saved": "*"})])
+@pytest.mark.parametrize("copy_files", [[{"source": "saved", "filenames": "*"}]])
 def test_calc_setup_v4(tmp_path, monkeypatch, copy_files):
     monkeypatch.chdir(tmp_path)
     make_files3()

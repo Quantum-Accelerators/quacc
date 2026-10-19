@@ -16,8 +16,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from numpy.typing import NDArray
 
-    from quacc.types import OptParams, OptSchema, RunSchema, SourceDirectory
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, OptParams, OptSchema, RunSchema
 
 
 @job
@@ -30,7 +29,7 @@ def static_job(
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
@@ -97,7 +96,7 @@ def relax_job(
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
@@ -170,7 +169,7 @@ def freq_job(
     orcasimpleinput: list[str] | None = None,
     orcablocks: list[str] | None = None,
     nprocs: int | Literal["max"] = "max",
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> RunSchema:
     """
@@ -239,7 +238,7 @@ def ase_relax_job(
     orcablocks: list[str] | None = None,
     opt_params: OptParams | None = None,
     nprocs: int | Literal["max"] = "max",
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> OptSchema:
     """
@@ -311,7 +310,7 @@ def ase_quasi_irc_job(
     orcablocks: list[str] | None = None,
     opt_params: OptParams | None = None,
     nprocs: int | Literal["max"] = "max",
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
 ) -> OptSchema:
     """

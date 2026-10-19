@@ -15,7 +15,6 @@ from quacc.recipes.vasp._base import (
     run_and_summarize_opt,
     run_and_summarize_vib_and_thermo,
 )
-from quacc.wflow_tools.job_argument import Copy
 
 if TYPE_CHECKING:
     from typing import Any
@@ -23,8 +22,8 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc.types import (
+        CopyFiles,
         DoubleRelaxSchema,
-        Filenames,
         OptParams,
         SourceDirectory,
         VaspASEOptSchema,
@@ -38,14 +37,12 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     preset: str | None = "DefaultSetGGA",
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
-    Carry out a single-point calculation. If you want high quality forces,
-    then you should set ISMEAR = 0 instead of ISMEAR = -5 (particularly for
-    metals).
+    Carry out a single-point calculation.
 
     Parameters
     ----------
@@ -70,7 +67,6 @@ def static_job(
         See the type-hint for the data structure.
     """
     calc_defaults = {
-        "ismear": -5,
         "laechg": True,
         "lcharg": True,
         "lreal": False,
@@ -93,9 +89,9 @@ def relax_job(
     atoms: Atoms,
     preset: str | None = "DefaultSetGGA",
     relax_cell: bool = False,
-    copy_files: SourceDirectory | Copy | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Relax a structure.
@@ -193,7 +189,7 @@ def double_relax_flow(
         summary1["atoms"],
         preset=preset,
         relax_cell=relax_cell,
-        copy_files=Copy({summary1["dir_name"]: ["WAVECAR*"]}),
+        copy_files=[{"source": summary1["dir_name"], "filenames": ["WAVECAR*"]}],
         **relax2_kwargs,
     )
 
@@ -206,9 +202,9 @@ def ase_relax_job(
     preset: str | None = "DefaultSetGGA",
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspASEOptSchema:
     """
     Relax a structure.
@@ -264,7 +260,7 @@ def non_scf_job(
     line_kpt_density: float = 20,
     calculate_optics: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> VaspSchema:
     """
     Carry out a non-self-consistent field (NSCF) calculation.
@@ -343,7 +339,9 @@ def non_scf_job(
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
         additional_fields={"name": "VASP Non-SCF"} | (additional_fields or {}),
-        copy_files={prev_dir: ["CHGCAR*", "WAVECAR*"]} if prev_dir else None,
+        copy_files=[{"source": prev_dir, "filenames": ["CHGCAR*", "WAVECAR*"]}]
+        if prev_dir
+        else None,
     )
 
 
@@ -356,8 +354,8 @@ def freq_job(
     pressure: float = 1.0,
     thermo_method: Literal["harmonic", "ideal_gas"] = "harmonic",
     vib_kwargs: VibKwargs | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
-    **calc_kwargs,
+    copy_files: CopyFiles | None = None,
+    **calc_kwargs: Any,
 ) -> VibThermoSchema:
     """
     Run a frequency job and calculate thermochemistry.

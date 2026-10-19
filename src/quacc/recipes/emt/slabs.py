@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow
 from quacc.recipes.emt.core import relax_job, static_job
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -61,12 +61,11 @@ def bulk_to_slabs_flow(
         [OptSchema][quacc.schemas.ase.Summarize.opt] for each slab.
         See the return type-hint for the data structure.
     """
-    relax_job_, static_job_ = customize_funcs(
-        ["relax_job", "static_job"],
-        [relax_job, static_job],
+    relax_job_, static_job_ = customize_jobs(
+        {"relax_job": relax_job, "static_job": static_job},
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     return bulk_to_slabs_subflow(
         atoms,

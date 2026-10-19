@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from functools import partial, wraps
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar, overload
 
 from quacc.settings import change_settings_wrap
 from quacc.wflow_tools.context import NodeType, tracked
@@ -15,9 +15,21 @@ if TYPE_CHECKING:
 Job = Callable[..., Any]
 Flow = Callable[..., Any]
 Subflow = Callable[..., Any]
+P = ParamSpec("P")
+R = TypeVar("R")
 
 
-def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
+@overload
+def job(_func: Callable[P, R], **kwargs: Any) -> Callable[P, R]: ...
+
+
+@overload
+def job(
+    _func: None = None, **kwargs: Any
+) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
+
+
+def job(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Job:
     """
     Decorator for individual compute jobs. This is a `#!Python @job` decorator. Think of
     each `#!Python @job`-decorated function as an individual SLURM job, if that helps.
@@ -141,7 +153,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
         # See https://github.com/dask/dask/issues/10733
 
         @wraps(_func)
-        def wrapper(*f_args, **f_kwargs):
+        def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
             return _func(*f_args, **f_kwargs)
 
         return Delayed_(delayed(wrapper, **kwargs))
@@ -164,7 +176,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
         if settings.PREFECT_AUTO_SUBMIT:
 
             @wraps(_func)
-            def wrapper(*f_args, **f_kwargs):
+            def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
                 decorated = task(_func, **kwargs)
                 return decorated.submit(*f_args, **f_kwargs)
 
@@ -174,14 +186,14 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
-        _ray_target = _wrap_partial_for_ray(_func)
+        _ray_target = _wrap_ray_target(_wrap_partial_for_ray(_func), ray)
 
         remote_func = (
             ray.remote(**kwargs)(_ray_target) if kwargs else ray.remote(_ray_target)
         )
 
         @wraps(_ray_target)
-        def wrapper(*f_args, **f_kwargs):
+        def wrapper(*f_args: Any, **f_kwargs: Any) -> RayFuture:
             f_args = tuple(_unwrap_ray_future(a) for a in f_args)
             f_kwargs = {k: _unwrap_ray_future(v) for k, v in f_kwargs.items()}
             return RayFuture(remote_func.remote(*f_args, **f_kwargs))
@@ -192,7 +204,17 @@ def job(_func: Callable[..., Any] | None = None, **kwargs) -> Job:
         return _func
 
 
-def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
+@overload
+def flow(_func: Callable[P, R], **kwargs: Any) -> Callable[P, R]: ...
+
+
+@overload
+def flow(
+    _func: None = None, **kwargs: Any
+) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
+
+
+def flow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Flow:
     """
     Decorator for workflows, which consist of at least one compute job. This is a
     `#!Python @flow` decorator.
@@ -334,7 +356,17 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs) -> Flow:
         return tracked(NodeType.FLOW)(_func)
 
 
-def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
+@overload
+def subflow(_func: Callable[P, R], **kwargs: Any) -> Callable[P, R]: ...
+
+
+@overload
+def subflow(
+    _func: None = None, **kwargs: Any
+) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
+
+
+def subflow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Subflow:
     """
     Decorator for (dynamic) sub-workflows. This is a `#!Python @subflow` decorator.
 
@@ -508,7 +540,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         # See https://github.com/dask/dask/issues/10733
 
         @wraps(_func)
-        def wrapper(*f_args, **f_kwargs):
+        def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
             with worker_client() as client:
                 futures = client.compute(_func(*f_args, **f_kwargs))
                 return client.gather(futures)
@@ -544,14 +576,14 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
 
         return task(_func, namespace=_func.__module__, **kwargs)
     elif settings.WORKFLOW_ENGINE == "jobflow":
-        return _get_jobflow_wrapped_func(_func, **kwargs)
+        return _get_jobflow_wrapped_subflow(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
-        target_func = _wrap_partial_for_ray(_func)
+        target_func = _wrap_ray_target(_wrap_partial_for_ray(_func), ray)
 
         @wraps(target_func)
-        def _ray_subflow_target(*f_args, **f_kwargs):
+        def _ray_subflow_target(*f_args: Any, **f_kwargs: Any) -> Any:
             return _resolve_ray_subflow_result(target_func(*f_args, **f_kwargs), ray)
 
         remote_subflow = (
@@ -561,7 +593,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs) -> Subflow:
         )
 
         @wraps(target_func)
-        def wrapper(*f_args, **f_kwargs):
+        def wrapper(*f_args: Any, **f_kwargs: Any) -> RayFuture:
             f_args = tuple(_unwrap_ray_future(a) for a in f_args)
             f_kwargs = {k: _unwrap_ray_future(v) for k, v in f_kwargs.items()}
             return RayFuture(remote_subflow.remote(*f_args, **f_kwargs))
@@ -599,11 +631,11 @@ def _get_parsl_wrapped_func(
     )
 
     def wrapper(
-        *f_args,
-        walltime=walltime,  # noqa: ARG001
-        parsl_resource_specification=parsl_resource_specification,  # noqa: ARG001
-        **f_kwargs,
-    ):
+        *f_args: object,
+        walltime: object = walltime,  # noqa: ARG001
+        parsl_resource_specification: object = parsl_resource_specification,  # noqa: ARG001
+        **f_kwargs: Any,
+    ) -> object:
         return func(*f_args, **f_kwargs)
 
     if getattr(func, "_changed", False):
@@ -614,7 +646,7 @@ def _get_parsl_wrapped_func(
 
 
 def _get_prefect_wrapped_flow(
-    _func: Callable, settings: QuaccSettings, **kwargs
+    _func: Callable, settings: QuaccSettings, **kwargs: Any
 ) -> Callable:
     from prefect import flow as prefect_flow
     from prefect.futures import resolve_futures_to_results
@@ -624,7 +656,7 @@ def _get_prefect_wrapped_flow(
         if settings.PREFECT_RESOLVE_FLOW_RESULTS:
 
             @wraps(_func)
-            async def async_wrapper(*f_args, **f_kwargs):
+            async def async_wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
                 result = await _func(*f_args, **f_kwargs)
                 return resolve_futures_to_results(result)
 
@@ -636,7 +668,7 @@ def _get_prefect_wrapped_flow(
         if settings.PREFECT_RESOLVE_FLOW_RESULTS:
 
             @wraps(_func)
-            def sync_wrapper(*f_args, **f_kwargs):
+            def sync_wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
                 result = _func(*f_args, **f_kwargs)
                 return resolve_futures_to_results(result)
 
@@ -645,10 +677,29 @@ def _get_prefect_wrapped_flow(
             return prefect_flow(_func, validate_parameters=False, **kwargs)
 
 
-def _get_jobflow_wrapped_func(method=None, **job_kwargs):
+def _get_jobflow_wrapped_func(
+    method: Callable | None = None, **job_kwargs: Any
+) -> Callable:
     from jobflow import job as jf_job
 
     return jf_job(method, **job_kwargs)
+
+
+def _get_jobflow_wrapped_subflow(method: Callable, **job_kwargs: Any) -> Callable:
+    from jobflow import Flow
+    from jobflow import job as jf_job
+    from jobflow.core.flow import flow_build_context
+    from jobflow.utils import replace_job_or_flow_with_output
+
+    @jf_job(**job_kwargs)
+    @wraps(method)
+    def wrapped(*args: Any, **kwargs: Any) -> Flow:
+        children = []
+        with flow_build_context(children):
+            output = method(*args, **kwargs)
+        return Flow(jobs=children, output=replace_job_or_flow_with_output(output))
+
+    return wrapped
 
 
 def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:
@@ -664,13 +715,13 @@ class Delayed_:
 
     __slots__ = ("func",)
 
-    def __init__(self, func):
+    def __init__(self, func: Callable) -> None:
         self.func = func
 
-    def __reduce__(self):
+    def __reduce__(self) -> tuple[type[Delayed_], tuple[Callable]]:
         return (Delayed_, (self.func,))
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
         return self.func(*args, **kwargs)
 
 
@@ -686,7 +737,7 @@ class RayFuture:
     def __init__(self, ref: Any) -> None:
         self._ref = ref
 
-    def __reduce__(self):
+    def __reduce__(self) -> tuple[type[RayFuture], tuple[Any]]:
         return (RayFuture, (self._ref,))
 
     def __getitem__(self, key: Any) -> RayFuture:
@@ -726,7 +777,7 @@ def _wrap_partial_for_ray(func: Callable) -> Callable:
     inner = func
 
     @wraps(inner.func)
-    def _real(*f_args, **f_kwargs):
+    def _real(*f_args: Any, **f_kwargs: Any) -> Any:
         return inner(*f_args, **f_kwargs)
 
     return _real
@@ -738,20 +789,32 @@ def _ray_getitem(obj: Any, k: Any) -> Any:
 
 
 def _resolve_ray_value(value: Any, ray_mod: Any) -> Any:
-    """Resolve a single ``RayFuture``/``ObjectRef`` to its concrete value."""
+    """Recursively resolve ``RayFuture``/``ObjectRef`` values."""
     if isinstance(value, RayFuture):
         return ray_mod.get(value._ref)
     if isinstance(value, ray_mod.ObjectRef):
         return ray_mod.get(value)
+    if type(value) is list:
+        return [_resolve_ray_value(v, ray_mod) for v in value]
+    if type(value) is tuple:
+        return tuple(_resolve_ray_value(v, ray_mod) for v in value)
+    if type(value) is dict:
+        return {k: _resolve_ray_value(v, ray_mod) for k, v in value.items()}
     return value
+
+
+def _wrap_ray_target(func: Callable, ray_mod: Any) -> Callable:
+    """Resolve nested Ray references before invoking a remote function."""
+
+    @wraps(func)
+    def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
+        f_args = tuple(_resolve_ray_value(a, ray_mod) for a in f_args)
+        f_kwargs = {k: _resolve_ray_value(v, ray_mod) for k, v in f_kwargs.items()}
+        return func(*f_args, **f_kwargs)
+
+    return wrapper
 
 
 def _resolve_ray_subflow_result(result: Any, ray_mod: Any) -> Any:
     """Recursively resolve futures returned from a ray subflow body."""
-    if type(result) is list:
-        return [_resolve_ray_value(r, ray_mod) for r in result]
-    if type(result) is tuple:
-        return tuple(_resolve_ray_value(r, ray_mod) for r in result)
-    if type(result) is dict:
-        return {k: _resolve_ray_value(v, ray_mod) for k, v in result.items()}
     return _resolve_ray_value(result, ray_mod)

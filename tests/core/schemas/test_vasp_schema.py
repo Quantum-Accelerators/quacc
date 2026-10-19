@@ -4,6 +4,7 @@ import os
 from logging import WARNING, getLogger
 from pathlib import Path
 from shutil import copytree, move
+from types import SimpleNamespace
 
 import pytest
 from ase.io import read
@@ -237,3 +238,36 @@ def test_no_chargemol(tmp_path, monkeypatch, run1, caplog):
             atoms
         )
     assert "chargemol" not in results
+
+
+def test_unconverged_run_raises(monkeypatch, run1):
+    atoms = read(run1 / "OUTCAR.gz")
+    task_doc = SimpleNamespace(model_dump=lambda: {"state": "failed"})
+    monkeypatch.setattr(
+        "quacc.schemas.vasp.TaskDoc.from_directory", lambda _directory: task_doc
+    )
+
+    with pytest.raises(RuntimeError, match="VASP calculation did not converge"):
+        VaspSummarize(directory=run1, check_convergence=True).run(atoms)
+
+
+def test_analysis_errors_are_logged(tmp_path, monkeypatch, run1, caplog):
+    p = tmp_path / "vasp_run"
+    copytree(run1, p)
+    atoms = read(p / "OUTCAR.gz")
+
+    def raise_analysis_error(_directory):
+        raise RuntimeError("analysis failed")
+
+    monkeypatch.setattr("quacc.schemas.vasp.bader_runner", raise_analysis_error)
+    monkeypatch.setattr("quacc.schemas.vasp.chargemol_runner", raise_analysis_error)
+
+    with caplog.at_level(WARNING):
+        results = VaspSummarize(directory=p, run_bader=True, run_chargemol=True).run(
+            atoms
+        )
+
+    assert "bader" not in results
+    assert "chargemol" not in results
+    assert "Bader analysis could not be performed" in caplog.text
+    assert "Chargemol analysis could not be performed" in caplog.text

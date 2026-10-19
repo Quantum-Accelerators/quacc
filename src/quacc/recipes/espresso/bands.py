@@ -15,7 +15,7 @@ from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.recipes.espresso._base import run_and_summarize
 from quacc.utils.kpts import convert_pmg_kpts
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -23,21 +23,20 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import EspressoBandsSchema, Filenames, RunSchema, SourceDirectory
-    from quacc.wflow_tools.job_argument import Copy
+    from quacc.types import CopyFiles, EspressoBandsSchema, RunSchema, SourceDirectory
 
 
 @job
 def bands_pw_job(
     atoms: Atoms,
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     make_bandpath: bool = True,
     line_density: float = 20,
     force_gamma: bool = True,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic bandstructure calculation with pw.x.
@@ -53,11 +52,8 @@ def bands_pw_job(
     atoms
         The Atoms object.
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -115,11 +111,11 @@ def bands_pw_job(
 
 @job
 def bands_pp_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to re-order bands and computes bands-related properties with bands.x.
@@ -132,11 +128,8 @@ def bands_pp_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -169,11 +162,11 @@ def bands_pp_job(
 
 @job
 def fermi_surface_job(
-    copy_files: (SourceDirectory | list[SourceDirectory] | Copy | None) = None,
+    copy_files: CopyFiles | None = None,
     prev_outdir: SourceDirectory | None = None,
     test_run: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to retrieve the fermi surface with fs.x
@@ -185,11 +178,8 @@ def fermi_surface_job(
     Parameters
     ----------
     copy_files
-        Source directory or directories to copy files from. If a `SourceDirectory` or a
-        list of `SourceDirectory` is provided, this interface will automatically guess
-        which files have to be copied over by looking at the binary and `input_data`.
-        If a dict is provided, the mode is manual, keys are source directories and values
-        are relative path to files or directories to copy. Glob patterns are supported.
+        A list of file-transfer specifications. Each specification contains a `source`
+        directory and the `filenames` to copy. Glob patterns are supported.
     prev_outdir
         The output directory of a previous calculation. If provided, Quantum Espresso
         will directly read the necessary files from this directory, eliminating the need
@@ -222,9 +212,7 @@ def fermi_surface_job(
 @flow
 def bands_flow(
     atoms: Atoms,
-    copy_files: (
-        SourceDirectory | list[SourceDirectory] | dict[SourceDirectory, Filenames]
-    ),
+    copy_files: CopyFiles,
     run_bands_pp: bool = True,
     run_fermi_surface: bool = False,
     make_bandpath: bool = True,
@@ -287,12 +275,15 @@ def bands_flow(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_funcs(
-        ["bands_pw_job", "bands_pp_job", "fermi_surface_job"],
-        [bands_pw_job, bands_pp_job, fermi_surface_job],
+    (bands_pw_job_, bands_pp_job_, fermi_surface_job_) = customize_jobs(
+        {
+            "bands_pw_job": bands_pw_job,
+            "bands_pp_job": bands_pp_job,
+            "fermi_surface_job": fermi_surface_job,
+        },
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
 
     bands_results = bands_pw_job_(
         atoms,

@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+import pytest
 from ase.build import bulk
 
 from quacc import change_settings
@@ -34,10 +35,27 @@ def test_results_dir(tmp_path, monkeypatch):
         assert "opt.traj" in os.listdir(output["dir_name"])
 
 
+def test_change_settings_rejects_workflow_engine():
+    with (
+        pytest.raises(
+            ValueError, match="Cannot change the workflow engine in a context manager"
+        ),
+        change_settings({"WORKFLOW_ENGINE": "dask"}),
+    ):
+        pass
+
+
 def test_env_var(monkeypatch, tmp_path):
     p = tmp_path / "my/scratch/dir"
     monkeypatch.setenv("QUACC_SCRATCH_DIR", p)
     assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR
+
+
+def test_custodian_log_level(monkeypatch):
+    assert QuaccSettings().CUSTODIAN_LOG_LEVEL == "WARNING"
+
+    monkeypatch.setenv("QUACC_CUSTODIAN_LOG_LEVEL", "ERROR")
+    assert QuaccSettings().CUSTODIAN_LOG_LEVEL == "ERROR"
 
 
 def test_env_var2(monkeypatch, tmp_path):

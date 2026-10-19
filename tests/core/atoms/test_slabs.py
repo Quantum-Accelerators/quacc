@@ -7,6 +7,7 @@ import numpy as np
 import pytest
 from ase.build import bulk, fcc100, molecule
 from ase.io import read
+from pymatgen.core import Structure
 
 from quacc.atoms.slabs import (
     flip_atoms,
@@ -41,6 +42,9 @@ def test_flip_atoms():
     assert np.all(new_atoms.get_initial_magnetic_moments()[Zn_idx] == 2.0)
     assert np.all(new_atoms.get_initial_magnetic_moments()[Te_idx] == 1.0)
     assert new_atoms.info.get("test", None) == "hi"
+
+    flipped_structure = flip_atoms(atoms, return_struct=True)
+    assert isinstance(flipped_structure, Structure)
 
 
 def test_make_slabs_from_bulk(atoms_mag):
@@ -133,6 +137,13 @@ def test_make_adsorbate_structures():
     assert new_atoms[0].get_initial_magnetic_moments().tolist() == [*mags, 0, 0, 0]
     new_atoms = make_adsorbate_structures(atoms, h2o, modes=["ontop"])
     assert len(new_atoms) == 1
+
+    atoms_with_adsorbate_history = atoms.copy()
+    atoms_with_adsorbate_history.info["adsorbates"] = [{"existing": True}]
+    new_atoms = make_adsorbate_structures(
+        atoms_with_adsorbate_history, h2o, modes=["ontop"]
+    )
+    assert len(new_atoms[0].info["adsorbates"]) == 2
 
     new_atoms = make_adsorbate_structures(
         atoms, h2o, allowed_surface_symbols=["Cu", "Fe"]

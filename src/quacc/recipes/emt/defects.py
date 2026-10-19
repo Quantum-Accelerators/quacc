@@ -11,7 +11,7 @@ from quacc import flow
 from quacc.recipes.common.defects import bulk_to_defects_subflow
 from quacc.recipes.emt.core import relax_job, static_job
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.customizers import customize_funcs
+from quacc.wflow_tools.customizers import customize_jobs
 
 has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
 has_shakenbreak = bool(find_spec("shakenbreak"))
@@ -100,12 +100,11 @@ def bulk_to_defects_flow(
         or [quacc.schemas.ase.Summarize.opt][].
         See the return type-hint for the data structure.
     """
-    relax_job_, static_job_ = customize_funcs(
-        ["relax_job", "static_job"],
-        [relax_job, static_job],
+    relax_job_, static_job_ = customize_jobs(
+        {"relax_job": relax_job, "static_job": static_job},
         param_swaps=job_params,
         decorators=job_decorators,
-    )
+    ).values()
     make_defects_kwargs = recursive_dict_merge(
         make_defects_kwargs, {"defect_gen": defect_gen, "defect_charge": defect_charge}
     )

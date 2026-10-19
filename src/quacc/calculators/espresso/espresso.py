@@ -360,7 +360,7 @@ class Espresso(GenericFileIOCalculator):
         input_atoms: Atoms | None = None,
         preset: str | Path | None = None,
         template: EspressoTemplate | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """
         Initialize the Espresso calculator.

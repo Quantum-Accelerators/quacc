@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, RunSchema, SourceDirectory
+    from quacc.types import CopyFiles, RunSchema
 
 
 BASE_SET_METAL = {
@@ -55,10 +55,10 @@ def static_job(
     ] = "intermediate",
     kspacing: float | None = None,
     spin: Literal["none", "collinear", "non-collinear"] | None = None,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     agnostic_params: bool = False,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a basic SCF calculation with FHI-aims.
@@ -138,10 +138,10 @@ def relax_job(
     kspacing: float | None = None,
     spin: Literal["none", "collinear", "non-collinear"] | None = None,
     relax_cell: bool = False,
-    copy_files: SourceDirectory | dict[SourceDirectory, Filenames] | None = None,
+    copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     agnostic_params: bool = False,
-    **calc_kwargs,
+    **calc_kwargs: Any,
 ) -> RunSchema:
     """
     Function to carry out a structure relaxation with FHI-aims internal optimizer.

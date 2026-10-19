@@ -36,6 +36,17 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
+AIMD_CUSTODIAN_HANDLERS = [
+    "VaspErrorHandler",
+    "MeshSymmetryErrorHandler",
+    "PositiveEnergyErrorHandler",
+    "FrozenJobErrorHandler",
+    "StdErrHandler",
+    "LargeSigmaHandler",
+    "IncorrectSmearingHandler",
+]
+
+
 class Vasp(Vasp_):
     """This is a wrapper around the ASE Vasp calculator that adjusts INCAR parameters
     on-the-fly, allows for ASE to run VASP via Custodian, and supports several automatic
@@ -45,9 +56,9 @@ class Vasp(Vasp_):
     def __init__(
         self,
         input_atoms: Atoms,
-        preset: None | str | Path = None,
+        preset: str | Path | None = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
-        incar_copilot: Literal["off", "critical", "standard", "aggressive"]
+        incar_copilot_mode: Literal["off", "critical", "standard", "aggressive"]
         | DefaultSetting = QuaccDefault,
         copy_magmoms: bool | DefaultSetting = QuaccDefault,
         preset_mag_default: float | DefaultSetting = QuaccDefault,
@@ -59,7 +70,7 @@ class Vasp(Vasp_):
             | None
         ) = None,
         auto_dipole: bool | None = None,
-        **kwargs,
+        **kwargs: Any,
     ) -> None:
         """
         Initialize the VASP calculator.
@@ -77,7 +88,7 @@ class Vasp(Vasp_):
             override any corresponding preset values.
         use_custodian
             Whether to use Custodian to run VASP. Default is True in settings.
-        incar_copilot
+        incar_copilot_mode
             Controls VASP co-pilot mode for automated INCAR parameter handling.
 
             Options include:
@@ -124,10 +135,10 @@ class Vasp(Vasp_):
             if use_custodian == QuaccDefault
             else use_custodian
         )
-        incar_copilot = (
-            self._settings.VASP_INCAR_COPILOT
-            if incar_copilot == QuaccDefault
-            else incar_copilot
+        incar_copilot_mode = (
+            self._settings.VASP_INCAR_COPILOT_MODE
+            if incar_copilot_mode == QuaccDefault
+            else incar_copilot_mode
         )
         copy_magmoms = (
             self._settings.VASP_COPY_MAGMOMS
@@ -147,7 +158,7 @@ class Vasp(Vasp_):
         self.input_atoms = input_atoms
         self.preset = preset
         self.use_custodian = use_custodian
-        self.incar_copilot = incar_copilot
+        self.incar_copilot_mode = incar_copilot_mode
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
         self.mag_cutoff = mag_cutoff
@@ -199,7 +210,7 @@ class Vasp(Vasp_):
             potpaw_path = (
                 self._settings.VASP_PP_PATH / f"{potpaw_prefix}{potpaw_suffix}"
             ).resolve()
-            LOGGER.info(f"Using PAW pseudopotentials: {potpaw_path}")
+            LOGGER.info(f"PAW potentials = {potpaw_path}")
 
         # Set the ASE_VASP_VDW environment variable
         if self._settings.VASP_VDW:
@@ -218,7 +229,7 @@ class Vasp(Vasp_):
             self._settings.VASP_GAMMA_CMD if use_gamma else self._settings.VASP_CMD
         )
         full_vasp_cmd = f"{self._settings.VASP_PARALLEL_CMD} {vasp_cmd}"
-        LOGGER.info(f"Using VASP command: {full_vasp_cmd.strip()}")
+        LOGGER.info(f"VASP command = {full_vasp_cmd.strip()}")
 
         return full_vasp_cmd
 
@@ -304,12 +315,14 @@ class Vasp(Vasp_):
         self.user_calc_params = get_param_swaps(
             self.user_calc_params,
             self.input_atoms,
-            incar_copilot_mode=self.incar_copilot,
+            incar_copilot_mode=self.incar_copilot_mode,
             pmg_kpts=self.pmg_kpts,
         )
+        if self.incar_copilot_mode.lower() not in {"off", "critical"}:
+            self.user_calc_params = remove_unused_flags(self.user_calc_params)
 
         # Clean up the user calc parameters
-        self.user_calc_params = sort_dict(remove_unused_flags(self.user_calc_params))
+        self.user_calc_params = sort_dict(self.user_calc_params)
 
     def _run(
         self,
@@ -342,7 +355,10 @@ class Vasp(Vasp_):
             directory = self.directory
 
         if self.use_custodian:
-            run_custodian(directory=directory)
+            custodian_kwargs = {"directory": directory}
+            if self.int_params.get("ibrion") == 0 and self.int_params.get("nsw", 0) > 0:
+                custodian_kwargs["vasp_custodian_handlers"] = AIMD_CUSTODIAN_HANDLERS
+            run_custodian(**custodian_kwargs)
             return 0, None
 
         result = subprocess.run(

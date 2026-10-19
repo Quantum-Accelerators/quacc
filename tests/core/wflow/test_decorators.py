@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+import asyncio
+import sys
+from types import ModuleType, SimpleNamespace
+
 from quacc import flow, job, subflow
+from quacc.wflow_tools.context import NodeType, tracked
 
 
 def test_decorators(tmp_path, monkeypatch):
@@ -100,3 +105,68 @@ def test_decorators_v3(tmp_path, monkeypatch):
     assert job(mult)(1, 2) == 2
     assert flow(workflow)(1, 2, 3) == 9
     assert flow(dynamic_workflow)(1, 2, 3) == [6, 6, 6]
+
+
+def test_tracked_async_function():
+    @tracked(NodeType.JOB)
+    async def add(a, b):
+        return a + b
+
+    assert asyncio.run(add(1, 2)) == 3
+
+
+def test_ray_subflow_target_resolves_result(monkeypatch):
+    class ObjectRef:
+        def __init__(self, value):
+            self.value = value
+
+    class FakeRemote:
+        def __init__(self, func):
+            self.func = func
+
+        def remote(self, *args, **kwargs):
+            return ObjectRef(self.func(*args, **kwargs))
+
+    fake_ray = ModuleType("ray")
+    fake_ray.ObjectRef = ObjectRef
+    fake_ray.get = lambda value: value.value
+    fake_ray.remote = FakeRemote
+    monkeypatch.setitem(sys.modules, "ray", fake_ray)
+    monkeypatch.setattr(
+        "quacc.get_settings", lambda: SimpleNamespace(WORKFLOW_ENGINE="ray")
+    )
+
+    @subflow
+    def increment(value):
+        return value + 1
+
+    assert increment(ObjectRef(1)).result() == 2
+
+
+def test_ray_job_resolves_nested_inputs(monkeypatch):
+    class ObjectRef:
+        def __init__(self, value):
+            self.value = value
+
+    class FakeRemote:
+        def __init__(self, func):
+            self.func = func
+
+        def remote(self, *args, **kwargs):
+            return ObjectRef(self.func(*args, **kwargs))
+
+    fake_ray = ModuleType("ray")
+    fake_ray.ObjectRef = ObjectRef
+    fake_ray.get = lambda value: value.value
+    fake_ray.remote = FakeRemote
+    monkeypatch.setitem(sys.modules, "ray", fake_ray)
+    monkeypatch.setattr(
+        "quacc.get_settings", lambda: SimpleNamespace(WORKFLOW_ENGINE="ray")
+    )
+
+    @job
+    def identity(value):
+        return value
+
+    value = {"source": ObjectRef("resolved"), "filenames": [ObjectRef("*.txt")]}
+    assert identity(value).result() == {"source": "resolved", "filenames": ["*.txt"]}
