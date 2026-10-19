@@ -76,14 +76,15 @@ def test_relax_flow(tmp_path, monkeypatch, jobflow_output):
     assert "atoms" in jobflow_output(responses, workflow.jobs[-1])
 
 
-def test_relaxed_slabs(tmp_path, monkeypatch):
+@pytest.mark.parametrize("run_static", [True, False])
+def test_relaxed_slabs(tmp_path, monkeypatch, run_static):
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu")
 
     @flow
     def workflow(atoms):
         relaxed_bulk = relax_job(atoms)
-        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=False)
+        return bulk_to_slabs_flow(relaxed_bulk["atoms"], run_static=run_static)
 
     responses = jf.run_locally(workflow(atoms), ensure_success=True)
     results = [

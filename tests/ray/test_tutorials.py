@@ -27,7 +27,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
 
     future = bulk_to_slabs_flow(atoms)
 
-    assert "atoms" in future.result()[0]
+    assert "atoms" in future.result()["static"][0]
 
 
 def test_tutorial2a(tmp_path, monkeypatch):
@@ -74,7 +74,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
 
     future = workflow(atoms)
 
-    result = future.result()
+    result = future.result()["relax"]
 
     assert len(result) == 4
     assert "atoms" in result[0]

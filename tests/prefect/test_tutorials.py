@@ -34,7 +34,7 @@ def test_tutorial1b(tmp_path, monkeypatch):
     atoms = bulk("Cu")
 
     # Dispatch the workflow
-    results = bulk_to_slabs_flow(atoms)  # (1)!
+    results = bulk_to_slabs_flow(atoms)["static"]  # (1)!
 
     # Print the results
     for result in results:
@@ -100,7 +100,7 @@ def test_tutorial2c(tmp_path, monkeypatch):
     atoms = bulk("Cu")
 
     # Dispatch the workflow and retrieve result
-    results = workflow(atoms)
+    results = workflow(atoms)["relax"]
     assert len(results) == 4
     for result in results:
         assert "atoms" in result
