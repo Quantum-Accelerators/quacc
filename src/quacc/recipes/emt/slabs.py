@@ -60,6 +60,19 @@ def bulk_to_slabs_flow(
         Relaxation and static results, grouped under "relax" and "static".
         The "static" list is empty when run_static is False.
         See the return type-hint for the data structure.
+
+        ??? info "Output structure"
+
+            - `output["relax"]`: one [OptSchema][quacc.types.OptSchema] per slab.
+            - `output["static"]`: one [RunSchema][quacc.types.RunSchema] per slab
+              when `run_static=True` (the default), otherwise an empty list.
+
+            Both lists follow the generated slab order. For example,
+            `output["relax"][0]["trajectory"]` contains the first slab's relaxation
+            structures, and `output["static"][0]["results"]` contains its static
+            calculator results when static calculations are enabled.
+
+            --8<-- "docs/reference/_schemas/ase.md"
     """
     relax_job_, static_job_ = customize_jobs(
         {"relax_job": relax_job, "static_job": static_job},

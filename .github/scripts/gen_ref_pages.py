@@ -9,12 +9,15 @@ import tomllib
 from pathlib import Path
 from urllib.parse import urljoin
 
+from schema_diagrams import write_schema_diagrams
+
 with Path("_zensical.toml").open("rb") as config_file:
     config = tomllib.load(config_file)["project"]
 edit_base = urljoin(config["repo_url"], config["edit_uri"])
 
 out_dir = Path("docs/reference")
 out_dir.mkdir(parents=True, exist_ok=True)
+write_schema_diagrams(out_dir)
 
 nav_lines = []
 seen_dirs: set[tuple[str, ...]] = set()

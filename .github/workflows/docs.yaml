@@ -34,6 +34,9 @@ jobs:
       - name: Generate reference pages
         run: python .github/scripts/gen_ref_pages.py
 
+      - name: Test schema diagrams
+        run: python -m unittest discover -s .github/scripts -p test_schema_diagrams.py
+
       - name: Generate zensical.toml
         run: python .github/scripts/gen_zensical_toml.py
 
