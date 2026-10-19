@@ -8336,9 +8336,13 @@ using the "QUACC" prefix. e.g. <code>export QUACC_SCRATCH_DIR=/path/to/scratch</
 
 <a href="#quacc.settings.QuaccSettings.GULP_LIB" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">GULP_LIB</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pydantic.Field&lt;/code&gt;" href="https://docs.pydantic.dev/latest/api/pydantic/fields/#pydantic.fields.Field">Field</a></span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/os.html#module-os">os</a></span><span class="o">.</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;os.environ&lt;/code&gt;" href="https://docs.python.org/3/library/os.html#os.environ">environ</a></span><span class="o">.</span><span class="n"><span title="os.environ.get">get</span></span><span class="p">(</span><span class="s2">"GULP_LIB"</span><span class="p">),</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n"><span title="pydantic.Field(description)">description</span></span><span class="o">=</span><span class="s2">"Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="p">(</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/os.html#module-os">os</a></span><span class="o">.</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;os.environ&lt;/code&gt;" href="https://docs.python.org/3/library/os.html#os.environ">environ</a></span><span class="p">[</span><span class="s2">"GULP_LIB"</span><span class="p">])</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        <span class="k">if</span> <span class="s2">"GULP_LIB"</span> <span class="ow">in</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/os.html#module-os">os</a></span><span class="o">.</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;os.environ&lt;/code&gt;" href="https://docs.python.org/3/library/os.html#os.environ">environ</a></span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="k">else</span> <span class="kc">None</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="p">),</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n"><span title="pydantic.Field(description)">description</span></span><span class="o">=</span><span class="s2">"Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9205,9 +9209,13 @@ using the "QUACC" prefix. e.g. <code>export QUACC_SCRATCH_DIR=/path/to/scratch</
 
 <a href="#quacc.settings.QuaccSettings.VASP_PP_PATH" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">VASP_PP_PATH</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pydantic.Field&lt;/code&gt;" href="https://docs.pydantic.dev/latest/api/pydantic/fields/#pydantic.fields.Field">Field</a></span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/os.html#module-os">os</a></span><span class="o">.</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;os.environ&lt;/code&gt;" href="https://docs.python.org/3/library/os.html#os.environ">environ</a></span><span class="o">.</span><span class="n"><span title="os.environ.get">get</span></span><span class="p">(</span><span class="s2">"VASP_PP_PATH"</span><span class="p">),</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n"><span title="pydantic.Field(description)">description</span></span><span class="o">=</span><span class="s2">"Path to the VASP pseudopotential folders."</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="p">(</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/os.html#module-os">os</a></span><span class="o">.</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;os.environ&lt;/code&gt;" href="https://docs.python.org/3/library/os.html#os.environ">environ</a></span><span class="p">[</span><span class="s2">"VASP_PP_PATH"</span><span class="p">])</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        <span class="k">if</span> <span class="s2">"VASP_PP_PATH"</span> <span class="ow">in</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/os.html#module-os">os</a></span><span class="o">.</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;os.environ&lt;/code&gt;" href="https://docs.python.org/3/library/os.html#os.environ">environ</a></span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="k">else</span> <span class="kc">None</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="p">),</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n"><span title="pydantic.Field(description)">description</span></span><span class="o">=</span><span class="s2">"Path to the VASP pseudopotential folders."</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9338,9 +9346,13 @@ using the "QUACC" prefix. e.g. <code>export QUACC_SCRATCH_DIR=/path/to/scratch</
 
 <a href="#quacc.settings.QuaccSettings.VASP_VDW" class="headerlink" title="Permanent link">&para;</a></h3>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">VASP_VDW</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pydantic.Field&lt;/code&gt;" href="https://docs.pydantic.dev/latest/api/pydantic/fields/#pydantic.fields.Field">Field</a></span><span class="p">(</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/os.html#module-os">os</a></span><span class="o">.</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;os.environ&lt;/code&gt;" href="https://docs.python.org/3/library/os.html#os.environ">environ</a></span><span class="o">.</span><span class="n"><span title="os.environ.get">get</span></span><span class="p">(</span><span class="s2">"ASE_VASP_VDW"</span><span class="p">),</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n"><span title="pydantic.Field(description)">description</span></span><span class="o">=</span><span class="s2">"Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals."</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="p">(</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>        <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;pathlib.Path&lt;/code&gt;" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a></span><span class="p">(</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/os.html#module-os">os</a></span><span class="o">.</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;os.environ&lt;/code&gt;" href="https://docs.python.org/3/library/os.html#os.environ">environ</a></span><span class="p">[</span><span class="s2">"ASE_VASP_VDW"</span><span class="p">])</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        <span class="k">if</span> <span class="s2">"ASE_VASP_VDW"</span> <span class="ow">in</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/os.html#module-os">os</a></span><span class="o">.</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;os.environ&lt;/code&gt;" href="https://docs.python.org/3/library/os.html#os.environ">environ</a></span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="k">else</span> <span class="kc">None</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="p">),</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n"><span title="pydantic.Field(description)">description</span></span><span class="o">=</span><span class="s2">"Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals."</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">)</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -9438,39 +9450,39 @@ using the "QUACC" prefix. e.g. <code>export QUACC_SCRATCH_DIR=/path/to/scratch</
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/settings.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-468">468</a></span>
-<span class="normal"><a href="#__codelineno-0-469">469</a></span>
-<span class="normal"><a href="#__codelineno-0-470">470</a></span>
-<span class="normal"><a href="#__codelineno-0-471">471</a></span>
-<span class="normal"><a href="#__codelineno-0-472">472</a></span>
-<span class="normal"><a href="#__codelineno-0-473">473</a></span>
-<span class="normal"><a href="#__codelineno-0-474">474</a></span>
-<span class="normal"><a href="#__codelineno-0-475">475</a></span>
-<span class="normal"><a href="#__codelineno-0-476">476</a></span>
-<span class="normal"><a href="#__codelineno-0-477">477</a></span>
-<span class="normal"><a href="#__codelineno-0-478">478</a></span>
-<span class="normal"><a href="#__codelineno-0-479">479</a></span>
-<span class="normal"><a href="#__codelineno-0-480">480</a></span>
-<span class="normal"><a href="#__codelineno-0-481">481</a></span>
-<span class="normal"><a href="#__codelineno-0-482">482</a></span>
-<span class="normal"><a href="#__codelineno-0-483">483</a></span>
-<span class="normal"><a href="#__codelineno-0-484">484</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-468"><a id="__codelineno-0-468" name="__codelineno-0-468"></a><span class="nd">@field_validator</span><span class="p">(</span>
-</span><span id="__span-0-469"><a id="__codelineno-0-469" name="__codelineno-0-469"></a>    <span class="s2">"RESULTS_DIR"</span><span class="p">,</span>
-</span><span id="__span-0-470"><a id="__codelineno-0-470" name="__codelineno-0-470"></a>    <span class="s2">"SCRATCH_DIR"</span><span class="p">,</span>
-</span><span id="__span-0-471"><a id="__codelineno-0-471" name="__codelineno-0-471"></a>    <span class="s2">"ESPRESSO_PRESET_DIR"</span><span class="p">,</span>
-</span><span id="__span-0-472"><a id="__codelineno-0-472" name="__codelineno-0-472"></a>    <span class="s2">"ESPRESSO_PSEUDO"</span><span class="p">,</span>
-</span><span id="__span-0-473"><a id="__codelineno-0-473" name="__codelineno-0-473"></a>    <span class="s2">"GULP_LIB"</span><span class="p">,</span>
-</span><span id="__span-0-474"><a id="__codelineno-0-474" name="__codelineno-0-474"></a>    <span class="s2">"QCHEM_LOCAL_SCRATCH"</span><span class="p">,</span>
-</span><span id="__span-0-475"><a id="__codelineno-0-475" name="__codelineno-0-475"></a>    <span class="s2">"VASP_PRESET_DIR"</span><span class="p">,</span>
-</span><span id="__span-0-476"><a id="__codelineno-0-476" name="__codelineno-0-476"></a>    <span class="s2">"VASP_PP_PATH"</span><span class="p">,</span>
-</span><span id="__span-0-477"><a id="__codelineno-0-477" name="__codelineno-0-477"></a>    <span class="s2">"VASP_VDW"</span><span class="p">,</span>
-</span><span id="__span-0-478"><a id="__codelineno-0-478" name="__codelineno-0-478"></a><span class="p">)</span>
-</span><span id="__span-0-479"><a id="__codelineno-0-479" name="__codelineno-0-479"></a><span class="nd">@classmethod</span>
-</span><span id="__span-0-480"><a id="__codelineno-0-480" name="__codelineno-0-480"></a><span class="k">def</span><span class="w"> </span><span class="nf">expand_paths</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-481"><a id="__codelineno-0-481" name="__codelineno-0-481"></a><span class="w">    </span><span class="sd">"""Expand ~/ and $ENV_VARS in paths."""</span>
-</span><span id="__span-0-482"><a id="__codelineno-0-482" name="__codelineno-0-482"></a>    <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
-</span><span id="__span-0-483"><a id="__codelineno-0-483" name="__codelineno-0-483"></a>        <span class="n">v</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">v</span><span class="p">))</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
-</span><span id="__span-0-484"><a id="__codelineno-0-484" name="__codelineno-0-484"></a>    <span class="k">return</span> <span class="n">v</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-468">468</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-469">469</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-470">470</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-471">471</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-472">472</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-473">473</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-474">474</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-475">475</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-476">476</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-477">477</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-478">478</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-479">479</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-480">480</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-481">481</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-482">482</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-483">483</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-484">484</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-468"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-468" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-468"></a><span class="nd">@field_validator</span><span class="p">(</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-469"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-469" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-469"></a>    <span class="s2">"RESULTS_DIR"</span><span class="p">,</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-470"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-470" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-470"></a>    <span class="s2">"SCRATCH_DIR"</span><span class="p">,</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-471"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-471" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-471"></a>    <span class="s2">"ESPRESSO_PRESET_DIR"</span><span class="p">,</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-472"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-472" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-472"></a>    <span class="s2">"ESPRESSO_PSEUDO"</span><span class="p">,</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-473"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-473" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-473"></a>    <span class="s2">"GULP_LIB"</span><span class="p">,</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-474"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-474" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-474"></a>    <span class="s2">"QCHEM_LOCAL_SCRATCH"</span><span class="p">,</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-475"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-475" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-475"></a>    <span class="s2">"VASP_PRESET_DIR"</span><span class="p">,</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-476"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-476" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-476"></a>    <span class="s2">"VASP_PP_PATH"</span><span class="p">,</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-477"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-477" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-477"></a>    <span class="s2">"VASP_VDW"</span><span class="p">,</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-478"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-478" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-478"></a><span class="p">)</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-479"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-479" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-479"></a><span class="nd">@classmethod</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-480"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-480" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-480"></a><span class="k">def</span><span class="w"> </span><span class="nf">expand_paths</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-481"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-481" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-481"></a><span class="w">    </span><span class="sd">"""Expand ~/ and $ENV_VARS in paths."""</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-482"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-482" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-482"></a>    <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-483"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-483" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-483"></a>        <span class="n">v</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expandvars</span><span class="p">(</span><span class="n">v</span><span class="p">))</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span>
+</span><span id="quacc.settings.QuaccSettings.expand_paths--source--__span-0-484"><a id="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-484" name="quacc.settings.QuaccSettings.expand_paths--source--__codelineno-0-484"></a>    <span class="k">return</span> <span class="n">v</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -9527,41 +9539,41 @@ of built in defaults. Will also convert common strings to their proper types.</p
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/settings.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-533">533</a></span>
-<span class="normal"><a href="#__codelineno-0-534">534</a></span>
-<span class="normal"><a href="#__codelineno-0-535">535</a></span>
-<span class="normal"><a href="#__codelineno-0-536">536</a></span>
-<span class="normal"><a href="#__codelineno-0-537">537</a></span>
-<span class="normal"><a href="#__codelineno-0-538">538</a></span>
-<span class="normal"><a href="#__codelineno-0-539">539</a></span>
-<span class="normal"><a href="#__codelineno-0-540">540</a></span>
-<span class="normal"><a href="#__codelineno-0-541">541</a></span>
-<span class="normal"><a href="#__codelineno-0-542">542</a></span>
-<span class="normal"><a href="#__codelineno-0-543">543</a></span>
-<span class="normal"><a href="#__codelineno-0-544">544</a></span>
-<span class="normal"><a href="#__codelineno-0-545">545</a></span>
-<span class="normal"><a href="#__codelineno-0-546">546</a></span>
-<span class="normal"><a href="#__codelineno-0-547">547</a></span>
-<span class="normal"><a href="#__codelineno-0-548">548</a></span>
-<span class="normal"><a href="#__codelineno-0-549">549</a></span>
-<span class="normal"><a href="#__codelineno-0-550">550</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-533"><a id="__codelineno-0-533" name="__codelineno-0-533"></a><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
-</span><span id="__span-0-534"><a id="__codelineno-0-534" name="__codelineno-0-534"></a><span class="nd">@classmethod</span>
-</span><span id="__span-0-535"><a id="__codelineno-0-535" name="__codelineno-0-535"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_user_settings</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span id="__span-0-536"><a id="__codelineno-0-536" name="__codelineno-0-536"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-537"><a id="__codelineno-0-537" name="__codelineno-0-537"></a><span class="sd">    Loads settings from a root file if available and uses that as defaults in place</span>
-</span><span id="__span-0-538"><a id="__codelineno-0-538" name="__codelineno-0-538"></a><span class="sd">    of built in defaults. Will also convert common strings to their proper types.</span>
-</span><span id="__span-0-539"><a id="__codelineno-0-539" name="__codelineno-0-539"></a>
-</span><span id="__span-0-540"><a id="__codelineno-0-540" name="__codelineno-0-540"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-541"><a id="__codelineno-0-541" name="__codelineno-0-541"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-542"><a id="__codelineno-0-542" name="__codelineno-0-542"></a><span class="sd">    settings</span>
-</span><span id="__span-0-543"><a id="__codelineno-0-543" name="__codelineno-0-543"></a><span class="sd">        Settings to load.</span>
-</span><span id="__span-0-544"><a id="__codelineno-0-544" name="__codelineno-0-544"></a>
-</span><span id="__span-0-545"><a id="__codelineno-0-545" name="__codelineno-0-545"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-546"><a id="__codelineno-0-546" name="__codelineno-0-546"></a><span class="sd">    -------</span>
-</span><span id="__span-0-547"><a id="__codelineno-0-547" name="__codelineno-0-547"></a><span class="sd">    dict</span>
-</span><span id="__span-0-548"><a id="__codelineno-0-548" name="__codelineno-0-548"></a><span class="sd">        Loaded settings.</span>
-</span><span id="__span-0-549"><a id="__codelineno-0-549" name="__codelineno-0-549"></a><span class="sd">    """</span>
-</span><span id="__span-0-550"><a id="__codelineno-0-550" name="__codelineno-0-550"></a>    <span class="k">return</span> <span class="n">_type_handler</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_use_custom_config_settings</span><span class="p">(</span><span class="n">settings</span><span class="p">))</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-533">533</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-534">534</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-535">535</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-536">536</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-537">537</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-538">538</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-539">539</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-540">540</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-541">541</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-542">542</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-543">543</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-544">544</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-545">545</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-546">546</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-547">547</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-548">548</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-549">549</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-550">550</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-533"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-533" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-533"></a><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"before"</span><span class="p">)</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-534"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-534" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-534"></a><span class="nd">@classmethod</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-535"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-535" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-535"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_user_settings</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-536"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-536" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-536"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-537"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-537" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-537"></a><span class="sd">    Loads settings from a root file if available and uses that as defaults in place</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-538"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-538" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-538"></a><span class="sd">    of built in defaults. Will also convert common strings to their proper types.</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-539"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-539" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-539"></a>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-540"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-540" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-540"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-541"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-541" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-541"></a><span class="sd">    ----------</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-542"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-542" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-542"></a><span class="sd">    settings</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-543"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-543" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-543"></a><span class="sd">        Settings to load.</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-544"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-544" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-544"></a>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-545"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-545" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-545"></a><span class="sd">    Returns</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-546"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-546" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-546"></a><span class="sd">    -------</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-547"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-547" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-547"></a><span class="sd">    dict</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-548"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-548" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-548"></a><span class="sd">        Loaded settings.</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-549"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-549" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-549"></a><span class="sd">    """</span>
+</span><span id="quacc.settings.QuaccSettings.load_user_settings--source--__span-0-550"><a id="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-550" name="quacc.settings.QuaccSettings.load_user_settings--source--__codelineno-0-550"></a>    <span class="k">return</span> <span class="n">_type_handler</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_use_custom_config_settings</span><span class="p">(</span><span class="n">settings</span><span class="p">))</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -9590,19 +9602,19 @@ of built in defaults. Will also convert common strings to their proper types.</p
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/settings.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-486">486</a></span>
-<span class="normal"><a href="#__codelineno-0-487">487</a></span>
-<span class="normal"><a href="#__codelineno-0-488">488</a></span>
-<span class="normal"><a href="#__codelineno-0-489">489</a></span>
-<span class="normal"><a href="#__codelineno-0-490">490</a></span>
-<span class="normal"><a href="#__codelineno-0-491">491</a></span>
-<span class="normal"><a href="#__codelineno-0-492">492</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-486"><a id="__codelineno-0-486" name="__codelineno-0-486"></a><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"RESULTS_DIR"</span><span class="p">,</span> <span class="s2">"SCRATCH_DIR"</span><span class="p">)</span>
-</span><span id="__span-0-487"><a id="__codelineno-0-487" name="__codelineno-0-487"></a><span class="nd">@classmethod</span>
-</span><span id="__span-0-488"><a id="__codelineno-0-488" name="__codelineno-0-488"></a><span class="k">def</span><span class="w"> </span><span class="nf">make_directories</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-489"><a id="__codelineno-0-489" name="__codelineno-0-489"></a><span class="w">    </span><span class="sd">"""Make directories."""</span>
-</span><span id="__span-0-490"><a id="__codelineno-0-490" name="__codelineno-0-490"></a>    <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
-</span><span id="__span-0-491"><a id="__codelineno-0-491" name="__codelineno-0-491"></a>        <span class="n">v</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-0-492"><a id="__codelineno-0-492" name="__codelineno-0-492"></a>    <span class="k">return</span> <span class="n">v</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-486">486</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-487">487</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-488">488</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-489">489</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-490">490</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-491">491</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-492">492</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.settings.QuaccSettings.make_directories--source--__span-0-486"><a id="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-486" name="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-486"></a><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"RESULTS_DIR"</span><span class="p">,</span> <span class="s2">"SCRATCH_DIR"</span><span class="p">)</span>
+</span><span id="quacc.settings.QuaccSettings.make_directories--source--__span-0-487"><a id="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-487" name="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-487"></a><span class="nd">@classmethod</span>
+</span><span id="quacc.settings.QuaccSettings.make_directories--source--__span-0-488"><a id="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-488" name="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-488"></a><span class="k">def</span><span class="w"> </span><span class="nf">make_directories</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="quacc.settings.QuaccSettings.make_directories--source--__span-0-489"><a id="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-489" name="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-489"></a><span class="w">    </span><span class="sd">"""Make directories."""</span>
+</span><span id="quacc.settings.QuaccSettings.make_directories--source--__span-0-490"><a id="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-490" name="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-490"></a>    <span class="k">if</span> <span class="n">v</span><span class="p">:</span>
+</span><span id="quacc.settings.QuaccSettings.make_directories--source--__span-0-491"><a id="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-491" name="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-491"></a>        <span class="n">v</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="quacc.settings.QuaccSettings.make_directories--source--__span-0-492"><a id="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-492" name="quacc.settings.QuaccSettings.make_directories--source--__codelineno-0-492"></a>    <span class="k">return</span> <span class="n">v</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -9628,23 +9640,23 @@ is set to False since Jobflow already handles this for us.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/settings.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-552">552</a></span>
-<span class="normal"><a href="#__codelineno-0-553">553</a></span>
-<span class="normal"><a href="#__codelineno-0-554">554</a></span>
-<span class="normal"><a href="#__codelineno-0-555">555</a></span>
-<span class="normal"><a href="#__codelineno-0-556">556</a></span>
-<span class="normal"><a href="#__codelineno-0-557">557</a></span>
-<span class="normal"><a href="#__codelineno-0-558">558</a></span>
-<span class="normal"><a href="#__codelineno-0-559">559</a></span>
-<span class="normal"><a href="#__codelineno-0-560">560</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-552"><a id="__codelineno-0-552" name="__codelineno-0-552"></a><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
-</span><span id="__span-0-553"><a id="__codelineno-0-553" name="__codelineno-0-553"></a><span class="k">def</span><span class="w"> </span><span class="nf">set_jobflow_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuaccSettings</span><span class="p">:</span>
-</span><span id="__span-0-554"><a id="__codelineno-0-554" name="__codelineno-0-554"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-555"><a id="__codelineno-0-555" name="__codelineno-0-555"></a><span class="sd">    If WORKFLOW_ENGINE is jobflow, ensure that CREATE_UNIQUE_DIR</span>
-</span><span id="__span-0-556"><a id="__codelineno-0-556" name="__codelineno-0-556"></a><span class="sd">    is set to False since Jobflow already handles this for us.</span>
-</span><span id="__span-0-557"><a id="__codelineno-0-557" name="__codelineno-0-557"></a><span class="sd">    """</span>
-</span><span id="__span-0-558"><a id="__codelineno-0-558" name="__codelineno-0-558"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">WORKFLOW_ENGINE</span> <span class="o">==</span> <span class="s2">"jobflow"</span><span class="p">:</span>
-</span><span id="__span-0-559"><a id="__codelineno-0-559" name="__codelineno-0-559"></a>        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"CREATE_UNIQUE_DIR"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-</span><span id="__span-0-560"><a id="__codelineno-0-560" name="__codelineno-0-560"></a>    <span class="k">return</span> <span class="bp">self</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-552">552</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-553">553</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-554">554</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-555">555</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-556">556</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-557">557</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-558">558</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-559">559</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-560">560</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__span-0-552"><a id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-552" name="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-552"></a><span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"after"</span><span class="p">)</span>
+</span><span id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__span-0-553"><a id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-553" name="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-553"></a><span class="k">def</span><span class="w"> </span><span class="nf">set_jobflow_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuaccSettings</span><span class="p">:</span>
+</span><span id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__span-0-554"><a id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-554" name="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-554"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__span-0-555"><a id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-555" name="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-555"></a><span class="sd">    If WORKFLOW_ENGINE is jobflow, ensure that CREATE_UNIQUE_DIR</span>
+</span><span id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__span-0-556"><a id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-556" name="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-556"></a><span class="sd">    is set to False since Jobflow already handles this for us.</span>
+</span><span id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__span-0-557"><a id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-557" name="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-557"></a><span class="sd">    """</span>
+</span><span id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__span-0-558"><a id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-558" name="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-558"></a>    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">WORKFLOW_ENGINE</span> <span class="o">==</span> <span class="s2">"jobflow"</span><span class="p">:</span>
+</span><span id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__span-0-559"><a id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-559" name="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-559"></a>        <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"CREATE_UNIQUE_DIR"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+</span><span id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__span-0-560"><a id="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-560" name="quacc.settings.QuaccSettings.set_jobflow_settings--source--__codelineno-0-560"></a>    <span class="k">return</span> <span class="bp">self</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -9675,27 +9687,27 @@ is set to False since Jobflow already handles this for us.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/settings.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-494">494</a></span>
-<span class="normal"><a href="#__codelineno-0-495">495</a></span>
-<span class="normal"><a href="#__codelineno-0-496">496</a></span>
-<span class="normal"><a href="#__codelineno-0-497">497</a></span>
-<span class="normal"><a href="#__codelineno-0-498">498</a></span>
-<span class="normal"><a href="#__codelineno-0-499">499</a></span>
-<span class="normal"><a href="#__codelineno-0-500">500</a></span>
-<span class="normal"><a href="#__codelineno-0-501">501</a></span>
-<span class="normal"><a href="#__codelineno-0-502">502</a></span>
-<span class="normal"><a href="#__codelineno-0-503">503</a></span>
-<span class="normal"><a href="#__codelineno-0-504">504</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-494"><a id="__codelineno-0-494" name="__codelineno-0-494"></a><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"ESPRESSO_PARALLEL_CMD"</span><span class="p">)</span>
-</span><span id="__span-0-495"><a id="__codelineno-0-495" name="__codelineno-0-495"></a><span class="nd">@classmethod</span>
-</span><span id="__span-0-496"><a id="__codelineno-0-496" name="__codelineno-0-496"></a><span class="k">def</span><span class="w"> </span><span class="nf">validate_espresso_parallel_cmd</span><span class="p">(</span>
-</span><span id="__span-0-497"><a id="__codelineno-0-497" name="__codelineno-0-497"></a>    <span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
-</span><span id="__span-0-498"><a id="__codelineno-0-498" name="__codelineno-0-498"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-</span><span id="__span-0-499"><a id="__codelineno-0-499" name="__codelineno-0-499"></a><span class="w">    </span><span class="sd">"""Clean up Espresso parallel command."""</span>
-</span><span id="__span-0-500"><a id="__codelineno-0-500" name="__codelineno-0-500"></a>
-</span><span id="__span-0-501"><a id="__codelineno-0-501" name="__codelineno-0-501"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-</span><span id="__span-0-502"><a id="__codelineno-0-502" name="__codelineno-0-502"></a>        <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
-</span><span id="__span-0-503"><a id="__codelineno-0-503" name="__codelineno-0-503"></a>
-</span><span id="__span-0-504"><a id="__codelineno-0-504" name="__codelineno-0-504"></a>    <span class="k">return</span> <span class="n">v</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-494">494</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-495">495</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-496">496</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-497">497</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-498">498</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-499">499</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-500">500</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-501">501</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-502">502</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-503">503</a></span>
+<span class="normal"><a href="#quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-504">504</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-494"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-494" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-494"></a><span class="nd">@field_validator</span><span class="p">(</span><span class="s2">"ESPRESSO_PARALLEL_CMD"</span><span class="p">)</span>
+</span><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-495"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-495" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-495"></a><span class="nd">@classmethod</span>
+</span><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-496"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-496" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-496"></a><span class="k">def</span><span class="w"> </span><span class="nf">validate_espresso_parallel_cmd</span><span class="p">(</span>
+</span><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-497"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-497" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-497"></a>    <span class="bp">cls</span><span class="p">,</span> <span class="n">v</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span>
+</span><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-498"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-498" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-498"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+</span><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-499"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-499" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-499"></a><span class="w">    </span><span class="sd">"""Clean up Espresso parallel command."""</span>
+</span><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-500"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-500" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-500"></a>
+</span><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-501"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-501" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-501"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-502"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-502" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-502"></a>        <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span>
+</span><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-503"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-503" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-503"></a>
+</span><span id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__span-0-504"><a id="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-504" name="quacc.settings.QuaccSettings.validate_espresso_parallel_cmd--source--__codelineno-0-504"></a>    <span class="k">return</span> <span class="n">v</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -9742,57 +9754,57 @@ is set to False since Jobflow already handles this for us.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/settings.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-587">587</a></span>
-<span class="normal"><a href="#__codelineno-0-588">588</a></span>
-<span class="normal"><a href="#__codelineno-0-589">589</a></span>
-<span class="normal"><a href="#__codelineno-0-590">590</a></span>
-<span class="normal"><a href="#__codelineno-0-591">591</a></span>
-<span class="normal"><a href="#__codelineno-0-592">592</a></span>
-<span class="normal"><a href="#__codelineno-0-593">593</a></span>
-<span class="normal"><a href="#__codelineno-0-594">594</a></span>
-<span class="normal"><a href="#__codelineno-0-595">595</a></span>
-<span class="normal"><a href="#__codelineno-0-596">596</a></span>
-<span class="normal"><a href="#__codelineno-0-597">597</a></span>
-<span class="normal"><a href="#__codelineno-0-598">598</a></span>
-<span class="normal"><a href="#__codelineno-0-599">599</a></span>
-<span class="normal"><a href="#__codelineno-0-600">600</a></span>
-<span class="normal"><a href="#__codelineno-0-601">601</a></span>
-<span class="normal"><a href="#__codelineno-0-602">602</a></span>
-<span class="normal"><a href="#__codelineno-0-603">603</a></span>
-<span class="normal"><a href="#__codelineno-0-604">604</a></span>
-<span class="normal"><a href="#__codelineno-0-605">605</a></span>
-<span class="normal"><a href="#__codelineno-0-606">606</a></span>
-<span class="normal"><a href="#__codelineno-0-607">607</a></span>
-<span class="normal"><a href="#__codelineno-0-608">608</a></span>
-<span class="normal"><a href="#__codelineno-0-609">609</a></span>
-<span class="normal"><a href="#__codelineno-0-610">610</a></span>
-<span class="normal"><a href="#__codelineno-0-611">611</a></span>
-<span class="normal"><a href="#__codelineno-0-612">612</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-587"><a id="__codelineno-0-587" name="__codelineno-0-587"></a><span class="nd">@contextmanager</span>
-</span><span id="__span-0-588"><a id="__codelineno-0-588" name="__codelineno-0-588"></a><span class="k">def</span><span class="w"> </span><span class="nf">change_settings</span><span class="p">(</span><span class="n">changes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
-</span><span id="__span-0-589"><a id="__codelineno-0-589" name="__codelineno-0-589"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-590"><a id="__codelineno-0-590" name="__codelineno-0-590"></a><span class="sd">    Temporarily change an attribute of an object.</span>
-</span><span id="__span-0-591"><a id="__codelineno-0-591" name="__codelineno-0-591"></a>
-</span><span id="__span-0-592"><a id="__codelineno-0-592" name="__codelineno-0-592"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-593"><a id="__codelineno-0-593" name="__codelineno-0-593"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-594"><a id="__codelineno-0-594" name="__codelineno-0-594"></a><span class="sd">    changes</span>
-</span><span id="__span-0-595"><a id="__codelineno-0-595" name="__codelineno-0-595"></a><span class="sd">        Dictionary of changes to make formatted as attribute: value.</span>
-</span><span id="__span-0-596"><a id="__codelineno-0-596" name="__codelineno-0-596"></a><span class="sd">    """</span>
-</span><span id="__span-0-597"><a id="__codelineno-0-597" name="__codelineno-0-597"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">quacc</span><span class="w"> </span><span class="kn">import</span> <span class="n">_internally_set_settings</span><span class="p">,</span> <span class="n">get_settings</span>
-</span><span id="__span-0-598"><a id="__codelineno-0-598" name="__codelineno-0-598"></a>
-</span><span id="__span-0-599"><a id="__codelineno-0-599" name="__codelineno-0-599"></a>    <span class="k">if</span> <span class="s2">"WORKFLOW_ENGINE"</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">:</span>
-</span><span id="__span-0-600"><a id="__codelineno-0-600" name="__codelineno-0-600"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-</span><span id="__span-0-601"><a id="__codelineno-0-601" name="__codelineno-0-601"></a>            <span class="s2">"Cannot change the workflow engine in a context manager. Please use environment variables, e.g. `export QUACC_WORKFLOW_ENGINE=jobflow`, if you need to dynamically change the workflow engine."</span>
-</span><span id="__span-0-602"><a id="__codelineno-0-602" name="__codelineno-0-602"></a>        <span class="p">)</span>
-</span><span id="__span-0-603"><a id="__codelineno-0-603" name="__codelineno-0-603"></a>
-</span><span id="__span-0-604"><a id="__codelineno-0-604" name="__codelineno-0-604"></a>    <span class="n">settings</span> <span class="o">=</span> <span class="n">get_settings</span><span class="p">()</span>
-</span><span id="__span-0-605"><a id="__codelineno-0-605" name="__codelineno-0-605"></a>    <span class="n">original_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">attr</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">}</span>
-</span><span id="__span-0-606"><a id="__codelineno-0-606" name="__codelineno-0-606"></a>
-</span><span id="__span-0-607"><a id="__codelineno-0-607" name="__codelineno-0-607"></a>    <span class="n">_internally_set_settings</span><span class="p">(</span><span class="n">changes</span><span class="o">=</span><span class="n">changes</span><span class="p">)</span>
-</span><span id="__span-0-608"><a id="__codelineno-0-608" name="__codelineno-0-608"></a>
-</span><span id="__span-0-609"><a id="__codelineno-0-609" name="__codelineno-0-609"></a>    <span class="k">try</span><span class="p">:</span>
-</span><span id="__span-0-610"><a id="__codelineno-0-610" name="__codelineno-0-610"></a>        <span class="k">yield</span>
-</span><span id="__span-0-611"><a id="__codelineno-0-611" name="__codelineno-0-611"></a>    <span class="k">finally</span><span class="p">:</span>
-</span><span id="__span-0-612"><a id="__codelineno-0-612" name="__codelineno-0-612"></a>        <span class="n">_internally_set_settings</span><span class="p">(</span><span class="n">changes</span><span class="o">=</span><span class="n">original_values</span><span class="p">)</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-587">587</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-588">588</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-589">589</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-590">590</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-591">591</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-592">592</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-593">593</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-594">594</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-595">595</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-596">596</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-597">597</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-598">598</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-599">599</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-600">600</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-601">601</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-602">602</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-603">603</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-604">604</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-605">605</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-606">606</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-607">607</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-608">608</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-609">609</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-610">610</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-611">611</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings--source--__codelineno-0-612">612</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.settings.change_settings--source--__span-0-587"><a id="quacc.settings.change_settings--source--__codelineno-0-587" name="quacc.settings.change_settings--source--__codelineno-0-587"></a><span class="nd">@contextmanager</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-588"><a id="quacc.settings.change_settings--source--__codelineno-0-588" name="quacc.settings.change_settings--source--__codelineno-0-588"></a><span class="k">def</span><span class="w"> </span><span class="nf">change_settings</span><span class="p">(</span><span class="n">changes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="kc">None</span><span class="p">]:</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-589"><a id="quacc.settings.change_settings--source--__codelineno-0-589" name="quacc.settings.change_settings--source--__codelineno-0-589"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-590"><a id="quacc.settings.change_settings--source--__codelineno-0-590" name="quacc.settings.change_settings--source--__codelineno-0-590"></a><span class="sd">    Temporarily change an attribute of an object.</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-591"><a id="quacc.settings.change_settings--source--__codelineno-0-591" name="quacc.settings.change_settings--source--__codelineno-0-591"></a>
+</span><span id="quacc.settings.change_settings--source--__span-0-592"><a id="quacc.settings.change_settings--source--__codelineno-0-592" name="quacc.settings.change_settings--source--__codelineno-0-592"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-593"><a id="quacc.settings.change_settings--source--__codelineno-0-593" name="quacc.settings.change_settings--source--__codelineno-0-593"></a><span class="sd">    ----------</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-594"><a id="quacc.settings.change_settings--source--__codelineno-0-594" name="quacc.settings.change_settings--source--__codelineno-0-594"></a><span class="sd">    changes</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-595"><a id="quacc.settings.change_settings--source--__codelineno-0-595" name="quacc.settings.change_settings--source--__codelineno-0-595"></a><span class="sd">        Dictionary of changes to make formatted as attribute: value.</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-596"><a id="quacc.settings.change_settings--source--__codelineno-0-596" name="quacc.settings.change_settings--source--__codelineno-0-596"></a><span class="sd">    """</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-597"><a id="quacc.settings.change_settings--source--__codelineno-0-597" name="quacc.settings.change_settings--source--__codelineno-0-597"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">quacc</span><span class="w"> </span><span class="kn">import</span> <span class="n">_internally_set_settings</span><span class="p">,</span> <span class="n">get_settings</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-598"><a id="quacc.settings.change_settings--source--__codelineno-0-598" name="quacc.settings.change_settings--source--__codelineno-0-598"></a>
+</span><span id="quacc.settings.change_settings--source--__span-0-599"><a id="quacc.settings.change_settings--source--__codelineno-0-599" name="quacc.settings.change_settings--source--__codelineno-0-599"></a>    <span class="k">if</span> <span class="s2">"WORKFLOW_ENGINE"</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">:</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-600"><a id="quacc.settings.change_settings--source--__codelineno-0-600" name="quacc.settings.change_settings--source--__codelineno-0-600"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-601"><a id="quacc.settings.change_settings--source--__codelineno-0-601" name="quacc.settings.change_settings--source--__codelineno-0-601"></a>            <span class="s2">"Cannot change the workflow engine in a context manager. Please use environment variables, e.g. `export QUACC_WORKFLOW_ENGINE=jobflow`, if you need to dynamically change the workflow engine."</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-602"><a id="quacc.settings.change_settings--source--__codelineno-0-602" name="quacc.settings.change_settings--source--__codelineno-0-602"></a>        <span class="p">)</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-603"><a id="quacc.settings.change_settings--source--__codelineno-0-603" name="quacc.settings.change_settings--source--__codelineno-0-603"></a>
+</span><span id="quacc.settings.change_settings--source--__span-0-604"><a id="quacc.settings.change_settings--source--__codelineno-0-604" name="quacc.settings.change_settings--source--__codelineno-0-604"></a>    <span class="n">settings</span> <span class="o">=</span> <span class="n">get_settings</span><span class="p">()</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-605"><a id="quacc.settings.change_settings--source--__codelineno-0-605" name="quacc.settings.change_settings--source--__codelineno-0-605"></a>    <span class="n">original_values</span> <span class="o">=</span> <span class="p">{</span><span class="n">attr</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">changes</span><span class="p">}</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-606"><a id="quacc.settings.change_settings--source--__codelineno-0-606" name="quacc.settings.change_settings--source--__codelineno-0-606"></a>
+</span><span id="quacc.settings.change_settings--source--__span-0-607"><a id="quacc.settings.change_settings--source--__codelineno-0-607" name="quacc.settings.change_settings--source--__codelineno-0-607"></a>    <span class="n">_internally_set_settings</span><span class="p">(</span><span class="n">changes</span><span class="o">=</span><span class="n">changes</span><span class="p">)</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-608"><a id="quacc.settings.change_settings--source--__codelineno-0-608" name="quacc.settings.change_settings--source--__codelineno-0-608"></a>
+</span><span id="quacc.settings.change_settings--source--__span-0-609"><a id="quacc.settings.change_settings--source--__codelineno-0-609" name="quacc.settings.change_settings--source--__codelineno-0-609"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-610"><a id="quacc.settings.change_settings--source--__codelineno-0-610" name="quacc.settings.change_settings--source--__codelineno-0-610"></a>        <span class="k">yield</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-611"><a id="quacc.settings.change_settings--source--__codelineno-0-611" name="quacc.settings.change_settings--source--__codelineno-0-611"></a>    <span class="k">finally</span><span class="p">:</span>
+</span><span id="quacc.settings.change_settings--source--__span-0-612"><a id="quacc.settings.change_settings--source--__codelineno-0-612" name="quacc.settings.change_settings--source--__codelineno-0-612"></a>        <span class="n">_internally_set_settings</span><span class="p">(</span><span class="n">changes</span><span class="o">=</span><span class="n">original_values</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -9882,61 +9894,69 @@ is set to False since Jobflow already handles this for us.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/settings.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-615">615</a></span>
-<span class="normal"><a href="#__codelineno-0-616">616</a></span>
-<span class="normal"><a href="#__codelineno-0-617">617</a></span>
-<span class="normal"><a href="#__codelineno-0-618">618</a></span>
-<span class="normal"><a href="#__codelineno-0-619">619</a></span>
-<span class="normal"><a href="#__codelineno-0-620">620</a></span>
-<span class="normal"><a href="#__codelineno-0-621">621</a></span>
-<span class="normal"><a href="#__codelineno-0-622">622</a></span>
-<span class="normal"><a href="#__codelineno-0-623">623</a></span>
-<span class="normal"><a href="#__codelineno-0-624">624</a></span>
-<span class="normal"><a href="#__codelineno-0-625">625</a></span>
-<span class="normal"><a href="#__codelineno-0-626">626</a></span>
-<span class="normal"><a href="#__codelineno-0-627">627</a></span>
-<span class="normal"><a href="#__codelineno-0-628">628</a></span>
-<span class="normal"><a href="#__codelineno-0-629">629</a></span>
-<span class="normal"><a href="#__codelineno-0-630">630</a></span>
-<span class="normal"><a href="#__codelineno-0-631">631</a></span>
-<span class="normal"><a href="#__codelineno-0-632">632</a></span>
-<span class="normal"><a href="#__codelineno-0-633">633</a></span>
-<span class="normal"><a href="#__codelineno-0-634">634</a></span>
-<span class="normal"><a href="#__codelineno-0-635">635</a></span>
-<span class="normal"><a href="#__codelineno-0-636">636</a></span>
-<span class="normal"><a href="#__codelineno-0-637">637</a></span>
-<span class="normal"><a href="#__codelineno-0-638">638</a></span>
-<span class="normal"><a href="#__codelineno-0-639">639</a></span>
-<span class="normal"><a href="#__codelineno-0-640">640</a></span>
-<span class="normal"><a href="#__codelineno-0-641">641</a></span>
-<span class="normal"><a href="#__codelineno-0-642">642</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-615"><a id="__codelineno-0-615" name="__codelineno-0-615"></a><span class="k">def</span><span class="w"> </span><span class="nf">change_settings_wrap</span><span class="p">(</span>
-</span><span id="__span-0-616"><a id="__codelineno-0-616" name="__codelineno-0-616"></a>    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">],</span> <span class="n">changes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
-</span><span id="__span-0-617"><a id="__codelineno-0-617" name="__codelineno-0-617"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">]:</span>
-</span><span id="__span-0-618"><a id="__codelineno-0-618" name="__codelineno-0-618"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-619"><a id="__codelineno-0-619" name="__codelineno-0-619"></a><span class="sd">    Wraps a function with the change_settings context manager if not already wrapped.</span>
-</span><span id="__span-0-620"><a id="__codelineno-0-620" name="__codelineno-0-620"></a>
-</span><span id="__span-0-621"><a id="__codelineno-0-621" name="__codelineno-0-621"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-622"><a id="__codelineno-0-622" name="__codelineno-0-622"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-623"><a id="__codelineno-0-623" name="__codelineno-0-623"></a><span class="sd">    func</span>
-</span><span id="__span-0-624"><a id="__codelineno-0-624" name="__codelineno-0-624"></a><span class="sd">        The function to wrap.</span>
-</span><span id="__span-0-625"><a id="__codelineno-0-625" name="__codelineno-0-625"></a><span class="sd">    changes</span>
-</span><span id="__span-0-626"><a id="__codelineno-0-626" name="__codelineno-0-626"></a><span class="sd">        The settings to apply within the context manager.</span>
-</span><span id="__span-0-627"><a id="__codelineno-0-627" name="__codelineno-0-627"></a>
-</span><span id="__span-0-628"><a id="__codelineno-0-628" name="__codelineno-0-628"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-629"><a id="__codelineno-0-629" name="__codelineno-0-629"></a><span class="sd">    -------</span>
-</span><span id="__span-0-630"><a id="__codelineno-0-630" name="__codelineno-0-630"></a><span class="sd">    Callable</span>
-</span><span id="__span-0-631"><a id="__codelineno-0-631" name="__codelineno-0-631"></a><span class="sd">        The wrapped function.</span>
-</span><span id="__span-0-632"><a id="__codelineno-0-632" name="__codelineno-0-632"></a><span class="sd">    """</span>
-</span><span id="__span-0-633"><a id="__codelineno-0-633" name="__codelineno-0-633"></a>    <span class="n">original_func</span> <span class="o">=</span> <span class="n">func</span><span class="o">.</span><span class="n">_original_func</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">"_changed"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span> <span class="k">else</span> <span class="n">func</span>
-</span><span id="__span-0-634"><a id="__codelineno-0-634" name="__codelineno-0-634"></a>
-</span><span id="__span-0-635"><a id="__codelineno-0-635" name="__codelineno-0-635"></a>    <span class="nd">@wraps</span><span class="p">(</span><span class="n">original_func</span><span class="p">)</span>
-</span><span id="__span-0-636"><a id="__codelineno-0-636" name="__codelineno-0-636"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
-</span><span id="__span-0-637"><a id="__codelineno-0-637" name="__codelineno-0-637"></a>        <span class="k">with</span> <span class="n">change_settings</span><span class="p">(</span><span class="n">changes</span><span class="p">):</span>
-</span><span id="__span-0-638"><a id="__codelineno-0-638" name="__codelineno-0-638"></a>            <span class="k">return</span> <span class="n">original_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span id="__span-0-639"><a id="__codelineno-0-639" name="__codelineno-0-639"></a>
-</span><span id="__span-0-640"><a id="__codelineno-0-640" name="__codelineno-0-640"></a>    <span class="n">wrapper</span><span class="o">.</span><span class="n">_changed</span> <span class="o">=</span> <span class="kc">True</span>
-</span><span id="__span-0-641"><a id="__codelineno-0-641" name="__codelineno-0-641"></a>    <span class="n">wrapper</span><span class="o">.</span><span class="n">_original_func</span> <span class="o">=</span> <span class="n">original_func</span>
-</span><span id="__span-0-642"><a id="__codelineno-0-642" name="__codelineno-0-642"></a>    <span class="k">return</span> <span class="n">wrapper</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-615">615</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-616">616</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-617">617</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-618">618</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-619">619</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-620">620</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-621">621</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-622">622</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-623">623</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-624">624</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-625">625</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-626">626</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-627">627</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-628">628</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-629">629</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-630">630</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-631">631</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-632">632</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-633">633</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-634">634</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-635">635</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-636">636</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-637">637</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-638">638</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-639">639</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-640">640</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-641">641</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-642">642</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-643">643</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-644">644</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-645">645</a></span>
+<span class="normal"><a href="#quacc.settings.change_settings_wrap--source--__codelineno-0-646">646</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.settings.change_settings_wrap--source--__span-0-615"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-615" name="quacc.settings.change_settings_wrap--source--__codelineno-0-615"></a><span class="k">def</span><span class="w"> </span><span class="nf">change_settings_wrap</span><span class="p">(</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-616"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-616" name="quacc.settings.change_settings_wrap--source--__codelineno-0-616"></a>    <span class="n">func</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">],</span> <span class="n">changes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-617"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-617" name="quacc.settings.change_settings_wrap--source--__codelineno-0-617"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">R</span><span class="p">]:</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-618"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-618" name="quacc.settings.change_settings_wrap--source--__codelineno-0-618"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-619"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-619" name="quacc.settings.change_settings_wrap--source--__codelineno-0-619"></a><span class="sd">    Wraps a function with the change_settings context manager if not already wrapped.</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-620"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-620" name="quacc.settings.change_settings_wrap--source--__codelineno-0-620"></a>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-621"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-621" name="quacc.settings.change_settings_wrap--source--__codelineno-0-621"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-622"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-622" name="quacc.settings.change_settings_wrap--source--__codelineno-0-622"></a><span class="sd">    ----------</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-623"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-623" name="quacc.settings.change_settings_wrap--source--__codelineno-0-623"></a><span class="sd">    func</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-624"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-624" name="quacc.settings.change_settings_wrap--source--__codelineno-0-624"></a><span class="sd">        The function to wrap.</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-625"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-625" name="quacc.settings.change_settings_wrap--source--__codelineno-0-625"></a><span class="sd">    changes</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-626"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-626" name="quacc.settings.change_settings_wrap--source--__codelineno-0-626"></a><span class="sd">        The settings to apply within the context manager.</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-627"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-627" name="quacc.settings.change_settings_wrap--source--__codelineno-0-627"></a>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-628"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-628" name="quacc.settings.change_settings_wrap--source--__codelineno-0-628"></a><span class="sd">    Returns</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-629"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-629" name="quacc.settings.change_settings_wrap--source--__codelineno-0-629"></a><span class="sd">    -------</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-630"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-630" name="quacc.settings.change_settings_wrap--source--__codelineno-0-630"></a><span class="sd">    Callable</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-631"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-631" name="quacc.settings.change_settings_wrap--source--__codelineno-0-631"></a><span class="sd">        The wrapped function.</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-632"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-632" name="quacc.settings.change_settings_wrap--source--__codelineno-0-632"></a><span class="sd">    """</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-633"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-633" name="quacc.settings.change_settings_wrap--source--__codelineno-0-633"></a>    <span class="n">original_func</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-634"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-634" name="quacc.settings.change_settings_wrap--source--__codelineno-0-634"></a>        <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">"_original_func"</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-635"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-635" name="quacc.settings.change_settings_wrap--source--__codelineno-0-635"></a>        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="s2">"_changed"</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-636"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-636" name="quacc.settings.change_settings_wrap--source--__codelineno-0-636"></a>        <span class="k">else</span> <span class="n">func</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-637"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-637" name="quacc.settings.change_settings_wrap--source--__codelineno-0-637"></a>    <span class="p">)</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-638"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-638" name="quacc.settings.change_settings_wrap--source--__codelineno-0-638"></a>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-639"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-639" name="quacc.settings.change_settings_wrap--source--__codelineno-0-639"></a>    <span class="nd">@wraps</span><span class="p">(</span><span class="n">original_func</span><span class="p">)</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-640"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-640" name="quacc.settings.change_settings_wrap--source--__codelineno-0-640"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">P</span><span class="o">.</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">R</span><span class="p">:</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-641"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-641" name="quacc.settings.change_settings_wrap--source--__codelineno-0-641"></a>        <span class="k">with</span> <span class="n">change_settings</span><span class="p">(</span><span class="n">changes</span><span class="p">):</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-642"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-642" name="quacc.settings.change_settings_wrap--source--__codelineno-0-642"></a>            <span class="k">return</span> <span class="n">original_func</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-643"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-643" name="quacc.settings.change_settings_wrap--source--__codelineno-0-643"></a>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-644"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-644" name="quacc.settings.change_settings_wrap--source--__codelineno-0-644"></a>    <span class="nb">vars</span><span class="p">(</span><span class="n">wrapper</span><span class="p">)[</span><span class="s2">"_changed"</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-645"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-645" name="quacc.settings.change_settings_wrap--source--__codelineno-0-645"></a>    <span class="nb">vars</span><span class="p">(</span><span class="n">wrapper</span><span class="p">)[</span><span class="s2">"_original_func"</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_func</span>
+</span><span id="quacc.settings.change_settings_wrap--source--__span-0-646"><a id="quacc.settings.change_settings_wrap--source--__codelineno-0-646" name="quacc.settings.change_settings_wrap--source--__codelineno-0-646"></a>    <span class="k">return</span> <span class="n">wrapper</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>

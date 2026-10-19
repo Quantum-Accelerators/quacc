@@ -2443,6 +2443,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#quacc.recipes.common.defects.Schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Schema
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quacc.recipes.common.defects.has_pmg_defects" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -6233,6 +6244,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#quacc.recipes.common.defects.Schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Schema
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quacc.recipes.common.defects.has_pmg_defects" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -6490,6 +6512,28 @@
 
 
 
+<h2 id="quacc.recipes.common.defects.Schema" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">Schema</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-module-attribute"><code>module-attribute</code></small>
+  </span>
+
+<a href="#quacc.recipes.common.defects.Schema" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">Schema</span> <span class="o">=</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;typing.TypeVar&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.TypeVar">TypeVar</a></span><span class="p">(</span><span class="s1">'Schema'</span><span class="p">,</span> <span class="n"><span title="typing.TypeVar(bound)">bound</span></span><span class="o">=</span><span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-class-name&quot;&gt;RunSchema&lt;/span&gt; (&lt;code&gt;quacc.types.RunSchema&lt;/code&gt;)" href="../../types.html#quacc.types.RunSchema">RunSchema</a></span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
 <h2 id="quacc.recipes.common.defects.has_pmg_defects" class="doc doc-heading">
             <span class="doc doc-object-name doc-attribute-name">has_pmg_defects</span>
 
@@ -6545,20 +6589,25 @@
 <a href="#quacc.recipes.common.defects.bulk_to_defects_subflow" class="headerlink" title="Permanent link">&para;</a></h2>
 <div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">bulk_to_defects_subflow</span><span class="p">(</span>
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;ase.atoms.Atoms&lt;/code&gt;" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">relax_job</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Job&lt;/span&gt;
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">relax_job</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;collections.abc.Callable&lt;/code&gt;" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a></span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Schema&lt;/span&gt;
 
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-module-attribute&quot;&gt;&lt;code&gt;module-attribute&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;quacc.Job&lt;/code&gt;)" href="../../wflow_tools/decorators.html#quacc.wflow_tools.decorators.Job">Job</a></span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">static_job</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Job&lt;/span&gt;
+  &lt;/span&gt; (&lt;code&gt;quacc.recipes.common.defects.Schema&lt;/code&gt;)" href="#quacc.recipes.common.defects.Schema">Schema</a></span><span class="p">],</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">static_job</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;collections.abc.Callable&lt;/code&gt;" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a></span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Schema&lt;/span&gt;
 
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-module-attribute&quot;&gt;&lt;code&gt;module-attribute&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;quacc.Job&lt;/code&gt;)" href="../../wflow_tools/decorators.html#quacc.wflow_tools.decorators.Job">Job</a></span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+  &lt;/span&gt; (&lt;code&gt;quacc.recipes.common.defects.Schema&lt;/code&gt;)" href="#quacc.recipes.common.defects.Schema">Schema</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">make_defects_kwargs</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;typing.Any&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></span><span class="p">]</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a></span><span class="p">,</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Schema&lt;/span&gt;
+
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-module-attribute&quot;&gt;&lt;code&gt;module-attribute&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;quacc.recipes.common.defects.Schema&lt;/code&gt;)" href="#quacc.recipes.common.defects.Schema">Schema</a></span><span class="p">]]</span>
 </span></code></pre></div>
 
     <div class="doc doc-contents ">
@@ -6589,12 +6638,12 @@
         </li>
         <li class="doc-section-item field-body">
             <b><code>relax_job</code></b>
-              (<code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Job&lt;/span&gt;
+              (<code><a class="autorefs autorefs-external" title="&lt;code&gt;collections.abc.Callable&lt;/code&gt;" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a>[..., <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Schema&lt;/span&gt;
 
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-module-attribute&quot;&gt;&lt;code&gt;module-attribute&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;quacc.Job&lt;/code&gt;)" href="../../wflow_tools/decorators.html#quacc.wflow_tools.decorators.Job">Job</a></code>)
+  &lt;/span&gt; (&lt;code&gt;quacc.recipes.common.defects.Schema&lt;/code&gt;)" href="#quacc.recipes.common.defects.Schema">Schema</a>]</code>)
           –
           <div class="doc-md-description">
             <p>The relaxation function.</p>
@@ -6602,12 +6651,12 @@
         </li>
         <li class="doc-section-item field-body">
             <b><code>static_job</code></b>
-              (<code><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Job&lt;/span&gt;
+              (<code><a class="autorefs autorefs-external" title="&lt;code&gt;collections.abc.Callable&lt;/code&gt;" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Callable">Callable</a>[..., <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Schema&lt;/span&gt;
 
 
   &lt;span class=&quot;doc doc-labels&quot;&gt;
       &lt;small class=&quot;doc doc-label doc-label-module-attribute&quot;&gt;&lt;code&gt;module-attribute&lt;/code&gt;&lt;/small&gt;
-  &lt;/span&gt; (&lt;code&gt;quacc.Job&lt;/code&gt;)" href="../../wflow_tools/decorators.html#quacc.wflow_tools.decorators.Job">Job</a> | None</code>, default:
+  &lt;/span&gt; (&lt;code&gt;quacc.recipes.common.defects.Schema&lt;/code&gt;)" href="#quacc.recipes.common.defects.Schema">Schema</a>] | None</code>, default:
                   <code>None</code>
 )
           –
@@ -6631,10 +6680,16 @@
 <p><span class="doc-section-title">Returns:</span></p>
     <ul>
         <li class="doc-section-item field-body">
-              <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a>]</code>
+              <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#dict">dict</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#str">str</a>, <a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-attribute-name&quot;&gt;Schema&lt;/span&gt;
+
+
+  &lt;span class=&quot;doc doc-labels&quot;&gt;
+      &lt;small class=&quot;doc doc-label doc-label-module-attribute&quot;&gt;&lt;code&gt;module-attribute&lt;/code&gt;&lt;/small&gt;
+  &lt;/span&gt; (&lt;code&gt;quacc.recipes.common.defects.Schema&lt;/code&gt;)" href="#quacc.recipes.common.defects.Schema">Schema</a>]]</code>
           –
           <div class="doc-md-description">
-            <p>Dict of dictionary of results.</p>
+            <p>Relaxation and static results, grouped under "relax" and "static".
+The "static" list is empty when no static job is supplied.</p>
           </div>
         </li>
     </ul>
@@ -6642,105 +6697,107 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/recipes/common/defects.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span>
-<span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span>
-<span class="normal"><a href="#__codelineno-0-59">59</a></span>
-<span class="normal"><a href="#__codelineno-0-60">60</a></span>
-<span class="normal"><a href="#__codelineno-0-61">61</a></span>
-<span class="normal"><a href="#__codelineno-0-62">62</a></span>
-<span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span>
-<span class="normal"><a href="#__codelineno-0-65">65</a></span>
-<span class="normal"><a href="#__codelineno-0-66">66</a></span>
-<span class="normal"><a href="#__codelineno-0-67">67</a></span>
-<span class="normal"><a href="#__codelineno-0-68">68</a></span>
-<span class="normal"><a href="#__codelineno-0-69">69</a></span>
-<span class="normal"><a href="#__codelineno-0-70">70</a></span>
-<span class="normal"><a href="#__codelineno-0-71">71</a></span>
-<span class="normal"><a href="#__codelineno-0-72">72</a></span>
-<span class="normal"><a href="#__codelineno-0-73">73</a></span>
-<span class="normal"><a href="#__codelineno-0-74">74</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="nd">@subflow</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="nd">@requires</span><span class="p">(</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">has_pmg_defects</span><span class="p">,</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="s2">"Missing pymatgen-analysis-defects. Please run pip install quacc[defects]"</span><span class="p">,</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="p">)</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_shakenbreak</span><span class="p">,</span> <span class="s2">"Missing shakenbreak. Please run pip install quacc[defects]"</span><span class="p">)</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="k">def</span><span class="w"> </span><span class="nf">bulk_to_defects_subflow</span><span class="p">(</span>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="n">relax_job</span><span class="p">:</span> <span class="n">Job</span><span class="p">,</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">static_job</span><span class="p">:</span> <span class="n">Job</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="n">make_defects_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    Workflow consisting of:</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    1. Defect generation</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    2. Defect relaxations</span>
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">    3. Defect statics (optional)</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">    atoms</span>
-</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">        Atoms object for the structure.</span>
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">    relax_job</span>
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">        The relaxation function.</span>
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">    static_job</span>
-</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">        The static function.</span>
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    make_defects_kwargs</span>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">        Keyword arguments for [quacc.atoms.defects.make_defects_from_bulk][]</span>
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="sd">    -------</span>
-</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="sd">    dict[dict]</span>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">        Dict of dictionary of results.</span>
-</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="sd">    """</span>
-</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>    <span class="n">make_defects_kwargs</span> <span class="o">=</span> <span class="n">make_defects_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
-</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="n">defects</span> <span class="o">=</span> <span class="n">make_defects_from_bulk</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="o">**</span><span class="n">make_defects_kwargs</span><span class="p">)</span>
-</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a>
-</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"relax"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"static"</span><span class="p">:</span> <span class="p">[]}</span>
-</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="k">for</span> <span class="n">defect</span> <span class="ow">in</span> <span class="n">defects</span><span class="p">:</span>
-</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">relax_job</span><span class="p">(</span><span class="n">defect</span><span class="p">)</span>
-</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">"relax"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>
-</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a>        <span class="k">if</span> <span class="n">static_job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a>            <span class="n">result</span> <span class="o">=</span> <span class="n">static_job</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"atoms"</span><span class="p">])</span>
-</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">"static"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>
-</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a>    <span class="k">return</span> <span class="n">results</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-45">45</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-46">46</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-47">47</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-48">48</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-49">49</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-50">50</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-56">56</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-68">68</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-69">69</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-72">72</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-78">78</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-28"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-28" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-28"></a><span class="nd">@subflow</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-29"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-29" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-29"></a><span class="nd">@requires</span><span class="p">(</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-30"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-30" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-30"></a>    <span class="n">has_pmg_defects</span><span class="p">,</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-31"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-31" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-31"></a>    <span class="s2">"Missing pymatgen-analysis-defects. Please run pip install quacc[defects]"</span><span class="p">,</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-32"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-32" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-32"></a><span class="p">)</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-33"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-33" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-33"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_shakenbreak</span><span class="p">,</span> <span class="s2">"Missing shakenbreak. Please run pip install quacc[defects]"</span><span class="p">)</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-34"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-34" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-34"></a><span class="k">def</span><span class="w"> </span><span class="nf">bulk_to_defects_subflow</span><span class="p">(</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-35"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-35" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-35"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-36"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-36" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-36"></a>    <span class="n">relax_job</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Schema</span><span class="p">],</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-37"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-37" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-37"></a>    <span class="n">static_job</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Schema</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-38"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-38" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-38"></a>    <span class="n">make_defects_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-39"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-39" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-39"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Schema</span><span class="p">]]:</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-40"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-40" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-40"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-41"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-41" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-41"></a><span class="sd">    Workflow consisting of:</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-42"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-42" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-42"></a>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-43"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-43" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-43"></a><span class="sd">    1. Defect generation</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-44"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-44" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-44"></a>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-45"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-45" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-45"></a><span class="sd">    2. Defect relaxations</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-46"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-46" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-46"></a>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-47"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-47" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-47"></a><span class="sd">    3. Defect statics (optional)</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-48"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-48" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-48"></a>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-49"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-49" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-49"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-50"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-50" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-50"></a><span class="sd">    ----------</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-51"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-51" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-51"></a><span class="sd">    atoms</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-52"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-52" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-52"></a><span class="sd">        Atoms object for the structure.</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-53"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-53" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-53"></a><span class="sd">    relax_job</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-54"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-54" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-54"></a><span class="sd">        The relaxation function.</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-55"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-55" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-55"></a><span class="sd">    static_job</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-56"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-56" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-56"></a><span class="sd">        The static function.</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-57"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-57" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-57"></a><span class="sd">    make_defects_kwargs</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-58"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-58" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-58"></a><span class="sd">        Keyword arguments for [quacc.atoms.defects.make_defects_from_bulk][]</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-59"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-59" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-59"></a>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-60"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-60" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-60"></a><span class="sd">    Returns</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-61"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-61" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-61"></a><span class="sd">    -------</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-62"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-62" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-62"></a><span class="sd">    dict[str, list[Schema]]</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-63"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-63" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-63"></a><span class="sd">        Relaxation and static results, grouped under "relax" and "static".</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-64"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-64" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-64"></a><span class="sd">        The "static" list is empty when no static job is supplied.</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-65"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-65" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-65"></a><span class="sd">    """</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-66"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-66" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-66"></a>    <span class="n">make_defects_kwargs</span> <span class="o">=</span> <span class="n">make_defects_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-67"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-67" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-67"></a>    <span class="n">defects</span> <span class="o">=</span> <span class="n">make_defects_from_bulk</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span> <span class="o">**</span><span class="n">make_defects_kwargs</span><span class="p">)</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-68"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-68" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-68"></a>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-69"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-69" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-69"></a>    <span class="n">results</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">Schema</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"relax"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"static"</span><span class="p">:</span> <span class="p">[]}</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-70"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-70" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-70"></a>    <span class="k">for</span> <span class="n">defect</span> <span class="ow">in</span> <span class="n">defects</span><span class="p">:</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-71"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-71" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-71"></a>        <span class="n">result</span> <span class="o">=</span> <span class="n">relax_job</span><span class="p">(</span><span class="n">defect</span><span class="p">)</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-72"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-72" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-72"></a>        <span class="n">results</span><span class="p">[</span><span class="s2">"relax"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-73"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-73" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-73"></a>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-74"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-74" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-74"></a>        <span class="k">if</span> <span class="n">static_job</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-75"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-75" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-75"></a>            <span class="n">result</span> <span class="o">=</span> <span class="n">static_job</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"atoms"</span><span class="p">])</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-76"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-76" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-76"></a>            <span class="n">results</span><span class="p">[</span><span class="s2">"static"</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-77"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-77" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-77"></a>
+</span><span id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__span-0-78"><a id="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-78" name="quacc.recipes.common.defects.bulk_to_defects_subflow--source--__codelineno-0-78"></a>    <span class="k">return</span> <span class="n">results</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>

@@ -6599,6 +6599,7 @@
 <p>All changes you make to quacc should be accompanied by unit tests and should not break existing tests. The full test suite will run automatically via GitHub Actions. If you are fixing a bug, include a regression test to make sure the fix you submit continues to work.</p>
 <h3 id="running-locally">Running Locally<a class="headerlink" href="#running-locally" title="Permanent link">&para;</a></h3>
 <p>To run the core test suite locally, run <code>pytest tests/core</code>.</p>
+<p>To check type hints, install the development dependencies with <code>pip install -e '.[dev]'</code> and run <code>python -m mypy</code> from the repository root. This checks the entire <code>src/quacc</code> package and the static API contracts in <code>tests/typecheck</code>, without running calculations. The type checks also run in GitHub Actions.</p>
 <p>If you wish to test the behavior of a given workflow engine, run <code>pytest tests/WORKFLOW_ENGINE</code> where <code>WORKFLOW_ENGINE</code> is the name of your workflow engine.</p>
 <h3 id="coverage">Coverage<a class="headerlink" href="#coverage" title="Permanent link">&para;</a></h3>
 <p>Each PR will report the code coverage once your tests pass, but if you'd like to generate a coverage report locally, you can use <a href="https://pytest-cov.readthedocs.io/en/latest/">pytest-cov</a>, such as by doing <code>pytest --cov=quacc .</code></p>

@@ -6556,63 +6556,63 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/atoms/phonons.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-99"> 99</a></span>
-<span class="normal"><a href="#__codelineno-0-100">100</a></span>
-<span class="normal"><a href="#__codelineno-0-101">101</a></span>
-<span class="normal"><a href="#__codelineno-0-102">102</a></span>
-<span class="normal"><a href="#__codelineno-0-103">103</a></span>
-<span class="normal"><a href="#__codelineno-0-104">104</a></span>
-<span class="normal"><a href="#__codelineno-0-105">105</a></span>
-<span class="normal"><a href="#__codelineno-0-106">106</a></span>
-<span class="normal"><a href="#__codelineno-0-107">107</a></span>
-<span class="normal"><a href="#__codelineno-0-108">108</a></span>
-<span class="normal"><a href="#__codelineno-0-109">109</a></span>
-<span class="normal"><a href="#__codelineno-0-110">110</a></span>
-<span class="normal"><a href="#__codelineno-0-111">111</a></span>
-<span class="normal"><a href="#__codelineno-0-112">112</a></span>
-<span class="normal"><a href="#__codelineno-0-113">113</a></span>
-<span class="normal"><a href="#__codelineno-0-114">114</a></span>
-<span class="normal"><a href="#__codelineno-0-115">115</a></span>
-<span class="normal"><a href="#__codelineno-0-116">116</a></span>
-<span class="normal"><a href="#__codelineno-0-117">117</a></span>
-<span class="normal"><a href="#__codelineno-0-118">118</a></span>
-<span class="normal"><a href="#__codelineno-0-119">119</a></span>
-<span class="normal"><a href="#__codelineno-0-120">120</a></span>
-<span class="normal"><a href="#__codelineno-0-121">121</a></span>
-<span class="normal"><a href="#__codelineno-0-122">122</a></span>
-<span class="normal"><a href="#__codelineno-0-123">123</a></span>
-<span class="normal"><a href="#__codelineno-0-124">124</a></span>
-<span class="normal"><a href="#__codelineno-0-125">125</a></span>
-<span class="normal"><a href="#__codelineno-0-126">126</a></span>
-<span class="normal"><a href="#__codelineno-0-127">127</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-99"><a id="__codelineno-0-99" name="__codelineno-0-99"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_phonopy</span><span class="p">,</span> <span class="s2">"Phonopy not installed."</span><span class="p">)</span>
-</span><span id="__span-0-100"><a id="__codelineno-0-100" name="__codelineno-0-100"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_atoms_supercell_by_phonopy</span><span class="p">(</span>
-</span><span id="__span-0-101"><a id="__codelineno-0-101" name="__codelineno-0-101"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
-</span><span id="__span-0-102"><a id="__codelineno-0-102" name="__codelineno-0-102"></a>    <span class="n">supercell_matrix</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span>
-</span><span id="__span-0-103"><a id="__codelineno-0-103" name="__codelineno-0-103"></a>        <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
-</span><span id="__span-0-104"><a id="__codelineno-0-104" name="__codelineno-0-104"></a>    <span class="p">],</span>
-</span><span id="__span-0-105"><a id="__codelineno-0-105" name="__codelineno-0-105"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Atoms</span><span class="p">:</span>
-</span><span id="__span-0-106"><a id="__codelineno-0-106" name="__codelineno-0-106"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-107"><a id="__codelineno-0-107" name="__codelineno-0-107"></a><span class="sd">    Get the supercell of an ASE atoms object using a supercell matrix.</span>
-</span><span id="__span-0-108"><a id="__codelineno-0-108" name="__codelineno-0-108"></a>
-</span><span id="__span-0-109"><a id="__codelineno-0-109" name="__codelineno-0-109"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-110"><a id="__codelineno-0-110" name="__codelineno-0-110"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-111"><a id="__codelineno-0-111" name="__codelineno-0-111"></a><span class="sd">    atoms</span>
-</span><span id="__span-0-112"><a id="__codelineno-0-112" name="__codelineno-0-112"></a><span class="sd">        ASE atoms object.</span>
-</span><span id="__span-0-113"><a id="__codelineno-0-113" name="__codelineno-0-113"></a><span class="sd">    supercell_matrix</span>
-</span><span id="__span-0-114"><a id="__codelineno-0-114" name="__codelineno-0-114"></a><span class="sd">        The supercell matrix to use.</span>
-</span><span id="__span-0-115"><a id="__codelineno-0-115" name="__codelineno-0-115"></a>
-</span><span id="__span-0-116"><a id="__codelineno-0-116" name="__codelineno-0-116"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-117"><a id="__codelineno-0-117" name="__codelineno-0-117"></a><span class="sd">    -------</span>
-</span><span id="__span-0-118"><a id="__codelineno-0-118" name="__codelineno-0-118"></a><span class="sd">    Atoms</span>
-</span><span id="__span-0-119"><a id="__codelineno-0-119" name="__codelineno-0-119"></a><span class="sd">        ASE atoms object of the supercell.</span>
-</span><span id="__span-0-120"><a id="__codelineno-0-120" name="__codelineno-0-120"></a><span class="sd">    """</span>
-</span><span id="__span-0-121"><a id="__codelineno-0-121" name="__codelineno-0-121"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">phonopy.structure.cells</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_supercell</span>
-</span><span id="__span-0-122"><a id="__codelineno-0-122" name="__codelineno-0-122"></a>
-</span><span id="__span-0-123"><a id="__codelineno-0-123" name="__codelineno-0-123"></a>    <span class="k">return</span> <span class="n">phonopy_atoms_to_ase_atoms</span><span class="p">(</span>
-</span><span id="__span-0-124"><a id="__codelineno-0-124" name="__codelineno-0-124"></a>        <span class="n">get_supercell</span><span class="p">(</span>
-</span><span id="__span-0-125"><a id="__codelineno-0-125" name="__codelineno-0-125"></a>            <span class="n">get_phonopy_structure</span><span class="p">(</span><span class="n">Structure</span><span class="o">.</span><span class="n">from_ase_atoms</span><span class="p">(</span><span class="n">atoms</span><span class="p">)),</span> <span class="n">supercell_matrix</span>
-</span><span id="__span-0-126"><a id="__codelineno-0-126" name="__codelineno-0-126"></a>        <span class="p">)</span>
-</span><span id="__span-0-127"><a id="__codelineno-0-127" name="__codelineno-0-127"></a>    <span class="p">)</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-99"> 99</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-100">100</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-101">101</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-102">102</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-103">103</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-104">104</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-105">105</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-106">106</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-107">107</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-108">108</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-109">109</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-110">110</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-111">111</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-112">112</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-113">113</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-114">114</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-115">115</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-116">116</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-117">117</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-118">118</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-119">119</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-120">120</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-121">121</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-122">122</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-123">123</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-124">124</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-125">125</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-126">126</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-127">127</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-99"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-99" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-99"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_phonopy</span><span class="p">,</span> <span class="s2">"Phonopy not installed."</span><span class="p">)</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-100"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-100" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-100"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_atoms_supercell_by_phonopy</span><span class="p">(</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-101"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-101" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-101"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-102"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-102" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-102"></a>    <span class="n">supercell_matrix</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-103"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-103" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-103"></a>        <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-104"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-104" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-104"></a>    <span class="p">],</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-105"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-105" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-105"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Atoms</span><span class="p">:</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-106"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-106" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-106"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-107"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-107" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-107"></a><span class="sd">    Get the supercell of an ASE atoms object using a supercell matrix.</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-108"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-108" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-108"></a>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-109"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-109" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-109"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-110"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-110" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-110"></a><span class="sd">    ----------</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-111"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-111" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-111"></a><span class="sd">    atoms</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-112"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-112" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-112"></a><span class="sd">        ASE atoms object.</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-113"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-113" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-113"></a><span class="sd">    supercell_matrix</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-114"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-114" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-114"></a><span class="sd">        The supercell matrix to use.</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-115"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-115" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-115"></a>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-116"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-116" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-116"></a><span class="sd">    Returns</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-117"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-117" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-117"></a><span class="sd">    -------</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-118"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-118" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-118"></a><span class="sd">    Atoms</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-119"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-119" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-119"></a><span class="sd">        ASE atoms object of the supercell.</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-120"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-120" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-120"></a><span class="sd">    """</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-121"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-121" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-121"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">phonopy.structure.cells</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_supercell</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-122"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-122" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-122"></a>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-123"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-123" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-123"></a>    <span class="k">return</span> <span class="n">phonopy_atoms_to_ase_atoms</span><span class="p">(</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-124"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-124" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-124"></a>        <span class="n">get_supercell</span><span class="p">(</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-125"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-125" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-125"></a>            <span class="n">get_phonopy_structure</span><span class="p">(</span><span class="n">Structure</span><span class="o">.</span><span class="n">from_ase_atoms</span><span class="p">(</span><span class="n">atoms</span><span class="p">)),</span> <span class="n">supercell_matrix</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-126"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-126" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-126"></a>        <span class="p">)</span>
+</span><span id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__span-0-127"><a id="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-127" name="quacc.atoms.phonons.get_atoms_supercell_by_phonopy--source--__codelineno-0-127"></a>    <span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6730,115 +6730,115 @@ value specified by <code>min_lengths</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/atoms/phonons.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span>
-<span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span>
-<span class="normal"><a href="#__codelineno-0-59">59</a></span>
-<span class="normal"><a href="#__codelineno-0-60">60</a></span>
-<span class="normal"><a href="#__codelineno-0-61">61</a></span>
-<span class="normal"><a href="#__codelineno-0-62">62</a></span>
-<span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span>
-<span class="normal"><a href="#__codelineno-0-65">65</a></span>
-<span class="normal"><a href="#__codelineno-0-66">66</a></span>
-<span class="normal"><a href="#__codelineno-0-67">67</a></span>
-<span class="normal"><a href="#__codelineno-0-68">68</a></span>
-<span class="normal"><a href="#__codelineno-0-69">69</a></span>
-<span class="normal"><a href="#__codelineno-0-70">70</a></span>
-<span class="normal"><a href="#__codelineno-0-71">71</a></span>
-<span class="normal"><a href="#__codelineno-0-72">72</a></span>
-<span class="normal"><a href="#__codelineno-0-73">73</a></span>
-<span class="normal"><a href="#__codelineno-0-74">74</a></span>
-<span class="normal"><a href="#__codelineno-0-75">75</a></span>
-<span class="normal"><a href="#__codelineno-0-76">76</a></span>
-<span class="normal"><a href="#__codelineno-0-77">77</a></span>
-<span class="normal"><a href="#__codelineno-0-78">78</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_phonopy</span><span class="p">,</span> <span class="s2">"Phonopy not installed."</span><span class="p">)</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_phonopy</span><span class="p">(</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">min_lengths</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="n">supercell_matrix</span><span class="p">:</span> <span class="p">(</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a>        <span class="n">NDArray</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a>        <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>        <span class="o">|</span> <span class="kc">None</span>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="p">)</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="n">symprec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">displacement</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="n">phonopy_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Phonopy</span><span class="p">:</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    Convert an ASE atoms object to a phonopy object with displacements generated.</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    atoms</span>
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">        ASE atoms object.</span>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">    min_lengths</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">        Minimum length of each lattice dimension (A).</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">    supercell_matrix</span>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">        The supercell matrix to use. If specified, it will override any</span>
-</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">        value specified by `min_lengths`.</span>
-</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">    symprec</span>
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">        Precision for symmetry detection.</span>
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">    displacement</span>
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">        Atomic displacement (A).</span>
-</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">    phonopy_kwargs</span>
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">        Additional kwargs to pass to the Phonopy class.</span>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a>
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">    -------</span>
-</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="sd">    Phonopy</span>
-</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="sd">        Phonopy object</span>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">    """</span>
-</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">phonopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Phonopy</span>
-</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>
-</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="n">phonopy_kwargs</span> <span class="o">=</span> <span class="n">phonopy_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
-</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a>
-</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="k">if</span> <span class="n">supercell_matrix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">min_lengths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a>        <span class="n">supercell_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span>
-</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a>            <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">min_lengths</span> <span class="o">/</span> <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">lengths</span><span class="p">()))</span>
-</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="p">)</span>
-</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>
-</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a>    <span class="n">phonon</span> <span class="o">=</span> <span class="n">Phonopy</span><span class="p">(</span>
-</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="n">get_phonopy_structure</span><span class="p">(</span><span class="n">Structure</span><span class="o">.</span><span class="n">from_ase_atoms</span><span class="p">(</span><span class="n">atoms</span><span class="p">)),</span>
-</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a>        <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">,</span>
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>        <span class="n">supercell_matrix</span><span class="o">=</span><span class="n">supercell_matrix</span><span class="p">,</span>
-</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a>        <span class="o">**</span><span class="n">phonopy_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>    <span class="p">)</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>    <span class="n">phonon</span><span class="o">.</span><span class="n">generate_displacements</span><span class="p">(</span><span class="n">distance</span><span class="o">=</span><span class="n">displacement</span><span class="p">)</span>
-</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>
-</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>    <span class="k">return</span> <span class="n">phonon</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-45">45</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-46">46</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-47">47</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-48">48</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-49">49</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-50">50</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-56">56</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-68">68</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-69">69</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-72">72</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.get_phonopy--source--__codelineno-0-78">78</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-24"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-24" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-24"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_phonopy</span><span class="p">,</span> <span class="s2">"Phonopy not installed."</span><span class="p">)</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-25"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-25" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-25"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_phonopy</span><span class="p">(</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-26"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-26" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-26"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-27"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-27" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-27"></a>    <span class="n">min_lengths</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-28"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-28" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-28"></a>    <span class="n">supercell_matrix</span><span class="p">:</span> <span class="p">(</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-29"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-29" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-29"></a>        <span class="n">NDArray</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-30"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-30" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-30"></a>        <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-31"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-31" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-31"></a>        <span class="o">|</span> <span class="kc">None</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-32"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-32" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-32"></a>    <span class="p">)</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-33"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-33" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-33"></a>    <span class="n">symprec</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-34"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-34" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-34"></a>    <span class="n">displacement</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">,</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-35"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-35" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-35"></a>    <span class="n">phonopy_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-36"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-36" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-36"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Phonopy</span><span class="p">:</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-37"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-37" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-37"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-38"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-38" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-38"></a><span class="sd">    Convert an ASE atoms object to a phonopy object with displacements generated.</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-39"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-39" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-39"></a>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-40"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-40" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-40"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-41"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-41" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-41"></a><span class="sd">    ----------</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-42"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-42" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-42"></a><span class="sd">    atoms</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-43"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-43" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-43"></a><span class="sd">        ASE atoms object.</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-44"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-44" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-44"></a><span class="sd">    min_lengths</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-45"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-45" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-45"></a><span class="sd">        Minimum length of each lattice dimension (A).</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-46"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-46" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-46"></a><span class="sd">    supercell_matrix</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-47"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-47" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-47"></a><span class="sd">        The supercell matrix to use. If specified, it will override any</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-48"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-48" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-48"></a><span class="sd">        value specified by `min_lengths`.</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-49"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-49" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-49"></a><span class="sd">    symprec</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-50"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-50" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-50"></a><span class="sd">        Precision for symmetry detection.</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-51"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-51" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-51"></a><span class="sd">    displacement</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-52"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-52" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-52"></a><span class="sd">        Atomic displacement (A).</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-53"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-53" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-53"></a><span class="sd">    phonopy_kwargs</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-54"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-54" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-54"></a><span class="sd">        Additional kwargs to pass to the Phonopy class.</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-55"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-55" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-55"></a>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-56"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-56" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-56"></a><span class="sd">    Returns</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-57"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-57" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-57"></a><span class="sd">    -------</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-58"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-58" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-58"></a><span class="sd">    Phonopy</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-59"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-59" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-59"></a><span class="sd">        Phonopy object</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-60"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-60" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-60"></a><span class="sd">    """</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-61"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-61" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-61"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">phonopy</span><span class="w"> </span><span class="kn">import</span> <span class="n">Phonopy</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-62"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-62" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-62"></a>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-63"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-63" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-63"></a>    <span class="n">phonopy_kwargs</span> <span class="o">=</span> <span class="n">phonopy_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-64"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-64" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-64"></a>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-65"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-65" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-65"></a>    <span class="k">if</span> <span class="n">supercell_matrix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">min_lengths</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-66"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-66" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-66"></a>        <span class="n">supercell_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-67"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-67" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-67"></a>            <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">min_lengths</span> <span class="o">/</span> <span class="n">atoms</span><span class="o">.</span><span class="n">cell</span><span class="o">.</span><span class="n">lengths</span><span class="p">()))</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-68"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-68" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-68"></a>        <span class="p">)</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-69"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-69" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-69"></a>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-70"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-70" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-70"></a>    <span class="n">phonon</span> <span class="o">=</span> <span class="n">Phonopy</span><span class="p">(</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-71"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-71" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-71"></a>        <span class="n">get_phonopy_structure</span><span class="p">(</span><span class="n">Structure</span><span class="o">.</span><span class="n">from_ase_atoms</span><span class="p">(</span><span class="n">atoms</span><span class="p">)),</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-72"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-72" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-72"></a>        <span class="n">symprec</span><span class="o">=</span><span class="n">symprec</span><span class="p">,</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-73"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-73" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-73"></a>        <span class="n">supercell_matrix</span><span class="o">=</span><span class="n">supercell_matrix</span><span class="p">,</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-74"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-74" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-74"></a>        <span class="o">**</span><span class="n">phonopy_kwargs</span><span class="p">,</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-75"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-75" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-75"></a>    <span class="p">)</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-76"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-76" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-76"></a>    <span class="n">phonon</span><span class="o">.</span><span class="n">generate_displacements</span><span class="p">(</span><span class="n">distance</span><span class="o">=</span><span class="n">displacement</span><span class="p">)</span>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-77"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-77" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-77"></a>
+</span><span id="quacc.atoms.phonons.get_phonopy--source--__span-0-78"><a id="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-78" name="quacc.atoms.phonons.get_phonopy--source--__codelineno-0-78"></a>    <span class="k">return</span> <span class="n">phonon</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -6890,37 +6890,37 @@ value specified by <code>min_lengths</code>.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/atoms/phonons.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-81">81</a></span>
-<span class="normal"><a href="#__codelineno-0-82">82</a></span>
-<span class="normal"><a href="#__codelineno-0-83">83</a></span>
-<span class="normal"><a href="#__codelineno-0-84">84</a></span>
-<span class="normal"><a href="#__codelineno-0-85">85</a></span>
-<span class="normal"><a href="#__codelineno-0-86">86</a></span>
-<span class="normal"><a href="#__codelineno-0-87">87</a></span>
-<span class="normal"><a href="#__codelineno-0-88">88</a></span>
-<span class="normal"><a href="#__codelineno-0-89">89</a></span>
-<span class="normal"><a href="#__codelineno-0-90">90</a></span>
-<span class="normal"><a href="#__codelineno-0-91">91</a></span>
-<span class="normal"><a href="#__codelineno-0-92">92</a></span>
-<span class="normal"><a href="#__codelineno-0-93">93</a></span>
-<span class="normal"><a href="#__codelineno-0-94">94</a></span>
-<span class="normal"><a href="#__codelineno-0-95">95</a></span>
-<span class="normal"><a href="#__codelineno-0-96">96</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a><span class="k">def</span><span class="w"> </span><span class="nf">phonopy_atoms_to_ase_atoms</span><span class="p">(</span><span class="n">phonopy_atoms</span><span class="p">:</span> <span class="n">PhonopyAtoms</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Atoms</span><span class="p">:</span>
-</span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83"></a><span class="sd">    Convert a phonopy atoms object to an ASE atoms object.</span>
-</span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84"></a>
-</span><span id="__span-0-85"><a id="__codelineno-0-85" name="__codelineno-0-85"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a><span class="sd">    phonopy_atoms</span>
-</span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a><span class="sd">        Phonopy atoms object</span>
-</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a>
-</span><span id="__span-0-90"><a id="__codelineno-0-90" name="__codelineno-0-90"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-91"><a id="__codelineno-0-91" name="__codelineno-0-91"></a><span class="sd">    -------</span>
-</span><span id="__span-0-92"><a id="__codelineno-0-92" name="__codelineno-0-92"></a><span class="sd">    Atoms</span>
-</span><span id="__span-0-93"><a id="__codelineno-0-93" name="__codelineno-0-93"></a><span class="sd">        ASE atoms object</span>
-</span><span id="__span-0-94"><a id="__codelineno-0-94" name="__codelineno-0-94"></a><span class="sd">    """</span>
-</span><span id="__span-0-95"><a id="__codelineno-0-95" name="__codelineno-0-95"></a>    <span class="n">pmg_structure</span> <span class="o">=</span> <span class="n">get_pmg_structure</span><span class="p">(</span><span class="n">phonopy_atoms</span><span class="p">)</span>
-</span><span id="__span-0-96"><a id="__codelineno-0-96" name="__codelineno-0-96"></a>    <span class="k">return</span> <span class="n">pmg_structure</span><span class="o">.</span><span class="n">to_ase_atoms</span><span class="p">()</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-81">81</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-82">82</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-83">83</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-84">84</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-85">85</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-86">86</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-87">87</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-88">88</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-89">89</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-90">90</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-91">91</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-92">92</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-93">93</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-94">94</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-95">95</a></span>
+<span class="normal"><a href="#quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-96">96</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-81"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-81" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-81"></a><span class="k">def</span><span class="w"> </span><span class="nf">phonopy_atoms_to_ase_atoms</span><span class="p">(</span><span class="n">phonopy_atoms</span><span class="p">:</span> <span class="n">PhonopyAtoms</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Atoms</span><span class="p">:</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-82"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-82" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-82"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-83"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-83" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-83"></a><span class="sd">    Convert a phonopy atoms object to an ASE atoms object.</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-84"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-84" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-84"></a>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-85"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-85" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-85"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-86"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-86" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-86"></a><span class="sd">    ----------</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-87"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-87" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-87"></a><span class="sd">    phonopy_atoms</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-88"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-88" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-88"></a><span class="sd">        Phonopy atoms object</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-89"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-89" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-89"></a>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-90"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-90" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-90"></a><span class="sd">    Returns</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-91"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-91" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-91"></a><span class="sd">    -------</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-92"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-92" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-92"></a><span class="sd">    Atoms</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-93"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-93" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-93"></a><span class="sd">        ASE atoms object</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-94"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-94" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-94"></a><span class="sd">    """</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-95"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-95" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-95"></a>    <span class="n">pmg_structure</span> <span class="o">=</span> <span class="n">get_pmg_structure</span><span class="p">(</span><span class="n">phonopy_atoms</span><span class="p">)</span>
+</span><span id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__span-0-96"><a id="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-96" name="quacc.atoms.phonons.phonopy_atoms_to_ase_atoms--source--__codelineno-0-96"></a>    <span class="k">return</span> <span class="n">pmg_structure</span><span class="o">.</span><span class="n">to_ase_atoms</span><span class="p">()</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>

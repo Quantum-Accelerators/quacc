@@ -6585,143 +6585,143 @@ the keys are the names of the jobs and the values are decorators.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/recipes/emt/elastic.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-21">21</a></span>
-<span class="normal"><a href="#__codelineno-0-22">22</a></span>
-<span class="normal"><a href="#__codelineno-0-23">23</a></span>
-<span class="normal"><a href="#__codelineno-0-24">24</a></span>
-<span class="normal"><a href="#__codelineno-0-25">25</a></span>
-<span class="normal"><a href="#__codelineno-0-26">26</a></span>
-<span class="normal"><a href="#__codelineno-0-27">27</a></span>
-<span class="normal"><a href="#__codelineno-0-28">28</a></span>
-<span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span>
-<span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span>
-<span class="normal"><a href="#__codelineno-0-59">59</a></span>
-<span class="normal"><a href="#__codelineno-0-60">60</a></span>
-<span class="normal"><a href="#__codelineno-0-61">61</a></span>
-<span class="normal"><a href="#__codelineno-0-62">62</a></span>
-<span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span>
-<span class="normal"><a href="#__codelineno-0-65">65</a></span>
-<span class="normal"><a href="#__codelineno-0-66">66</a></span>
-<span class="normal"><a href="#__codelineno-0-67">67</a></span>
-<span class="normal"><a href="#__codelineno-0-68">68</a></span>
-<span class="normal"><a href="#__codelineno-0-69">69</a></span>
-<span class="normal"><a href="#__codelineno-0-70">70</a></span>
-<span class="normal"><a href="#__codelineno-0-71">71</a></span>
-<span class="normal"><a href="#__codelineno-0-72">72</a></span>
-<span class="normal"><a href="#__codelineno-0-73">73</a></span>
-<span class="normal"><a href="#__codelineno-0-74">74</a></span>
-<span class="normal"><a href="#__codelineno-0-75">75</a></span>
-<span class="normal"><a href="#__codelineno-0-76">76</a></span>
-<span class="normal"><a href="#__codelineno-0-77">77</a></span>
-<span class="normal"><a href="#__codelineno-0-78">78</a></span>
-<span class="normal"><a href="#__codelineno-0-79">79</a></span>
-<span class="normal"><a href="#__codelineno-0-80">80</a></span>
-<span class="normal"><a href="#__codelineno-0-81">81</a></span>
-<span class="normal"><a href="#__codelineno-0-82">82</a></span>
-<span class="normal"><a href="#__codelineno-0-83">83</a></span>
-<span class="normal"><a href="#__codelineno-0-84">84</a></span>
-<span class="normal"><a href="#__codelineno-0-85">85</a></span>
-<span class="normal"><a href="#__codelineno-0-86">86</a></span>
-<span class="normal"><a href="#__codelineno-0-87">87</a></span>
-<span class="normal"><a href="#__codelineno-0-88">88</a></span>
-<span class="normal"><a href="#__codelineno-0-89">89</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="nd">@flow</span>
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="k">def</span><span class="w"> </span><span class="nf">elastic_tensor_flow</span><span class="p">(</span>
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a>    <span class="n">pre_relax</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a>    <span class="n">run_static</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a>    <span class="n">deform_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">job_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="n">job_decorators</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElasticSchema</span><span class="p">:</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    Workflow consisting of:</span>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    1. Bulk structure relaxation (if pre_relax is True)</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a><span class="sd">        - name: "relax_job"</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a><span class="sd">        - job: [quacc.recipes.emt.core.relax_job][]</span>
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="sd">    2. Bulk structure static calculation (if run_static is True)</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">        - name: "static_job"</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a><span class="sd">        - job: [quacc.recipes.emt.core.static_job][]</span>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">    3. Deformed structures generation</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a>
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">    4. Deformed structures relaxations</span>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">        - name: "relax_job"</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">        - job: [quacc.recipes.emt.core.relax_job][]</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">    5. Deformed structures statics (if run_static is True)</span>
-</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">        - name: "static_job"</span>
-</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">        - job: [quacc.recipes.emt.core.static_job][]</span>
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a>
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">    6. Elastic tensor calculation</span>
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>
-</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">    atoms</span>
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">        Atoms object</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">    pre_relax</span>
-</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="sd">        Whether to run a relaxation on the structure before deformation (true)</span>
-</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="sd">    run_static</span>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">        Whether to run static calculations after any relaxations on the undeformed or deformed structures</span>
-</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="sd">    deform_kwargs</span>
-</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="sd">        Additional keyword arguments to pass to [quacc.atoms.deformation.make_deformations_from_bulk][]</span>
-</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="sd">    job_params</span>
-</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="sd">        Custom parameters to pass to each Job in the Flow. This is a dictionary where</span>
-</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a><span class="sd">        the keys are the names of the jobs and the values are dictionaries of parameters.</span>
-</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a><span class="sd">    job_decorators</span>
-</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">        Custom decorators to apply to each Job in the Flow. This is a dictionary where</span>
-</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="sd">        the keys are the names of the jobs and the values are decorators.</span>
-</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>
-</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a><span class="sd">    -------</span>
-</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a><span class="sd">    ElasticSchema</span>
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a><span class="sd">        See the return type-hint for the data structure.</span>
-</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a><span class="sd">    """</span>
-</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>    <span class="n">relax_job_</span><span class="p">,</span> <span class="n">static_job_</span> <span class="o">=</span> <span class="n">customize_jobs</span><span class="p">(</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>        <span class="p">{</span><span class="s2">"relax_job"</span><span class="p">:</span> <span class="n">relax_job</span><span class="p">,</span> <span class="s2">"static_job"</span><span class="p">:</span> <span class="n">static_job</span><span class="p">},</span>
-</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>        <span class="n">param_defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">"relax_job"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"relax_cell"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}},</span>
-</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>        <span class="n">param_swaps</span><span class="o">=</span><span class="n">job_params</span><span class="p">,</span>
-</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>        <span class="n">decorators</span><span class="o">=</span><span class="n">job_decorators</span><span class="p">,</span>
-</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80"></a>    <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-</span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81"></a>
-</span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82"></a>    <span class="k">return</span> <span class="n">elastic_tensor_flow_</span><span class="p">(</span>
-</span><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83"></a>        <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span>
-</span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="n">relax_job</span><span class="o">=</span><span class="n">relax_job_</span><span class="p">,</span>
-</span><span id="__span-0-85"><a id="__codelineno-0-85" name="__codelineno-0-85"></a>        <span class="n">static_job</span><span class="o">=</span><span class="n">static_job_</span><span class="p">,</span>
-</span><span id="__span-0-86"><a id="__codelineno-0-86" name="__codelineno-0-86"></a>        <span class="n">pre_relax</span><span class="o">=</span><span class="n">pre_relax</span><span class="p">,</span>
-</span><span id="__span-0-87"><a id="__codelineno-0-87" name="__codelineno-0-87"></a>        <span class="n">run_static</span><span class="o">=</span><span class="n">run_static</span><span class="p">,</span>
-</span><span id="__span-0-88"><a id="__codelineno-0-88" name="__codelineno-0-88"></a>        <span class="n">deform_kwargs</span><span class="o">=</span><span class="n">deform_kwargs</span><span class="p">,</span>
-</span><span id="__span-0-89"><a id="__codelineno-0-89" name="__codelineno-0-89"></a>    <span class="p">)</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-26">26</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-27">27</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-28">28</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-45">45</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-46">46</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-47">47</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-48">48</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-49">49</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-50">50</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-56">56</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-68">68</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-69">69</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-72">72</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-78">78</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-79">79</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-80">80</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-81">81</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-82">82</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-83">83</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-84">84</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-85">85</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-86">86</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-87">87</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-88">88</a></span>
+<span class="normal"><a href="#quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-89">89</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-21"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-21" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-21"></a><span class="nd">@flow</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-22"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-22" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-22"></a><span class="k">def</span><span class="w"> </span><span class="nf">elastic_tensor_flow</span><span class="p">(</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-23"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-23" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-23"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-24"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-24" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-24"></a>    <span class="n">pre_relax</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-25"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-25" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-25"></a>    <span class="n">run_static</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-26"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-26" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-26"></a>    <span class="n">deform_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-27"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-27" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-27"></a>    <span class="n">job_params</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-28"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-28" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-28"></a>    <span class="n">job_decorators</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Callable</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-29"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-29" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-29"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ElasticSchema</span><span class="p">:</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-30"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-30" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-30"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-31"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-31" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-31"></a><span class="sd">    Workflow consisting of:</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-32"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-32" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-32"></a>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-33"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-33" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-33"></a><span class="sd">    1. Bulk structure relaxation (if pre_relax is True)</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-34"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-34" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-34"></a><span class="sd">        - name: "relax_job"</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-35"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-35" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-35"></a><span class="sd">        - job: [quacc.recipes.emt.core.relax_job][]</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-36"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-36" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-36"></a>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-37"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-37" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-37"></a><span class="sd">    2. Bulk structure static calculation (if run_static is True)</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-38"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-38" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-38"></a><span class="sd">        - name: "static_job"</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-39"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-39" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-39"></a><span class="sd">        - job: [quacc.recipes.emt.core.static_job][]</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-40"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-40" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-40"></a>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-41"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-41" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-41"></a><span class="sd">    3. Deformed structures generation</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-42"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-42" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-42"></a>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-43"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-43" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-43"></a><span class="sd">    4. Deformed structures relaxations</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-44"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-44" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-44"></a><span class="sd">        - name: "relax_job"</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-45"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-45" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-45"></a><span class="sd">        - job: [quacc.recipes.emt.core.relax_job][]</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-46"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-46" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-46"></a>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-47"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-47" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-47"></a><span class="sd">    5. Deformed structures statics (if run_static is True)</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-48"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-48" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-48"></a><span class="sd">        - name: "static_job"</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-49"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-49" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-49"></a><span class="sd">        - job: [quacc.recipes.emt.core.static_job][]</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-50"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-50" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-50"></a>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-51"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-51" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-51"></a><span class="sd">    6. Elastic tensor calculation</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-52"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-52" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-52"></a>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-53"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-53" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-53"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-54"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-54" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-54"></a><span class="sd">    ----------</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-55"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-55" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-55"></a><span class="sd">    atoms</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-56"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-56" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-56"></a><span class="sd">        Atoms object</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-57"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-57" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-57"></a><span class="sd">    pre_relax</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-58"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-58" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-58"></a><span class="sd">        Whether to run a relaxation on the structure before deformation (true)</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-59"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-59" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-59"></a><span class="sd">    run_static</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-60"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-60" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-60"></a><span class="sd">        Whether to run static calculations after any relaxations on the undeformed or deformed structures</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-61"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-61" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-61"></a><span class="sd">    deform_kwargs</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-62"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-62" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-62"></a><span class="sd">        Additional keyword arguments to pass to [quacc.atoms.deformation.make_deformations_from_bulk][]</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-63"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-63" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-63"></a><span class="sd">    job_params</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-64"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-64" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-64"></a><span class="sd">        Custom parameters to pass to each Job in the Flow. This is a dictionary where</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-65"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-65" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-65"></a><span class="sd">        the keys are the names of the jobs and the values are dictionaries of parameters.</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-66"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-66" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-66"></a><span class="sd">    job_decorators</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-67"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-67" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-67"></a><span class="sd">        Custom decorators to apply to each Job in the Flow. This is a dictionary where</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-68"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-68" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-68"></a><span class="sd">        the keys are the names of the jobs and the values are decorators.</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-69"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-69" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-69"></a>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-70"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-70" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-70"></a><span class="sd">    Returns</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-71"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-71" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-71"></a><span class="sd">    -------</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-72"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-72" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-72"></a><span class="sd">    ElasticSchema</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-73"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-73" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-73"></a><span class="sd">        See the return type-hint for the data structure.</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-74"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-74" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-74"></a><span class="sd">    """</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-75"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-75" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-75"></a>    <span class="n">relax_job_</span><span class="p">,</span> <span class="n">static_job_</span> <span class="o">=</span> <span class="n">customize_jobs</span><span class="p">(</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-76"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-76" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-76"></a>        <span class="p">{</span><span class="s2">"relax_job"</span><span class="p">:</span> <span class="n">relax_job</span><span class="p">,</span> <span class="s2">"static_job"</span><span class="p">:</span> <span class="n">static_job</span><span class="p">},</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-77"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-77" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-77"></a>        <span class="n">param_defaults</span><span class="o">=</span><span class="p">{</span><span class="s2">"relax_job"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"relax_cell"</span><span class="p">:</span> <span class="kc">True</span><span class="p">}},</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-78"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-78" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-78"></a>        <span class="n">param_swaps</span><span class="o">=</span><span class="n">job_params</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-79"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-79" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-79"></a>        <span class="n">decorators</span><span class="o">=</span><span class="n">job_decorators</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-80"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-80" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-80"></a>    <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-81"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-81" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-81"></a>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-82"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-82" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-82"></a>    <span class="k">return</span> <span class="n">elastic_tensor_flow_</span><span class="p">(</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-83"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-83" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-83"></a>        <span class="n">atoms</span><span class="o">=</span><span class="n">atoms</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-84"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-84" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-84"></a>        <span class="n">relax_job</span><span class="o">=</span><span class="n">relax_job_</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-85"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-85" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-85"></a>        <span class="n">static_job</span><span class="o">=</span><span class="n">static_job_</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-86"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-86" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-86"></a>        <span class="n">pre_relax</span><span class="o">=</span><span class="n">pre_relax</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-87"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-87" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-87"></a>        <span class="n">run_static</span><span class="o">=</span><span class="n">run_static</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-88"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-88" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-88"></a>        <span class="n">deform_kwargs</span><span class="o">=</span><span class="n">deform_kwargs</span><span class="p">,</span>
+</span><span id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__span-0-89"><a id="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-89" name="quacc.recipes.emt.elastic.elastic_tensor_flow--source--__codelineno-0-89"></a>    <span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>

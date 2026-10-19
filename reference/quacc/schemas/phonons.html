@@ -6539,107 +6539,107 @@
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>quacc/schemas/phonons.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-29">29</a></span>
-<span class="normal"><a href="#__codelineno-0-30">30</a></span>
-<span class="normal"><a href="#__codelineno-0-31">31</a></span>
-<span class="normal"><a href="#__codelineno-0-32">32</a></span>
-<span class="normal"><a href="#__codelineno-0-33">33</a></span>
-<span class="normal"><a href="#__codelineno-0-34">34</a></span>
-<span class="normal"><a href="#__codelineno-0-35">35</a></span>
-<span class="normal"><a href="#__codelineno-0-36">36</a></span>
-<span class="normal"><a href="#__codelineno-0-37">37</a></span>
-<span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span>
-<span class="normal"><a href="#__codelineno-0-41">41</a></span>
-<span class="normal"><a href="#__codelineno-0-42">42</a></span>
-<span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
-<span class="normal"><a href="#__codelineno-0-46">46</a></span>
-<span class="normal"><a href="#__codelineno-0-47">47</a></span>
-<span class="normal"><a href="#__codelineno-0-48">48</a></span>
-<span class="normal"><a href="#__codelineno-0-49">49</a></span>
-<span class="normal"><a href="#__codelineno-0-50">50</a></span>
-<span class="normal"><a href="#__codelineno-0-51">51</a></span>
-<span class="normal"><a href="#__codelineno-0-52">52</a></span>
-<span class="normal"><a href="#__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#__codelineno-0-54">54</a></span>
-<span class="normal"><a href="#__codelineno-0-55">55</a></span>
-<span class="normal"><a href="#__codelineno-0-56">56</a></span>
-<span class="normal"><a href="#__codelineno-0-57">57</a></span>
-<span class="normal"><a href="#__codelineno-0-58">58</a></span>
-<span class="normal"><a href="#__codelineno-0-59">59</a></span>
-<span class="normal"><a href="#__codelineno-0-60">60</a></span>
-<span class="normal"><a href="#__codelineno-0-61">61</a></span>
-<span class="normal"><a href="#__codelineno-0-62">62</a></span>
-<span class="normal"><a href="#__codelineno-0-63">63</a></span>
-<span class="normal"><a href="#__codelineno-0-64">64</a></span>
-<span class="normal"><a href="#__codelineno-0-65">65</a></span>
-<span class="normal"><a href="#__codelineno-0-66">66</a></span>
-<span class="normal"><a href="#__codelineno-0-67">67</a></span>
-<span class="normal"><a href="#__codelineno-0-68">68</a></span>
-<span class="normal"><a href="#__codelineno-0-69">69</a></span>
-<span class="normal"><a href="#__codelineno-0-70">70</a></span>
-<span class="normal"><a href="#__codelineno-0-71">71</a></span>
-<span class="normal"><a href="#__codelineno-0-72">72</a></span>
-<span class="normal"><a href="#__codelineno-0-73">73</a></span>
-<span class="normal"><a href="#__codelineno-0-74">74</a></span>
-<span class="normal"><a href="#__codelineno-0-75">75</a></span>
-<span class="normal"><a href="#__codelineno-0-76">76</a></span>
-<span class="normal"><a href="#__codelineno-0-77">77</a></span>
-<span class="normal"><a href="#__codelineno-0-78">78</a></span>
-<span class="normal"><a href="#__codelineno-0-79">79</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_phonopy</span><span class="p">,</span> <span class="s2">"This schema relies on phonopy"</span><span class="p">)</span>
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="k">def</span><span class="w"> </span><span class="nf">summarize_phonopy</span><span class="p">(</span>
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31"></a>    <span class="n">phonon</span><span class="p">:</span> <span class="n">Phonopy</span><span class="p">,</span>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32"></a>    <span class="n">input_atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33"></a>    <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="n">additional_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhononSchema</span><span class="p">:</span>
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37"></a><span class="w">    </span><span class="sd">"""</span>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38"></a><span class="sd">    Summarize a Phonopy object.</span>
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39"></a>
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40"></a><span class="sd">    Parameters</span>
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41"></a><span class="sd">    ----------</span>
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42"></a><span class="sd">    phonon</span>
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="sd">        Phonopy object</span>
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44"></a><span class="sd">    input_atoms</span>
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="sd">        Input atoms object</span>
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="sd">    directory</span>
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">        Directory where the results are stored.</span>
-</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="sd">    parameters</span>
-</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">        Calculator parameters used to generate the phonon object.</span>
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">    additional_fields</span>
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">        Additional fields to add to the document.</span>
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52"></a>
-</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">    Returns</span>
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    -------</span>
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">    PhononSchema</span>
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">        The PhononSchema.</span>
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">    """</span>
-</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58"></a>    <span class="n">additional_fields</span> <span class="o">=</span> <span class="n">additional_fields</span> <span class="ow">or</span> <span class="p">{}</span>
-</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59"></a>
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60"></a>    <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61"></a>        <span class="s2">"parameters"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
-</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62"></a>        <span class="s2">"nid"</span><span class="p">:</span> <span class="n">get_uri</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
-</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63"></a>        <span class="s2">"dir_name"</span><span class="p">:</span> <span class="n">directory</span><span class="p">,</span>
-</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64"></a>        <span class="s2">"phonopy_metadata"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"version"</span><span class="p">:</span> <span class="n">phonon</span><span class="o">.</span><span class="n">version</span><span class="p">},</span>
-</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65"></a>        <span class="s2">"quacc_version"</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
-</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="p">}</span>
-</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67"></a>
-</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68"></a>    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="s2">"results"</span><span class="p">:</span> <span class="p">{</span>
-</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70"></a>            <span class="s2">"thermal_properties"</span><span class="p">:</span> <span class="n">phonon</span><span class="o">.</span><span class="n">get_thermal_properties_dict</span><span class="p">(),</span>
-</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71"></a>            <span class="s2">"mesh_properties"</span><span class="p">:</span> <span class="n">phonon</span><span class="o">.</span><span class="n">get_mesh_dict</span><span class="p">(),</span>
-</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72"></a>            <span class="s2">"total_dos"</span><span class="p">:</span> <span class="n">phonon</span><span class="o">.</span><span class="n">get_total_dos_dict</span><span class="p">(),</span>
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="s2">"force_constants"</span><span class="p">:</span> <span class="n">phonon</span><span class="o">.</span><span class="n">force_constants</span><span class="p">,</span>
-</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74"></a>        <span class="p">}</span>
-</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>    <span class="p">}</span>
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>
-</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77"></a>    <span class="n">atoms_metadata</span> <span class="o">=</span> <span class="n">atoms_to_metadata</span><span class="p">(</span><span class="n">input_atoms</span><span class="p">)</span>
-</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78"></a>    <span class="n">unsorted_task_doc</span> <span class="o">=</span> <span class="n">atoms_metadata</span> <span class="o">|</span> <span class="n">inputs</span> <span class="o">|</span> <span class="n">results</span> <span class="o">|</span> <span class="n">additional_fields</span>
-</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79"></a>    <span class="k">return</span> <span class="n">clean_dict</span><span class="p">(</span><span class="n">unsorted_task_doc</span><span class="p">)</span>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-29">29</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-30">30</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-31">31</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-32">32</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-33">33</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-34">34</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-35">35</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-36">36</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-37">37</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-38">38</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-39">39</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-40">40</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-41">41</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-42">42</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-43">43</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-44">44</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-45">45</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-46">46</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-47">47</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-48">48</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-49">49</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-50">50</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-51">51</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-56">56</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-68">68</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-69">69</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-72">72</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-78">78</a></span>
+<span class="normal"><a href="#quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-79">79</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-29"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-29" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-29"></a><span class="nd">@requires</span><span class="p">(</span><span class="n">has_phonopy</span><span class="p">,</span> <span class="s2">"This schema relies on phonopy"</span><span class="p">)</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-30"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-30" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-30"></a><span class="k">def</span><span class="w"> </span><span class="nf">summarize_phonopy</span><span class="p">(</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-31"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-31" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-31"></a>    <span class="n">phonon</span><span class="p">:</span> <span class="n">Phonopy</span><span class="p">,</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-32"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-32" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-32"></a>    <span class="n">input_atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-33"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-33" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-33"></a>    <span class="n">directory</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-34"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-34" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-34"></a>    <span class="n">parameters</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-35"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-35" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-35"></a>    <span class="n">additional_fields</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-36"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-36" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-36"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PhononSchema</span><span class="p">:</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-37"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-37" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-37"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-38"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-38" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-38"></a><span class="sd">    Summarize a Phonopy object.</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-39"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-39" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-39"></a>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-40"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-40" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-40"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-41"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-41" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-41"></a><span class="sd">    ----------</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-42"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-42" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-42"></a><span class="sd">    phonon</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-43"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-43" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-43"></a><span class="sd">        Phonopy object</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-44"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-44" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-44"></a><span class="sd">    input_atoms</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-45"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-45" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-45"></a><span class="sd">        Input atoms object</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-46"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-46" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-46"></a><span class="sd">    directory</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-47"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-47" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-47"></a><span class="sd">        Directory where the results are stored.</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-48"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-48" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-48"></a><span class="sd">    parameters</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-49"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-49" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-49"></a><span class="sd">        Calculator parameters used to generate the phonon object.</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-50"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-50" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-50"></a><span class="sd">    additional_fields</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-51"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-51" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-51"></a><span class="sd">        Additional fields to add to the document.</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-52"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-52" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-52"></a>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-53"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-53" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-53"></a><span class="sd">    Returns</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-54"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-54" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-54"></a><span class="sd">    -------</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-55"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-55" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-55"></a><span class="sd">    PhononSchema</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-56"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-56" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-56"></a><span class="sd">        The PhononSchema.</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-57"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-57" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-57"></a><span class="sd">    """</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-58"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-58" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-58"></a>    <span class="n">additional_fields</span> <span class="o">=</span> <span class="n">additional_fields</span> <span class="ow">or</span> <span class="p">{}</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-59"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-59" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-59"></a>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-60"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-60" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-60"></a>    <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-61"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-61" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-61"></a>        <span class="s2">"parameters"</span><span class="p">:</span> <span class="n">parameters</span><span class="p">,</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-62"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-62" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-62"></a>        <span class="s2">"nid"</span><span class="p">:</span> <span class="n">get_uri</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">":"</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-63"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-63" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-63"></a>        <span class="s2">"dir_name"</span><span class="p">:</span> <span class="n">directory</span><span class="p">,</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-64"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-64" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-64"></a>        <span class="s2">"phonopy_metadata"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"version"</span><span class="p">:</span> <span class="n">phonon</span><span class="o">.</span><span class="n">version</span><span class="p">},</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-65"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-65" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-65"></a>        <span class="s2">"quacc_version"</span><span class="p">:</span> <span class="n">__version__</span><span class="p">,</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-66"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-66" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-66"></a>    <span class="p">}</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-67"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-67" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-67"></a>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-68"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-68" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-68"></a>    <span class="n">results</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-69"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-69" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-69"></a>        <span class="s2">"results"</span><span class="p">:</span> <span class="p">{</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-70"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-70" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-70"></a>            <span class="s2">"thermal_properties"</span><span class="p">:</span> <span class="n">phonon</span><span class="o">.</span><span class="n">get_thermal_properties_dict</span><span class="p">(),</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-71"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-71" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-71"></a>            <span class="s2">"mesh_properties"</span><span class="p">:</span> <span class="n">phonon</span><span class="o">.</span><span class="n">get_mesh_dict</span><span class="p">(),</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-72"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-72" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-72"></a>            <span class="s2">"total_dos"</span><span class="p">:</span> <span class="n">phonon</span><span class="o">.</span><span class="n">get_total_dos_dict</span><span class="p">(),</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-73"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-73" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-73"></a>            <span class="s2">"force_constants"</span><span class="p">:</span> <span class="n">phonon</span><span class="o">.</span><span class="n">force_constants</span><span class="p">,</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-74"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-74" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-74"></a>        <span class="p">}</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-75"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-75" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-75"></a>    <span class="p">}</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-76"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-76" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-76"></a>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-77"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-77" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-77"></a>    <span class="n">atoms_metadata</span> <span class="o">=</span> <span class="n">atoms_to_metadata</span><span class="p">(</span><span class="n">input_atoms</span><span class="p">)</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-78"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-78" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-78"></a>    <span class="n">unsorted_task_doc</span> <span class="o">=</span> <span class="n">atoms_metadata</span> <span class="o">|</span> <span class="n">inputs</span> <span class="o">|</span> <span class="n">results</span> <span class="o">|</span> <span class="n">additional_fields</span>
+</span><span id="quacc.schemas.phonons.summarize_phonopy--source--__span-0-79"><a id="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-79" name="quacc.schemas.phonons.summarize_phonopy--source--__codelineno-0-79"></a>    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">"PhononSchema"</span><span class="p">,</span> <span class="n">clean_dict</span><span class="p">(</span><span class="n">unsorted_task_doc</span><span class="p">))</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>

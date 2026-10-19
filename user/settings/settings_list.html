@@ -6429,7 +6429,7 @@
 </span><span id="__span-0-181"><a id="__codelineno-0-181" name="__codelineno-0-181" href="#__codelineno-0-181"></a>    # ---------------------------
 </span><span id="__span-0-182"><a id="__codelineno-0-182" name="__codelineno-0-182" href="#__codelineno-0-182"></a>    GULP_CMD: str = Field("gulp", description=("Path to the GULP executable."))
 </span><span id="__span-0-183"><a id="__codelineno-0-183" name="__codelineno-0-183" href="#__codelineno-0-183"></a>    GULP_LIB: Path | None = Field(
-</span><span id="__span-0-184"><a id="__codelineno-0-184" name="__codelineno-0-184" href="#__codelineno-0-184"></a>        os.environ.get("GULP_LIB"),
+</span><span id="__span-0-184"><a id="__codelineno-0-184" name="__codelineno-0-184" href="#__codelineno-0-184"></a>        Path(os.environ["GULP_LIB"]) if "GULP_LIB" in os.environ else None,
 </span><span id="__span-0-185"><a id="__codelineno-0-185" name="__codelineno-0-185" href="#__codelineno-0-185"></a>        description=(
 </span><span id="__span-0-186"><a id="__codelineno-0-186" name="__codelineno-0-186" href="#__codelineno-0-186"></a>            "Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."
 </span><span id="__span-0-187"><a id="__codelineno-0-187" name="__codelineno-0-187" href="#__codelineno-0-187"></a>        ),
@@ -6457,7 +6457,7 @@
 </span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209" href="#__codelineno-0-209"></a>        "vasp_gam", description="Command to run the gamma-point only version of VASP."
 </span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210" href="#__codelineno-0-210"></a>    )
 </span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211" href="#__codelineno-0-211"></a>    VASP_PP_PATH: Path | None = Field(
-</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212" href="#__codelineno-0-212"></a>        os.environ.get("VASP_PP_PATH"),
+</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212" href="#__codelineno-0-212"></a>        Path(os.environ["VASP_PP_PATH"]) if "VASP_PP_PATH" in os.environ else None,
 </span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213" href="#__codelineno-0-213"></a>        description="Path to the VASP pseudopotential folders.",
 </span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214" href="#__codelineno-0-214"></a>    )
 </span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215" href="#__codelineno-0-215"></a>    VASP_PP_VERSION: str | None = Field(
@@ -6465,7 +6465,7 @@
 </span><span id="__span-0-217"><a id="__codelineno-0-217" name="__codelineno-0-217" href="#__codelineno-0-217"></a>        description="Version of VASP pseudopotentials to use",
 </span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218" href="#__codelineno-0-218"></a>    )
 </span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219" href="#__codelineno-0-219"></a>    VASP_VDW: Path | None = Field(
-</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220" href="#__codelineno-0-220"></a>        os.environ.get("ASE_VASP_VDW"),
+</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220" href="#__codelineno-0-220"></a>        Path(os.environ["ASE_VASP_VDW"]) if "ASE_VASP_VDW" in os.environ else None,
 </span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221" href="#__codelineno-0-221"></a>        description="Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals.",
 </span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222" href="#__codelineno-0-222"></a>    )
 </span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223" href="#__codelineno-0-223"></a>
