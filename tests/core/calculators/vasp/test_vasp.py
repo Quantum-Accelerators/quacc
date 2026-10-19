@@ -21,7 +21,7 @@ from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp import vasp as vasp_module
-from quacc.calculators.vasp.params import MPtoASEConverter
+from quacc.calculators.vasp.params import MPtoASEConverter, get_param_swaps
 from quacc.schemas.prep import prep_next_run
 
 FILE_DIR = Path(__file__).parent
@@ -1387,33 +1387,81 @@ def test_logging(caplog):
     atoms = bulk("Cu")
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(3, 3, 3))
-    assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending NCORE" in caplog.text
-    assert "The following parameters were added" in caplog.text
-    assert "'lmaxmix': 4" in caplog.text
-    assert "'ncore':" in caplog.text
+    assert "================ VASP INCAR COPILOT ================" in caplog.text
+    copilot_record = next(
+        record
+        for record in caplog.records
+        if "VASP INCAR COPILOT" in record.getMessage()
+    )
+    assert copilot_record.getMessage().startswith(
+        "\n================ VASP INCAR COPILOT ================\nApplied changes:"
+    )
+    header = "================ VASP INCAR COPILOT ================"
+    assert copilot_record.getMessage().endswith("=" * len(header))
+    assert f"\n\n{'=' * len(header)}" not in copilot_record.getMessage()
+    assert "LMAXMIX: None -> 4" in caplog.text
+    assert "Reason: d electrons were detected." in caplog.text
+    assert "NCORE: None ->" in caplog.text
+    assert "VASP command = vasp_std" in caplog.text
     caplog.clear()
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=0)
-    assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending SIGMA = 0.05" in caplog.text
-    assert "Recommending NCORE" in caplog.text
-    assert "The following parameters were added" in caplog.text
-    assert "'lmaxmix': 4" in caplog.text
-    assert "'ncore':" in caplog.text
+    assert "================ VASP INCAR COPILOT ================" in caplog.text
+    assert "  ISMEAR:" not in caplog.text
+    assert "LMAXMIX: None -> 4" in caplog.text
+    assert "NCORE: None ->" in caplog.text
+    assert "SIGMA: None -> 0.05" in caplog.text
     caplog.clear()
 
     with caplog.at_level(INFO):
         Vasp(atoms, nsw=0, kpts=(2, 2, 1), ismear=-5, algo="all", lmaxmix=1)
-    assert "Recommending LMAXMIX = 4" in caplog.text
-    assert "Recommending NCORE" in caplog.text
-    assert "The following parameters were added" in caplog.text
-    assert "'isearch': 1" in caplog.text
-    assert "'ncore':" in caplog.text
+    assert "================ VASP INCAR COPILOT ================" in caplog.text
+    assert "ISEARCH: None -> 1" in caplog.text
+    assert "NCORE: None ->" in caplog.text
     assert "ALGO was changed from 'all' to 'normal'" in caplog.text
-    assert "LMAXMIX was *not* changed from 1 to 4" in caplog.text
+    assert "LMAXMIX was not changed from 1 to 4" in caplog.text
+    assert (
+        "  LMAXMIX was not changed from 1 to 4, but should be modified.\n"
+        "    Reason: d electrons were detected."
+    ) in caplog.text
+    assert "⚠️ Attention required:" in caplog.text
+    assert caplog.text.index("⚠️ Attention required:") < caplog.text.index(
+        "Applied changes:"
+    )
+    assert (
+        sum("VASP INCAR COPILOT" in record.getMessage() for record in caplog.records)
+        == 1
+    )
     caplog.clear()
+
+    with caplog.at_level(INFO):
+        params = get_param_swaps({}, atoms, incar_copilot_mode="off")
+    assert isinstance(params, dict)
+    assert "INCAR copilot" not in caplog.text
+
+
+def test_ediff_warning(caplog):
+    atoms = bulk("Cu")
+
+    with caplog.at_level(INFO):
+        calc = Vasp(atoms, ediff=1e-3)
+    assert calc.parameters["ediff"] == 1e-3
+    assert "EDIFF=0.001 is greater than 1e-4" in caplog.text
+    assert "results are likely unconverged" in caplog.text
+    caplog.clear()
+
+    with caplog.at_level(INFO):
+        calc = Vasp(atoms, ediff=1e-4)
+    assert calc.parameters["ediff"] == 1e-4
+    assert "results are likely unconverged" not in caplog.text
+
+
+def test_copilot_recommendation_label(caplog):
+    with caplog.at_level(INFO):
+        Vasp(bulk("Cu"), isif=3, nsw=2)
+
+    assert "Recommendation: Re-relax the final structure" in caplog.text
 
 
 def test_bad_pmg_converter():
@@ -1518,6 +1566,7 @@ def test_logger(caplog):
     with change_settings({"VASP_PP_PATH": "/path/to/pseudos"}):
         with caplog.at_level(INFO):
             Vasp(atoms)
+        assert "PAW potentials = /path/to/pseudos/potpaw_PBE" in caplog.text
         assert "/path/to/pseudos/potpaw_PBE" in caplog.text
         caplog.clear()
 

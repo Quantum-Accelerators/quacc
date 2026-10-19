@@ -236,6 +236,16 @@ class Summarize:
             )
 
         md_fields = {"parameters_md": parameters_md, "trajectory_log": trajectory_log}
+        requested_steps = getattr(dyn, "requested_steps", dyn.nsteps)
+        completed_steps = getattr(dyn, "completed_steps", dyn.nsteps)
+        is_partial = completed_steps < requested_steps
+        md_fields |= {
+            "state": "partial" if is_partial else "completed",
+            "requested_steps": requested_steps,
+            "completed_steps": completed_steps,
+        }
+        if is_partial and (stop_reason := getattr(dyn, "stop_reason", None)):
+            md_fields["stop_reason"] = stop_reason
 
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | md_fields | self.additional_fields

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {# Generated reference pages point to their Python source. #}
+  {% if page.meta.edit_url %}
+    {% set page = dict(page, edit_url=page.meta.edit_url) %}
+  {% endif %}
+  {{ super() }}
+{% endblock %}

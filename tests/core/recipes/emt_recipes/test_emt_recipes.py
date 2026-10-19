@@ -130,7 +130,25 @@ def test_md_job1():
     assert output["trajectory_log"][0]["temperature"] == pytest.approx(0.0)
     assert output["trajectory_log"][1]["temperature"] == pytest.approx(759.680)
     assert output["trajectory_log"][10]["time"] == pytest.approx(10 * fs)
+    assert output["state"] == "completed"
+    assert output["requested_steps"] == 500
+    assert output["completed_steps"] == 500
     assert atoms.positions == pytest.approx(old_positions)
+
+
+def test_md_job_partial():
+    output = md_job(
+        molecule("H2O"),
+        timestep_fs=1.0,
+        steps=10,
+        md_params={"stop_condition": lambda dyn: dyn.nsteps >= 3},
+    )
+
+    assert output["state"] == "partial"
+    assert output["stop_reason"] == "walltime"
+    assert output["requested_steps"] == 10
+    assert output["completed_steps"] == 3
+    assert len(output["trajectory"]) == 4
 
 
 def test_md_job2():

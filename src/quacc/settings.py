@@ -375,7 +375,7 @@ class QuaccSettings(BaseSettings):
         ],
         description="Handlers for Custodian",
     )
-    VASP_CUSTODIAN_VASP_ERROR_EXCLUDE: list[str] = Field(
+    VASP_CUSTODIAN_ERROR_EXCLUDE: list[str] = Field(
         [], description="VASP errors to exclude from Custodian's VaspErrorHandler"
     )
     VASP_CUSTODIAN_VALIDATORS: list[str] = Field(
@@ -458,6 +458,9 @@ class QuaccSettings(BaseSettings):
     LOG_FILENAME: Path | None = Field(None, description="Path to store the log file.")
     LOG_LEVEL: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] = Field(
         "INFO", description=("Logger level.")
+    )
+    CUSTODIAN_LOG_LEVEL: Literal["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"] = (
+        Field("WARNING", description="Logger level for Custodian.")
     )
 
     # --8<-- [end:settings]

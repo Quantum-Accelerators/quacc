@@ -4,6 +4,79 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1]
+
+### Fixed
+
+- Updated minimum version of fairchem in pyproject.toml
+
+## [1.6.0]
+
+### Added
+
+- Added `odac23_static_job` and `odac25_static_job`, which use the 1x1x1 and ceil(40/a) x ceil(40/b) x ceil(40/c) k-point grids of the respective datasets.
+- Added an `additional_fields` keyword argument to `mp_aloe_static_job`.
+- Added an `nprocs` keyword argument to `omol_static_job`, defaulting to the number of physical cores (previously hardcoded to 12 by fairchem).
+
+### Removed
+
+- Removed `odac_static_job` in favor of `odac23_static_job` and `odac25_static_job`.
+
+### Fixed
+
+- `oc20_static_job` now runs a static calculation (`NSW = 0`) instead of inheriting the 2000-step relaxation settings from fairchem.
+- `orcasimpleinput`/`orcablocks` in `omol_static_job` are now merged with the OMol defaults as swaps (like the core ORCA recipes) rather than replacing them.
+- Corrected the extra dependency listed for `omc_static_job` (`quacc[atomate2]`, not `quacc[fairchem]`).
+- `oc20_static_job` and `oc25_static_job` no longer inherit the hardware-specific `NCORE = 4` from fairchem.
+- `quacc.recipes.orca.fairchem` can now be imported without fairchem installed, so `omol_static_job` raises its intended missing-dependency error.
+- Fixed the OC20 and OC25 paper links in the MLIP recipe docs (the unversioned OC25 arXiv ID now resolves to a different paper, so it is pinned to v1).
+
+## [1.5.13]
+
+### Added
+
+- Added an OC22-compatible VASP static recipe.
+- Added an OC25-compatible VASP static recipe.
+
+## [1.5.12]
+
+### Changed
+
+- Does not use ISMEAR = -5 for static jobs by default, since this can negatively impact forces/stresses for metallic systems.
+
+
+## [1.5.11]
+
+### Added
+
+- Added AQCat25-compatible recipe
+
+### Fixed
+
+- Fixed K-point handling for oc20_static_job
+
+## [1.5.10]
+
+### Added
+
+- Added feature to stop an MD simulation before a certain length of time has been hit
+
+### Changed
+
+- Changed the `mp` extra dependency list name to `atomate2`
+
+## [1.5.9]
+
+### Changed
+
+- Overhauled quacc's logging utilities to be more user friendly
+
+## [1.5.8]
+
+### Changed
+
+- Rename VASP_CUSTODIAN_VASP_ERROR_EXCLUDE to VASP_CUSTODIAN_ERROR_EXCLUDE
+
 ## [1.5.7]
 
 ### Added

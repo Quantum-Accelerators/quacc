@@ -94,6 +94,9 @@ if TYPE_CHECKING:
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
         set_com_stationary: bool
         set_zero_rotation: bool
+        stop_condition: Callable[[MolecularDynamics], bool] | None
+        max_runtime: float | None
+        stop_reason: str
 
     class VibKwargs(TypedDict, total=False):
         """
@@ -496,6 +499,10 @@ if TYPE_CHECKING:
         trajectory: list[Atoms]
         trajectory_log: TrajectoryLog
         trajectory_results: list[Results]
+        state: Literal["completed", "partial"]
+        stop_reason: NotRequired[str]
+        requested_steps: int
+        completed_steps: int
 
     class ParametersVib(TypedDict):
         delta: float

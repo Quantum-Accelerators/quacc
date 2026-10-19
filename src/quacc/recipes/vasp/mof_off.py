@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mof_off_static_job(
     atoms: Atoms,
     *,
@@ -91,7 +91,7 @@ def mof_off_static_job(
 
 
 @flow
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mof_off_static_flow(
     atoms: Atoms,
     dispersion: Literal["D3BJ", "D4"] | None = None,

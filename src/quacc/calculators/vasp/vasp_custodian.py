@@ -42,7 +42,7 @@ def run_custodian(
     vasp_custodian_wall_time: float | DefaultSetting = QuaccDefault,
     vtst_fixes: bool | DefaultSetting = QuaccDefault,
     vasp_custodian_handlers: list[str] | DefaultSetting | None = QuaccDefault,
-    vasp_custodian_vasp_error_exclude: list[str] | DefaultSetting = QuaccDefault,
+    vasp_custodian_error_exclude: list[str] | DefaultSetting = QuaccDefault,
     vasp_custodian_validators: list[str] | DefaultSetting | None = QuaccDefault,
     scratch_dir: str | None = None,
     directory: str | Path | None = None,
@@ -71,7 +71,7 @@ def run_custodian(
         Whether to apply VTST input swaps. Defaults to False in settings.
     vasp_custodian_handlers
         List of handlers to use in Custodian. See settings for list.
-    vasp_custodian_vasp_error_exclude
+    vasp_custodian_error_exclude
         List of errors to exclude from Custodian's VaspErrorHandler. See
         ``VaspErrorHandler.error_msgs`` for available errors.
     vasp_custodian_validators
@@ -121,10 +121,10 @@ def run_custodian(
         if vasp_custodian_handlers == QuaccDefault
         else vasp_custodian_handlers
     )
-    vasp_custodian_vasp_error_exclude = (
-        settings.VASP_CUSTODIAN_VASP_ERROR_EXCLUDE
-        if vasp_custodian_vasp_error_exclude == QuaccDefault
-        else vasp_custodian_vasp_error_exclude
+    vasp_custodian_error_exclude = (
+        settings.VASP_CUSTODIAN_ERROR_EXCLUDE
+        if vasp_custodian_error_exclude == QuaccDefault
+        else vasp_custodian_error_exclude
     )
 
     vasp_custodian_validators = (
@@ -133,7 +133,7 @@ def run_custodian(
         else vasp_custodian_validators
     )
 
-    unknown_vasp_errors = set(vasp_custodian_vasp_error_exclude) - set(
+    unknown_vasp_errors = set(vasp_custodian_error_exclude) - set(
         VaspErrorHandler.error_msgs
     )
     if unknown_vasp_errors:
@@ -143,7 +143,7 @@ def run_custodian(
     vasp_errors_to_catch = [
         error
         for error in VaspErrorHandler.error_msgs
-        if error not in vasp_custodian_vasp_error_exclude
+        if error not in vasp_custodian_error_exclude
     ]
 
     # Handlers for VASP
