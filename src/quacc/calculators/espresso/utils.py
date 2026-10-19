@@ -9,11 +9,12 @@ import numpy as np
 from quacc.utils.dicts import Remove
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from typing import Any
 
     from ase.atoms import Atoms
 
-    from quacc.types import Filenames, SourceDirectory
+    from quacc.types import SourceDirectory
 
 LOGGER = getLogger(__name__)
 
@@ -54,11 +55,11 @@ def get_pseudopotential_info(
 
 
 def grid_copy_files(
-    ph_input_data: dict[str, Any],
+    ph_input_data: Mapping[str, Any],
     directory: str | Path,
-    qnum: int,
+    qnum: int | str,
     qpt: tuple[float, float, float],
-) -> dict[SourceDirectory, Filenames]:
+) -> dict[SourceDirectory, list[Path]]:
     """
     Function that returns a dictionary of files to copy for the grid calculation.
 
@@ -151,7 +152,7 @@ def espresso_prepare_dir(outdir: str | Path, binary: str = "pw") -> dict[str, An
     dict[str, Any]
         Input data for the espresso calculation
     """
-    outkeys = {
+    outkeys: dict[str, dict[str, Any]] = {
         "pw": {"control": {"prefix": "pwscf", "outdir": outdir, "wfcdir": Remove}},
         "ph": {
             "inputph": {

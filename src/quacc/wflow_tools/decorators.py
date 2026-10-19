@@ -154,6 +154,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Job:
 
         @wraps(_func)
         def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
+            assert _func is not None
             return _func(*f_args, **f_kwargs)
 
         return Delayed_(delayed(wrapper, **kwargs))
@@ -542,6 +543,7 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Subflow:
         @wraps(_func)
         def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
             with worker_client() as client:
+                assert _func is not None
                 futures = client.compute(_func(*f_args, **f_kwargs))
                 return client.gather(futures)
 
@@ -557,7 +559,8 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Subflow:
             lambda key, *values: dict(zip(key, values, strict=False))
         )
 
-        def dict_aware_wrapper(*f_args, **f_kwargs):
+        def dict_aware_wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
+            assert _func is not None
             result = _func(*f_args, **f_kwargs)
             if isinstance(result, dict):
                 keys = list(result.keys())
@@ -694,7 +697,7 @@ def _get_jobflow_wrapped_subflow(method: Callable, **job_kwargs: Any) -> Callabl
     @jf_job(**job_kwargs)
     @wraps(method)
     def wrapped(*args: Any, **kwargs: Any) -> Flow:
-        children = []
+        children: list[Any] = []
         with flow_build_context(children):
             output = method(*args, **kwargs)
         return Flow(jobs=children, output=replace_job_or_flow_with_output(output))

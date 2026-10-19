@@ -64,6 +64,8 @@ All changes you make to quacc should be accompanied by unit tests and should not
 
 To run the core test suite locally, run `pytest tests/core`.
 
+To check type hints, install the development dependencies with `pip install -e '.[dev]'` and run `python -m mypy` from the repository root. This checks the entire `src/quacc` package and the static API contracts in `tests/typecheck`, without running calculations. The type checks also run in GitHub Actions.
+
 If you wish to test the behavior of a given workflow engine, run `pytest tests/WORKFLOW_ENGINE` where `WORKFLOW_ENGINE` is the name of your workflow engine.
 
 ### Coverage

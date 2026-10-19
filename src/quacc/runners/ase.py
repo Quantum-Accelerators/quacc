@@ -10,7 +10,7 @@ from logging import getLogger
 from pathlib import Path
 from shutil import copy, copytree
 from time import monotonic
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 import numpy as np
 from ase.calculators import calculator
@@ -31,7 +31,7 @@ from ase.vibrations import Vibrations
 from monty.dev import requires
 from monty.os.path import zpath
 
-from quacc.runners._base import BaseRunner
+from quacc.runners._base import AtomsT, BaseRunner
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
 from quacc.utils.dicts import recursive_dict_merge
 
@@ -51,15 +51,17 @@ if TYPE_CHECKING:
     from quacc.types import CopyFiles, MaxwellBoltzmanDistributionKwargs, VibKwargs
 
 
-class Runner(BaseRunner):
+class Runner(BaseRunner[AtomsT]):
     """
     Run various types of calculations in a scratch directory and copy the results back
     to the original directory. Note: This function does not modify the atoms object in-place.
     """
 
+    atoms: AtomsT
+
     def __init__(
         self,
-        atoms: Atoms | list[Atoms],
+        atoms: AtomsT,
         calculator: BaseCalculator,
         copy_files: CopyFiles | None = None,
     ) -> None:
@@ -90,7 +92,9 @@ class Runner(BaseRunner):
             self.setup(copy_files=copy_files)
 
     def run_calc(
-        self, properties: list[str] | None = None, geom_file: str | None = None
+        self: Runner[Atoms],
+        properties: list[str] | None = None,
+        geom_file: str | None = None,
     ) -> Atoms:
         """
         This is a wrapper around `atoms.calc.calculate()`.
@@ -133,7 +137,7 @@ class Runner(BaseRunner):
         # object, as this contains important information such as the parameters
         # and output properties (e.g. final magnetic moments).
         if geom_file:
-            atoms_new = read(zpath(str(self.tmpdir / geom_file)))
+            atoms_new = cast("Atoms", read(zpath(str(self.tmpdir / geom_file))))
 
             # Make sure the atom indices didn't get updated somehow (sanity check).
             # If this happens, there is a serious problem.
@@ -156,19 +160,19 @@ class Runner(BaseRunner):
         return self.atoms
 
     def run_opt(
-        self,
+        self: Runner[Atoms],
         relax_cell: bool = False,
         fmax: float | None = 0.01,
         max_steps: int = 1000,
-        optimizer: type[Dynamics] = BFGS,
+        optimizer: type[Optimizer | MolecularDynamics] = BFGS,
         optimizer_kwargs: dict[str, Any] | None = None,
         store_intermediate_results: bool = False,
         fn_hook: Callable | None = None,
         run_kwargs: dict[str, Any] | None = None,
         filter_kwargs: dict[str, Any] | None = None,
         write_files: bool = True,
-        stop_condition: Callable[[Dynamics], bool] | None = None,
-    ) -> Optimizer:
+        stop_condition: Callable[[Optimizer | MolecularDynamics], bool] | None = None,
+    ) -> Optimizer | MolecularDynamics:
         """
         This is a wrapper around the optimizers in ASE.
 
@@ -207,8 +211,8 @@ class Runner(BaseRunner):
 
         Returns
         -------
-        Optimizer
-            The ASE Optimizer object following an optimization.
+        Optimizer | MolecularDynamics
+            The instantiated ASE optimizer or molecular dynamics object.
         """
         # Set defaults
         merged_optimizer_kwargs = recursive_dict_merge(
@@ -245,7 +249,7 @@ class Runner(BaseRunner):
 
         # Set volume relaxation constraints, if relevant
         if relax_cell and self.atoms.pbc.any():
-            self.atoms = FrechetCellFilter(self.atoms, **filter_kwargs)
+            self.atoms = cast("Atoms", FrechetCellFilter(self.atoms, **filter_kwargs))
 
         # Define run kwargs
         full_run_kwargs = {"steps": max_steps, **run_kwargs}
@@ -287,7 +291,7 @@ class Runner(BaseRunner):
 
         return dyn
 
-    def run_vib(self, vib_kwargs: VibKwargs | None = None) -> Vibrations:
+    def run_vib(self: Runner[Atoms], vib_kwargs: VibKwargs | None = None) -> Vibrations:
         """
         Run an ASE-based vibration analysis in a scratch directory and copy the results back
         to the original directory. This can be useful if file I/O is slow in the working
@@ -324,8 +328,8 @@ class Runner(BaseRunner):
         return vib
 
     def run_md(
-        self,
-        dynamics: MolecularDynamics,
+        self: Runner[Atoms],
+        dynamics: type[MolecularDynamics],
         dynamics_kwargs: dict[str, Any] | None = None,
         steps: int = 1000,
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None = None,
@@ -394,24 +398,29 @@ class Runner(BaseRunner):
                 or (max_runtime is not None and monotonic() - start_time >= max_runtime)
             )
 
-        dyn = self.run_opt(
-            fmax=None,
-            max_steps=steps,
-            optimizer=dynamics,
-            optimizer_kwargs=dynamics_kwargs,
-            stop_condition=_should_stop
-            if stop_condition or max_runtime is not None
-            else None,
+        dyn = cast(
+            "MolecularDynamics",
+            self.run_opt(
+                fmax=None,
+                max_steps=steps,
+                optimizer=dynamics,
+                optimizer_kwargs=dynamics_kwargs,
+                stop_condition=cast(
+                    "Callable[[Optimizer | MolecularDynamics], bool]", _should_stop
+                )
+                if stop_condition or max_runtime is not None
+                else None,
+            ),
         )
-        dyn.requested_steps = steps
-        dyn.completed_steps = dyn.nsteps
+        vars(dyn)["requested_steps"] = steps
+        vars(dyn)["completed_steps"] = dyn.nsteps
         if dyn.nsteps < steps:
-            dyn.stop_reason = stop_reason
+            vars(dyn)["stop_reason"] = stop_reason
 
         return dyn
 
     def run_neb(
-        self,
+        self: Runner[list[Atoms]],
         relax_cell: bool = False,
         fmax: float = 0.01,
         max_steps: int | None = 1000,
@@ -493,7 +502,7 @@ class Runner(BaseRunner):
         traj_file = neb_tmpdir / traj_filename
         traj = Trajectory(traj_file, "w", atoms=neb)
 
-        dyn = optimizer(neb, **optimizer_kwargs)
+        dyn = optimizer(cast("Atoms", neb), **optimizer_kwargs)
         dyn.attach(traj.write)
         dyn.run(fmax, max_steps)
         traj.close()
@@ -505,7 +514,7 @@ class Runner(BaseRunner):
         return dyn
 
     def _copy_intermediate_files(
-        self, step_number: int, files_to_ignore: list[Path] | None = None
+        self, step_number: int, files_to_ignore: list[Path | str | None] | None = None
     ) -> None:
         """
         Copy all files in the working directory to a subdirectory named `stepN` where `N`
@@ -534,7 +543,9 @@ class Runner(BaseRunner):
                     copytree(item, store_path / item.name)
 
     @requires(has_sella, "Sella must be installed. Refer to the quacc documentation.")
-    def _set_sella_kwargs(self, optimizer_kwargs: dict[str, Any]) -> None:
+    def _set_sella_kwargs(
+        self: Runner[Atoms], optimizer_kwargs: dict[str, Any]
+    ) -> None:
         """
         Modifies the `optimizer_kwargs` in-place to address various Sella-related
         parameters. This function does the following for the specified key/value pairs in

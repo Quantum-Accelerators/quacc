@@ -23,15 +23,16 @@ from quacc.calculators.vasp.params import (
 )
 from quacc.calculators.vasp.vasp_custodian import run_custodian
 from quacc.schemas.prep import set_magmoms
+from quacc.types import DefaultSetting
 from quacc.utils.dicts import sort_dict
 from quacc.utils.kpts import kspacing_to_kpts
 
 if TYPE_CHECKING:
-    from typing import Any, Literal
+    from typing import Any, Literal, TextIO
 
     from ase.atoms import Atoms
 
-    from quacc.types import DefaultSetting
+    from quacc.types import PmgKpts
 
 LOGGER = getLogger(__name__)
 
@@ -64,11 +65,7 @@ class Vasp(Vasp_):
         preset_mag_default: float | DefaultSetting = QuaccDefault,
         mag_cutoff: float | DefaultSetting = QuaccDefault,
         elemental_magmoms: dict[str, float] | None = None,
-        pmg_kpts: (
-            dict[Literal["line_density", "kppvol", "kppa"], float]
-            | dict[Literal["length_densities"], list[float]]
-            | None
-        ) = None,
+        pmg_kpts: PmgKpts | None = None,
         auto_dipole: bool | None = None,
         **kwargs: Any,
     ) -> None:
@@ -132,26 +129,28 @@ class Vasp(Vasp_):
         # Set defaults
         use_custodian = (
             self._settings.VASP_USE_CUSTODIAN
-            if use_custodian == QuaccDefault
+            if isinstance(use_custodian, DefaultSetting)
             else use_custodian
         )
         incar_copilot_mode = (
             self._settings.VASP_INCAR_COPILOT_MODE
-            if incar_copilot_mode == QuaccDefault
+            if isinstance(incar_copilot_mode, DefaultSetting)
             else incar_copilot_mode
         )
         copy_magmoms = (
             self._settings.VASP_COPY_MAGMOMS
-            if copy_magmoms == QuaccDefault
+            if isinstance(copy_magmoms, DefaultSetting)
             else copy_magmoms
         )
         preset_mag_default = (
             self._settings.VASP_PRESET_MAG_DEFAULT
-            if preset_mag_default == QuaccDefault
+            if isinstance(preset_mag_default, DefaultSetting)
             else preset_mag_default
         )
         mag_cutoff = (
-            self._settings.VASP_MAG_CUTOFF if mag_cutoff == QuaccDefault else mag_cutoff
+            self._settings.VASP_MAG_CUTOFF
+            if isinstance(mag_cutoff, DefaultSetting)
+            else mag_cutoff
         )
 
         # Assign variables to self
@@ -327,9 +326,9 @@ class Vasp(Vasp_):
     def _run(
         self,
         command: str | None = None,
-        out: Path | str | None = None,
+        out: TextIO | None = None,
         directory: Path | str | None = None,
-    ) -> tuple[int, str]:
+    ) -> tuple[int, str | None]:
         """
         Override the Vasp calculator's run method to use Custodian if necessary.
 
@@ -346,7 +345,7 @@ class Vasp(Vasp_):
 
         Returns
         -------
-        int, str
+        int, str | None
             The return code and stderr.
         """
         if command is None:
@@ -355,7 +354,7 @@ class Vasp(Vasp_):
             directory = self.directory
 
         if self.use_custodian:
-            custodian_kwargs = {"directory": directory}
+            custodian_kwargs: dict[str, Any] = {"directory": directory}
             if self.int_params.get("ibrion") == 0 and self.int_params.get("nsw", 0) > 0:
                 custodian_kwargs["vasp_custodian_handlers"] = AIMD_CUSTODIAN_HANDLERS
             run_custodian(**custodian_kwargs)

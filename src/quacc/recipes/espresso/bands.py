@@ -292,7 +292,7 @@ def bands_flow(
         line_density=line_density,
         force_gamma=force_gamma,
     )
-    results = {"bands_pw": bands_results}
+    results: EspressoBandsSchema = {"bands_pw": bands_results}
     bands_results_dir = bands_results["dir_name"]
 
     if run_bands_pp:

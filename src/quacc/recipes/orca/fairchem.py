@@ -42,7 +42,7 @@ def omol_static_job(
     nprocs: int | Literal["max"] = "max",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-):
+) -> dict[str, Any]:
     """
     Carry out a single-point calculation using the OMol settings.
 
@@ -73,7 +73,7 @@ def omol_static_job(
 
     Returns
     -------
-    dict
+    dict[str, Any]
         Dictionary of results.
     """
     from fairchem.data.omol.orca.calc import ORCA_BLOCKS, ORCA_SIMPLE_INPUT, Vertical

@@ -248,7 +248,7 @@ def phonon_dos_flow(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    default_job_params = {
+    default_job_params: dict[str, dict[str, Any]] = {
         "phonon_job": {
             "input_data": {
                 "inputph": {
@@ -446,7 +446,7 @@ def grid_phonon_flow(
         return grid_results
 
     job_params = job_params or {}
-    default_job_params = {
+    default_job_params: dict[str, dict[str, Any]] = {
         "ph_init_job": recursive_dict_merge(
             {"input_data": {"inputph": {"lqdir": True, "only_init": True}}},
             job_params.get("ph_job"),

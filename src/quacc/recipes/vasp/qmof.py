@@ -8,7 +8,7 @@ Reference: https://doi.org/10.1016/j.matt.2021.02.015
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from ase.optimize import BFGSLineSearch
 
@@ -25,10 +25,10 @@ if TYPE_CHECKING:
     class QMOFRelaxSchema(VaspSchema):
         """Type hint associated with the QMOF relaxation jobs."""
 
-        prerelax_lowacc: VaspSchema | None
+        prerelax_lowacc: OptSchema | None
         position_relax_lowacc: VaspSchema
         volume_relax_lowacc: VaspSchema | None
-        double_relax: VaspSchema
+        double_relax: list[VaspSchema]
 
 
 LOGGER = getLogger(__name__)
@@ -111,7 +111,9 @@ def qmof_relax_job(
     copy_files = [{"source": summary4[-1]["dir_name"], "filenames": ["WAVECAR*"]}]
 
     # 5. Static Calculation
-    summary5 = _static(atoms, copy_files=copy_files, **calc_kwargs)
+    summary5 = cast(
+        "QMOFRelaxSchema", _static(atoms, copy_files=copy_files, **calc_kwargs)
+    )
     summary5["prerelax_lowacc"] = summary1 if run_prerelax else None
     summary5["position_relax_lowacc"] = summary2
     summary5["volume_relax_lowacc"] = summary3 if relax_cell else None

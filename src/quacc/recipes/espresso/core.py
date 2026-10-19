@@ -15,9 +15,14 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
-    from src.quacc.types import EspressoBaseSet
 
-    from quacc.types import CopyFiles, OptParams, RunSchema, SourceDirectory
+    from quacc.types import (
+        CopyFiles,
+        EspressoBaseSet,
+        OptParams,
+        RunSchema,
+        SourceDirectory,
+    )
 
 
 BASE_SET_METAL: EspressoBaseSet = {

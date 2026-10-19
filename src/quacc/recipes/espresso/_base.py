@@ -19,6 +19,7 @@ from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from typing import Any
 
     from quacc.types import CopyFiles, OptParams, RunSchema
@@ -29,7 +30,7 @@ def run_and_summarize(
     preset: str | None = None,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
-    calc_defaults: dict[str, Any] | None = None,
+    calc_defaults: Mapping[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
     copy_files: CopyFiles | None = None,
@@ -89,7 +90,7 @@ def run_and_summarize_opt(
     preset: str | None = None,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
-    calc_defaults: dict[str, Any] | None = None,
+    calc_defaults: Mapping[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
     opt_params: OptParams | None = None,
@@ -152,7 +153,7 @@ def prepare_calc(
     preset: str | None = None,
     template: EspressoTemplate | None = None,
     profile: EspressoProfile | None = None,
-    calc_defaults: dict[str, Any] | None = None,
+    calc_defaults: Mapping[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
 ) -> Espresso:
     """
@@ -181,7 +182,7 @@ def prepare_calc(
     Espresso
         The Espresso calculator.
     """
-    calc_defaults = calc_defaults or {}
+    calc_defaults = dict(calc_defaults or {})
     calc_swaps = calc_swaps or {}
 
     calc_defaults["input_data"] = Namelist(calc_defaults.get("input_data"))

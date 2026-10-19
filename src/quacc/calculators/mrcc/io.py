@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from io import StringIO
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from ase.io import read
 from ase.units import Hartree
 
 if TYPE_CHECKING:
+    from typing import Any
+
     from ase.atoms import Atoms
 
     from quacc.types import MRCCEnergyInfo
@@ -29,14 +31,14 @@ def read_geom_mrccinp(file_path: Path | str) -> Atoms:
     """
 
     # Get the lines as a list
-    with Path.open(file_path) as fd:
+    with Path(file_path).open() as fd:
         lines = fd.readlines()
-    xyz_line_index = [index for index, line in enumerate(lines) if "xyz" in line]
+    xyz_line_indices = [index for index, line in enumerate(lines) if "xyz" in line]
 
-    if len(xyz_line_index) != 1:
+    if len(xyz_line_indices) != 1:
         raise ValueError("Geometry incorrectly provided in MRCC input file")
 
-    xyz_line_index = xyz_line_index[0]
+    xyz_line_index = xyz_line_indices[0]
 
     # Get the number of atoms
     atoms_length = int(lines[xyz_line_index + 1])
@@ -45,7 +47,7 @@ def read_geom_mrccinp(file_path: Path | str) -> Atoms:
     xyz_text = f"{atoms_length}\n geometry\n"
     for line in lines[xyz_line_index + 3 : xyz_line_index + 3 + atoms_length]:
         xyz_text += line
-    atoms = read(StringIO(xyz_text), format="xyz")
+    atoms = cast("Atoms", read(StringIO(xyz_text), format="xyz"))
 
     # Remove PBC and set the unit cell to zero as MRCC is a molecular code.
     atoms.pbc = False
@@ -54,7 +56,7 @@ def read_geom_mrccinp(file_path: Path | str) -> Atoms:
     return atoms
 
 
-def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: dict[str, str]) -> None:
+def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: dict[str, Any]) -> None:
     """
     Write MRCC input file given the Atoms object and the parameters.
 
@@ -68,28 +70,28 @@ def write_mrcc(file_path: Path | str, atoms: Atoms, parameters: dict[str, str]) 
         Dictionary with the parameters to be written in the MRCC input file. The keys are the input keyword and the values are the input values.
     """
 
-    with Path.open(file_path, "w") as file_path:
+    with Path(file_path).open("w") as output_file:
         # Write the MRCC input file
         for key, value in parameters.items():
-            file_path.write(f"{key}={value}\n")
+            output_file.write(f"{key}={value}\n")
 
         if "geom" not in parameters:
             # If the geometry is not provided in the MRCC blocks, write it here.
             ghost_list = []  # List of indices of the ghost atoms.
-            file_path.write(f"geom=xyz\n{len(atoms)}\n\n")
+            output_file.write(f"geom=xyz\n{len(atoms)}\n\n")
             for atom_idx, atom in enumerate(atoms):
                 if atom.tag == 71:  # 71 is ascii G (Ghost)
                     ghost_list += [atom_idx + 1]
 
                 symbol = atom.symbol
                 position = atom.position
-                file_path.write(
+                output_file.write(
                     f"{symbol.ljust(3)} {position[0]:-16.11f} {position[1]:-16.11f} {position[2]:-16.11f}\n"
                 )
 
             if ghost_list and "ghost" not in parameters:
-                file_path.write("\nghost=serialno\n")
-                file_path.write(",".join([str(atom_idx) for atom_idx in ghost_list]))
+                output_file.write("\nghost=serialno\n")
+                output_file.write(",".join([str(atom_idx) for atom_idx in ghost_list]))
 
 
 def read_energy(lines: list[str]) -> MRCCEnergyInfo:
@@ -112,7 +114,7 @@ def read_energy(lines: list[str]) -> MRCCEnergyInfo:
         - ccsdt_corr_energy : float <-- CCSD(T) correlation energy.
     """
 
-    energy_dict = {
+    energy_dict: MRCCEnergyInfo = {
         "energy": None,
         "scf_energy": None,
         "mp2_corr_energy": None,
@@ -152,7 +154,7 @@ def read_mrcc_outputs(output_file_path: Path | str) -> MRCCEnergyInfo:
         - ccsd_corr_energy : float | None <-- CCSD correlation energy.
         - ccsdt_corr_energy : float | None <-- CCSD(T) correlation energy.
     """
-    with Path.open(output_file_path) as output_textio:
+    with Path(output_file_path).open() as output_textio:
         lines = output_textio.readlines()
 
     energy_dict = read_energy(lines)

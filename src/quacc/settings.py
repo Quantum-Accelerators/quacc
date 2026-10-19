@@ -239,7 +239,7 @@ class QuaccSettings(BaseSettings):
     # ---------------------------
     GULP_CMD: str = Field("gulp", description=("Path to the GULP executable."))
     GULP_LIB: Path | None = Field(
-        os.environ.get("GULP_LIB"),
+        Path(os.environ["GULP_LIB"]) if "GULP_LIB" in os.environ else None,
         description=(
             "Path to the GULP force field library. If not specified, the GULP_LIB environment variable will be used (if present)."
         ),
@@ -267,7 +267,7 @@ class QuaccSettings(BaseSettings):
         "vasp_gam", description="Command to run the gamma-point only version of VASP."
     )
     VASP_PP_PATH: Path | None = Field(
-        os.environ.get("VASP_PP_PATH"),
+        Path(os.environ["VASP_PP_PATH"]) if "VASP_PP_PATH" in os.environ else None,
         description="Path to the VASP pseudopotential folders.",
     )
     VASP_PP_VERSION: str | None = Field(
@@ -275,7 +275,7 @@ class QuaccSettings(BaseSettings):
         description="Version of VASP pseudopotentials to use",
     )
     VASP_VDW: Path | None = Field(
-        os.environ.get("ASE_VASP_VDW"),
+        Path(os.environ["ASE_VASP_VDW"]) if "ASE_VASP_VDW" in os.environ else None,
         description="Path to the folder containing the vdw_kernel.bindat file for VASP vdW functionals.",
     )
 
@@ -630,13 +630,17 @@ def change_settings_wrap(
     Callable
         The wrapped function.
     """
-    original_func = func._original_func if getattr(func, "_changed", False) else func
+    original_func = (
+        getattr(func, "_original_func", func)
+        if getattr(func, "_changed", False)
+        else func
+    )
 
     @wraps(original_func)
     def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
         with change_settings(changes):
             return original_func(*args, **kwargs)
 
-    wrapper._changed = True
-    wrapper._original_func = original_func
+    vars(wrapper)["_changed"] = True
+    vars(wrapper)["_original_func"] = original_func
     return wrapper
