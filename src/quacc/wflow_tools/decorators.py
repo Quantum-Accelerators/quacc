@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from functools import partial, wraps
-from typing import TYPE_CHECKING, Any, ParamSpec, TypeAlias, TypeVar, overload
+from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar, overload
 
 from quacc.settings import change_settings_wrap
 from quacc.wflow_tools.context import NodeType, tracked
@@ -12,11 +12,11 @@ from quacc.wflow_tools.context import NodeType, tracked
 if TYPE_CHECKING:
     from quacc.settings import QuaccSettings
 
-P = ParamSpec("P")
-R = TypeVar("R")
-Job: TypeAlias = Callable[..., R]
+Job = Callable[..., Any]
 Flow = Callable[..., Any]
 Subflow = Callable[..., Any]
+P = ParamSpec("P")
+R = TypeVar("R")
 
 
 @overload

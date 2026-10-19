@@ -8,23 +8,23 @@ from quacc import subflow
 from quacc.atoms.slabs import make_adsorbate_structures, make_slabs_from_bulk
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from typing import Any, TypeVar
 
     from ase.atoms import Atoms
 
-    from quacc import Job
     from quacc.types import RunSchema
 
-    ResultSchema = TypeVar("ResultSchema", bound=RunSchema)
+    Schema = TypeVar("Schema", bound=RunSchema)
 
 
 @subflow
 def bulk_to_slabs_subflow(
     atoms: Atoms,
-    relax_job: Job[ResultSchema],
-    static_job: Job[ResultSchema] | None = None,
+    relax_job: Callable[..., Schema],
+    static_job: Callable[..., Schema] | None = None,
     make_slabs_kwargs: dict[str, Any] | None = None,
-) -> dict[str, list[ResultSchema]]:
+) -> dict[str, list[Schema]]:
     """
     Workflow consisting of:
 
@@ -39,26 +39,24 @@ def bulk_to_slabs_subflow(
     atoms
         Atoms object
     relax_job
-        Relaxation job. Its result schema is preserved in the returned lists.
+        The relaxation function.
     static_job
-        Optional static job. Its result schema is preserved in the returned lists.
+        The static function.
     make_slabs_kwargs
         Additional keyword arguments to pass to
         [quacc.atoms.slabs.make_slabs_from_bulk][]
 
     Returns
     -------
-    dict[str, list[ResultSchema]]
-        Results grouped under "relax" and "static". Each list contains the result
-        schema returned by the corresponding job, such as
-        [RunSchema][quacc.types.RunSchema] or [VaspSchema][quacc.types.VaspSchema].
+    dict[str, list[Schema]]
+        Relaxation and static results, grouped under "relax" and "static".
         The "static" list is empty when no static job is supplied.
     """
     make_slabs_kwargs = make_slabs_kwargs or {}
 
     slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
-    results: dict[str, list[ResultSchema]] = {"relax": [], "static": []}
+    results: dict[str, list[Schema]] = {"relax": [], "static": []}
     for slab in slabs:
         result = relax_job(slab)
         results["relax"].append(result)
@@ -74,10 +72,10 @@ def bulk_to_slabs_subflow(
 def slab_to_ads_subflow(
     atoms: Atoms,
     adsorbate: Atoms,
-    relax_job: Job[ResultSchema],
-    static_job: Job[ResultSchema] | None,
+    relax_job: Callable[..., Schema],
+    static_job: Callable[..., Schema] | None,
     make_ads_kwargs: dict[str, Any] | None = None,
-) -> dict[str, list[ResultSchema]]:
+) -> dict[str, list[Schema]]:
     """
     Workflow consisting of:
 
@@ -94,26 +92,24 @@ def slab_to_ads_subflow(
     adsorbate
         Atoms object for the adsorbate.
     relax_job
-        Slab relaxation job. Its result schema is preserved in the returned lists.
+        The slab releaxation job.
     static_job
-        Optional slab static job.
+        The slab static job.
     make_ads_kwargs
         Additional keyword arguments to pass to
         [quacc.atoms.slabs.make_adsorbate_structures][]
 
     Returns
     -------
-    dict[str, list[ResultSchema]]
-        Results grouped under "relax" and "static". Each list contains the result
-        schema returned by the corresponding job, such as
-        [RunSchema][quacc.types.RunSchema] or [VaspSchema][quacc.types.VaspSchema].
+    dict[str, list[Schema]]
+        Relaxation and static results, grouped under "relax" and "static".
         The "static" list is empty when no static job is supplied.
     """
     make_ads_kwargs = make_ads_kwargs or {}
 
     slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
-    results: dict[str, list[ResultSchema]] = {"relax": [], "static": []}
+    results: dict[str, list[Schema]] = {"relax": [], "static": []}
     for slab in slabs:
         result = relax_job(slab)
         results["relax"].append(result)
