@@ -395,7 +395,8 @@ def test_errors(tmp_path, monkeypatch):
         VibSummarize(vib, directory=tmp_path).vib_and_thermo("bad")
 
 
-def test_summarize_neb(monkeypatch, tmp_path):
+@pytest.mark.parametrize("trajectory_source", ["str", "path", "writer"])
+def test_summarize_neb(monkeypatch, tmp_path, trajectory_source):
     monkeypatch.chdir(tmp_path)
 
     # Read initial and final states:
@@ -421,6 +422,25 @@ def test_summarize_neb(monkeypatch, tmp_path):
         optimizer, len(images), n_iter_return=-1, trajectory=read("opt.traj", index=":")
     )
     assert len(final_iteration["trajectory"]) == len(images)
+
+    # Loading the optimizer's saved trajectory must give the same final images
+    # and results as an explicitly supplied trajectory.
+    with Trajectory("opt.traj", mode="a") as writer:
+        optimizer.trajectory = {
+            "str": "opt.traj",
+            "path": Path("opt.traj"),
+            "writer": writer,
+        }[trajectory_source]
+        from_optimizer = Summarize().neb(optimizer, len(images))
+    assert len(from_optimizer["trajectory"]) == len(images)
+    np.testing.assert_allclose(
+        [image.positions for image in from_optimizer["trajectory"]],
+        [image.positions for image in final_iteration["trajectory"]],
+    )
+    np.testing.assert_allclose(
+        [result["energy"] for result in from_optimizer["trajectory_results"]],
+        [result["energy"] for result in final_iteration["trajectory_results"]],
+    )
 
     # A supplied reader must take precedence over the optimizer's trajectory.
     optimizer.trajectory = SimpleNamespace(filename="missing.traj")
