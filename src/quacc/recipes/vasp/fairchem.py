@@ -6,10 +6,11 @@ from importlib.util import find_spec
 from math import ceil
 from typing import TYPE_CHECKING, cast
 
+from monty.dev import requires
+
 from quacc import job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
-from quacc.utils.dependencies import requires
 
 has_fairchem = bool(find_spec("fairchem"))
 has_fairchem_omat = (

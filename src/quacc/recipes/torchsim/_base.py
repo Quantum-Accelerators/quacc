@@ -6,8 +6,9 @@ from copy import deepcopy
 from importlib.util import find_spec
 from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
 
+from monty.dev import requires
+
 from quacc.schemas.torchsim import PROPERTY_FN_REGISTRY, TSModelType
-from quacc.utils.dependencies import requires
 
 has_torchsim = bool(find_spec("torch_sim"))
 

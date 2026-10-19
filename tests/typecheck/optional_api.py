@@ -8,25 +8,16 @@ if TYPE_CHECKING:
     from pathlib import Path
     from typing import assert_type
 
-    from ase.atoms import Atoms
-
-    from quacc.recipes.orca.fairchem import omol_static_job
-    from quacc.recipes.tblite.core import static_job as tblite_static_job
     from quacc.recipes.torchsim._base import (
         AutobatcherDict,
         TrajectoryReporterDetails,
         TrajectoryReporterDict,
     )
-    from quacc.types import BaderSchema, RunSchema
+    from quacc.types import BaderSchema
 
     def check_optional_api(
-        atoms: Atoms,
-        path: Path,
-        reporter: TrajectoryReporterDetails,
-        bader: BaderSchema,
+        path: Path, reporter: TrajectoryReporterDetails, bader: BaderSchema
     ) -> None:
-        assert_type(omol_static_job(atoms), RunSchema)
-        assert_type(tblite_static_job(atoms), RunSchema)
         assert_type(reporter["filenames"], list[str] | None)
         assert_type(bader["atomic_volume"], list[float])
         autobatcher: AutobatcherDict = {

@@ -5,9 +5,10 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
+from monty.dev import requires
+
 from quacc import subflow
 from quacc.atoms.defects import make_defects_from_bulk
-from quacc.utils.dependencies import requires
 
 has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
 has_shakenbreak = bool(find_spec("shakenbreak"))

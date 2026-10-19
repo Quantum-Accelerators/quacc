@@ -5,9 +5,10 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
+from monty.dev import requires
+
 from quacc import job
 from quacc.recipes.psi4._base import run_and_summarize
-from quacc.utils.dependencies import requires
 
 has_psi4 = bool(find_spec("psi4"))
 

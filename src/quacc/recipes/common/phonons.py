@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from ase.atoms import Atoms
+from monty.dev import requires
 
 from quacc import job, subflow
 from quacc.atoms.phonons import (
@@ -16,7 +17,6 @@ from quacc.atoms.phonons import (
 )
 from quacc.runners.phonons import PhonopyRunner
 from quacc.schemas.phonons import summarize_phonopy
-from quacc.utils.dependencies import requires
 from quacc.utils.dicts import recursive_dict_merge
 
 has_phonopy = bool(find_spec("phonopy"))

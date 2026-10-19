@@ -7,7 +7,7 @@ from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING, cast
 
-from quacc.utils.dependencies import requires
+from monty.dev import requires
 
 has_frozen = bool(find_spec("frozendict"))
 has_torch = bool(find_spec("torch"))

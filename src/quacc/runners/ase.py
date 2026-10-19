@@ -28,11 +28,11 @@ from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
+from monty.dev import requires
 from monty.os.path import zpath
 
 from quacc.runners._base import AtomsT, BaseRunner
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
-from quacc.utils.dependencies import requires
 from quacc.utils.dicts import recursive_dict_merge
 
 LOGGER = getLogger(__name__)

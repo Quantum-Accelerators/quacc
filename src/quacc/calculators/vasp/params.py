@@ -10,10 +10,10 @@ from typing import TYPE_CHECKING, cast
 import numpy as np
 import psutil
 from ase.calculators.vasp import Vasp as Vasp_
+from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import check_is_metal
-from quacc.utils.dependencies import requires
 from quacc.utils.kpts import convert_pmg_kpts
 
 has_atomate2 = bool(find_spec("atomate2"))

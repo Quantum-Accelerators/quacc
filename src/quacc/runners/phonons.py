@@ -4,8 +4,9 @@ from importlib.util import find_spec
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from monty.dev import requires
+
 from quacc.runners.ase import BaseRunner
-from quacc.utils.dependencies import requires
 
 has_phonopy = bool(find_spec("phonopy"))
 has_seekpath = bool(find_spec("seekpath"))

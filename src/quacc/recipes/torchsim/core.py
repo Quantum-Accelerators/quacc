@@ -5,6 +5,8 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING, Any, Literal
 
+from monty.dev import requires
+
 from quacc import __version__, job
 from quacc.recipes.torchsim._base import (
     get_calculation_output,
@@ -16,7 +18,6 @@ from quacc.recipes.torchsim._base import (
 )
 from quacc.runners._base import BaseRunner
 from quacc.schemas.torchsim import CONVERGENCE_FN_REGISTRY, TSModelType
-from quacc.utils.dependencies import requires
 
 has_torchsim = bool(find_spec("torch_sim"))
 if has_torchsim:

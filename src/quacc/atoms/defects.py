@@ -5,11 +5,10 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
+from monty.dev import requires
 from pymatgen.core.periodic_table import DummySpecies
 from pymatgen.entries.computed_entries import ComputedStructureEntry
 from pymatgen.io.ase import AseAtomsAdaptor
-
-from quacc.utils.dependencies import requires
 
 has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
 has_shakenbreak = bool(find_spec("shakenbreak"))

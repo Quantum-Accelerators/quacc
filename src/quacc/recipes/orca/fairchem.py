@@ -6,9 +6,9 @@ from importlib.util import find_spec
 from typing import TYPE_CHECKING, Any
 
 import psutil
+from monty.dev import requires
 
 from quacc import job
-from quacc.utils.dependencies import requires
 from quacc.utils.lists import merge_list_params
 
 if TYPE_CHECKING:
