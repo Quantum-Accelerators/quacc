@@ -25,7 +25,7 @@ def bulk_to_slabs_flow(
     make_slabs_kwargs: dict[str, Any] | None = None,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-) -> list[RunSchema | OptSchema]:
+) -> dict[str, list[RunSchema | OptSchema]]:
     """
     Workflow consisting of:
 
@@ -56,9 +56,9 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    list[RunSchema | OptSchema]
-        [RunSchema][quacc.schemas.ase.Summarize.run] or
-        [OptSchema][quacc.schemas.ase.Summarize.opt] for each slab.
+    dict[str, list[RunSchema | OptSchema]]
+        Relaxation and static results, grouped under "relax" and "static".
+        The "static" list is empty when run_static is False.
         See the return type-hint for the data structure.
     """
     relax_job_, static_job_ = customize_jobs(

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from pymatgen.analysis.elasticity.strain import DeformedStructureSet
 
     from quacc import Job
-    from quacc.types import ElasticSchema, RunSchema
+    from quacc.types import ElasticSchema, OptSchema, RunSchema
 
 
 @flow
@@ -73,7 +73,7 @@ def elastic_tensor_flow(
 
 @subflow
 def _elastic_tensor_subflow(
-    undeformed_result: RunSchema,
+    undeformed_result: RunSchema | OptSchema,
     relax_job: Job,
     static_job: Job | None = None,
     deform_kwargs: dict[str, Any] | None = None,
@@ -103,8 +103,9 @@ def _elastic_tensor_subflow(
 
     Returns
     -------
-    dict[dict]
-        Dict of schemas.
+    ElasticSchema
+        Elastic properties with deformed results grouped under "relax" and "static".
+        The "static" list is empty when no static job is supplied.
     """
     deform_kwargs = deform_kwargs or {}
 
@@ -112,7 +113,7 @@ def _elastic_tensor_subflow(
         undeformed_result["atoms"], **deform_kwargs
     )
 
-    results = {"relax": [], "static": []}
+    results: dict[str, list[RunSchema | OptSchema]] = {"relax": [], "static": []}
     for deformed in deformed_structure_set:
         result = relax_job(deformed.to_ase_atoms(), relax_cell=False)
         results["relax"].append(result)
@@ -137,9 +138,9 @@ def _elastic_tensor_subflow(
 
 @job
 def _deformations_to_elastic_tensor(
-    undeformed_result: RunSchema,
+    undeformed_result: RunSchema | OptSchema,
     deformed_structure_set: DeformedStructureSet,
-    results: list[RunSchema],
+    results: list[RunSchema | OptSchema],
 ) -> ElasticityDoc:
     """
     Function to fit a DeformedStructureSet and result documents to an elastic tensor

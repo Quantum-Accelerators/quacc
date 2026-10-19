@@ -550,7 +550,7 @@ if TYPE_CHECKING:
         """Elastic properties and fitting schema"""
 
         deformed_structure_set: DeformedStructureSet
-        deformed_results: list[RunSchema | OptSchema]
+        deformed_results: dict[str, list[RunSchema | OptSchema]]
         undeformed_result: RunSchema | OptSchema
         elasticity_doc: ElasticityDoc
 

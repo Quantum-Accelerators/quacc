@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc import Job
+    from quacc.types import OptSchema, RunSchema
 
 
 @subflow
@@ -33,7 +34,7 @@ def bulk_to_defects_subflow(
     relax_job: Job,
     static_job: Job | None = None,
     make_defects_kwargs: dict[str, Any] | None = None,
-) -> dict[dict]:
+) -> dict[str, list[RunSchema | OptSchema]]:
     """
     Workflow consisting of:
 
@@ -56,13 +57,14 @@ def bulk_to_defects_subflow(
 
     Returns
     -------
-    dict[dict]
-        Dict of dictionary of results.
+    dict[str, list[RunSchema | OptSchema]]
+        Relaxation and static results, grouped under "relax" and "static".
+        The "static" list is empty when no static job is supplied.
     """
     make_defects_kwargs = make_defects_kwargs or {}
     defects = make_defects_from_bulk(atoms, **make_defects_kwargs)
 
-    results = {"relax": [], "static": []}
+    results: dict[str, list[RunSchema | OptSchema]] = {"relax": [], "static": []}
     for defect in defects:
         result = relax_job(defect)
         results["relax"].append(result)

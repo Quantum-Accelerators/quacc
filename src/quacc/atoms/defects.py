@@ -42,14 +42,14 @@ if TYPE_CHECKING:
 @requires(has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]")
 def make_defects_from_bulk(
     atoms: Atoms,
-    defect_gen: (
+    defect_gen: type[
         AntiSiteGenerator
         | ChargeInterstitialGenerator
         | InterstitialGenerator
         | SubstitutionGenerator
         | VacancyGenerator
         | VoronoiInterstitialGenerator
-    ) = VacancyGenerator,
+    ] = VacancyGenerator,
     defect_charge: int = 0,
     sc_mat: NDArray | None = None,
     min_atoms: int = 80,

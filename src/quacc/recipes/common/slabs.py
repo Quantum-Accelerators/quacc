@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
     from quacc import Job
+    from quacc.types import OptSchema, RunSchema
 
 
 @subflow
@@ -21,7 +22,7 @@ def bulk_to_slabs_subflow(
     relax_job: Job,
     static_job: Job | None = None,
     make_slabs_kwargs: dict[str, Any] | None = None,
-) -> dict[dict]:
+) -> dict[str, list[RunSchema | OptSchema]]:
     """
     Workflow consisting of:
 
@@ -45,14 +46,15 @@ def bulk_to_slabs_subflow(
 
     Returns
     -------
-    dict[dict]
-        Dict of schemas.
+    dict[str, list[RunSchema | OptSchema]]
+        Relaxation and static results, grouped under "relax" and "static".
+        The "static" list is empty when no static job is supplied.
     """
     make_slabs_kwargs = make_slabs_kwargs or {}
 
     slabs = make_slabs_from_bulk(atoms, **make_slabs_kwargs)
 
-    results = {"relax": [], "static": []}
+    results: dict[str, list[RunSchema | OptSchema]] = {"relax": [], "static": []}
     for slab in slabs:
         result = relax_job(slab)
         results["relax"].append(result)
@@ -71,7 +73,7 @@ def slab_to_ads_subflow(
     relax_job: Job,
     static_job: Job | None,
     make_ads_kwargs: dict[str, Any] | None = None,
-) -> dict[dict]:
+) -> dict[str, list[RunSchema | OptSchema]]:
     """
     Workflow consisting of:
 
@@ -97,14 +99,15 @@ def slab_to_ads_subflow(
 
     Returns
     -------
-    dict[dict]
-        Dict of schemas.
+    dict[str, list[RunSchema | OptSchema]]
+        Relaxation and static results, grouped under "relax" and "static".
+        The "static" list is empty when no static job is supplied.
     """
     make_ads_kwargs = make_ads_kwargs or {}
 
     slabs = make_adsorbate_structures(atoms, adsorbate, **make_ads_kwargs)
 
-    results = {"relax": [], "static": []}
+    results: dict[str, list[RunSchema | OptSchema]] = {"relax": [], "static": []}
     for slab in slabs:
         result = relax_job(slab)
         results["relax"].append(result)
