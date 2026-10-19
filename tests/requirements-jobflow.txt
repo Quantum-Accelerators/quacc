@@ -1,2 +1,2 @@
-jobflow @ git+https://github.com/Andrew-S-Rosen/jobflow.git@agent/resolve-job-inputs-in-decorated-flows
+jobflow==0.4.0
 jobflow-remote==1.0.1
