@@ -67,6 +67,28 @@ def test_jobflow_decorators_args(tmp_path, monkeypatch):
     assert isinstance(add_distributed([1, 2, 3], 4), jf.Job)
 
 
+def test_jobflow_tuple_argument(tmp_path, monkeypatch, jobflow_output):
+    monkeypatch.chdir(tmp_path)
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @job
+    def sum_values(values):
+        return sum(values)
+
+    @flow
+    def workflow():
+        job1 = add(1, 2)
+        job2 = add(3, 4)
+        return (sum_values((job1, job2)),)
+
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    assert jobflow_output(responses, workflow_flow.output[0]) == 10
+
+
 def test_jobflow_flow_output_warning_is_suppressed(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
@@ -82,3 +104,19 @@ def test_jobflow_flow_output_warning_is_suppressed(tmp_path, monkeypatch):
         assert isinstance(workflow(1, 2), jf.Flow)
 
     assert not caught_warnings
+
+
+def test_jobflow_dict_output(tmp_path, monkeypatch, jobflow_output):
+    monkeypatch.chdir(tmp_path)
+
+    @job
+    def add(a, b):
+        return a + b
+
+    @flow
+    def workflow():
+        return {"sum": add(1, 2)}
+
+    workflow_flow = workflow()
+    responses = jf.run_locally(workflow_flow, ensure_success=True)
+    assert jobflow_output(responses, workflow_flow.output["sum"]) == 3
