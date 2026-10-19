@@ -5,10 +5,9 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING, cast
 
-from monty.dev import requires
-
 from quacc import __version__
 from quacc.schemas.atoms import atoms_to_metadata
+from quacc.utils.dependencies import requires
 from quacc.utils.dicts import clean_dict
 from quacc.utils.files import get_uri
 

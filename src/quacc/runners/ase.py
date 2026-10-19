@@ -28,11 +28,11 @@ from ase.mep.neb import NEBOptimizer
 from ase.optimize import BFGS, BFGSLineSearch
 from ase.optimize.sciopt import SciPyOptimizer
 from ase.vibrations import Vibrations
-from monty.dev import requires
 from monty.os.path import zpath
 
 from quacc.runners._base import AtomsT, BaseRunner
 from quacc.runners.prep import calc_cleanup, calc_setup, terminate
+from quacc.utils.dependencies import requires
 from quacc.utils.dicts import recursive_dict_merge
 
 LOGGER = getLogger(__name__)
@@ -46,7 +46,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.calculators.calculator import BaseCalculator
-    from ase.optimize.optimize import Dynamics, Optimizer
+    from ase.optimize.optimize import Optimizer
 
     from quacc.types import CopyFiles, MaxwellBoltzmanDistributionKwargs, VibKwargs
 
@@ -428,7 +428,7 @@ class Runner(BaseRunner[AtomsT]):
         optimizer_kwargs: dict[str, Any] | None = None,
         neb_kwargs: dict[str, Any] | None = None,
         run_kwargs: dict[str, Any] | None = None,
-    ) -> Dynamics:
+    ) -> Optimizer:
         """
         Run an NEB calculation.
 
@@ -452,8 +452,8 @@ class Runner(BaseRunner[AtomsT]):
 
         Returns
         -------
-        Dynamics
-            The ASE Dynamics object following an NEB calculation.
+        Optimizer
+            The ASE optimizer following an NEB calculation.
 
         Raises
         ------

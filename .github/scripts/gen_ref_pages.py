@@ -32,8 +32,15 @@ for path in sorted(Path("src").rglob("*.py")):
     full_doc_path.parent.mkdir(parents=True, exist_ok=True)
     # Reference pages are generated; edits belong in the Python source instead.
     edit_url = urljoin(edit_base, f"../{path.as_posix()}")
+    module_name = ".".join(parts)
+    options = ""
+    if module_name in {"quacc.types", "quacc.recipes.torchsim._base"}:
+        # Schema pages should show every supported field, including inherited keys.
+        options = (
+            "    options:\n      inherited_members: true\n      show_bases: false\n"
+        )
     full_doc_path.write_text(
-        f"---\nedit_url: {edit_url}\n---\n\n::: {'.'.join(parts)}\n"
+        f"---\nedit_url: {edit_url}\n---\n\n::: {module_name}\n{options}"
     )
 
     # Emit section headers for intermediate directories not yet seen

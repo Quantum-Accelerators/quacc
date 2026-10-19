@@ -20,10 +20,11 @@ from quacc.utils.dicts import clean_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from typing import Any, Literal
 
     from ase.atoms import Atoms
-    from ase.io.trajectory import TrajectoryWriter
+    from ase.io.trajectory import TrajectoryReader
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.vibrations import Vibrations
@@ -31,6 +32,7 @@ if TYPE_CHECKING:
     from quacc.types import (
         DefaultSetting,
         DynSchema,
+        NebResultSchema,
         OptSchema,
         RunSchema,
         VibSchema,
@@ -132,7 +134,7 @@ class Summarize:
     def opt(
         self,
         dyn: Optimizer | MolecularDynamics,
-        trajectory: list[Atoms] | None = None,
+        trajectory: Sequence[Atoms] | TrajectoryReader | None = None,
         check_convergence: bool | DefaultSetting = QuaccDefault,
     ) -> OptSchema:
         """
@@ -163,7 +165,7 @@ class Summarize:
 
         # Get trajectory
         if trajectory is not None:
-            atoms_trajectory = trajectory
+            atoms_trajectory = list(trajectory)
         elif isinstance(dyn.trajectory, (str, Path)):
             atoms_trajectory = cast("list[Atoms]", read(dyn.trajectory, index=":"))
         else:
@@ -206,7 +208,9 @@ class Summarize:
         return cast("OptSchema", clean_dict(unsorted_task_doc))
 
     def md(
-        self, dyn: MolecularDynamics, trajectory: list[Atoms] | None = None
+        self,
+        dyn: MolecularDynamics,
+        trajectory: Sequence[Atoms] | TrajectoryReader | None = None,
     ) -> DynSchema:
         """
         Get tabulated results from an ASE MD run.
@@ -265,11 +269,11 @@ class Summarize:
 
     def neb(
         self,
-        dyn: Optimizer | MolecularDynamics,
+        dyn: Optimizer,
         n_images: int,
         n_iter_return: int = -1,
-        trajectory: TrajectoryWriter | list[Atoms] | None = None,
-    ) -> OptSchema:
+        trajectory: Sequence[Atoms] | TrajectoryReader | None = None,
+    ) -> NebResultSchema:
         """
         Summarize the NEB run results and store them in a database-friendly format.
 
@@ -286,19 +290,19 @@ class Summarize:
 
         Returns
         -------
-        OptSchema
+        NebResultSchema
             A dictionary containing the summarized NEB run results.
         """
 
         # Get trajectory
-        atoms_trajectory = cast(
-            "list[Atoms]",
-            (
-                trajectory or read(dyn.trajectory, index=":")
-                if isinstance(dyn.trajectory, (str, Path))
-                else read(cast("Any", dyn.trajectory).filename, index=":")
-            ),
-        )
+        if trajectory is not None:
+            atoms_trajectory = list(trajectory)
+        elif isinstance(dyn.trajectory, (str, Path)):
+            atoms_trajectory = cast("list[Atoms]", read(dyn.trajectory, index=":"))
+        else:
+            atoms_trajectory = cast(
+                "list[Atoms]", read(cast("Any", dyn.trajectory).filename, index=":")
+            )
 
         if n_iter_return == -1:
             atoms_trajectory = atoms_trajectory[-(n_images):]
@@ -337,7 +341,7 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
-        return cast("OptSchema", clean_dict(unsorted_task_doc))
+        return cast("NebResultSchema", clean_dict(unsorted_task_doc))
 
 
 class VibSummarize:

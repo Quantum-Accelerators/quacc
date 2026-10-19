@@ -4,15 +4,16 @@ from importlib.util import find_spec
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from monty.dev import requires
-
 from quacc.runners.ase import BaseRunner
+from quacc.utils.dependencies import requires
 
 has_phonopy = bool(find_spec("phonopy"))
 has_seekpath = bool(find_spec("seekpath"))
 
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
     from numpy.typing import NDArray
 
     if has_phonopy:
@@ -35,7 +36,7 @@ class PhonopyRunner(BaseRunner):
     def run_phonopy(
         self,
         phonon: Phonopy,
-        forces: NDArray,
+        forces: NDArray | Sequence[NDArray] | Sequence[Sequence[Sequence[float]]],
         symmetrize: bool = False,
         t_step: float = 10,
         t_min: float = 0,
@@ -84,7 +85,7 @@ class PhonopyRunner(BaseRunner):
         phonon.save(
             Path(self.tmpdir, "phonopy.yaml"), settings={"force_constants": True}
         )
-        phonon.directory = self.job_results_dir
+        vars(phonon)["directory"] = self.job_results_dir
 
         # Perform cleanup operations
         self.cleanup()

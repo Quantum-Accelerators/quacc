@@ -5,10 +5,11 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
-from monty.dev import requires
 from pymatgen.core.periodic_table import DummySpecies
 from pymatgen.entries.computed_entries import ComputedStructureEntry
 from pymatgen.io.ase import AseAtomsAdaptor
+
+from quacc.utils.dependencies import requires
 
 has_pmg_defects = bool(find_spec("pymatgen.analysis.defects"))
 has_shakenbreak = bool(find_spec("shakenbreak"))
@@ -102,7 +103,7 @@ def make_defects_from_bulk(
         # Generate the supercell for a defect
         defect_supercell = defect.get_supercell_structure(
             sc_mat=sc_mat,
-            dummy_species=DummySpecies(),
+            dummy_species=str(DummySpecies()),
             min_atoms=min_atoms,
             max_atoms=max_atoms,
             min_length=min_length,
@@ -184,5 +185,9 @@ def get_defect_entry_from_defect(
         defect=defect,
         charge_state=defect_charge,
         sc_entry=computed_structure_entry,
-        sc_defect_frac_coords=dummy_site.frac_coords,
+        sc_defect_frac_coords=(
+            dummy_site.frac_coords[0],
+            dummy_site.frac_coords[1],
+            dummy_site.frac_coords[2],
+        ),
     )

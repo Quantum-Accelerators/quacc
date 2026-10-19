@@ -165,13 +165,13 @@ if _settings.WORKFLOW_ENGINE == "prefect":
 
     def _patched_getitem(self: PrefectFuture | State, index: object) -> object:
         @job
-        def _getitem(future: PrefectFuture | State, index_: object) -> object:
+        def _getitem(future: Any, index_: Any) -> Any:
             return future[index_]
 
         return _getitem(self, index)
 
-    PrefectFuture.__getitem__ = _patched_getitem
-    State.__getitem__ = _patched_getitem
+    setattr(PrefectFuture, "__getitem__", _patched_getitem)  # noqa: B010 -- patch an external generic class.
+    setattr(State, "__getitem__", _patched_getitem)  # noqa: B010 -- patch an external generic class.
 
 if _settings.WORKFLOW_ENGINE == "parsl":
     from parsl.dataflow.memoization import id_for_memo

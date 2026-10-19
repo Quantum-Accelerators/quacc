@@ -7,7 +7,7 @@ from importlib.util import find_spec
 from logging import getLogger
 from typing import TYPE_CHECKING, cast
 
-from monty.dev import requires
+from quacc.utils.dependencies import requires
 
 has_frozen = bool(find_spec("frozendict"))
 has_torch = bool(find_spec("torch"))
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.calculators.calculator import BaseCalculator
+    from fairchem.core.units.mlip_unit.predict import MLIPPredictUnit
 
 
 LOGGER = getLogger(__name__)
@@ -196,7 +197,11 @@ def pick_calculator(
                 deployment_name="multiplexed-predict-server", model_spec=model_spec
             )
 
-            calc = FAIRChemCalculator(predict_unit=mlip_unit, task_name=task_name)
+            # FairChem also accepts its batch-server adapter, although its
+            # calculator annotation currently names only the local predict unit.
+            calc = FAIRChemCalculator(
+                predict_unit=cast("MLIPPredictUnit", mlip_unit), task_name=task_name
+            )
         else:
             # Use local inference
             calc = FAIRChemCalculator.from_model_checkpoint(**calc_kwargs)

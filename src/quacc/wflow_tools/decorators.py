@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from functools import partial, wraps
-from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar, overload
+from typing import TYPE_CHECKING, Any, ParamSpec, TypeAlias, TypeVar, overload
 
 from quacc.settings import change_settings_wrap
 from quacc.wflow_tools.context import NodeType, tracked
@@ -12,11 +12,11 @@ from quacc.wflow_tools.context import NodeType, tracked
 if TYPE_CHECKING:
     from quacc.settings import QuaccSettings
 
-Job = Callable[..., Any]
-Flow = Callable[..., Any]
-Subflow = Callable[..., Any]
 P = ParamSpec("P")
 R = TypeVar("R")
+Job: TypeAlias = Callable[..., R]
+Flow = Callable[..., Any]
+Subflow = Callable[..., Any]
 
 
 @overload
@@ -168,22 +168,23 @@ def job(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Job:
 
         return python_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
-        from redun import task
+        from redun import task as redun_task
 
-        return task(_func, namespace=_func.__module__, **kwargs)
+        return redun_task(namespace=_func.__module__, **kwargs)(_func)
     elif settings.WORKFLOW_ENGINE == "prefect":
-        from prefect import task
+        from prefect import task as prefect_task
 
         if settings.PREFECT_AUTO_SUBMIT:
 
             @wraps(_func)
             def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
-                decorated = task(_func, **kwargs)
+                assert _func is not None
+                decorated = prefect_task(_func, **kwargs)
                 return decorated.submit(*f_args, **f_kwargs)
 
             return wrapper
         else:
-            return task(_func, **kwargs)
+            return prefect_task(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
@@ -346,9 +347,9 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Flow:
         return partial(flow, **kwargs)
 
     elif settings.WORKFLOW_ENGINE == "redun":
-        from redun import task
+        from redun import task as redun_task
 
-        return task(_func, namespace=_func.__module__, **kwargs)
+        return redun_task(namespace=_func.__module__, **kwargs)(_func)
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     elif settings.WORKFLOW_ENGINE == "jobflow":
@@ -575,9 +576,9 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Subflow:
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
-        from redun import task
+        from redun import task as redun_task
 
-        return task(_func, namespace=_func.__module__, **kwargs)
+        return redun_task(namespace=_func.__module__, **kwargs)(_func)
     elif settings.WORKFLOW_ENGINE == "jobflow":
         return _get_jobflow_wrapped_subflow(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "ray":
@@ -663,10 +664,10 @@ def _get_prefect_wrapped_flow(
                 result = await _func(*f_args, **f_kwargs)
                 return resolve_futures_to_results(result)
 
-            return prefect_flow(async_wrapper, validate_parameters=False, **kwargs)
+            return prefect_flow(validate_parameters=False, **kwargs)(async_wrapper)
 
         else:
-            return prefect_flow(_func, validate_parameters=False, **kwargs)
+            return prefect_flow(validate_parameters=False, **kwargs)(_func)
     else:
         if settings.PREFECT_RESOLVE_FLOW_RESULTS:
 
@@ -675,9 +676,9 @@ def _get_prefect_wrapped_flow(
                 result = _func(*f_args, **f_kwargs)
                 return resolve_futures_to_results(result)
 
-            return prefect_flow(sync_wrapper, validate_parameters=False, **kwargs)
+            return prefect_flow(validate_parameters=False, **kwargs)(sync_wrapper)
         else:
-            return prefect_flow(_func, validate_parameters=False, **kwargs)
+            return prefect_flow(validate_parameters=False, **kwargs)(_func)
 
 
 def _get_jobflow_wrapped_func(

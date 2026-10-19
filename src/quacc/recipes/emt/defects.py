@@ -5,11 +5,10 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
-from monty.dev import requires
-
 from quacc import flow
 from quacc.recipes.common.defects import bulk_to_defects_subflow
 from quacc.recipes.emt.core import relax_job, static_job
+from quacc.utils.dependencies import requires
 from quacc.utils.dicts import recursive_dict_merge
 from quacc.wflow_tools.customizers import customize_jobs
 

@@ -6,9 +6,10 @@ from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 import numpy as np
-from monty.dev import requires
 from pymatgen.core import Structure
 from pymatgen.io.phonopy import get_phonopy_structure, get_pmg_structure
+
+from quacc.utils.dependencies import requires
 
 has_phonopy = bool(find_spec("phonopy"))
 
@@ -99,9 +100,8 @@ def phonopy_atoms_to_ase_atoms(phonopy_atoms: PhonopyAtoms) -> Atoms:
 @requires(has_phonopy, "Phonopy not installed.")
 def get_atoms_supercell_by_phonopy(
     atoms: Atoms,
-    supercell_matrix: tuple[
-        tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]
-    ],
+    supercell_matrix: NDArray
+    | tuple[tuple[int, int, int], tuple[int, int, int], tuple[int, int, int]],
 ) -> Atoms:
     """
     Get the supercell of an ASE atoms object using a supercell matrix.

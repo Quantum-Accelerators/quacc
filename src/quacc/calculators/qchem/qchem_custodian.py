@@ -5,10 +5,9 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
-from monty.dev import requires
-
 from quacc import QuaccDefault, get_settings
 from quacc.types import DefaultSetting
+from quacc.utils.dependencies import requires
 
 if TYPE_CHECKING:
     from pathlib import Path

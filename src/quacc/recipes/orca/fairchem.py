@@ -6,9 +6,9 @@ from importlib.util import find_spec
 from typing import TYPE_CHECKING, Any
 
 import psutil
-from monty.dev import requires
 
 from quacc import job
+from quacc.utils.dependencies import requires
 from quacc.utils.lists import merge_list_params
 
 if TYPE_CHECKING:
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
     from fairchem.data.omol.orca.calc import Vertical
 
-    from quacc.types import CopyFiles
+    from quacc.types import CopyFiles, RunSchema
 
 has_fairchem = bool(find_spec("fairchem"))
 has_fairchem_omol = (
@@ -42,7 +42,7 @@ def omol_static_job(
     nprocs: int | Literal["max"] = "max",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+) -> RunSchema:
     """
     Carry out a single-point calculation using the OMol settings.
 
@@ -73,8 +73,8 @@ def omol_static_job(
 
     Returns
     -------
-    dict[str, Any]
-        Dictionary of results.
+    RunSchema
+        Results from the ORCA single-point calculation.
     """
     from fairchem.data.omol.orca.calc import ORCA_BLOCKS, ORCA_SIMPLE_INPUT, Vertical
     from fairchem.data.omol.orca.recipes import single_point_calculation

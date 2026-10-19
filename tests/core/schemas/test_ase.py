@@ -3,12 +3,13 @@ from __future__ import annotations
 import os
 from copy import deepcopy
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
 from ase.calculators.emt import EMT
-from ase.io import read
+from ase.io import Trajectory, read
 from ase.mep import NEB
 from ase.optimize import BFGS
 from ase.vibrations import Vibrations
@@ -420,3 +421,14 @@ def test_summarize_neb(monkeypatch, tmp_path):
         optimizer, len(images), n_iter_return=-1, trajectory=read("opt.traj", index=":")
     )
     assert len(final_iteration["trajectory"]) == len(images)
+
+    # A supplied reader must take precedence over the optimizer's trajectory.
+    optimizer.trajectory = SimpleNamespace(filename="missing.traj")
+    with Trajectory("opt.traj") as trajectory:
+        from_reader = Summarize().neb(
+            optimizer, len(images), n_iter_return=-1, trajectory=trajectory
+        )
+    assert len(from_reader["trajectory"]) == len(images)
+    assert "ts_atoms" in from_reader
+    assert "converged" not in from_reader
+    assert "results" not in from_reader

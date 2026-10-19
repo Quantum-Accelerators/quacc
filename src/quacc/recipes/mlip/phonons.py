@@ -5,11 +5,10 @@ from __future__ import annotations
 from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
-from monty.dev import requires
-
 from quacc import flow
 from quacc.recipes.common.phonons import phonon_subflow
 from quacc.recipes.mlip.core import static_job
+from quacc.utils.dependencies import requires
 from quacc.wflow_tools.customizers import customize_jobs
 
 has_phonopy = bool(find_spec("phonopy"))

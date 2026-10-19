@@ -167,6 +167,7 @@ separator = '[\\s\\-,:!=\\[\\]()\"`/]+|\\.(?!\\d)|&[lg]t;|(?!\\b)(?=[A-Z][a-z])'
 default_handler = "python"
 
 [project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
 inventories = [
     "https://docs.python.org/3/objects.inv",
     "https://docs.ase-lib.org/objects.inv",
@@ -187,6 +188,8 @@ merge_init_into_class = true
 show_signature_annotations = true
 signature_crossrefs = true
 show_if_no_docstring = true
+# Keep runtime dependency flags and typing helpers out of the public reference.
+filters = ["!^_", "!^has_", "!^(P|R|Schema|ResultSchema|AtomsT)$"]
 
 [project.plugins.mkdocstrings.handlers.python.options.docstring_options]
 ignore_init_summary = true

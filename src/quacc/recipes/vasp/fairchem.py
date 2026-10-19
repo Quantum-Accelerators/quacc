@@ -4,13 +4,12 @@ from __future__ import annotations
 
 from importlib.util import find_spec
 from math import ceil
-from typing import TYPE_CHECKING
-
-from monty.dev import requires
+from typing import TYPE_CHECKING, cast
 
 from quacc import job
 from quacc.calculators.vasp.params import MPtoASEConverter
 from quacc.recipes.vasp._base import run_and_summarize
+from quacc.utils.dependencies import requires
 
 has_fairchem = bool(find_spec("fairchem"))
 has_fairchem_omat = (
@@ -29,6 +28,7 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from pymatgen.io.vasp.sets import UserPotcarFunctional
 
     from quacc.types import CopyFiles, VaspSchema
 
@@ -172,7 +172,8 @@ def _make_omc_inputs(atoms: Atoms) -> dict:
             "PREC": "Normal",
             "SIGMA": 0.1,
         },
-        user_potcar_functional="PBE_54_W_HASH",
+        # OMat uses a dataset-specific POTCAR identifier beyond pymatgen's Literal list.
+        user_potcar_functional=cast("UserPotcarFunctional", "PBE_54_W_HASH"),
         auto_kspacing=True,
     )
     return MPtoASEConverter(atoms=atoms).convert_input_generator(input_generator)

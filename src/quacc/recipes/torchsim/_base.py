@@ -4,11 +4,10 @@ from __future__ import annotations
 
 from copy import deepcopy
 from importlib.util import find_spec
-from typing import TYPE_CHECKING, Any, Literal, TypedDict
-
-from monty.dev import requires
+from typing import TYPE_CHECKING, Any, Literal, TypedDict, cast
 
 from quacc.schemas.torchsim import PROPERTY_FN_REGISTRY, TSModelType
+from quacc.utils.dependencies import requires
 
 has_torchsim = bool(find_spec("torch_sim"))
 
@@ -19,6 +18,7 @@ if has_torchsim:
 
 if TYPE_CHECKING:
     import pathlib
+    from collections.abc import Callable
     from pathlib import Path
 
     from ase.atoms import Atoms
@@ -53,22 +53,32 @@ class TorchSimSchema(TypedDict):
     quacc_version: str
 
 
-class TrajectoryReporterDict(TypedDict, total=False):
+class _TrajectoryReporterKwargs(TypedDict, total=False):
     filenames: list[str | pathlib.Path]
-    state_frequency: int | None
-    prop_calculators: dict[int, list[PropertyFn]]
+    state_frequency: int
     state_kwargs: dict[str, Any] | None
     metadata: dict[str, str] | None
     trajectory_kwargs: dict[str, Any] | None
 
 
-class AutobatcherDict(TypedDict, total=False):
-    memory_scales_with: Literal["n_atoms", "n_atoms_x_density"] | None
+class TrajectoryReporterDict(_TrajectoryReporterKwargs, total=False):
+    """Trajectory output settings with serializable property names."""
+
+    prop_calculators: dict[int, list[PropertyFn]]
+
+
+class _BinningAutobatcherDict(TypedDict, total=False):
+    memory_scales_with: Literal["n_atoms", "n_atoms_x_density", "n_edges"]
     max_memory_scaler: float | None
-    max_atoms_to_try: int | None
-    memory_scaling_factor: float | None
+    max_atoms_to_try: int
+    memory_scaling_factor: float
+    max_memory_padding: float
+
+
+class AutobatcherDict(_BinningAutobatcherDict, total=False):
+    """Autobatcher settings; max_iterations applies to in-flight batching only."""
+
     max_iterations: int | None
-    max_memory_padding: float | None
 
 
 class TrajectoryReporterDetails(TypedDict):
@@ -77,12 +87,12 @@ class TrajectoryReporterDetails(TypedDict):
     prop_calculators: dict[int, list[PropertyFn]]
     state_kwargs: dict[str, Any]
     metadata: dict[str, str] | None
-    filenames: list[str | pathlib.Path] | None  # should be relative paths
+    filenames: list[str] | None  # TorchSim normalizes paths to strings.
 
 
 class AutobatcherDetails(TypedDict):
     autobatcher: Literal["BinningAutoBatcher", "InFlightAutoBatcher"]
-    memory_scales_with: Literal["n_atoms", "n_atoms_x_density"]
+    memory_scales_with: Literal["n_atoms", "n_atoms_x_density", "n_edges"]
     max_memory_scaler: float | None
     max_atoms_to_try: int | None
     memory_scaling_factor: float | None
@@ -155,7 +165,9 @@ def process_binning_autobatcher_dict(
         # pop max_iterations if present
         autobatcher_dict.pop("max_iterations", None)
         autobatcher_dict.setdefault("memory_scales_with", model.memory_scales_with)
-        autobatcher = BinningAutoBatcher(model=model, **autobatcher_dict)
+        autobatcher = BinningAutoBatcher(
+            model=model, **cast("_BinningAutobatcherDict", autobatcher_dict)
+        )
 
     autobatcher_details = _get_autobatcher_details(autobatcher)
     return autobatcher, autobatcher_details
@@ -199,14 +211,15 @@ def process_trajectory_reporter_dict(
             for filename in trajectory_reporter_dict["filenames"]
         ]
     prop_calculators = trajectory_reporter_dict.pop("prop_calculators", {})
-    prop_calculators_functions = {
+    prop_calculators_functions: dict[int, dict[str, Callable]] = {
         i: {prop: PROPERTY_FN_REGISTRY[prop] for prop in props}
         for i, props in prop_calculators.items()
     }
 
     # TODO: put in optional dependencies
     trajectory_reporter = ts.TrajectoryReporter(
-        **trajectory_reporter_dict, prop_calculators=prop_calculators_functions
+        **cast("_TrajectoryReporterKwargs", trajectory_reporter_dict),
+        prop_calculators=prop_calculators_functions,
     )
 
     reporter_details: TrajectoryReporterDetails = {
@@ -261,7 +274,10 @@ def pick_model(
     if model_type == TSModelType.MACE:
         from torch_sim.models.mace import MaceModel
 
-        return MaceModel(model=model, **model_kwargs)
+        # TorchSim exports an abstract placeholder when MACE is not installed.
+        # The installed backend supplies the concrete model constructor.
+        model_factory: Callable[..., ModelInterface] = MaceModel
+        return model_factory(model=model, **model_kwargs)
     if model_type == TSModelType.MATTERSIM:
         from torch_sim.models.mattersim import MatterSimModel
 
