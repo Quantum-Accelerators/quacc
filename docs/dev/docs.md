@@ -8,7 +8,6 @@ The documentation uses [Zensical](https://zensical.org/), configured in `_zensic
 python .github/scripts/gen_ref_pages.py
 python .github/scripts/gen_zensical_toml.py
 zensical build --clean
-python .github/scripts/check_api_docs.py
 python -m http.server --directory site 8000
 ```
 

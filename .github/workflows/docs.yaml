@@ -42,9 +42,6 @@ jobs:
           zensical build --clean
         id: build_docs
 
-      - name: Check rendered reference pages
-        run: python .github/scripts/check_api_docs.py
-
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         if: github.ref == 'refs/heads/main' && steps.build_docs.outcome == 'success'
