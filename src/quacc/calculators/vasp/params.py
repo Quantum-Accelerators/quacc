@@ -351,11 +351,11 @@ def get_param_swaps(
         if (
             calc.parameters.get("lhfcalc", False)
             and calc.parameters.get("hfscreen", 0) == 0.2
-            and calc.parameters.get("ivdw", 1) == 12
-            and not calc.parameters.get("vdw_s6")
-            and not calc.parameters.get("vdw_s8")
-            and not calc.parameters.get("vdw_a1")
-            and not calc.parameters.get("vdw_a2")
+            and calc.parameters.get("ivdw", 0) == 12
+            and all(
+                calc.parameters.get(key) is None
+                for key in ("vdw_s6", "vdw_s8", "vdw_a1", "vdw_a2")
+            )
         ):
             recommend(
                 "These are the recommended HSE06-D3(BJ) damping parameters.",
@@ -374,7 +374,6 @@ def get_param_swaps(
                 for key in ("vdw_s6", "vdw_s8", "vdw_a1", "vdw_a2")
             )
         ):
-            # https://github.com/dftd4/dftd4/blob/main/assets/parameters.toml
             recommend(
                 "These are the recommended HSE06-D4 damping parameters.",
                 vdw_s6=1.0,
