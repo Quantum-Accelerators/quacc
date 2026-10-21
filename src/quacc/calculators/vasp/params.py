@@ -365,6 +365,24 @@ def get_param_swaps(
                 vdw_a2=5.685,
             )
 
+        if (
+            calc.parameters.get("lhfcalc", False)
+            and calc.parameters.get("hfscreen", 0) == 0.2
+            and calc.parameters.get("ivdw", 0) == 13
+            and all(
+                calc.parameters.get(key) is None
+                for key in ("vdw_s6", "vdw_s8", "vdw_a1", "vdw_a2")
+            )
+        ):
+            # https://github.com/dftd4/dftd4/blob/main/assets/parameters.toml
+            recommend(
+                "These are the recommended HSE06-D4 damping parameters.",
+                vdw_s6=1.0,
+                vdw_s8=1.19528249,
+                vdw_a1=0.38663183,
+                vdw_a2=5.19133469,
+            )
+
         if input_atoms.get_chemical_formula() == "O2" and all(
             input_atoms.get_initial_magnetic_moments() == 0
         ):
