@@ -1247,6 +1247,46 @@ def test_dispersion():
     assert calc.parameters["vdw_a2"] == 5.685
 
 
+@pytest.mark.parametrize(
+    "functional", [{"xc": "hse06"}, {"lhfcalc": True, "hfscreen": 0.2}]
+)
+@pytest.mark.parametrize("mode", ["critical", "standard", "aggressive"])
+def test_hse06_d4(functional, mode):
+    calc = Vasp(bulk("Cu"), ivdw=13, incar_copilot_mode=mode, **functional)
+    assert calc.parameters["vdw_s6"] == 1.0
+    assert calc.parameters["vdw_s8"] == 1.19528249
+    assert calc.parameters["vdw_a1"] == 0.38663183
+    assert calc.parameters["vdw_a2"] == 5.19133469
+
+
+@pytest.mark.parametrize("key", ["vdw_s6", "vdw_s8", "vdw_a1", "vdw_a2"])
+@pytest.mark.parametrize("value", [0.0, 2.0])
+@pytest.mark.parametrize("mode", ["standard", "aggressive"])
+def test_hse06_d4_custom_damping(key, value, mode):
+    calc = Vasp(
+        bulk("Cu"), xc="hse06", ivdw=13, incar_copilot_mode=mode, **{key: value}
+    )
+    assert calc.parameters[key] == value
+    for other_key in {"vdw_s6", "vdw_s8", "vdw_a1", "vdw_a2"} - {key}:
+        assert calc.parameters.get(other_key) is None
+
+
+@pytest.mark.parametrize(
+    "parameters",
+    [
+        {"xc": "hse06"},
+        {"xc": "pbe", "ivdw": 13},
+        {"lhfcalc": True, "hfscreen": 0.3, "ivdw": 13},
+        {"lhfcalc": False, "hfscreen": 0.2, "ivdw": 13},
+        {"xc": "hse06", "ivdw": 13, "incar_copilot_mode": "off"},
+    ],
+)
+def test_hse06_d4_not_applied(parameters):
+    calc = Vasp(bulk("Cu"), **parameters)
+    for key in ("vdw_s6", "vdw_s8", "vdw_a1", "vdw_a2"):
+        assert calc.parameters.get(key) is None
+
+
 def test_setups():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="DefaultSetGGA")
@@ -1361,7 +1401,7 @@ def test_envvars():
         }
     ):
         atoms = bulk("Cu")
-        atoms.calc = Vasp(atoms, xc="beef-vdw")
+        atoms.calc = Vasp(atoms, xc="r2scan+rvv10")
         assert os.environ.get("VASP_PP_PATH") == str(Path("/path/to/pseudos"))
         assert os.environ.get("ASE_VASP_VDW") == str(Path("/path/to/kernel"))
 
