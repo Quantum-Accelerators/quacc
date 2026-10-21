@@ -1401,7 +1401,7 @@ def test_envvars():
         }
     ):
         atoms = bulk("Cu")
-        atoms.calc = Vasp(atoms, xc="r2scan-rvv10")
+        atoms.calc = Vasp(atoms, xc="r2scan+rvv10")
         assert os.environ.get("VASP_PP_PATH") == str(Path("/path/to/pseudos"))
         assert os.environ.get("ASE_VASP_VDW") == str(Path("/path/to/kernel"))
 
