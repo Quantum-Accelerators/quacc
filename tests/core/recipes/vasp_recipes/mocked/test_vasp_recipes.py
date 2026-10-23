@@ -15,6 +15,7 @@ from quacc.recipes.vasp.core import (
     double_relax_flow,
     freq_job,
     non_scf_job,
+    non_scf_opt_job,
     relax_job,
     static_job,
 )
@@ -334,9 +335,7 @@ def test_non_scf_job5(patch_metallic_taskdoc):
 @pytest.mark.parametrize("kpts_mode", ["uniform", "line"])
 @requires_kpoints_opt
 def test_non_scf_kpoints_opt(patch_metallic_taskdoc, kpts_mode):
-    output = non_scf_job(
-        bulk("Al"), use_kpoints_opt=True, kpts_mode=kpts_mode, kpts=(3, 3, 3)
-    )
+    output = non_scf_opt_job(bulk("Al"), kpts_mode=kpts_mode, kpts=(3, 3, 3))
     params = output["parameters"]
     assert params["kpts"] == (3, 3, 3)
     assert params["lkpoints_opt"] is True
@@ -351,7 +350,7 @@ def test_non_scf_kpoints_opt(patch_metallic_taskdoc, kpts_mode):
 @pytest.mark.parametrize("opt_kwargs", [{"kpts_opt": (8, 8, 8)}, {"kspacing_opt": 0.1}])
 @requires_kpoints_opt
 def test_non_scf_kpoints_opt_override(patch_metallic_taskdoc, opt_kwargs):
-    output = non_scf_job(bulk("Al"), use_kpoints_opt=True, kspacing=0.3, **opt_kwargs)
+    output = non_scf_opt_job(bulk("Al"), kspacing=0.3, **opt_kwargs)
     params = output["parameters"]
     assert params["kspacing"] == 0.3
     for key, value in opt_kwargs.items():
@@ -361,22 +360,26 @@ def test_non_scf_kpoints_opt_override(patch_metallic_taskdoc, opt_kwargs):
 
 
 @requires_kpoints_opt
-def test_non_scf_kpoints_opt_restart(patch_metallic_taskdoc):
-    output = non_scf_job(bulk("Al"), MOCKED_DIR / "metallic", use_kpoints_opt=True)
+def test_non_scf_kpoints_opt_nbands(patch_metallic_taskdoc):
+    output = non_scf_opt_job(bulk("Al"), nbands=99, calculate_optics=True)
     assert output["parameters"]["nbands"] == 99
     assert output["parameters"]["icharg"] == 1
+    assert output["parameters"]["loptics"] is True
+    assert output["parameters"]["cshift"] == 1e-5
+    assert output["parameters"]["lreal"] is False
 
 
-def test_non_scf_requires_prev_dir():
-    with pytest.raises(ValueError, match="prev_dir is required"):
-        non_scf_job(bulk("Al"))
+@requires_kpoints_opt
+def test_non_scf_opt_invalid_mode():
+    with pytest.raises(ValueError, match="Supported kpoint modes"):
+        non_scf_opt_job(bulk("Al"), kpts_mode="dummy")
 
 
 def test_non_scf_kpoints_opt_requires_ase_support(monkeypatch):
     monkeypatch.setattr(ASEVasp, "input_params", {}, raising=False)
     monkeypatch.setattr(ASEVasp, "__init__", lambda self: None)
     with pytest.raises(ImportError, match="requires ASE with KPOINTS_OPT"):
-        non_scf_job(bulk("Al"), use_kpoints_opt=True)
+        non_scf_opt_job(bulk("Al"))
 
 
 def test_slab_static_job(patch_metallic_taskdoc):

@@ -254,7 +254,7 @@ def ase_relax_job(
 @job
 def non_scf_job(
     atoms: Atoms,
-    prev_dir: SourceDirectory | None = None,
+    prev_dir: SourceDirectory,
     preset: str | None = "DefaultSetGGA",
     nbands_factor: float = 1.2,
     kpts_mode: Literal["uniform", "line"] = "uniform",
@@ -262,7 +262,6 @@ def non_scf_job(
     line_kpt_density: float = 20,
     calculate_optics: bool = False,
     additional_fields: dict[str, Any] | None = None,
-    use_kpoints_opt: bool = False,
     **calc_kwargs: Any,
 ) -> VaspSchema:
     """
@@ -273,8 +272,7 @@ def non_scf_job(
     atoms
         Atoms object.
     prev_dir
-        Directory of the prior job. Must contain a CHGCAR and vasprun.xml file
-        for a conventional NSCF run. Optional with `use_kpoints_opt=True`.
+        Directory of the prior job. Must contain a CHGCAR and vasprun.xml file.
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
     nbands_factor
@@ -290,14 +288,6 @@ def non_scf_job(
         Whether to calculate optical properties.
     additional_fields
         Additional fields to add to the results dictionary.
-    use_kpoints_opt
-        Perform SCF and NSCF in one VASP invocation using KPOINTS_OPT (VASP
-        6.3+). The preset and `kpts`, `kspacing`, or `pmg_kpts` kwargs control
-        the uniform SCF grid. The NSCF grid is generated from `kpts_mode`
-        unless overridden by `kpts_opt` or `kspacing_opt` (VASP 6.6+).
-        Requires ASE with KPOINTS_OPT support. NBANDS is scaled only when
-        `prev_dir` is supplied. For unscreened hybrid functionals, set
-        `hfrcut=-1` as required by VASP for optional k points.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -311,58 +301,36 @@ def non_scf_job(
         See the type-hint for the data structure.
     """
 
-    if prev_dir is None and not use_kpoints_opt:
-        raise ValueError("prev_dir is required unless use_kpoints_opt=True.")
+    vasprun_path = zpath(str(Path(prev_dir, "vasprun.xml")))
+    vasprun = Vasprun(vasprun_path)
 
-    vasprun = Vasprun(zpath(str(Path(prev_dir, "vasprun.xml")))) if prev_dir else None
+    prior_nbands = vasprun.parameters["NBANDS"]
     calc_defaults: dict[str, Any] = {
+        "icharg": 11,
+        "kspacing": None,
         "lcharg": False,
         "lorbit": 11,
         "lwave": False,
         "nsw": 0,
+        "nbands": int(np.ceil(prior_nbands * nbands_factor)),
     }
-    if vasprun is not None:
-        calc_defaults["nbands"] = int(
-            np.ceil(vasprun.parameters["NBANDS"] * nbands_factor)
-        )
-    if not use_kpoints_opt:
-        calc_defaults |= {"icharg": 11, "kspacing": None}
-    pmg_kpts: PmgKpts
     if kpts_mode == "uniform":
-        pmg_kpts = {"kppvol": uniform_kppvol}
-        calc_defaults["nedos"] = 6001
-        if not use_kpoints_opt:
-            calc_defaults |= {"ismear": -5, "isym": 2, "pmg_kpts": pmg_kpts}
+        calc_defaults |= {
+            "ismear": -5,
+            "isym": 2,
+            "pmg_kpts": {"kppvol": uniform_kppvol},
+            "nedos": 6001,
+        }
     elif kpts_mode == "line":
-        pmg_kpts = {"line_density": line_kpt_density}
-        if not use_kpoints_opt:
-            assert vasprun is not None
-            is_metal = vasprun.get_band_structure().is_metal()
-            calc_defaults |= {
-                "ismear": 1 if is_metal else 0,
-                "isym": 0,
-                "pmg_kpts": pmg_kpts,
-                "sigma": 0.2 if is_metal else 0.01,
-            }
+        is_metal = vasprun.get_band_structure().is_metal()
+        calc_defaults |= {
+            "ismear": 1 if is_metal else 0,
+            "isym": 0,
+            "pmg_kpts": {"line_density": line_kpt_density},
+            "sigma": 0.2 if is_metal else 0.01,
+        }
     else:
         raise ValueError("Supported kpoint modes are 'uniform' and 'line' at present")
-
-    if use_kpoints_opt:
-        from ase.calculators.vasp import Vasp
-
-        if "kpts_opt" not in Vasp().input_params:
-            raise ImportError("use_kpoints_opt requires ASE with KPOINTS_OPT support.")
-        calc_defaults |= {"icharg": 1, "lkpoints_opt": True}
-        if (
-            calc_kwargs.get("kpts_opt") is None
-            and calc_kwargs.get("kspacing_opt") is None
-        ):
-            kpts_opt, gamma_opt = convert_pmg_kpts(pmg_kpts, atoms)
-            calc_defaults |= {
-                "kpts_opt": kpts_opt,
-                "gamma_opt": gamma_opt,
-                "reciprocal_opt": True,
-            }
 
     if calculate_optics:
         calc_defaults |= {"cshift": 1e-5, "loptics": True, "lreal": False}
@@ -376,6 +344,95 @@ def non_scf_job(
         copy_files=[{"source": prev_dir, "filenames": ["CHGCAR*", "WAVECAR*"]}]
         if prev_dir
         else None,
+    )
+
+
+@job
+def non_scf_opt_job(
+    atoms: Atoms,
+    preset: str | None = "DefaultSetGGA",
+    kpts_mode: Literal["uniform", "line"] = "uniform",
+    uniform_kppvol: float = 100,
+    line_kpt_density: float = 20,
+    calculate_optics: bool = False,
+    copy_files: CopyFiles | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    **calc_kwargs: Any,
+) -> VaspSchema:
+    """
+    Carry out SCF followed by NSCF using VASP's optional k-point driver.
+
+    Requires ASE with KPOINTS_OPT support and VASP 6.3 or newer.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object.
+    preset
+        Preset to use from `quacc.calculators.vasp.presets`. The preset and
+        ordinary k-point kwargs control the uniform SCF grid.
+    kpts_mode
+        NSCF k-point mode: "uniform" or "line".
+    uniform_kppvol
+        The k-point per volume density for the uniform NSCF grid.
+    line_kpt_density
+        The k-point density for the NSCF band path.
+    calculate_optics
+        Whether to calculate optical properties.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Override the generated NSCF
+        grid with `kpts_opt` or `kspacing_opt` (VASP 6.6+). Set `nbands`
+        explicitly if more empty bands are needed. For unscreened hybrid
+        functionals, use `hfrcut=-1` as required by VASP for optional k points.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
+    """
+    from ase.calculators.vasp import Vasp
+
+    if "kpts_opt" not in Vasp().input_params:
+        raise ImportError("non_scf_opt_job requires ASE with KPOINTS_OPT support.")
+
+    calc_defaults: dict[str, Any] = {
+        "icharg": 1,
+        "lcharg": False,
+        "lkpoints_opt": True,
+        "lorbit": 11,
+        "lwave": False,
+        "nsw": 0,
+    }
+    pmg_kpts: PmgKpts
+    if kpts_mode == "uniform":
+        pmg_kpts = {"kppvol": uniform_kppvol}
+        calc_defaults["nedos"] = 6001
+    elif kpts_mode == "line":
+        pmg_kpts = {"line_density": line_kpt_density}
+    else:
+        raise ValueError("Supported kpoint modes are 'uniform' and 'line' at present")
+
+    if calc_kwargs.get("kpts_opt") is None and calc_kwargs.get("kspacing_opt") is None:
+        kpts_opt, gamma_opt = convert_pmg_kpts(pmg_kpts, atoms)
+        calc_defaults |= {
+            "kpts_opt": kpts_opt,
+            "gamma_opt": gamma_opt,
+            "reciprocal_opt": True,
+        }
+    if calculate_optics:
+        calc_defaults |= {"cshift": 1e-5, "loptics": True, "lreal": False}
+
+    return run_and_summarize(
+        atoms,
+        preset=preset,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "VASP Non-SCF Opt"} | (additional_fields or {}),
+        copy_files=copy_files,
     )
 
 
