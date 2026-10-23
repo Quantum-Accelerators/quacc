@@ -114,7 +114,7 @@ def _species_directory(atoms: Atoms, species_dir: str | Path) -> Iterator[Path]:
         yield source
         return
 
-    with TemporaryDirectory(prefix="quacc-mad-") as tmpdir:
+    with TemporaryDirectory(prefix="quacc-mad-species-") as tmpdir:
         directory = Path(tmpdir)
         for symbol in set(atoms.symbols):
             number = atomic_numbers[symbol]
