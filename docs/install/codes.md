@@ -144,37 +144,3 @@ The `VASP_PARALLEL_CMD` setting tells Custodian and/or ASE how to parallelize VA
 The `VASP_PP_PATH` setting should be defined as described in the [ASE documentation](https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials) such that it is a directory containing each VASP pseudopotential folder. Similarly, the `VASP_PP_VERSION` setting defines the default version of the pseudopotentials to use if none is specified in a chosen recipe.
 
 Additional settings can be specified as well, such as the name of the VASP executables if they differ from the default values (i.e. `vasp_std`, `vasp_gam`).
-
-### Combined SCF and NSCF calculations
-
-With ASE's [KPOINTS_OPT support](https://gitlab.com/ase/ase/-/merge_requests/4298)
-and VASP 6.3 or newer, `non_scf_job` can perform both steps in one invocation:
-
-```python
-from ase.build import bulk
-from quacc.recipes.vasp.core import non_scf_job
-
-result = non_scf_job(
-    bulk("Si", "diamond", a=5.43),
-    use_kpoints_opt=True,
-    kpts_mode="line",
-    kpts=(6, 6, 6),
-)
-```
-
-The preset and `kpts`, `kspacing`, or `pmg_kpts` configure the uniform SCF grid.
-The NSCF grid is generated from `kpts_mode`, `uniform_kppvol`, or
-`line_kpt_density`. Override it with `kpts_opt` and, for explicit reciprocal
-coordinates, `reciprocal_opt=True`. With VASP 6.6 or newer, pass
-`kspacing_opt=0.1` instead to generate the optional mesh in VASP.
-The standard VASP executable is used for optional grids, including when the
-SCF grid contains only Gamma.
-
-No previous calculation is required in this mode. If `prev_dir` is supplied,
-its charge density and wavefunctions are copied and `nbands_factor` scales
-the prior NBANDS. Set `nbands` explicitly when starting fresh if more empty
-bands are needed. For unscreened hybrid functionals, use `hfrcut=-1` as
-described in the [VASP documentation](https://vasp.at/wiki/KPOINTS_OPT).
-ASE calculator results describe the SCF step; optional electronic results
-depend on the output parser. This feature currently requires the upstream
-ASE change linked above and has not been validated with a real VASP run.
