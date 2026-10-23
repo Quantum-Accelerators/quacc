@@ -2,10 +2,6 @@
 
 We welcome all contributions, big or small (provided they come with unit tests!). Here are some general guidelines and tips. Note that it is never too early to open a PR if you're looking for input or feedback!
 
-!!! Note "Contributions are Acknowledged"
-
-    Thank you for reading this page! If you need additional incentive to contribute to quacc, we plan to eventually submit a manuscript based on this code. If you contribute to quacc in a significant way (e.g. adding a new recipe or module), you will be contacted to opt-in for authorship once a draft is written. Regardless, all contributors are acknowledged in the [About](../about/contributors.md) section of the documentation.
-
 ## Steps to Contribute
 
 To contribute to quacc, we recommend doing the following:
@@ -67,6 +63,8 @@ All changes you make to quacc should be accompanied by unit tests and should not
 ### Running Locally
 
 To run the core test suite locally, run `pytest tests/core`.
+
+To check type hints, install the development dependencies with `pip install -e '.[dev]'` and run `python -m mypy` from the repository root. This checks the entire `src/quacc` package and the static API contracts in `tests/typecheck`, without running calculations. The type checks also run in GitHub Actions.
 
 If you wish to test the behavior of a given workflow engine, run `pytest tests/WORKFLOW_ENGINE` where `WORKFLOW_ENGINE` is the name of your workflow engine.
 

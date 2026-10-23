@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from pymatgen.core.structure import Structure
@@ -12,13 +12,14 @@ from pymatgen.symmetry.bandstructure import HighSymmKpath
 
 if TYPE_CHECKING:
     from ase.atoms import Atoms
+    from numpy.typing import NDArray
 
     from quacc.types import PmgKpts
 
 
 def convert_pmg_kpts(
     pmg_kpts: PmgKpts, input_atoms: Atoms, force_gamma: bool = False
-) -> tuple[list[int], bool]:
+) -> tuple[list[int] | NDArray, bool]:
     """
     Shortcuts for pymatgen k-point generation schemes.
 
@@ -73,31 +74,34 @@ def convert_pmg_kpts(
         gamma = False
 
     else:
-        max_pmg_kpts: PmgKpts = None
-        for k, v in pmg_kpts.items():
+        max_pmg_kpts: Kpoints | None = None
+        for k in pmg_kpts:
             if k == "kppvol":
-                pmg_kpts = Kpoints.automatic_density_by_vol(
-                    struct, v, force_gamma=force_gamma
+                generated_kpts = Kpoints.automatic_density_by_vol(
+                    struct, cast("int", pmg_kpts["kppvol"]), force_gamma=force_gamma
                 )
             elif k == "kppa":
-                pmg_kpts = Kpoints.automatic_density(struct, v, force_gamma=force_gamma)
+                generated_kpts = Kpoints.automatic_density(
+                    struct, pmg_kpts["kppa"], force_gamma=force_gamma
+                )
             elif k == "length_densities":
-                pmg_kpts = Kpoints.automatic_density_by_lengths(
-                    struct, v, force_gamma=force_gamma
+                generated_kpts = Kpoints.automatic_density_by_lengths(
+                    struct, pmg_kpts["length_densities"], force_gamma=force_gamma
                 )
             else:
                 msg = f"Unsupported k-point generation scheme: {pmg_kpts}."
                 raise ValueError(msg)
 
             max_pmg_kpts = (
-                pmg_kpts
+                generated_kpts
                 if (
                     not max_pmg_kpts
-                    or np.prod(pmg_kpts.kpts[0]) >= np.prod(max_pmg_kpts.kpts[0])
+                    or np.prod(generated_kpts.kpts[0]) >= np.prod(max_pmg_kpts.kpts[0])
                 )
                 else max_pmg_kpts
             )
 
+        assert max_pmg_kpts is not None
         kpts = [int(k) for k in max_pmg_kpts.kpts[0]]
         gamma = max_pmg_kpts.style.name.lower() == "gamma"
 

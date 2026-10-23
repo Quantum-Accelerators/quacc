@@ -51,6 +51,13 @@ def test_env_var(monkeypatch, tmp_path):
     assert p.expanduser().resolve() == QuaccSettings().SCRATCH_DIR
 
 
+def test_custodian_log_level(monkeypatch):
+    assert QuaccSettings().CUSTODIAN_LOG_LEVEL == "WARNING"
+
+    monkeypatch.setenv("QUACC_CUSTODIAN_LOG_LEVEL", "ERROR")
+    assert QuaccSettings().CUSTODIAN_LOG_LEVEL == "ERROR"
+
+
 def test_env_var2(monkeypatch, tmp_path):
     with open(tmp_path / "quacc_test.yaml", "w") as f:
         f.write("")

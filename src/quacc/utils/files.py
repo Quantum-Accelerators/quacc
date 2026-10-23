@@ -260,7 +260,7 @@ def load_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
 
 def find_recent_logfile(
     directory: Path | str, logfile_extensions: str | list[str]
-) -> Path:
+) -> Path | None:
     """
     Find the most recent logfile in a given directory.
 
@@ -279,7 +279,7 @@ def find_recent_logfile(
     Returns
     -------
     logfile
-        The path to the most recent logfile with the desired extension
+        The path to the most recent logfile with the desired extension, or None if no file matches
     """
     mod_time = 0.0
     logfile = None

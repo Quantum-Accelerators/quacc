@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from logging import getLogger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from ase.thermochemistry import HarmonicThermo, IdealGasThermo
 from ase.units import invcm
@@ -19,7 +19,8 @@ if TYPE_CHECKING:
     from ase.atoms import Atoms
 
 if TYPE_CHECKING:
-    from typing import Any
+    from collections.abc import Sequence
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
 
@@ -36,7 +37,7 @@ class ThermoSummarize:
     def __init__(
         self,
         atoms: Atoms,
-        vib_freqs: list[float | complex],
+        vib_freqs: Sequence[float | complex],
         energy: float = 0.0,
         additional_fields: dict[str, Any] | None = None,
     ) -> None:
@@ -60,7 +61,7 @@ class ThermoSummarize:
         """
         self.atoms = atoms.copy()
         # Make sure vibrational freqs are imaginary, not negative
-        vib_freqs_ = vib_freqs.copy()
+        vib_freqs_: list[float | complex] = list(vib_freqs)
         for i, f in enumerate(vib_freqs_):
             if not isinstance(f, complex) and f < 0:
                 vib_freqs_[i] = complex(0 - f * 1j)
@@ -139,7 +140,7 @@ class ThermoSummarize:
         unsorted_task_doc = (
             atoms_to_metadata(igt.atoms) | inputs | results | self.additional_fields
         )
-        return clean_dict(unsorted_task_doc)
+        return cast("ThermoSchema", clean_dict(unsorted_task_doc))
 
     def harmonic(
         self, temperature: float = 298.15, pressure: float = 1.0
@@ -189,7 +190,7 @@ class ThermoSummarize:
         unsorted_task_doc = (
             atoms_to_metadata(self.atoms) | inputs | results | self.additional_fields
         )
-        return clean_dict(unsorted_task_doc)
+        return cast("ThermoSchema", clean_dict(unsorted_task_doc))
 
     def _make_ideal_gas(self, spin_multiplicity: int | None = None) -> IdealGasThermo:
         """
@@ -217,7 +218,7 @@ class ThermoSummarize:
         # Get the geometry
         natoms = len(self.atoms)
         if natoms == 1:
-            geometry = "monatomic"
+            geometry: Literal["linear", "nonlinear", "monatomic"] = "monatomic"
         elif point_group_data.linear:
             geometry = "linear"
         else:

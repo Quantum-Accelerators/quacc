@@ -4,7 +4,9 @@ from __future__ import annotations
 
 
 def merge_list_params(
-    *lists: list[str], removal_prefix: str | None = "#", case_insensitive: bool = True
+    *lists: list[str] | None,
+    removal_prefix: str | None = "#",
+    case_insensitive: bool = True,
 ) -> list[str]:
     """
     Merge list string parameters, taking list2 as the priority. Also removes any entries

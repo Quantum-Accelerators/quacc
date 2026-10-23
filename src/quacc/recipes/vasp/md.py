@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, cast
 
 from quacc import job
 from quacc.recipes.vasp._base import run_and_summarize
@@ -58,7 +58,7 @@ def md_job(
         Custom keyword arguments for the VASP calculator. These values override
         the recipe defaults. Set a value to None to remove a pre-existing key entirely.
     """
-    ensemble = ensemble.lower()
+    ensemble = cast("Literal['nve', 'nvt', 'npt']", ensemble.lower())
 
     calc_defaults: dict[str, Any] = {
         "ibrion": 0,

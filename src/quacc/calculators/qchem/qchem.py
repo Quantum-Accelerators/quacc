@@ -11,9 +11,10 @@ from quacc.calculators.qchem.params import cleanup_attrs, make_qc_input
 from quacc.calculators.qchem.qchem_custodian import run_custodian
 
 if TYPE_CHECKING:
-    from typing import Any, ClassVar, Literal
+    from typing import Any, Literal
 
     from ase.atoms import Atoms
+    from numpy.typing import NDArray
 
     from quacc.types import QchemResults
 
@@ -21,13 +22,13 @@ if TYPE_CHECKING:
 class QChem(FileIOCalculator):
     """Custom Q-Chem calculator built on Pymatgen and Custodian."""
 
-    implemented_properties: ClassVar[list[str]] = [
+    implemented_properties: list[str] = [  # noqa: RUF012 -- ASE declares this as an instance attribute.
         "energy",
         "forces",
         "hessian",
         "taskdoc",
     ]
-    results: ClassVar[QchemResults] = {}
+    results: QchemResults
 
     def __init__(
         self,
@@ -239,7 +240,7 @@ class QChem(FileIOCalculator):
         self.fileiocalculator_kwargs = fileiocalculator_kwargs
 
         # Instantiate previous orbital coefficients
-        self.prev_orbital_coeffs = None
+        self.prev_orbital_coeffs: NDArray | None = None
 
         # Clean up parameters
         cleanup_attrs(self)

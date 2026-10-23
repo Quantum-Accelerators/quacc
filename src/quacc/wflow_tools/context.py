@@ -22,7 +22,7 @@ from contextvars import ContextVar
 from enum import Enum
 from functools import wraps
 from pathlib import Path
-from typing import TYPE_CHECKING, ParamSpec, TypeVar
+from typing import TYPE_CHECKING, ParamSpec, TypeVar, cast
 
 from monty.json import MSONable
 
@@ -143,8 +143,10 @@ def tracked(node_type: NodeType) -> Callable[[Callable[P, R]], Callable[P, R]]:
         if asyncio.iscoroutinefunction(func):
 
             @wraps(func)
-            async def wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
+            async def async_wrapper(*args: P.args, **kwargs: P.kwargs) -> Any:
                 return await _tracked_call(func, node_type, args, kwargs)
+
+            wrapper = cast("Callable[P, R]", async_wrapper)
 
         else:
 
@@ -153,17 +155,17 @@ def tracked(node_type: NodeType) -> Callable[[Callable[P, R]], Callable[P, R]]:
                 return _tracked_call(func, node_type, args, kwargs)
 
         # Attach the original unwrapped function so it can be recovered later.
-        wrapper.original = original
+        vars(wrapper)["original"] = original
         return wrapper
 
     return decorator
 
 
 def _tracked_call(
-    func: Callable[P, R],
+    func: Callable[..., R],
     node_type: NodeType,
-    args: tuple[object, ...],
-    kwargs: dict[str, object],
+    args: tuple[Any, ...],
+    kwargs: dict[str, Any],
 ) -> R:
     """Shared tracking logic for both sync and async tracked wrappers.
 

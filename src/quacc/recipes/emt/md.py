@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 @job
 def md_job(
     atoms: Atoms,
-    dynamics: MolecularDynamics | MDEnsemble = "nve",
+    dynamics: type[MolecularDynamics] | MDEnsemble = "nve",
     steps: int = 20000,
     timestep_fs: float = 0.5,
     temperature_K: float | None = None,
@@ -112,10 +112,12 @@ def md_job(
     md_defaults = {"steps": steps, "dynamics_kwargs": dynamics_defaults}
     if temperature_K is not None and not atoms.get_momenta().any():
         md_defaults["maxwell_boltzmann_kwargs"] = {"temperature_K": temperature_K}
-    md_params = recursive_dict_merge(md_defaults, md_params)
+    merged_md_params = recursive_dict_merge(md_defaults, md_params)
 
     calc = EMT(**calc_kwargs)
-    dyn = Runner(atoms, calc, copy_files=copy_files).run_md(dynamics, **md_params)
+    dyn = Runner(atoms, calc, copy_files=copy_files).run_md(
+        dynamics, **merged_md_params
+    )
 
     return Summarize(
         additional_fields={"name": "EMT MD"} | (additional_fields or {})

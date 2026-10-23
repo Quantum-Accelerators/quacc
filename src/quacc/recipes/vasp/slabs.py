@@ -53,7 +53,6 @@ def static_job(
     """
     calc_defaults = {
         "auto_dipole": True,
-        "ismear": -5,
         "laechg": True,
         "lcharg": True,
         "lreal": False,
@@ -133,7 +132,7 @@ def bulk_to_slabs_flow(
     run_static: bool = True,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-) -> list[VaspSchema]:
+) -> dict[str, list[VaspSchema]]:
     """
     Workflow consisting of:
 
@@ -164,8 +163,9 @@ def bulk_to_slabs_flow(
 
     Returns
     -------
-    list[VaspSchema]
-        List of dictionary results from [quacc.schemas.vasp.VaspSummarize.run][].
+    dict[str, list[VaspSchema]]
+        VASP results grouped under "relax" and "static".
+        The "static" list is empty when run_static is False.
         See the type-hint for the data structure.
     """
     relax_job_, static_job_ = customize_jobs(
@@ -190,7 +190,7 @@ def slab_to_ads_flow(
     make_ads_kwargs: dict[str, Any] | None = None,
     job_params: dict[str, dict[str, Any]] | None = None,
     job_decorators: dict[str, Callable | None] | None = None,
-) -> list[VaspSchema]:
+) -> dict[str, list[VaspSchema]]:
     """
     Workflow consisting of:
 
@@ -223,8 +223,9 @@ def slab_to_ads_flow(
 
     Returns
     -------
-    list[VaspSchema]
-        List of dictionaries of results from [quacc.schemas.vasp.VaspSummarize.run][].
+    dict[str, list[VaspSchema]]
+        VASP results grouped under "relax" and "static".
+        The "static" list is empty when run_static is False.
         See the type-hint for the data structure.
     """
     relax_job_, static_job_ = customize_jobs(

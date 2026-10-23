@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_prerelax_job(
     atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
@@ -77,7 +77,7 @@ def mp_prerelax_job(
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_metagga_relax_job(
     atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
@@ -121,7 +121,7 @@ def mp_metagga_relax_job(
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_metagga_static_job(
     atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
@@ -165,7 +165,7 @@ def mp_metagga_static_job(
 
 
 @flow
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_metagga_relax_flow(
     atoms: Atoms,
     job_params: dict[str, dict[str, Any]] | None = None,
@@ -175,7 +175,7 @@ def mp_metagga_relax_flow(
     Materials Project r2SCAN workflow consisting of:
 
     1. MP-compatible pre-relax
-        - name: "mpa_prerelax_job"
+        - name: "mp_prerelax_job"
         - job: [quacc.recipes.vasp.mp24.mp_prerelax_job][]
 
     2. MP-compatible relax

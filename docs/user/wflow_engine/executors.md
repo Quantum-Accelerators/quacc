@@ -204,10 +204,7 @@ If you haven't done so already:
         account=account,
         walltime="00:10:00",
         job_mem="0",
-        job_script_prologue=[
-            "source ~/.bashrc",
-            env_vars,
-        ],
+        job_script_prologue=["source ~/.bashrc", env_vars],
         job_directives_skip=["-n", "--cpus-per-task"],  # (3)!
         job_extra_directives=["-q debug", "-C cpu"],  # (4)!
     )
@@ -247,9 +244,7 @@ If you haven't done so already:
     results = client.gather(futures)
     for result in results:
         print(
-            result["formula_pretty"],
-            result["results"]["gibbs_energy"],
-            result["dir_name"],
+            result["formula_pretty"], result["results"]["gibbs_energy"], result["dir_name"]
         )
     ```
 
@@ -442,9 +437,7 @@ If you haven't done so already:
     for future in tqdm(as_completed(futures), total=len(futures)):
         result = future.result()
         print(
-            result["formula_pretty"],
-            result["results"]["gibbs_energy"],
-            result["dir_name"],
+            result["formula_pretty"], result["results"]["gibbs_energy"], result["dir_name"]
         )
     ```
 
@@ -486,10 +479,7 @@ If you haven't done so already:
         "account": account,
         "walltime": "00:10:00",
         "job_mem": "0",
-        "job_script_prologue": [
-            "source ~/.bashrc",
-            env_vars,
-        ],
+        "job_script_prologue": ["source ~/.bashrc", env_vars],
         "job_directives_skip": ["-n", "--cpus-per-task"],  # (3)!
         "job_extra_directives": ["-q debug", "-C cpu"],  # (4)!
     }

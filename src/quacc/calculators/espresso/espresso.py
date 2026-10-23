@@ -6,7 +6,7 @@ import os
 import re
 from logging import getLogger
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from ase.atoms import Atoms
@@ -214,7 +214,9 @@ class EspressoTemplate(EspressoTemplate_):
         """
         results = {}
         if self.binary == "pw":
-            atoms = read(Path(directory) / self.outputname, format="espresso-out")
+            atoms = cast(
+                "Atoms", read(Path(directory) / self.outputname, format="espresso-out")
+            )
             results = dict(atoms.calc.properties())
         elif self.binary in ["ph", "phcg"]:
             with Path(directory, self.outputname).open() as fd:
@@ -228,10 +230,10 @@ class EspressoTemplate(EspressoTemplate_):
             results = {"dos_results": {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
             with Path(directory, "pwscf.pdos_tot").open() as fd:
-                lines = np.loadtxt(fd.readlines())
-                energy = lines[1:, 0]
-                dos = lines[1:, 1]
-                pdos = lines[1:, 2]
+                pdos_data = np.loadtxt(fd.readlines())
+                energy = pdos_data[1:, 0]
+                dos = pdos_data[1:, 1]
+                pdos = pdos_data[1:, 2]
             results = {"projwfc_results": {"energy": energy, "dos": dos, "pdos": pdos}}
         elif self.binary == "matdyn":
             fldos = Path(directory, "matdyn.dos")

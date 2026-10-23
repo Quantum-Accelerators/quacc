@@ -234,7 +234,7 @@ def md_job(
         atoms, model, autobatcher_dict=autobatcher_dict
     )
 
-    state = ts.integrate(
+    state: ts.SimState = ts.integrate(
         system=atoms,
         model=model,
         integrator=integrator,

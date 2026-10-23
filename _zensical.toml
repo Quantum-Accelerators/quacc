@@ -18,6 +18,9 @@ nav = [
         { "Recipes" = [
             "user/recipes/recipes_intro.md",
             "user/recipes/workflows.md",
+            "user/recipes/file_transfers.md",
+            "user/recipes/mlip_recipes.md",
+            "user/recipes/database_recipes.md",
         ] },
         { "Settings Management" = [
             "user/settings/settings.md",
@@ -38,8 +41,7 @@ nav = [
             "user/db/context.md",
             "user/db/basics.md"
         ] },
-        { "Miscellaneous" = [
-            "user/miscellaneous/file_transfers.md",
+        { "Additional Recipe Details" = [
             "user/miscellaneous/torchsim.md"
         ] }
     ] },
@@ -65,6 +67,7 @@ nav = [
 ]
 
 [project.theme]
+custom_dir = "docs/overrides"
 favicon = "images/quacc_favicon.png"
 logo = "images/quacc_logo_wide.png"
 features = [

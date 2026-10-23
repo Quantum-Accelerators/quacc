@@ -97,14 +97,13 @@ def static_job(
         Dictionary of results, specified in [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
+    calc_defaults: dict[str, Any]
     if agnostic_params:
-        calc_defaults = BASE_SET_AGNOSTIC.copy()
+        calc_defaults = dict(BASE_SET_AGNOSTIC)
         default_kspacing = KSPACING_AGNOSTIC
     else:
         calc_defaults = (
-            BASE_SET_METAL.copy()
-            if check_is_metal(atoms)
-            else BASE_SET_NON_METAL.copy()
+            dict(BASE_SET_METAL) if check_is_metal(atoms) else dict(BASE_SET_NON_METAL)
         )
         default_kspacing = (
             KSPACING_METAL if check_is_metal(atoms) else KSPACING_NON_METAL
@@ -182,14 +181,13 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
+    calc_defaults: dict[str, Any]
     if agnostic_params:
-        calc_defaults = BASE_SET_AGNOSTIC.copy()
+        calc_defaults = dict(BASE_SET_AGNOSTIC)
         default_kspacing = KSPACING_AGNOSTIC
     else:
         calc_defaults = (
-            BASE_SET_METAL.copy()
-            if check_is_metal(atoms)
-            else BASE_SET_NON_METAL.copy()
+            dict(BASE_SET_METAL) if check_is_metal(atoms) else dict(BASE_SET_NON_METAL)
         )
         default_kspacing = (
             KSPACING_METAL if check_is_metal(atoms) else KSPACING_NON_METAL

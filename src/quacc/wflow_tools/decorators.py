@@ -154,6 +154,7 @@ def job(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Job:
 
         @wraps(_func)
         def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
+            assert _func is not None
             return _func(*f_args, **f_kwargs)
 
         return Delayed_(delayed(wrapper, **kwargs))
@@ -167,22 +168,23 @@ def job(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Job:
 
         return python_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
-        from redun import task
+        from redun import task as redun_task
 
-        return task(_func, namespace=_func.__module__, **kwargs)
+        return redun_task(namespace=_func.__module__, **kwargs)(_func)
     elif settings.WORKFLOW_ENGINE == "prefect":
-        from prefect import task
+        from prefect import task as prefect_task
 
         if settings.PREFECT_AUTO_SUBMIT:
 
             @wraps(_func)
             def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
-                decorated = task(_func, **kwargs)
+                assert _func is not None
+                decorated = prefect_task(_func, **kwargs)
                 return decorated.submit(*f_args, **f_kwargs)
 
             return wrapper
         else:
-            return task(_func, **kwargs)
+            return prefect_task(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
@@ -345,9 +347,9 @@ def flow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Flow:
         return partial(flow, **kwargs)
 
     elif settings.WORKFLOW_ENGINE == "redun":
-        from redun import task
+        from redun import task as redun_task
 
-        return task(_func, namespace=_func.__module__, **kwargs)
+        return redun_task(namespace=_func.__module__, **kwargs)(_func)
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     elif settings.WORKFLOW_ENGINE == "jobflow":
@@ -542,24 +544,43 @@ def subflow(_func: Callable[..., Any] | None = None, **kwargs: Any) -> Subflow:
         @wraps(_func)
         def wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
             with worker_client() as client:
+                assert _func is not None
                 futures = client.compute(_func(*f_args, **f_kwargs))
                 return client.gather(futures)
 
         return delayed(wrapper, **kwargs)
     elif settings.WORKFLOW_ENGINE == "parsl":
-        from parsl import join_app
+        from parsl import join_app, python_app
 
-        wrapped_fn = _get_parsl_wrapped_func(_func, kwargs)
+        # Parsl join_app only supports returning a list (or single) future, not
+        # a dict. To support dict returns, we unpack the futures as individual
+        # positional args to a python_app (Parsl resolves direct args) and
+        # reconstruct the dict from the resolved values.
+        collect_app = python_app(
+            lambda key, *values: dict(zip(key, values, strict=False))
+        )
+
+        def dict_aware_wrapper(*f_args: Any, **f_kwargs: Any) -> Any:
+            assert _func is not None
+            result = _func(*f_args, **f_kwargs)
+            if isinstance(result, dict):
+                keys = list(result.keys())
+                value_futures = list(result.values())
+                return collect_app(keys, *value_futures)
+            return result
+
+        dict_aware_wrapper.__name__ = _func.__name__
+        wrapped_fn = _get_parsl_wrapped_func(dict_aware_wrapper, kwargs)
 
         return join_app(wrapped_fn, **kwargs)
     elif settings.WORKFLOW_ENGINE == "prefect":
         return _get_prefect_wrapped_flow(_func, settings, **kwargs)
     elif settings.WORKFLOW_ENGINE == "redun":
-        from redun import task
+        from redun import task as redun_task
 
-        return task(_func, namespace=_func.__module__, **kwargs)
+        return redun_task(namespace=_func.__module__, **kwargs)(_func)
     elif settings.WORKFLOW_ENGINE == "jobflow":
-        return _get_jobflow_wrapped_func(_func, **kwargs)
+        return _get_jobflow_wrapped_subflow(_func, **kwargs)
     elif settings.WORKFLOW_ENGINE == "ray":
         import ray
 
@@ -643,10 +664,10 @@ def _get_prefect_wrapped_flow(
                 result = await _func(*f_args, **f_kwargs)
                 return resolve_futures_to_results(result)
 
-            return prefect_flow(async_wrapper, validate_parameters=False, **kwargs)
+            return prefect_flow(validate_parameters=False, **kwargs)(async_wrapper)
 
         else:
-            return prefect_flow(_func, validate_parameters=False, **kwargs)
+            return prefect_flow(validate_parameters=False, **kwargs)(_func)
     else:
         if settings.PREFECT_RESOLVE_FLOW_RESULTS:
 
@@ -655,9 +676,9 @@ def _get_prefect_wrapped_flow(
                 result = _func(*f_args, **f_kwargs)
                 return resolve_futures_to_results(result)
 
-            return prefect_flow(sync_wrapper, validate_parameters=False, **kwargs)
+            return prefect_flow(validate_parameters=False, **kwargs)(sync_wrapper)
         else:
-            return prefect_flow(_func, validate_parameters=False, **kwargs)
+            return prefect_flow(validate_parameters=False, **kwargs)(_func)
 
 
 def _get_jobflow_wrapped_func(
@@ -666,6 +687,23 @@ def _get_jobflow_wrapped_func(
     from jobflow import job as jf_job
 
     return jf_job(method, **job_kwargs)
+
+
+def _get_jobflow_wrapped_subflow(method: Callable, **job_kwargs: Any) -> Callable:
+    from jobflow import Flow
+    from jobflow import job as jf_job
+    from jobflow.core.flow import flow_build_context
+    from jobflow.utils import replace_job_or_flow_with_output
+
+    @jf_job(**job_kwargs)
+    @wraps(method)
+    def wrapped(*args: Any, **kwargs: Any) -> Flow:
+        children: list[Any] = []
+        with flow_build_context(children):
+            output = method(*args, **kwargs)
+        return Flow(jobs=children, output=replace_job_or_flow_with_output(output))
+
+    return wrapped
 
 
 def _get_jobflow_wrapped_flow(_func: Callable) -> Callable:

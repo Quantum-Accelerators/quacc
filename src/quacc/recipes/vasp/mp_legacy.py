@@ -6,6 +6,7 @@ from importlib.util import find_spec
 from typing import TYPE_CHECKING
 
 from monty.dev import requires
+from pymatgen.io.vasp.sets import MPRelaxSet
 
 from quacc import flow, job
 from quacc.calculators.vasp.params import MPtoASEConverter
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import SourceDirectory, VaspSchema
+    from quacc.types import CopyFiles, SourceDirectory, VaspSchema
 
     class MPGGARelaxFlowSchema(TypedDict):
         """Type hint associated with the MP GGA relaxation flows."""
@@ -31,7 +32,7 @@ if TYPE_CHECKING:
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_gga_relax_job(
     atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
@@ -74,14 +75,12 @@ def mp_gga_relax_job(
 
 
 @job
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_gga_static_job(
     atoms: Atoms, prev_dir: SourceDirectory | None = None, **calc_kwargs: Any
 ) -> VaspSchema:
     """
     Function to run a static calculation on a structure with the original Materials Project GGA(+U) settings.
-
-    This is also the settings compatible with the MPtrj dataset.
 
     Parameters
     ----------
@@ -118,8 +117,49 @@ def mp_gga_static_job(
     )
 
 
+@job
+def mp_relax_set_job(
+    atoms: Atoms,
+    copy_files: CopyFiles | None = None,
+    additional_fields: dict[str, Any] | None = None,
+    **calc_kwargs: Any,
+) -> VaspSchema:
+    """
+    Run a static calculation with the original pymatgen `MPRelaxSet` VASP settings,
+    compatible with the MPtrj, WBM, sAlex, and MatterSim datasets.
+
+    Parameters
+    ----------
+    atoms
+        Atoms object.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
+    **calc_kwargs
+        Custom kwargs for the Vasp calculator. Set a value to `None` to remove a
+        pre-existing key entirely. All ASE Vasp calculator keyword arguments are
+        supported.
+
+    Returns
+    -------
+    VaspSchema
+        Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
+    """
+    calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(MPRelaxSet())
+    calc_defaults |= {"nsw": 0, "incar_copilot_mode": "critical"}
+
+    return run_and_summarize(
+        atoms,
+        calc_defaults=calc_defaults,
+        calc_swaps=calc_kwargs,
+        additional_fields={"name": "MP RelaxSet Static"} | (additional_fields or {}),
+        copy_files=copy_files,
+    )
+
+
 @flow
-@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[mp]`")
+@requires(has_atomate2, "atomate2 is not installed. Run `pip install quacc[atomate2]`")
 def mp_gga_relax_flow(
     atoms: Atoms,
     job_params: dict[str, dict[str, Any]] | None = None,

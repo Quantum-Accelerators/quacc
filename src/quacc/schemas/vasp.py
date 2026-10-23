@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from logging import getLogger
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from ase.io import read
 from emmet.core.tasks import TaskDoc
@@ -26,15 +26,10 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
 
-    from quacc.types import (
-        BaderSchema,
-        ChargemolSchema,
-        DefaultSetting,
-        VaspASEOptSchema,
-        VaspSchema,
-    )
+    from quacc.types import BaderSchema, DefaultSetting, VaspASEOptSchema, VaspSchema
 
 
 LOGGER = getLogger(__name__)
@@ -150,7 +145,7 @@ class VaspSummarize:
                 f"VASP calculation did not converge. Will not store task data. Refer to {directory}"
             )
         poscar_path = directory / "POSCAR"
-        initial_atoms = read(zpath(str(poscar_path)))
+        initial_atoms = cast("Atoms", read(zpath(str(poscar_path))))
         base_task_doc = Summarize(
             directory=directory,
             move_magmoms=self.move_magmoms,
@@ -197,10 +192,12 @@ class VaspSummarize:
             | base_task_doc
             | additional_fields
         )
-        return clean_dict(unsorted_task_doc)
+        return cast("VaspSchema", clean_dict(unsorted_task_doc))
 
     def ase_opt(
-        self, optimizer: Optimizer, trajectory: list[Atoms] | None = None
+        self,
+        optimizer: Optimizer | MolecularDynamics,
+        trajectory: list[Atoms] | None = None,
     ) -> VaspASEOptSchema:
         """
         Summarize an ASE-based VASP optimization.
@@ -231,7 +228,7 @@ class VaspSummarize:
 
         vasp_summary = self.run(final_atoms)
         unsorted_task_doc = recursive_dict_merge(vasp_summary, opt_run_summary)
-        return clean_dict(unsorted_task_doc)
+        return cast("VaspASEOptSchema", clean_dict(unsorted_task_doc))
 
 
 def bader_runner(path: Path | str) -> BaderSchema:
@@ -260,7 +257,7 @@ def bader_runner(path: Path | str) -> BaderSchema:
             msg = f"Could not find {f} in {path}."
             raise FileNotFoundError(msg)
 
-    bader_stats = bader_analysis_from_path(path)
+    bader_stats = bader_analysis_from_path(str(path))
 
     # Store the partial charge, which is much more useful than the raw charge
     # and is more intuitive than the charge transferred. An atom with a positive
@@ -274,12 +271,12 @@ def bader_runner(path: Path | str) -> BaderSchema:
     for k in ["charge", "charge_transfer", "reference_used", "magmom"]:
         bader_stats.pop(k, None)
 
-    return bader_stats
+    return cast("BaderSchema", bader_stats)
 
 
 def chargemol_runner(
-    path: Path | str, atomic_densities_path: str | None = None
-) -> ChargemolSchema:
+    path: Path | str, atomic_densities_path: str | Path | None = None
+) -> ChargemolAnalysis:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
@@ -302,8 +299,8 @@ def chargemol_runner(
 
     Returns
     -------
-    ChargemolSchema
-        Dictionary containing the Chargemol analysis summary
+    ChargemolAnalysis
+        Chargemol analysis object, with results available in its summary attribute.
     """
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
