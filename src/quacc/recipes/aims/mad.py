@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     species_dir: str | Path = "tight",
-    subset: str | None = None,
+    use_dipole_correction: bool = False,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
@@ -43,10 +43,10 @@ def static_job(
         ``AIMS_SPECIES_DEFAULTS`` or an absolute path. Defaults to ``"tight"``.
         The confined 5d function for Pr-Yb and 6d function for Pu-No are
         removed from temporary copies; the installed species files are unchanged.
-    subset
-        The MAD subset name. For periodic systems, ``"mc2d"`` and
-        ``"mc3d_surface"`` enable the dipole correction. Defaults to None.
-        Override the correction with ``use_dipole_correction`` in ``calc_kwargs``.
+    use_dipole_correction
+        Whether to apply a dipole correction. Enable for 2D materials and
+        surface slabs, corresponding to the MAD ``mc2d`` and ``mc3d_surface``
+        subsets. Defaults to False. Ignored for nonperiodic systems.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -91,7 +91,7 @@ def static_job(
             for key in ("k_grid", "kpts", "kspacing")
         ):
             calc_defaults.pop("k_grid_density")
-        if subset in {"mc2d", "mc3d_surface"}:
+        if use_dipole_correction:
             calc_defaults["use_dipole_correction"] = True
 
     with _species_directory(atoms, species_dir) as directory:
