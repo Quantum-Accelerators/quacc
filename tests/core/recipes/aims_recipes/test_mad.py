@@ -81,7 +81,7 @@ def test_published_control(write_inputs):
                 )
             except ValueError:
                 assert actual_value == expected_value
-    assert captured["fields"] == {"name": "MAD-1.5/1.6 Static"}
+    assert captured["fields"] == {"name": "MAD-r2SCAN Static"}
     assert captured["species_dir"] == species_dir
 
 

@@ -100,8 +100,7 @@ def static_job(
             atoms,
             calc_defaults=calc_defaults,
             calc_swaps=calc_kwargs,
-            additional_fields={"name": "MAD-1.5/1.6 Static"}
-            | (additional_fields or {}),
+            additional_fields={"name": "MAD-r2SCAN Static"} | (additional_fields or {}),
             copy_files=copy_files,
         )
 
