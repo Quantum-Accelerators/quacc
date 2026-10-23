@@ -22,6 +22,7 @@ Several popular datasets used to train machine-learned interatomic potentials (M
 | [MPtrj](https://www.nature.com/articles/s42256-023-00716-3) / [WBM](https://www.nature.com/articles/s41524-020-00481-6) / [sAlex](https://matbench-discovery.materialsproject.org/data/salex) / [MatterSim](https://arxiv.org/abs/2405.04967) | [quacc.recipes.vasp.mp_legacy.mp_relax_set_job][] | none |
 | [MatPES](https://arxiv.org/abs/2503.04070) | [quacc.recipes.vasp.matpes.matpes_static_job][] | `quacc[atomate2]` |
 | [MP-ALOE](https://www.nature.com/articles/s41524-025-01834-9) | [quacc.recipes.vasp.mp_aloe.mp_aloe_static_job][] | none |
+| [MAD](https://arxiv.org/abs/2603.02089) | [quacc.recipes.aims.mad.static_job][] | none |
 
 ## A Representative Example
 
