@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from ase.calculators.genericfileio import (
@@ -13,7 +14,7 @@ from ase.calculators.genericfileio import (
 from quacc.calculators.mrcc.io import read_mrcc_outputs, write_mrcc
 
 if TYPE_CHECKING:
-    from pathlib import Path
+    from os import PathLike
     from typing import Any
 
     from ase.atoms import Atoms
@@ -38,6 +39,8 @@ def _get_version_from_mrcc_header(mrcc_header: str) -> str:
     """
 
     match = re.search(r"Release date: (.*)$", mrcc_header, re.M)
+    if match is None:
+        raise ValueError("MRCC header does not contain a release date.")
     return match.group(1)
 
 
@@ -102,7 +105,7 @@ class MrccTemplate(CalculatorTemplate):
         self.outputname = f"{self._label}.out"
         self.errorname = f"{self._label}.err"
 
-    def execute(self, directory: Path | str, profile: MrccProfile) -> None:
+    def execute(self, directory: Path, profile: MrccProfile) -> None:
         """
         Execute the MRCC calculation.
 
@@ -124,9 +127,9 @@ class MrccTemplate(CalculatorTemplate):
     def write_input(
         self,
         profile: MrccProfile,  # noqa: ARG002
-        directory: Path | str,
+        directory: Path,
         atoms: Atoms,
-        parameters: dict[str, str],
+        parameters: dict[str, Any],
         properties: dict[str, Any],  # noqa: ARG002
     ) -> None:
         """
@@ -156,7 +159,7 @@ class MrccTemplate(CalculatorTemplate):
 
         write_mrcc(directory / self.inputname, atoms, kw)
 
-    def read_results(self, directory: Path | str) -> MRCCEnergyInfo:
+    def read_results(self, directory: PathLike[str]) -> MRCCEnergyInfo:
         """
         Reads the MRCC output files.
 
@@ -175,7 +178,7 @@ class MrccTemplate(CalculatorTemplate):
             - ccsd_corr_energy : float <-- CCSD correlation energy.
             - ccsdt_corr_energy : float <-- CCSD(T) correlation energy.
         """
-        return read_mrcc_outputs(output_file_path=directory / self.outputname)
+        return read_mrcc_outputs(output_file_path=Path(directory) / self.outputname)
 
     def load_profile(self, cfg: Config, **kwargs: Any) -> MrccProfile:
         return MrccProfile.from_config(cfg, self.name, **kwargs)

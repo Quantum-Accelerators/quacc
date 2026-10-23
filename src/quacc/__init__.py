@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import threading
 from importlib.metadata import version
-from logging import basicConfig
+from logging import INFO, LogRecord, basicConfig, getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
 from warnings import filterwarnings
@@ -104,6 +104,18 @@ QuaccDefault = DefaultSetting()
 
 # Set logging info
 basicConfig(filename=_settings.LOG_FILENAME, level=_settings.LOG_LEVEL)
+getLogger("custodian").setLevel(_settings.CUSTODIAN_LOG_LEVEL)
+
+
+def _filter_emmet_task_doc_log(record: LogRecord) -> bool:
+    """Suppress Emmet's noisy task-document path announcement."""
+    return not (
+        record.levelno == INFO
+        and record.getMessage().startswith("Getting task doc in:")
+    )
+
+
+getLogger("emmet.core.tasks").addFilter(_filter_emmet_task_doc_log)
 
 
 # Custom exceptions
@@ -153,13 +165,13 @@ if _settings.WORKFLOW_ENGINE == "prefect":
 
     def _patched_getitem(self: PrefectFuture | State, index: object) -> object:
         @job
-        def _getitem(future: PrefectFuture | State, index_: object) -> object:
+        def _getitem(future: Any, index_: Any) -> Any:
             return future[index_]
 
         return _getitem(self, index)
 
-    PrefectFuture.__getitem__ = _patched_getitem
-    State.__getitem__ = _patched_getitem
+    setattr(PrefectFuture, "__getitem__", _patched_getitem)  # noqa: B010 -- patch an external generic class.
+    setattr(State, "__getitem__", _patched_getitem)  # noqa: B010 -- patch an external generic class.
 
 if _settings.WORKFLOW_ENGINE == "parsl":
     from parsl.dataflow.memoization import id_for_memo

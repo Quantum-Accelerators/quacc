@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from logging import WARNING, getLogger
+from types import MappingProxyType
 
 import pytest
 
@@ -68,6 +69,16 @@ def test_recursive_dict_merge2():
         "a": 1,
         "b": {"a": 1, "b": 3, "d": 1},
     }
+
+
+def test_recursive_dict_merge_readonly_mapping():
+    defaults = MappingProxyType({"a": {"x": 1}})
+
+    result = recursive_dict_merge(defaults, {"a": {"y": 2}})
+
+    assert result == {"a": {"x": 1, "y": 2}}
+    assert defaults == {"a": {"x": 1}}
+    assert isinstance(result, dict)
 
 
 def test_recursive_dict_merge_verbose(caplog):

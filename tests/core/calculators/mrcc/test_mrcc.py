@@ -26,6 +26,11 @@ def test_mrcc_version_from_string():
     assert version == "August 28, 2023"
 
 
+def test_mrcc_version_missing_release_date():
+    with pytest.raises(ValueError, match="release date"):
+        _get_version_from_mrcc_header("Unrecognized MRCC header")
+
+
 def test_mrcc_profile(monkeypatch):
     header = "Release date: August 28, 2023\n"
     monkeypatch.setattr(mrcc, "read_stdout", lambda command: header)

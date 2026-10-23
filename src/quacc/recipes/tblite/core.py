@@ -19,7 +19,13 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
 
-    from quacc.types import OptParams, OptSchema, RunSchema, VibKwargs, VibThermoSchema
+    from quacc.types import (
+        OptParamsNoCell,
+        OptSchema,
+        RunSchema,
+        VibKwargs,
+        VibThermoSchema,
+    )
 
 
 @job
@@ -70,7 +76,7 @@ def relax_job(
     atoms: Atoms,
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     relax_cell: bool = False,
-    opt_params: OptParams | None = None,
+    opt_params: OptParamsNoCell | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
 ) -> OptSchema:
@@ -121,7 +127,7 @@ def freq_job(
     method: Literal["GFN1-xTB", "GFN2-xTB", "IPEA1-xTB"] = "GFN2-xTB",
     energy: float = 0.0,
     temperature: float = 298.15,
-    pressure: float | None = 1.0,
+    pressure: float = 1.0,
     thermo_method: Literal["harmonic", "ideal_gas"] = "ideal_gas",
     vib_kwargs: VibKwargs | None = None,
     additional_fields: dict[str, Any] | None = None,

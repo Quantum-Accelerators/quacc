@@ -5,7 +5,7 @@ from __future__ import annotations
 from functools import lru_cache, wraps
 from importlib.util import find_spec
 from logging import getLogger
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from monty.dev import requires
 
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from typing import Any, Literal
 
     from ase.calculators.calculator import BaseCalculator
+    from fairchem.core.units.mlip_unit.predict import MLIPPredictUnit
 
 
 LOGGER = getLogger(__name__)
@@ -43,7 +44,7 @@ def freezeargs(func: Callable) -> Callable:
 
     @wraps(func)
     def wrapped(*args: Any, **kwargs: Any) -> Any:
-        args = (frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
+        args = tuple(frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
         kwargs = {
             k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()
         }
@@ -77,7 +78,7 @@ def pick_calculator(
               `fairchem.core.pretrained_mlip.available_models` or a path to a
               checkpoint file, e.g. `name_or_path="uma-s-1p1"`.
             - `task_name` (required for UMA checkpoints): one of `"omol"`,
-              `"omat"`, `"oc20"`, `"odac"`, or `"omc"`.
+              `"omat"`, `"oc20"`, `"oc22"`, `"oc25"`, `"odac"`, or `"omc"`.
             - Optional: `inference_settings`, `overrides`, `device`, and
               `workers`; see `FAIRChemCalculator.from_model_checkpoint` for
               details.
@@ -109,12 +110,16 @@ def pick_calculator(
         cuda_is_available = False
 
     settings = get_settings()
-    library = library.lower()
+    library = cast("Literal['fairchem', 'matcalc', 'rootstock']", library.lower())
 
     # Skip CUDA warning for rayserve batching mode (inference happens on remote GPU)
     use_ray_serve = library == "fairchem" and settings.FAIRCHEM_RAY_SERVE_BATCHING
 
-    if not use_ray_serve and not cuda_is_available:
+    # Also skip for rootstock. Inference happens in a worker subprocess
+    # with its own environment, so PyTorch in this process is not informative
+    use_rootstock = library == "rootstock"
+
+    if not use_ray_serve and not use_rootstock and not cuda_is_available:
         LOGGER.warning("CUDA is not available to PyTorch. Calculations will be slow.")
 
     if library == "matcalc":
@@ -158,10 +163,8 @@ def pick_calculator(
             # Use Ray Serve multiplexed deployment for inference. The deployment
             # is expected to already be running on the cluster (typically started
             # by get_local_inference_raycluster / get_slurm_inference_raycluster with
-            # setup_multiplexed_batch_predict_server). We connect by deployment
-            # name and route requests to the appropriate model via the
-            # multiplexed_model_id, which has the form
-            # "<checkpoint_name_or_path>:<inference_settings>".
+            # setup_multiplexed_batch_predict_server).
+            from fairchem.core.units.mlip_unit.api.model_spec import ModelSpec
             from fairchem.core.units.mlip_unit.predict import BatchServerPredictUnit
 
             calc_kwargs = calc_kwargs.copy()  # Don't modify the original kwargs
@@ -179,19 +182,26 @@ def pick_calculator(
             inference_settings = calc_kwargs.pop("inference_settings", "default")
             task_name = calc_kwargs.pop("task_name")
 
-            # Drop kwargs only meaningful when loading the checkpoint locally
-            calc_kwargs.pop("device", None)
-            calc_kwargs.pop("overrides", None)
+            device = calc_kwargs.pop("device", None)
+            overrides = calc_kwargs.pop("overrides", None)
             calc_kwargs.pop("seed", None)
 
-            multiplexed_model_id = f"{checkpoint_id}:{inference_settings}"
-
-            mlip_unit = BatchServerPredictUnit.from_deployment_connection_info(
-                deployment_name="multiplexed-predict-server",
-                multiplexed_model_id=multiplexed_model_id,
+            model_spec = ModelSpec(
+                checkpoint=str(checkpoint_id),
+                inference_settings=inference_settings,
+                device=device,
+                overrides=dict(overrides) if overrides is not None else None,
             )
 
-            calc = FAIRChemCalculator(predict_unit=mlip_unit, task_name=task_name)
+            mlip_unit = BatchServerPredictUnit.from_deployment_connection_info(
+                deployment_name="multiplexed-predict-server", model_spec=model_spec
+            )
+
+            # FairChem also accepts its batch-server adapter, although its
+            # calculator annotation currently names only the local predict unit.
+            calc = FAIRChemCalculator(
+                predict_unit=cast("MLIPPredictUnit", mlip_unit), task_name=task_name
+            )
         else:
             # Use local inference
             calc = FAIRChemCalculator.from_model_checkpoint(**calc_kwargs)

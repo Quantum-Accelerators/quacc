@@ -166,9 +166,9 @@ def test_elastic_jobs(tmp_path, monkeypatch, _batching):
             "relax_job": {"opt_params": {"fmax": 0.01}},
         },
     )
-    assert outputs["deformed_results"][0]["atoms"].get_volume() != pytest.approx(
-        atoms.get_volume()
-    )
+    assert outputs["deformed_results"]["relax"][0][
+        "atoms"
+    ].get_volume() != pytest.approx(atoms.get_volume())
     assert outputs["undeformed_result"]["results"]["stress"] == pytest.approx(
         0, abs=1e-2
     )

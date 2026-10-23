@@ -11,3 +11,9 @@
 ---
 
 ![Quacc logo](images/quacc_logo_wide.png)
+
+## Acknowledgments
+
+![National Science Foundation logo](images/nsf_logo.png){ width="150" }
+
+This material is based upon work supported by the National Science Foundation under Award No. [OAC-2514141](https://www.nsf.gov/awardsearch/show-award/?AWD_ID=2514141&HistoricalAwards=false).

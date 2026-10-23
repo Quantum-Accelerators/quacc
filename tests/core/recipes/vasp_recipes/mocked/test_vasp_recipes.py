@@ -22,7 +22,6 @@ from quacc.recipes.vasp.matpes import (
     matpes_static_flow,
     matpes_static_job,
 )
-from quacc.recipes.vasp.mattersim import mattersim_static_job
 from quacc.recipes.vasp.md import md_job
 from quacc.recipes.vasp.mof_off import mof_off_static_flow, mof_off_static_job
 from quacc.recipes.vasp.mp24 import (
@@ -36,6 +35,7 @@ from quacc.recipes.vasp.mp_legacy import (
     mp_gga_relax_flow,
     mp_gga_relax_job,
     mp_gga_static_job,
+    mp_relax_set_job,
 )
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
@@ -379,7 +379,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
 
     ### --------- Test bulk_to_slabs_flow --------- ###
 
-    outputs = bulk_to_slabs_flow(atoms, run_static=False)
+    outputs = bulk_to_slabs_flow(atoms, run_static=False)["relax"]
     assert len(outputs) == 4
     assert (
         sorted(output["structure_metadata"]["nsites"] for output in outputs)
@@ -387,7 +387,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     )
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
-    outputs = bulk_to_slabs_flow(atoms)
+    outputs = bulk_to_slabs_flow(atoms)["static"]
     assert len(outputs) == 4
     assert (
         sorted(output["structure_metadata"]["nsites"] for output in outputs)
@@ -399,7 +399,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         atoms,
         job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
         run_static=False,
-    )
+    )["relax"]
     assert len(outputs) == 4
     assert (
         sorted(output["structure_metadata"]["nsites"] for output in outputs)
@@ -411,7 +411,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
 
     outputs = bulk_to_slabs_flow(
         atoms, job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}}
-    )
+    )["static"]
     assert len(outputs) == 4
     assert (
         sorted(output["structure_metadata"]["nsites"] for output in outputs)
@@ -425,12 +425,12 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     atoms = outputs[0]["atoms"]
     adsorbate = molecule("H2")
 
-    outputs = slab_to_ads_flow(atoms, adsorbate, run_static=False)
+    outputs = slab_to_ads_flow(atoms, adsorbate, run_static=False)["relax"]
 
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
 
-    outputs = slab_to_ads_flow(atoms, adsorbate)
+    outputs = slab_to_ads_flow(atoms, adsorbate)["static"]
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
@@ -439,7 +439,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         adsorbate,
         job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
         run_static=False,
-    )
+    )["relax"]
 
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["isif"] == 2 for output in outputs]
@@ -450,7 +450,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
         atoms,
         adsorbate,
         job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
-    )
+    )["static"]
 
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
@@ -459,7 +459,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
 
     adsorbate2 = molecule("CH3")
     adsorbate2.set_initial_magnetic_moments([1, 0, 0, 0])
-    outputs = slab_to_ads_flow(atoms, adsorbate2)
+    outputs = slab_to_ads_flow(atoms, adsorbate2)["static"]
     assert [output["structure_metadata"]["nsites"] == 84 for output in outputs]
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
@@ -1562,14 +1562,22 @@ def test_fairchem_omc(patch_metallic_taskdoc):
     }
 
 
-def test_fairchem_odac(patch_nonmetallic_taskdoc):
-    from quacc.recipes.vasp.fairchem import odac_static_job
+@pytest.mark.parametrize(
+    ("recipe", "name", "kpts"),
+    [
+        ("odac23_static_job", "ODAC23 Static", (1, 1, 1)),
+        ("odac25_static_job", "ODAC25 Static", (11, 11, 11)),
+    ],
+)
+def test_fairchem_odac(patch_nonmetallic_taskdoc, recipe, name, kpts):
+    from quacc.recipes.vasp import fairchem
 
     atoms = bulk("Si")
-    output = odac_static_job(atoms)
+    output = getattr(fairchem, recipe)(atoms)
+    assert output["name"] == name
     output["parameters"].pop("ncore")
     assert output["parameters"] == {
-        "kpts": (1, 1, 1),
+        "kpts": kpts,
         "ediffg": -0.05,
         "ibrion": 2,
         "nwrite": 2,
@@ -1583,7 +1591,7 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
         "sigma": 0.2,
         "ispin": 2,
         "prec": "accurate",
-        "nelm": 60,
+        "nelm": 120,
         "nelmin": 2,
         "ediff": 1e-5,
         "maxmix": 40,
@@ -1602,16 +1610,24 @@ def test_fairchem_odac(patch_nonmetallic_taskdoc):
     }
 
 
+def test_fairchem_odac25_kpts_override(patch_nonmetallic_taskdoc):
+    from quacc.recipes.vasp.fairchem import odac25_static_job
+
+    atoms = bulk("Si", cubic=True).repeat((2, 3, 10))
+    assert odac25_static_job(atoms)["parameters"]["kpts"] == (4, 3, 1)
+    assert odac25_static_job(atoms, kpts=(2, 2, 2))["parameters"]["kpts"] == (2, 2, 2)
+
+
 @pytest.mark.skipif(not has_fairchem_oc, reason="fairchem not installed")
 def test_fairchem_oc20(patch_nonmetallic_taskdoc):
     from quacc.recipes.vasp.fairchem import oc20_static_job
 
     atoms = bulk("Si")
     output = oc20_static_job(atoms)
-    output["parameters"].pop("ncore")
+    output["parameters"].pop("ncore", None)
     assert output["parameters"] == {
         "ibrion": 2,
-        "nsw": 2000,
+        "nsw": 0,
         "isif": 0,
         "ispin": 1,
         "isym": 0,
@@ -1625,11 +1641,322 @@ def test_fairchem_oc20(patch_nonmetallic_taskdoc):
         "pp": "PBE",
         "xc": "rpbe",
         "pp_version": "54",
+        "kpts": (15, 15, 1),
     }
+
+
+@pytest.mark.skipif(not has_fairchem_oc, reason="fairchem not installed")
+@pytest.mark.parametrize("recipe", ["oc20_static_job", "oc25_static_job"])
+def test_fairchem_oc_no_hardcoded_ncore(patch_nonmetallic_taskdoc, monkeypatch, recipe):
+    from quacc.recipes.vasp import fairchem
+
+    monkeypatch.setattr(
+        "quacc.calculators.vasp.params.psutil.cpu_count", lambda logical=False: 1
+    )
+    output = getattr(fairchem, recipe)(bulk("Si"))
+    assert "ncore" not in output["parameters"]
+
+
+@pytest.mark.parametrize("override", [False, True])
+@pytest.mark.parametrize("initial_magmoms", [None, [0.1, -4.2, 0.3], [0, 0, 0]])
+@pytest.mark.parametrize(("element", "u"), [("Ni", 6.2), ("Co", 3.32), ("Si", 0)])
+def test_fairchem_oc22(
+    patch_nonmetallic_taskdoc, override, initial_magmoms, element, u
+):
+    from ase import Atoms
+    from pymatgen.io.vasp import Incar
+    from pymatgen.io.vasp.sets import MVLSlabSet
+
+    from quacc.recipes.vasp.fairchem import oc22_static_job
+
+    atoms = Atoms(
+        f"O{element}O",
+        positions=[[0, 0, 5], [2, 0, 5], [4, 0, 5]],
+        cell=[8.2, 9.4, 20],
+        pbc=True,
+    )
+    atoms.set_initial_magnetic_moments(initial_magmoms)
+    calc_kwargs = (
+        {"ediff": 1e-6, "ldipol": False, "magmom": [0.2, 3.1, 0.4]} if override else {}
+    )
+    default_magmom = MVLSlabSet.CONFIG["INCAR"]["MAGMOM"].get(element, 0.6)
+    magmoms = calc_kwargs.get("magmom", initial_magmoms or [0.6, default_magmom, 0.6])
+    output = oc22_static_job(atoms, **calc_kwargs)
+    assert output["name"] == "OC22 Static"
+    assert output["atoms"].get_chemical_symbols() == ["O", element, "O"]
+    incar = Incar.from_file(Path(output["dir_name"]) / "INCAR.gz")
+    assert incar["MAGMOM"] == [magmoms[0], magmoms[2], magmoms[1]]
+    expected = {
+        "gga": "pe",
+        "encut": 500,
+        "ediff": 1e-6 if override else 1e-4,
+        "ispin": 2,
+        "nsw": 0,
+        "isif": 0,
+        "isym": 0,
+        "lasph": False,
+        "lreal": False,
+        "kpts": (4, 4, 1),
+        "gamma": True,
+        "pp_version": "54",
+        "setups": {"O": "", element: "_pv" if element == "Ni" else ""},
+        "ldipol": not override,
+        "idipol": 3,
+    }
+    assert output["parameters"]["ldau"]
+    assert output["parameters"].get("ldauu", [0, 0]) == [0, u]
+    assert {key: output["parameters"][key] for key in expected} == expected
+    assert output["parameters"]["dipol"] == pytest.approx([2 / 8.2, 0, 0.25])
+
+
+@pytest.mark.skipif(not has_fairchem_oc, reason="fairchem not installed")
+@pytest.mark.parametrize(
+    ("calc_kwargs", "ediff"), [({}, 1e-6), ({"ediff": 1e-4}, 1e-4)]
+)
+def test_fairchem_oc25(patch_nonmetallic_taskdoc, calc_kwargs, ediff):
+    from quacc.recipes.vasp.fairchem import oc25_static_job
+
+    output = oc25_static_job(bulk("Si"), **calc_kwargs)
+    assert output["name"] == "OC25 Static"
+    output["parameters"].pop("ncore", None)
+    assert output["parameters"] == {
+        "prec": "normal",
+        "gga": "RP",
+        "pp": "PBE",
+        "xc": "rpbe",
+        "ivdw": 11,
+        "encut": 400,
+        "ediff": ediff,
+        "nelm": 100,
+        "ismear": 0,
+        "sigma": 0.1,
+        "lcharg": True,
+        "lwave": False,
+        "isif": 0,
+        "ispin": 1,
+        "algo": "all",
+        "idipol": 3,
+        "ldipol": True,
+        "lasph": True,
+        "lreal": "auto",
+        "dipol": [0.5, 0.5, 0.5],
+        "amin": 0.01,
+        "nsw": 0,
+        "kpts": (15, 15, 1),
+        "pp_version": "64",
+        "setups": "recommended",
+    }
+
+
+def test_aqcat25(patch_nonmetallic_taskdoc):
+    from quacc.recipes.vasp.aqcat import aqcat25_static_job
+
+    atoms = bulk("Si")
+    output = aqcat25_static_job(atoms)
+    output["parameters"].pop("ncore")
+    assert output["parameters"] == {
+        "kpts": (15, 15, 1),
+        "ibrion": 2,
+        "nsw": 0,
+        "isif": 0,
+        "ispin": 1,
+        "isym": 0,
+        "algo": "normal",
+        "ismear": 0,
+        "sigma": 0.1,
+        "ediffg": -0.03,
+        "encut": 500.0,
+        "prec": "accurate",
+        "potim": 0.5,
+        "nelm": 250,
+        "lwave": False,
+        "lvhar": False,
+        "lcharg": False,
+        "laechg": False,
+        "lasph": False,
+        "ediff": 1e-4,
+        "symprec": 1e-10,
+        "lreal": "auto",
+        "gga": "RP",
+        "pp": "PBE",
+        "xc": "rpbe",
+        "pp_version": "54",
+    }
+
+    output = aqcat25_static_job(atoms, kpts=(3, 2, 1))
+    assert output["parameters"]["kpts"] == (3, 2, 1)
+
+
+@pytest.mark.parametrize(
+    ("cell", "expected"),
+    [
+        ([10, 16, 20], (4, 2, 1)),
+        ([[8, 6, 0], [0, 12, 0], [0, 0, 20]], (5, 3, 1)),
+        ([100, 100, 20], (1, 1, 1)),
+    ],
+)
+def test_aqcat25_slab_kpoints(monkeypatch, cell, expected):
+    from quacc.recipes.vasp.aqcat import aqcat25_static_job
+
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.aqcat.run_and_summarize", mock_run_and_summarize
+    )
+    atoms = bulk("Si")
+    atoms.set_cell(cell)
+    assert aqcat25_static_job(atoms)["parameters"]["kpts"] == expected
+
+
+def test_aqcat25_kspacing_override(monkeypatch, tmp_path):
+    from quacc.calculators.vasp import Vasp
+    from quacc.recipes.vasp.aqcat import aqcat25_static_job
+    from quacc.utils.dicts import recursive_dict_merge
+
+    def capture_calculator(atoms, calc_defaults, calc_swaps, **kwargs):
+        return Vasp(atoms, **recursive_dict_merge(calc_defaults, calc_swaps))
+
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.aqcat.run_and_summarize", capture_calculator
+    )
+    atoms = bulk("Si")
+    calc = aqcat25_static_job(atoms, kspacing=0.2)
+    assert calc.float_params["kspacing"] == 0.2
+    # KSPACING in the INCAR takes precedence, so ASE writes no KPOINTS file.
+    calc.write_kpoints(atoms=atoms, directory=tmp_path)
+    assert not (tmp_path / "KPOINTS").exists()
 
 
 def mock_run_and_summarize(atoms, *args, **kwargs):
     return {"parameters": kwargs["calc_defaults"]}
+
+
+def test_aqcat25_spin_polarized(monkeypatch):
+    from ase import Atoms
+
+    from quacc.recipes.vasp.aqcat import aqcat25_static_job
+
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.aqcat.run_and_summarize", mock_run_and_summarize
+    )
+
+    atoms = Atoms("VCrMnFeCoNiCuMoRuWOsCeO", cell=[10, 10, 20])
+    parameters = aqcat25_static_job(atoms)["parameters"]
+    assert parameters["ispin"] == 2
+    assert parameters["magmom"] == [
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        5.0,
+        1.73,
+        5.0,
+        2.2,
+        5.0,
+        2.2,
+        5.0,
+        0.0,
+    ]
+
+    parameters = aqcat25_static_job(bulk("Si"))["parameters"]
+    assert parameters["ispin"] == 1
+    assert "magmom" not in parameters
+
+
+@pytest.mark.parametrize("with_results", [False, True])
+@pytest.mark.parametrize(
+    ("overrides", "expected"),
+    [
+        ({}, [5.0, 5.0, 0.0]),
+        ({"magmom": [3.0, -3.0, 0.0]}, [3.0, -3.0, 0.0]),
+        ({"magmom": None}, None),
+        ({"ispin": 1}, [5.0, 5.0, 0.0]),
+    ],
+)
+def test_aqcat25_magnetic_initialization(
+    monkeypatch, with_results, overrides, expected
+):
+    from ase import Atoms
+    from ase.calculators.singlepoint import SinglePointCalculator
+    from ase.calculators.vasp.create_input import set_magmom
+
+    from quacc.calculators.vasp import Vasp
+    from quacc.recipes.vasp.aqcat import aqcat25_static_job
+    from quacc.utils.dicts import recursive_dict_merge
+
+    # Exercise real calculator initialization without launching VASP.
+    def capture_calculator(atoms, calc_defaults, calc_swaps, **kwargs):
+        return Vasp(atoms, **recursive_dict_merge(calc_defaults, calc_swaps))
+
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.aqcat.run_and_summarize", capture_calculator
+    )
+    atoms = Atoms("Fe2O", cell=[10, 10, 20])
+    atoms.set_initial_magnetic_moments([1.0, -1.0, 0.1])
+    if with_results:
+        atoms.calc = SinglePointCalculator(atoms, magmoms=[0.2, -0.2, 0.0])
+
+    calc = aqcat25_static_job(atoms, **overrides)
+    assert calc.list_float_params["magmom"] == expected
+    assert calc.int_params["ispin"] == overrides.get("ispin", 2)
+    if expected is None:
+        inherited = [0.2, -0.2, 0.0] if with_results else [1.0, -1.0, 0.1]
+        np.testing.assert_array_equal(
+            calc.input_atoms.get_initial_magnetic_moments(), inherited
+        )
+    elif calc.int_params["ispin"] == 2:
+        # Verify the MAGMOM text ASE writes uses the explicit values, even
+        # when quacc has copied different moments from a previous calculator.
+        _, incar = set_magmom(
+            2,
+            True,
+            calc.input_atoms,
+            calc.list_float_params["magmom"],
+            [0, 1, 2],
+            False,
+        )
+        expected_line = (
+            "1*3.0000 1*-3.0000 1*0.0000"
+            if "magmom" in overrides
+            else "2*5.0000 1*0.0000"
+        )
+        assert incar["magmom"] == expected_line
+
+
+@pytest.mark.parametrize(
+    ("symbols", "overrides", "expected", "ispin"),
+    [
+        ("Fe2O", {"elemental_magmoms": {"Fe": 3.0, "O": 0.5}}, [3.0, 3.0, 0.5], 2),
+        ("Fe2O", {"elemental_magmoms": {"O": 0.5}}, [5.0, 5.0, 0.5], 2),
+        (
+            "Fe2O",
+            {"elemental_magmoms": {"Fe": 3.0}, "magmom": [2.0, -2.0, 0.0]},
+            [2.0, -2.0, 0.0],
+            2,
+        ),
+        ("O2", {"elemental_magmoms": {"O": 0.5}}, [0.5, 0.5], 2),
+        ("O2", {"elemental_magmoms": {"O": 0.5}, "ispin": 1}, [0.5, 0.5], 1),
+        ("O2", {"elemental_magmoms": {"Fe": 3.0}}, None, 1),
+    ],
+)
+def test_aqcat25_elemental_magmoms(monkeypatch, symbols, overrides, expected, ispin):
+    from ase import Atoms
+    from ase.calculators.singlepoint import SinglePointCalculator
+
+    from quacc.calculators.vasp import Vasp
+    from quacc.recipes.vasp.aqcat import aqcat25_static_job
+    from quacc.utils.dicts import recursive_dict_merge
+
+    def capture_calculator(atoms, calc_defaults, calc_swaps, **kwargs):
+        return Vasp(atoms, **recursive_dict_merge(calc_defaults, calc_swaps))
+
+    monkeypatch.setattr(
+        "quacc.recipes.vasp.aqcat.run_and_summarize", capture_calculator
+    )
+    atoms = Atoms(symbols, cell=[10, 10, 20])
+    atoms.calc = SinglePointCalculator(atoms, magmoms=[0.0] * len(atoms))
+    calc = aqcat25_static_job(atoms, **overrides)
+    assert calc.list_float_params["magmom"] == expected
+    assert calc.int_params["ispin"] == ispin
 
 
 def test_md_job_nvt(monkeypatch):
@@ -1693,12 +2020,12 @@ def test_md_job_error():
         md_job(atoms, ensemble="NNT")
 
 
-def test_mattersim_static_job(patch_nonmetallic_taskdoc):
+def test_mp_relax_set_job(patch_nonmetallic_taskdoc):
     atoms = bulk("Ni") * (2, 1, 1)
     atoms[0].symbol = "O"
     del atoms.arrays["initial_magmoms"]
 
-    output = mattersim_static_job(atoms, ncore=1)
+    output = mp_relax_set_job(atoms, ncore=1)
 
     assert output["parameters"] == {
         "algo": "fast",
@@ -1731,4 +2058,4 @@ def test_mattersim_static_job(patch_nonmetallic_taskdoc):
         "setups": {"Ni": "_pv", "O": ""},
         "sigma": 0.05,
     }
-    assert output["name"] == "MatterSim Static"
+    assert output["name"] == "MP RelaxSet Static"

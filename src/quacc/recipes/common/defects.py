@@ -15,11 +15,14 @@ has_shakenbreak = bool(find_spec("shakenbreak"))
 
 
 if TYPE_CHECKING:
-    from typing import Any
+    from collections.abc import Callable
+    from typing import Any, TypeVar
 
     from ase.atoms import Atoms
 
-    from quacc import Job
+    from quacc.types import RunSchema
+
+    Schema = TypeVar("Schema", bound=RunSchema)
 
 
 @subflow
@@ -30,10 +33,10 @@ if TYPE_CHECKING:
 @requires(has_shakenbreak, "Missing shakenbreak. Please run pip install quacc[defects]")
 def bulk_to_defects_subflow(
     atoms: Atoms,
-    relax_job: Job,
-    static_job: Job | None = None,
+    relax_job: Callable[..., Schema],
+    static_job: Callable[..., Schema] | None = None,
     make_defects_kwargs: dict[str, Any] | None = None,
-) -> list[dict]:
+) -> dict[str, list[Schema]]:
     """
     Workflow consisting of:
 
@@ -56,19 +59,20 @@ def bulk_to_defects_subflow(
 
     Returns
     -------
-    list[dict]
-        List of dictionary of results.
+    dict[str, list[Schema]]
+        Relaxation and static results, grouped under "relax" and "static".
+        The "static" list is empty when no static job is supplied.
     """
     make_defects_kwargs = make_defects_kwargs or {}
     defects = make_defects_from_bulk(atoms, **make_defects_kwargs)
 
-    results = []
+    results: dict[str, list[Schema]] = {"relax": [], "static": []}
     for defect in defects:
         result = relax_job(defect)
+        results["relax"].append(result)
 
         if static_job is not None:
             result = static_job(result["atoms"])
-
-        results.append(result)
+            results["static"].append(result)
 
     return results

@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
-    from ase.optimize.optimize import Dynamics
+    from ase.optimize.optimize import Optimizer
     from emmet.core.elasticity import ElasticityDoc
     from emmet.core.math import ListMatrix3D, Matrix3D, Vector3D
     from emmet.core.symmetry import CrystalSystem
@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     from numpy.random import Generator
     from numpy.typing import ArrayLike, NDArray
     from pymatgen.analysis.elasticity.strain import DeformedStructureSet
+    from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
     from pymatgen.core.composition import Composition
     from pymatgen.core.lattice import Lattice
     from pymatgen.core.periodic_table import Element
@@ -65,35 +66,45 @@ if TYPE_CHECKING:
         line_density: float
         kppvol: float
         kppa: float
-        length_densities: tuple[float, float, float]
+        length_densities: list[float] | tuple[float, float, float]
 
     # ----------- Runner parameter type hints -----------
 
-    class OptParams(TypedDict, total=False):
+    class OptParamsNoCell(TypedDict, total=False):
         """
         Type hint for `opt_params` used throughout quacc.
         """
 
-        relax_cell: bool
         fmax: float | None
         max_steps: int
-        optimizer: Dynamics
+        optimizer: type[Optimizer | MolecularDynamics]
         optimizer_kwargs: dict[str, Any] | None
         store_intermediate_results: bool
+        filter_kwargs: dict[str, Any] | None
+        write_files: bool
+        stop_condition: Callable[[Optimizer | MolecularDynamics], bool] | None
         fn_hook: Callable | None
         run_kwargs: dict[str, Any] | None
+
+    class OptParams(OptParamsNoCell, total=False):
+        """Optimization parameters including optional cell relaxation."""
+
+        relax_cell: bool
 
     class MDParams(TypedDict, total=False):
         """
         Type hint for `md_params` used throughout quacc.
         """
 
-        dynamics: MolecularDynamics
+        dynamics: type[MolecularDynamics]
         dynamics_kwargs: dict[str, Any] | None
         steps: int
         maxwell_boltzmann_kwargs: MaxwellBoltzmanDistributionKwargs | None
         set_com_stationary: bool
         set_zero_rotation: bool
+        stop_condition: Callable[[MolecularDynamics], bool] | None
+        max_runtime: float | None
+        stop_reason: str
 
     class VibKwargs(TypedDict, total=False):
         """
@@ -163,6 +174,7 @@ if TYPE_CHECKING:
         auto_npar: bool  # default = False
         auto_gamma: bool  # default = True
         settings_override: dict | None  # default = None
+        gamma_vasp_cmd: str | list[str] | None
         copy_magmom: bool  # default = False
         auto_continue: bool  # default = False
 
@@ -197,16 +209,13 @@ if TYPE_CHECKING:
 
     # ----------- ASE calculator type hints -----------
 
-    class Results(TypedDict):
-        """Dictionary of results from atoms.calc.results"""
+    Results = dict[str, Any]
 
-    class Parameters(TypedDict):
-        """Dictionary of parameters from atoms.calc.parameters"""
+    Parameters = dict[str, Any]
 
     # ----------- ASE dynamics type hints -----------
 
-    class ParametersDyn(TypedDict):
-        """Dictionary of parameters from Dynamics.todict()"""
+    ParametersDyn = dict[str, Any]
 
     class TrajectoryLog(TypedDict):
         """Dictionary of parameters related to the MD trajectory"""
@@ -489,13 +498,25 @@ if TYPE_CHECKING:
         trajectory: list[Atoms]
         trajectory_results: list[Results]
 
+    class NebResultSchema(AtomsSchema):
+        """Results from [quacc.schemas.ase.Summarize.neb][]."""
+
+        parameters_opt: ParametersDyn
+        trajectory: list[Atoms]
+        trajectory_results: list[Results]
+        ts_atoms: Atoms
+
     class DynSchema(RunSchema):
         """Schema for [quacc.schemas.ase.Summarize.md][]"""
 
         parameters_md: ParametersDyn
         trajectory: list[Atoms]
-        trajectory_log: TrajectoryLog
+        trajectory_log: list[TrajectoryLog]
         trajectory_results: list[Results]
+        state: Literal["completed", "partial"]
+        stop_reason: NotRequired[str]
+        requested_steps: int
+        completed_steps: int
 
     class ParametersVib(TypedDict):
         delta: float
@@ -513,16 +534,17 @@ if TYPE_CHECKING:
         vib_freqs_raw: list[float]
 
     class VibSchema(AtomsSchema):
-        parameters: Parameters | None
-        parameters_vib: ParametersVib | None
+        parameters: NotRequired[Parameters]
+        parameters_vib: NotRequired[ParametersVib]
         results: VibResults
 
     class ParametersThermo(TypedDict):
         # ASE units
         temperature: float
         pressure: float
-        sigma: int
-        spin_multiplicity: int
+        method: Literal["ideal_gas", "harmonic"]
+        sigma: NotRequired[int]
+        spin_multiplicity: NotRequired[int]
         vib_freqs: list[float]
         vib_energies: list[float]
         n_imag: int
@@ -530,9 +552,11 @@ if TYPE_CHECKING:
     class ThermoResults(TypedDict):
         # ASE units
         energy: float
-        enthalpy: float
+        enthalpy: NotRequired[float]
         entropy: float
-        gibbs_energy: float
+        gibbs_energy: NotRequired[float]
+        helmholtz_energy: NotRequired[float]
+        internal_energy: NotRequired[float]
         zpe: float
 
     class ThermoSchema(AtomsSchema):
@@ -543,12 +567,20 @@ if TYPE_CHECKING:
         """Elastic properties and fitting schema"""
 
         deformed_structure_set: DeformedStructureSet
-        deformed_results: list[RunSchema | OptSchema]
+        deformed_results: dict[str, list[RunSchema | OptSchema]]
         undeformed_result: RunSchema | OptSchema
         elasticity_doc: ElasticityDoc
 
-    class VibThermoSchema(VibSchema, ThermoSchema):
+    class VibThermoResults(VibResults, ThermoResults):
+        """Merged vibrational and thermochemical results."""
+
+    class VibThermoSchema(AtomsSchema):
         """Combined Vibrations and Thermo schema"""
+
+        parameters: NotRequired[Parameters]
+        parameters_vib: NotRequired[ParametersVib]
+        parameters_thermo: ParametersThermo
+        results: VibThermoResults
 
     # ----------- Schema (phonons) type hints -----------
 
@@ -567,7 +599,7 @@ if TYPE_CHECKING:
         weights: NDArray
         frequencies: NDArray
         eigenvectors: NDArray
-        group_velocities: NDArray
+        group_velocities: NotRequired[NDArray]
 
     class DosProperties(TypedDict):
         """Type hint associated with PhononSchema."""
@@ -589,9 +621,9 @@ if TYPE_CHECKING:
     class PhononSchema(AtomsSchema):
         """Type hint associated with [quacc.schemas.phonons.summarize_phonopy][]"""
 
-        parameters: dict[str, Any] | None
+        parameters: NotRequired[dict[str, Any]]
         nid: str
-        dir_name: str
+        dir_name: str | Path
         phonopy_metadata: PhonopyMetadata
         results: PhononResults
         quacc_version: str
@@ -601,7 +633,7 @@ if TYPE_CHECKING:
     class BaderSchema(TypedDict, total=False):
         """Type hint associated with quacc.schemas.vasp._bader_runner."""
 
-        atomic_volume: float
+        atomic_volume: list[float]
         partial_charges: list[float]
         spin_moments: list[float]
         bader_version: float
@@ -633,9 +665,9 @@ if TYPE_CHECKING:
     class VaspSchema(RunSchema, TaskDoc):
         """Type hint associated with [quacc.schemas.vasp.VaspSummarize.run][]"""
 
-        bader: BaderSchema
-        chargemol: ChargemolSchema
-        steps: dict[int, TaskDoc]  # when store_intermediate_results=True
+        bader: NotRequired[BaderSchema]
+        chargemol: NotRequired[ChargemolAnalysis]
+        steps: NotRequired[dict[int, TaskDoc]]  # when store_intermediate_results=True
 
     # ----------- Recipe (VASP) type hints -----------
 
@@ -681,6 +713,7 @@ if TYPE_CHECKING:
     class EspressoProjwfcSchema(TypedDict):
         static_job: RunSchema
         non_scf_job: RunSchema
+        projwfc_job: RunSchema
 
     class EspressoPhononDosSchema(TypedDict):
         phonon_job: RunSchema
@@ -691,13 +724,13 @@ if TYPE_CHECKING:
         relax_reactant: OptSchema
         relax_product: OptSchema
         initial_images: list[Atoms]
-        neb_results: dict
+        neb_results: NebResultSchema
 
     class NebTsSchema(TypedDict):
         relax_reactant: OptSchema
         relax_product: OptSchema
         initial_images: list[Atoms]
-        neb_results: dict
+        neb_results: NebResultSchema
         ts_results: OptSchema
 
     # ----------- Recipe (Q-Chem) type hints -----------

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import numpy as np
 from ase.io import read
@@ -20,10 +20,11 @@ from quacc.utils.dicts import clean_dict, recursive_dict_merge
 from quacc.utils.files import get_uri
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
     from typing import Any, Literal
 
     from ase.atoms import Atoms
-    from ase.io.trajectory import TrajectoryWriter
+    from ase.io.trajectory import TrajectoryReader
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from ase.vibrations import Vibrations
@@ -31,6 +32,7 @@ if TYPE_CHECKING:
     from quacc.types import (
         DefaultSetting,
         DynSchema,
+        NebResultSchema,
         OptSchema,
         RunSchema,
         VibSchema,
@@ -100,7 +102,9 @@ class Summarize:
         directory = self.directory or final_atoms.calc.directory
 
         # Generate input atoms metadata
-        input_atoms_metadata = atoms_to_metadata(input_atoms) if input_atoms else {}
+        input_atoms_metadata = (
+            dict(atoms_to_metadata(input_atoms)) if input_atoms else {}
+        )
 
         # Generate the base of the task document
         inputs = {
@@ -116,19 +120,21 @@ class Summarize:
         atoms_to_store = prep_next_run(final_atoms, move_magmoms=self.move_magmoms)
 
         # Generate final atoms metadata
-        final_atoms_metadata = atoms_to_metadata(atoms_to_store) if final_atoms else {}
+        final_atoms_metadata = (
+            dict(atoms_to_metadata(atoms_to_store)) if final_atoms else {}
+        )
 
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = (
             final_atoms_metadata | inputs | results | self.additional_fields
         )
 
-        return clean_dict(unsorted_task_doc)
+        return cast("RunSchema", clean_dict(unsorted_task_doc))
 
     def opt(
         self,
-        dyn: Optimizer,
-        trajectory: list[Atoms] | None = None,
+        dyn: Optimizer | MolecularDynamics,
+        trajectory: Sequence[Atoms] | TrajectoryReader | None = None,
         check_convergence: bool | DefaultSetting = QuaccDefault,
     ) -> OptSchema:
         """
@@ -159,11 +165,13 @@ class Summarize:
 
         # Get trajectory
         if trajectory is not None:
-            atoms_trajectory = trajectory
+            atoms_trajectory = list(trajectory)
         elif isinstance(dyn.trajectory, (str, Path)):
-            atoms_trajectory = read(dyn.trajectory, index=":")
+            atoms_trajectory = cast("list[Atoms]", read(dyn.trajectory, index=":"))
         else:
-            atoms_trajectory = read(dyn.trajectory.filename, index=":")
+            atoms_trajectory = cast(
+                "list[Atoms]", read(cast("Any", dyn.trajectory).filename, index=":")
+            )
         trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
 
         initial_atoms = atoms_trajectory[0]
@@ -197,10 +205,12 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
-        return clean_dict(unsorted_task_doc)
+        return cast("OptSchema", clean_dict(unsorted_task_doc))
 
     def md(
-        self, dyn: MolecularDynamics, trajectory: list[Atoms] | None = None
+        self,
+        dyn: MolecularDynamics,
+        trajectory: Sequence[Atoms] | TrajectoryReader | None = None,
     ) -> DynSchema:
         """
         Get tabulated results from an ASE MD run.
@@ -218,7 +228,9 @@ class Summarize:
             Dictionary representation of the task document
         """
         # Check and set up variables
-        base_task_doc = self.opt(dyn, trajectory=trajectory, check_convergence=False)
+        base_task_doc: dict[str, Any] = dict(
+            self.opt(dyn, trajectory=trajectory, check_convergence=False)
+        )
         del base_task_doc["converged"]
 
         # Clean up the opt parameters
@@ -235,20 +247,33 @@ class Summarize:
                 }
             )
 
-        md_fields = {"parameters_md": parameters_md, "trajectory_log": trajectory_log}
+        md_fields: dict[str, Any] = {
+            "parameters_md": parameters_md,
+            "trajectory_log": trajectory_log,
+        }
+        requested_steps = getattr(dyn, "requested_steps", dyn.nsteps)
+        completed_steps = getattr(dyn, "completed_steps", dyn.nsteps)
+        is_partial = completed_steps < requested_steps
+        md_fields |= {
+            "state": "partial" if is_partial else "completed",
+            "requested_steps": requested_steps,
+            "completed_steps": completed_steps,
+        }
+        if is_partial and (stop_reason := getattr(dyn, "stop_reason", None)):
+            md_fields["stop_reason"] = stop_reason
 
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | md_fields | self.additional_fields
 
-        return clean_dict(unsorted_task_doc)
+        return cast("DynSchema", clean_dict(unsorted_task_doc))
 
     def neb(
         self,
         dyn: Optimizer,
         n_images: int,
         n_iter_return: int = -1,
-        trajectory: TrajectoryWriter | list[Atoms] | None = None,
-    ) -> OptSchema:
+        trajectory: Sequence[Atoms] | TrajectoryReader | None = None,
+    ) -> NebResultSchema:
         """
         Summarize the NEB run results and store them in a database-friendly format.
 
@@ -265,16 +290,19 @@ class Summarize:
 
         Returns
         -------
-        OptSchema
+        NebResultSchema
             A dictionary containing the summarized NEB run results.
         """
 
         # Get trajectory
-        atoms_trajectory = (
-            trajectory or read(dyn.trajectory, index=":")
-            if isinstance(dyn.trajectory, (str, Path))
-            else read(dyn.trajectory.filename, index=":")
-        )
+        if trajectory is not None:
+            atoms_trajectory = list(trajectory)
+        elif isinstance(dyn.trajectory, (str, Path)):
+            atoms_trajectory = cast("list[Atoms]", read(dyn.trajectory, index=":"))
+        else:
+            atoms_trajectory = cast(
+                "list[Atoms]", read(cast("Any", dyn.trajectory).filename, index=":")
+            )
 
         if n_iter_return == -1:
             atoms_trajectory = atoms_trajectory[-(n_images):]
@@ -313,7 +341,7 @@ class Summarize:
         # Create a dictionary of the inputs/outputs
         unsorted_task_doc = base_task_doc | opt_fields | self.additional_fields
 
-        return clean_dict(unsorted_task_doc)
+        return cast("NebResultSchema", clean_dict(unsorted_task_doc))
 
 
 class VibSummarize:
@@ -371,7 +399,10 @@ class VibSummarize:
         if isinstance(self.vib_object, VibrationsData):
             atoms = self.vib_object._atoms
             directory = self.directory
-            inputs = {"nid": get_uri(directory).split(":")[0], "dir_name": directory}
+            inputs: dict[str, Any] = {
+                "nid": get_uri(directory).split(":")[0],
+                "dir_name": directory,
+            }
         else:
             atoms = self.vib_object.atoms
             directory = self.directory or atoms.calc.directory
@@ -444,7 +475,7 @@ class VibSummarize:
             atoms_metadata | inputs | vib_results | self.additional_fields
         )
 
-        return clean_dict(unsorted_task_doc)
+        return cast("VibSchema", clean_dict(unsorted_task_doc))
 
     def vib_and_thermo(
         self,
@@ -504,7 +535,7 @@ class VibSummarize:
         # Merge the vib and thermo data
         unsorted_task_doc = recursive_dict_merge(vib_schema, thermo_schema)
 
-        return clean_dict(unsorted_task_doc)
+        return cast("VibThermoSchema", clean_dict(unsorted_task_doc))
 
 
 def _get_nth_iteration(

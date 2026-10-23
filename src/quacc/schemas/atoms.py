@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from emmet.core.structure import MoleculeMetadata, StructureMetadata
 from pymatgen.io.ase import AseAtomsAdaptor
@@ -37,7 +37,7 @@ def atoms_to_metadata(
     """
     additional_fields = additional_fields or {}
     atoms = copy_atoms(atoms)
-    results = {}
+    results: dict[str, Any] = {}
     atoms.calc = None
 
     # Strip the dummy atoms, if present
@@ -59,4 +59,4 @@ def atoms_to_metadata(
     # Store Atoms object
     results["atoms"] = atoms
 
-    return results | additional_fields
+    return cast("AtomsSchema", results | additional_fields)

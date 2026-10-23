@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 def write_qchem(
     qc_input: QCInput,
     directory: Path | str,
-    prev_orbital_coeffs: list[float] | None = None,
+    prev_orbital_coeffs: list[float] | NDArray | None = None,
 ) -> None:
     """
     Write the Q-Chem input files.
@@ -45,7 +45,7 @@ def write_qchem(
     """
     directory = Path(directory)
 
-    if prev_orbital_coeffs:
+    if prev_orbital_coeffs is not None and len(prev_orbital_coeffs):
         with Path(directory / "53.0").open(mode="wb") as file:
             for val in prev_orbital_coeffs:
                 data = struct.pack("d", val)
