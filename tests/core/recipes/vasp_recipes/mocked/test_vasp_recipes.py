@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
+from ase.calculators.vasp import Vasp as ASEVasp
 from monty.shutil import copy_r
 
 from quacc import change_settings
@@ -14,6 +15,7 @@ from quacc.recipes.vasp.core import (
     double_relax_flow,
     freq_job,
     non_scf_job,
+    non_scf_opt_job,
     relax_job,
     static_job,
 )
@@ -56,6 +58,10 @@ has_fairchem_oc = (
 )
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
+requires_kpoints_opt = pytest.mark.skipif(
+    "kpts_opt" not in ASEVasp().input_params,
+    reason="Requires ASE KPOINTS_OPT support (ase/ase!4298)",
+)
 
 
 def test_mp_aloe_static_job(patch_metallic_taskdoc):
@@ -324,6 +330,49 @@ def test_non_scf_job5(patch_metallic_taskdoc):
         ValueError, match="Supported kpoint modes are 'uniform' and 'line' at present"
     ):
         non_scf_job(bulk("Al"), MOCKED_DIR / "metallic", kpts_mode="dummy")
+
+
+@pytest.mark.parametrize("kpts_mode", ["uniform", "line"])
+@requires_kpoints_opt
+def test_non_scf_kpoints_opt(patch_metallic_taskdoc, kpts_mode):
+    output = non_scf_opt_job(bulk("Al"), kpts_mode=kpts_mode, kpts=(3, 3, 3))
+    params = output["parameters"]
+    assert params["kpts"] == (3, 3, 3)
+    assert params["lkpoints_opt"] is True
+    assert params["icharg"] == 1
+    assert params["reciprocal_opt"] is True
+    if kpts_mode == "uniform":
+        assert params["kpts_opt"] == [11, 11, 11]
+    else:
+        assert np.shape(params["kpts_opt"]) == (250, 3)
+
+
+@pytest.mark.parametrize("opt_kwargs", [{"kpts_opt": (8, 8, 8)}, {"kspacing_opt": 0.1}])
+@requires_kpoints_opt
+def test_non_scf_kpoints_opt_override(patch_metallic_taskdoc, opt_kwargs):
+    output = non_scf_opt_job(bulk("Al"), kspacing=0.3, **opt_kwargs)
+    params = output["parameters"]
+    assert params["kspacing"] == 0.3
+    for key, value in opt_kwargs.items():
+        assert params[key] == value
+    if "kspacing_opt" in opt_kwargs:
+        assert "kpts_opt" not in params
+
+
+@requires_kpoints_opt
+def test_non_scf_kpoints_opt_nbands(patch_metallic_taskdoc):
+    output = non_scf_opt_job(bulk("Al"), nbands=99, calculate_optics=True)
+    assert output["parameters"]["nbands"] == 99
+    assert output["parameters"]["icharg"] == 1
+    assert output["parameters"]["loptics"] is True
+    assert output["parameters"]["cshift"] == 1e-5
+    assert output["parameters"]["lreal"] is False
+
+
+@requires_kpoints_opt
+def test_non_scf_opt_invalid_mode():
+    with pytest.raises(ValueError, match="Supported kpoint modes"):
+        non_scf_opt_job(bulk("Al"), kpts_mode="dummy")
 
 
 def test_slab_static_job(patch_metallic_taskdoc):
