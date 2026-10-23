@@ -1,4 +1,4 @@
-"""FHI-aims recipes for the MAD-1.5 and MAD-1.6 datasets."""
+"""FHI-aims recipes for the MAD dataset."""
 
 from __future__ import annotations
 
@@ -30,7 +30,7 @@ def static_job(
     **calc_kwargs: Any,
 ) -> RunSchema:
     """
-    Run a single-point calculation with the shared MAD-1.5/1.6 r2SCAN protocol.
+    Run a single-point calculation with the MAD r2SCAN protocol.
 
     Parameters
     ----------
@@ -59,7 +59,7 @@ def static_job(
 
     Notes
     -----
-    The published MAD-1.5 and MAD-1.6 ``control.in`` files are identical:
+    The published MAD ``control.in`` files are identical:
     https://archive.materialscloud.org/records/18tke-tt476 and
     https://archive.materialscloud.org/records/ffd5a-1hc37. The species
     modifications are described in the accompanying READMEs and
