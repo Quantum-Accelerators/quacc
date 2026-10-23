@@ -375,13 +375,6 @@ def test_non_scf_opt_invalid_mode():
         non_scf_opt_job(bulk("Al"), kpts_mode="dummy")
 
 
-def test_non_scf_kpoints_opt_requires_ase_support(monkeypatch):
-    monkeypatch.setattr(ASEVasp, "input_params", {}, raising=False)
-    monkeypatch.setattr(ASEVasp, "__init__", lambda self: None)
-    with pytest.raises(ImportError, match="requires ASE with KPOINTS_OPT"):
-        non_scf_opt_job(bulk("Al"))
-
-
 def test_slab_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 

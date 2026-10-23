@@ -394,11 +394,6 @@ def non_scf_opt_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
     """
-    from ase.calculators.vasp import Vasp
-
-    if "kpts_opt" not in Vasp().input_params:
-        raise ImportError("non_scf_opt_job requires ASE with KPOINTS_OPT support.")
-
     calc_defaults: dict[str, Any] = {
         "icharg": 1,
         "lcharg": False,
