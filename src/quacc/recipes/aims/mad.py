@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     species_dir: str | Path = "tight",
+    subset: str | None = None,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
@@ -35,15 +36,17 @@ def static_job(
     Parameters
     ----------
     atoms
-        The Atoms object. For the ``mc2d`` and ``mc3d_surface`` subsets, set
-        ``atoms.info["subset"]`` accordingly to enable the dipole correction,
-        or pass ``use_dipole_correction=True`` explicitly. Periodic structures
-        must include a complete cell, with vacuum for slabs and 2D materials.
+        The Atoms object. Periodic structures must include a complete cell,
+        with vacuum for slabs and 2D materials.
     species_dir
         Directory of FHI-aims 2020 species defaults, relative to
         ``AIMS_SPECIES_DEFAULTS`` or an absolute path. Defaults to ``"tight"``.
         The confined 5d function for Pr-Yb and 6d function for Pu-No are
         removed from temporary copies; the installed species files are unchanged.
+    subset
+        The MAD subset name. For periodic systems, ``"mc2d"`` and
+        ``"mc3d_surface"`` enable the dipole correction. Defaults to None.
+        Override the correction with ``use_dipole_correction`` in ``calc_kwargs``.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -56,16 +59,6 @@ def static_job(
     -------
     RunSchema
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
-
-    Notes
-    -----
-    The published MAD ``control.in`` files are identical:
-    https://archive.materialscloud.org/records/18tke-tt476 and
-    https://archive.materialscloud.org/records/ffd5a-1hc37. The species
-    modifications are described in the accompanying READMEs and
-    https://arxiv.org/abs/2603.02089. The paper used FHI-aims version 250806.
-    These recipes compute reference energies, forces, and periodic stresses;
-    they do not generate structures or perform the dataset's outlier filtering.
     """
     periodic = bool(atoms.pbc.any())
     calc_defaults: dict[str, Any] = {
@@ -98,7 +91,7 @@ def static_job(
             for key in ("k_grid", "kpts", "kspacing")
         ):
             calc_defaults.pop("k_grid_density")
-        if atoms.info.get("subset") in {"mc2d", "mc3d_surface"}:
+        if subset in {"mc2d", "mc3d_surface"}:
             calc_defaults["use_dipole_correction"] = True
 
     with _species_directory(atoms, species_dir) as directory:

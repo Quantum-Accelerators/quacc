@@ -93,7 +93,7 @@ def test_molecule(write_inputs, cell):
     if cell:
         atoms.set_cell(cell)
     atoms.set_initial_magnetic_moments([1, 1])
-    mad.static_job(atoms)
+    mad.static_job(atoms, subset="mc2d")
     assert captured["parameters"]["spin"] == "none"
     for key in ("k_grid_density", "compute_analytical_stress", "use_dipole_correction"):
         assert key not in captured["parameters"]
@@ -104,13 +104,13 @@ def test_dipole_correction(write_inputs, subset):
     species_dir, captured = write_inputs
     _write_species(species_dir, ["Si"])
     atoms = Atoms("Si", cell=[5, 5, 20], pbc=[True, True, False])
-    atoms.info["subset"] = subset
-    mad.static_job(atoms)
+    mad.static_job(atoms, subset=subset)
     assert captured["parameters"].get("use_dipole_correction", False) == (
         subset in {"mc2d", "mc3d_surface"}
     )
     assert captured["parameters"]["k_grid_density"] == 8
     assert captured["parameters"]["compute_analytical_stress"] is True
+    assert "subset" not in captured["parameters"]
 
 
 @pytest.mark.parametrize(
@@ -153,9 +153,9 @@ def test_overrides(write_inputs, kpoints):
     species_dir, captured = write_inputs
     _write_species(species_dir, ["Cu"])
     atoms = bulk("Cu")
-    atoms.info["subset"] = "mc3d_surface"
     mad.static_job(
         atoms,
+        subset="mc3d_surface",
         xc="pbe",
         use_dipole_correction=False,
         override_warning_libxc=Remove,
