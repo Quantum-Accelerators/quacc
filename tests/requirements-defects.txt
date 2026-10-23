@@ -1,2 +1,4 @@
 pymatgen-analysis-defects==2026.10.16
 shakenbreak==3.4.4
+# Older maggma releases can pin pyzmq versions that cannot build on Python 3.14.
+maggma==0.77.1

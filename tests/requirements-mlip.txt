@@ -1,3 +1,5 @@
 fairchem-core==2.23.0
 matcalc[matgl]==0.6.0
 rootstock==1.6.4
+# Older six releases cannot provide six.moves on Python 3.13.
+six==1.17.0
