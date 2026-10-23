@@ -42,7 +42,6 @@ nav = [
             "user/db/basics.md"
         ] },
         { "Additional Recipe Details" = [
-            "user/recipes/aims_recipes.md",
             "user/miscellaneous/torchsim.md"
         ] }
     ] },
