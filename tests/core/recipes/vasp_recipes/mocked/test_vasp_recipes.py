@@ -6,6 +6,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
+from ase.calculators.vasp import Vasp as ASEVasp
 from monty.shutil import copy_r
 
 from quacc import change_settings
@@ -56,6 +57,10 @@ has_fairchem_oc = (
 )
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
+requires_kpoints_opt = pytest.mark.skipif(
+    "kpts_opt" not in ASEVasp().input_params,
+    reason="Requires ASE KPOINTS_OPT support (ase/ase!4298)",
+)
 
 
 def test_mp_aloe_static_job(patch_metallic_taskdoc):
@@ -324,6 +329,54 @@ def test_non_scf_job5(patch_metallic_taskdoc):
         ValueError, match="Supported kpoint modes are 'uniform' and 'line' at present"
     ):
         non_scf_job(bulk("Al"), MOCKED_DIR / "metallic", kpts_mode="dummy")
+
+
+@pytest.mark.parametrize("kpts_mode", ["uniform", "line"])
+@requires_kpoints_opt
+def test_non_scf_kpoints_opt(patch_metallic_taskdoc, kpts_mode):
+    output = non_scf_job(
+        bulk("Al"), use_kpoints_opt=True, kpts_mode=kpts_mode, kpts=(3, 3, 3)
+    )
+    params = output["parameters"]
+    assert params["kpts"] == (3, 3, 3)
+    assert params["lkpoints_opt"] is True
+    assert params["icharg"] == 1
+    assert params["reciprocal_opt"] is True
+    if kpts_mode == "uniform":
+        assert params["kpts_opt"] == [11, 11, 11]
+    else:
+        assert np.shape(params["kpts_opt"]) == (250, 3)
+
+
+@pytest.mark.parametrize("opt_kwargs", [{"kpts_opt": (8, 8, 8)}, {"kspacing_opt": 0.1}])
+@requires_kpoints_opt
+def test_non_scf_kpoints_opt_override(patch_metallic_taskdoc, opt_kwargs):
+    output = non_scf_job(bulk("Al"), use_kpoints_opt=True, kspacing=0.3, **opt_kwargs)
+    params = output["parameters"]
+    assert params["kspacing"] == 0.3
+    for key, value in opt_kwargs.items():
+        assert params[key] == value
+    if "kspacing_opt" in opt_kwargs:
+        assert "kpts_opt" not in params
+
+
+@requires_kpoints_opt
+def test_non_scf_kpoints_opt_restart(patch_metallic_taskdoc):
+    output = non_scf_job(bulk("Al"), MOCKED_DIR / "metallic", use_kpoints_opt=True)
+    assert output["parameters"]["nbands"] == 99
+    assert output["parameters"]["icharg"] == 1
+
+
+def test_non_scf_requires_prev_dir():
+    with pytest.raises(ValueError, match="prev_dir is required"):
+        non_scf_job(bulk("Al"))
+
+
+def test_non_scf_kpoints_opt_requires_ase_support(monkeypatch):
+    monkeypatch.setattr(ASEVasp, "input_params", {}, raising=False)
+    monkeypatch.setattr(ASEVasp, "__init__", lambda self: None)
+    with pytest.raises(ImportError, match="requires ASE with KPOINTS_OPT"):
+        non_scf_job(bulk("Al"), use_kpoints_opt=True)
 
 
 def test_slab_static_job(patch_metallic_taskdoc):

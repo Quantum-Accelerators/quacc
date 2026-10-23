@@ -224,6 +224,15 @@ class Vasp(Vasp_):
         else:
             use_gamma = False
 
+        if (
+            self.user_calc_params.get("kpts_opt") is not None
+            or self.user_calc_params.get("kspacing_opt") is not None
+            or self.user_calc_params.get("lkpoints_opt")
+        ):
+            # The optional grid can contain non-Gamma points even for a
+            # Gamma-only SCF calculation.
+            use_gamma = False
+
         vasp_cmd = (
             self._settings.VASP_GAMMA_CMD if use_gamma else self._settings.VASP_CMD
         )
