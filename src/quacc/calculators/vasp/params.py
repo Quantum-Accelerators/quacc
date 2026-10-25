@@ -123,7 +123,15 @@ def get_param_swaps(
 
     def recommend(reason: str, **parameters: Any) -> None:
         change_reasons.update(dict.fromkeys(parameters, reason))
-        calc.set(**parameters)
+        # ASE can clear an existing INCAR parameter, but cannot infer the type
+        # of an unset parameter from None.
+        calc.set(
+            **{
+                k: v
+                for k, v in parameters.items()
+                if v is not None or k in calc.parameters
+            }
+        )
 
     max_Z = input_atoms.get_atomic_numbers().max()
 
@@ -288,7 +296,7 @@ def get_param_swaps(
                 calc.kpts is not None
                 and calc.parameters.get("kpar", 1) > np.prod(calc.kpts)
             )
-            and calc.float_params["kspacing"] is None
+            and calc.parameters.get("kspacing") is None
         ):
             recommend(
                 "There are too few k-points to parallelize over k-points.", kpar=1
@@ -298,7 +306,8 @@ def get_param_swaps(
             calc.parameters.get("isif", 2) in (3, 6, 7, 8)
             and calc.parameters.get("nsw", 0) > 0
         ):
-            if calc.encut is None:
+            encut = calc.parameters.get("encut")
+            if encut is None:
                 report.warnings.append(
                     CopilotWarning(
                         "Pulay stress risk during variable-cell relaxation because ENCUT was not explicitly set.",
@@ -306,7 +315,7 @@ def get_param_swaps(
                     )
                 )
             if "He" in input_atoms.get_chemical_symbols() and (
-                calc.encut is None or calc.encut < 478.896 * 1.3
+                encut is None or encut < 478.896 * 1.3
             ):
                 report.warnings.append(
                     CopilotWarning(
@@ -320,7 +329,7 @@ def get_param_swaps(
                 and calc.parameters.get("setups", {})
                 and isinstance(calc.parameters["setups"], dict)
                 and calc.parameters["setups"].get("Li", "") in ("Li_sv", "_sv")
-                and (calc.encut is None or calc.encut < 499.034 * 1.3)
+                and (encut is None or encut < 499.034 * 1.3)
             ):
                 report.warnings.append(
                     CopilotWarning(
@@ -449,7 +458,13 @@ def get_param_swaps(
     if incar_copilot_mode.lower() != "off":
         log_copilot_report(report)
 
-    return new_parameters
+    # Keep None for ASE input options (e.g. kpts), while omitting unset INCAR
+    # parameters before initializing a fresh calculator in every copilot mode.
+    return {
+        k: v
+        for k, v in new_parameters.items()
+        if v is not None or k in calc.input_params
+    }
 
 
 def remove_unused_flags(user_calc_params: dict[str, Any]) -> dict[str, Any]:

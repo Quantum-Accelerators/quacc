@@ -64,6 +64,42 @@ def test_vanilla_vasp():
     assert calc.asdict() == Vasp_().asdict()
 
 
+@pytest.mark.parametrize("mode", ["off", "critical", "standard", "aggressive"])
+def test_unset_incar_params(mode):
+    calc = Vasp(
+        bulk("Cu"),
+        incar_copilot_mode=mode,
+        encut=None,
+        npar=None,
+        kspacing=0.5,
+        nsw=0,
+        ediffg=-0.02,
+    )
+    assert calc.parameters.get("encut") is None
+    assert calc.parameters.get("npar") is None
+    assert calc.kpts is None
+    assert calc.parameters.get("gamma") is None
+    assert calc.parameters.get("ediffg") == (
+        -0.02 if mode in {"off", "critical"} else None
+    )
+
+
+@pytest.mark.parametrize("mode", ["critical", "standard", "aggressive"])
+@pytest.mark.parametrize("npar", [None, 4])
+def test_copilot_unset_npar(mode, npar, monkeypatch, caplog):
+    monkeypatch.setattr(
+        "quacc.calculators.vasp.params.psutil.cpu_count", lambda **_: 16
+    )
+    with caplog.at_level(INFO):
+        calc = Vasp(
+            bulk("Cu"), incar_copilot_mode=mode, npar=npar, lhfcalc=npar is not None
+        )
+    assert calc.parameters["ncore"] == (4 if npar is None else 1)
+    assert calc.parameters.get("npar") is None
+    if npar is not None:
+        assert "NPAR: 4 -> None" in caplog.text
+
+
 @pytest.mark.parametrize(
     "preset",
     [
