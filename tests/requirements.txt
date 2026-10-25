@@ -9,6 +9,6 @@ pydantic-settings==2.16.0
 pymatgen-core==2026.10.16
 # Avoid obsolete Boto dependency chains until python-dateutil 3 is supported.
 # https://github.com/boto/botocore/issues/3844
-python-dateutil<3
+python-dateutil<4
 ruamel.yaml==0.19.1
 typer==0.27.3
