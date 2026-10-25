@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
-from ase.calculators.vasp import Vasp as ASEVasp
 from monty.shutil import copy_r
 
 from quacc import change_settings
@@ -58,10 +57,6 @@ has_fairchem_oc = (
 )
 FILE_DIR = Path(__file__).parent
 MOCKED_DIR = FILE_DIR / "mocked_vasp_runs"
-requires_kpoints_opt = pytest.mark.skipif(
-    "kpts_opt" not in ASEVasp().input_params,
-    reason="Requires ASE KPOINTS_OPT support (ase/ase!4298)",
-)
 
 
 def test_mp_aloe_static_job(patch_metallic_taskdoc):
