@@ -5,7 +5,7 @@ frozendict==2.4.7
 monty==2026.7.16
 psutil==7.2.2
 pydantic==2.14.1
-pydantic-settings==2.16.0
+pydantic-settings==2.16.1
 pymatgen-core==2026.10.16
 # Avoid obsolete Boto dependency chains until python-dateutil 3 is supported.
 # https://github.com/boto/botocore/issues/3844
