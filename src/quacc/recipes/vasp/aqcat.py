@@ -76,7 +76,6 @@ def aqcat25_static_job(
     >>> aqcat25_static_job(atoms, kpts=(4, 4, 1), ispin=1)
     """
     # Initial magnetic moments of the spin-polarized elements (AQCat25 paper, Table 6)
-    print("ho")
     magmoms = {
         "V": 5.0,
         "Cr": 5.0,
