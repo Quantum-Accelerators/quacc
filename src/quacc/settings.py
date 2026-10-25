@@ -25,6 +25,7 @@ R = TypeVar("R")
 
 class QuaccSettings(BaseSettings):
     """
+    trigger
     Settings for quacc.
 
     The default way to modify these is to make a ~/.quacc.yaml file. Alternatively, the
