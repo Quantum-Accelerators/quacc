@@ -288,7 +288,7 @@ def get_param_swaps(
                 calc.kpts is not None
                 and calc.parameters.get("kpar", 1) > np.prod(calc.kpts)
             )
-            and calc.float_params["kspacing"] is None
+            and calc.float_params.get("kspacing") is None
         ):
             recommend(
                 "There are too few k-points to parallelize over k-points.", kpar=1
