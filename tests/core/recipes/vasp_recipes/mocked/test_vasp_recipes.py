@@ -361,7 +361,6 @@ def test_non_scf_kpoints_opt_nbands(patch_metallic_taskdoc):
     assert output["parameters"]["lreal"] is False
 
 
-
 def test_non_scf_opt_invalid_mode():
     with pytest.raises(ValueError, match="Supported kpoint modes"):
         non_scf_opt_job(bulk("Al"), kpts_mode="dummy")
