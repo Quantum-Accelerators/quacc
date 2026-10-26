@@ -1940,7 +1940,7 @@ def test_aqcat25_magnetic_initialization(
         atoms.calc = SinglePointCalculator(atoms, magmoms=[0.2, -0.2, 0.0])
 
     calc = aqcat25_static_job(atoms, **overrides)
-    assert calc.list_float_params["magmom"] == expected
+    assert calc.list_float_params.get("magmom") == expected
     assert calc.int_params["ispin"] == overrides.get("ispin", 2)
     if expected is None:
         inherited = [0.2, -0.2, 0.0] if with_results else [1.0, -1.0, 0.1]
@@ -1999,7 +1999,7 @@ def test_aqcat25_elemental_magmoms(monkeypatch, symbols, overrides, expected, is
     atoms = Atoms(symbols, cell=[10, 10, 20])
     atoms.calc = SinglePointCalculator(atoms, magmoms=[0.0] * len(atoms))
     calc = aqcat25_static_job(atoms, **overrides)
-    assert calc.list_float_params["magmom"] == expected
+    assert calc.list_float_params.get("magmom") == expected
     assert calc.int_params["ispin"] == ispin
 
 
