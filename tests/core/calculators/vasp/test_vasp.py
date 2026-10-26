@@ -64,6 +64,18 @@ def test_vanilla_vasp():
     assert calc.asdict() == Vasp_().asdict()
 
 
+@pytest.mark.parametrize("opt_kwargs", [{"kpts_opt": (4, 4, 4)}, {"kspacing_opt": 0.1}])
+@pytest.mark.skipif(
+    "kpts_opt" not in Vasp_().input_params,
+    reason="Requires ASE KPOINTS_OPT support (ase/ase!4298)",
+)
+def test_optional_grid_uses_standard_binary(opt_kwargs):
+    with change_settings({"VASP_CMD": "vasp_std", "VASP_GAMMA_CMD": "vasp_gam"}):
+        calc = Vasp(bulk("Al"), kpts=(1, 1, 1), incar_copilot_mode="off", **opt_kwargs)
+        assert "vasp_std" in calc.command
+        assert "vasp_gam" not in calc.command
+
+
 @pytest.mark.parametrize(
     "preset",
     [
