@@ -328,7 +328,6 @@ def test_non_scf_job5(patch_metallic_taskdoc):
 
 
 @pytest.mark.parametrize("kpts_mode", ["uniform", "line"])
-@requires_kpoints_opt
 def test_non_scf_kpoints_opt(patch_metallic_taskdoc, kpts_mode):
     output = non_scf_opt_job(bulk("Al"), kpts_mode=kpts_mode, kpts=(3, 3, 3))
     params = output["parameters"]
@@ -343,7 +342,6 @@ def test_non_scf_kpoints_opt(patch_metallic_taskdoc, kpts_mode):
 
 
 @pytest.mark.parametrize("opt_kwargs", [{"kpts_opt": (8, 8, 8)}, {"kspacing_opt": 0.1}])
-@requires_kpoints_opt
 def test_non_scf_kpoints_opt_override(patch_metallic_taskdoc, opt_kwargs):
     output = non_scf_opt_job(bulk("Al"), kspacing=0.3, **opt_kwargs)
     params = output["parameters"]
@@ -354,7 +352,6 @@ def test_non_scf_kpoints_opt_override(patch_metallic_taskdoc, opt_kwargs):
         assert "kpts_opt" not in params
 
 
-@requires_kpoints_opt
 def test_non_scf_kpoints_opt_nbands(patch_metallic_taskdoc):
     output = non_scf_opt_job(bulk("Al"), nbands=99, calculate_optics=True)
     assert output["parameters"]["nbands"] == 99
@@ -364,7 +361,7 @@ def test_non_scf_kpoints_opt_nbands(patch_metallic_taskdoc):
     assert output["parameters"]["lreal"] is False
 
 
-@requires_kpoints_opt
+
 def test_non_scf_opt_invalid_mode():
     with pytest.raises(ValueError, match="Supported kpoint modes"):
         non_scf_opt_job(bulk("Al"), kpts_mode="dummy")
