@@ -13,9 +13,11 @@ if TYPE_CHECKING:
     from ase.md.md import MolecularDynamics
     from ase.md.verlet import VelocityVerlet
     from ase.optimize.optimize import Optimizer
+    from emmet.core.eos import EOSDoc
     from pymatgen.core.structure import Structure
 
     from quacc.atoms.slabs import flip_atoms
+    from quacc.recipes.common.eos import eos_flow, eos_subflow
     from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
     from quacc.recipes.vasp.qmof import QMOFRelaxSchema
@@ -41,6 +43,7 @@ if TYPE_CHECKING:
         dynamics: DynSchema,
         qmof: QMOFRelaxSchema,
         thermo: VibThermoSchema,
+        vasp_result: VaspSchema,
     ) -> None:
         assert_type(flip_atoms(atoms), Atoms)
         assert_type(flip_atoms(atoms, return_struct=True), Structure)
@@ -69,3 +72,8 @@ if TYPE_CHECKING:
             slab_to_ads_subflow(atoms, adsorbate, relax_job, static_job),
             dict[str, list[VaspSchema]],
         )
+        eos = eos_subflow(vasp_result, relax_job, static_job)
+        assert_type(eos["deformed_results"], dict[str, list[VaspSchema]])
+        assert_type(eos["eos_doc"], EOSDoc)
+        eos = eos_flow(atoms, relax_job, static_job)
+        assert_type(eos["deformed_results"], dict[str, list[VaspSchema]])
