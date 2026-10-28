@@ -50,9 +50,7 @@ KSPACING_NON_METAL = 0.045
 @job
 def static_job(
     atoms: Atoms,
-    species_defaults: Literal[
-        "light", "intermediate", "tight", "really_tight"
-    ] = "intermediate",
+    species_defaults: str = "intermediate",
     kspacing: float | None = None,
     spin: Literal["none", "collinear", "non-collinear"] | None = None,
     copy_files: CopyFiles | None = None,
@@ -69,7 +67,9 @@ def static_job(
         The Atoms object.
     species_defaults
         The level of accuracy for the basis set and integration grids.
-        Options: "light", "intermediate", "tight", "really_tight".
+        This is the name of a subdirectory within the `AIMS_SPECIES_DEFAULTS`
+        directory. Common options include "light", "intermediate", "tight",
+        and "really_tight".
         Default is "intermediate" which is suitable for production SCF calculations.
     kspacing
         The kpoint spacing in Å^-1. If not provided, defaults to
@@ -131,9 +131,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    species_defaults: Literal[
-        "light", "intermediate", "tight", "really_tight"
-    ] = "light",
+    species_defaults: str = "light",
     kspacing: float | None = None,
     spin: Literal["none", "collinear", "non-collinear"] | None = None,
     relax_cell: bool = False,
@@ -151,7 +149,9 @@ def relax_job(
         The Atoms object.
     species_defaults
         The level of accuracy for the basis set and integration grids.
-        Options: "light", "intermediate", "tight", "really_tight".
+        This is the name of a subdirectory within the `AIMS_SPECIES_DEFAULTS`
+        directory. Common options include "light", "intermediate", "tight",
+        and "really_tight".
         Default is "light" which is suitable for geometry optimizations.
     kspacing
         The kpoint spacing in Å^-1. If not provided, defaults to
