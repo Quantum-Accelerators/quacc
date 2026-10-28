@@ -26,7 +26,7 @@
       
       
       <link rel="icon" href="../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.0.72">
+      <meta name="generator" content="zensical-0.0.73">
     
     
       
@@ -418,6 +418,17 @@
     <span class="md-ellipsis">
       <span class="md-typeset">
         EMT
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fhi-aims" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        FHI-aims
       </span>
     </span>
   </a>
@@ -6374,6 +6385,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#fhi-aims" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        FHI-aims
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#gaussian" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -6587,14 +6609,23 @@
 </span></code></pre></div>
 <h2 id="emt">EMT<a class="headerlink" href="#emt" title="Permanent link">&para;</a></h2>
 <p>No setup needed!</p>
+<h2 id="fhi-aims">FHI-aims<a class="headerlink" href="#fhi-aims" title="Permanent link">&para;</a></h2>
+<p>To use quacc with FHI-aims, you will first need to obtain and compile FHI-aims, as described on the <a href="https://fhi-aims.org/get-the-code">official website</a>. Then you will need to define several settings, as described in the section on <a href="../user/settings/settings.html">"Modifying Quacc Settings"</a>, such as by defining the following environment variables in your <code>~/.bashrc</code>:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_AIMS_BIN</span><span class="o">=</span><span class="s2">"/path/to/aims.x"</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_AIMS_PARALLEL_CMD</span><span class="o">=</span><span class="s2">"mpirun -np 4"</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_AIMS_SPECIES_DEFAULTS</span><span class="o">=</span><span class="s2">"/path/to/FHIaims/species_defaults/defaults_2020"</span>
+</span></code></pre></div>
+<p>The <code>AIMS_BIN</code> setting is the path to the FHI-aims executable (or the name of the executable if it is already in your <code>PATH</code>). The default is <code>aims.x</code>.</p>
+<p>The <code>AIMS_PARALLEL_CMD</code> setting tells quacc how to parallelize FHI-aims. Note that it does not include the executable. If left unset, FHI-aims will be run in serial.</p>
+<p>The <code>AIMS_SPECIES_DEFAULTS</code> setting should point to a specific set of species defaults that ships with FHI-aims (e.g. <code>defaults_2020</code>), which itself contains the <code>light</code>, <code>intermediate</code>, <code>tight</code>, and <code>really_tight</code> subdirectories. The quacc recipes select the appropriate subdirectory via the <code>species_defaults</code> keyword argument, so you should not include it in this path.</p>
 <h2 id="gaussian">Gaussian<a class="headerlink" href="#gaussian" title="Permanent link">&para;</a></h2>
 <p>To use quacc with Gaussian, you will need to define the <code>GAUSSIAN_CMD</code> setting to be the path of the Gaussian executable (or the name of the executable if it is already in your <code>PATH</code>). This can be done as described in the section on <a href="../user/settings/settings.html">"Modifying Quacc Settings"</a>, such as by defining the following environment variable:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_GAUSSIAN_CMD</span><span class="o">=</span><span class="s2">"/path/to/g16"</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_GAUSSIAN_CMD</span><span class="o">=</span><span class="s2">"/path/to/g16"</span>
 </span></code></pre></div>
 <h2 id="gulp">GULP<a class="headerlink" href="#gulp" title="Permanent link">&para;</a></h2>
 <p>To use quacc with GULP, you will need to download and compile GULP 6.2+ <a href="https://gulp.curtin.edu.au/download.html">per the official manual</a>. Then you will define the <code>GULP_CMD</code> setting to be the path of the GULP executable and the <code>GULP_LIB</code> setting to be the path to the GULP force field library. This can be done as described in the section on <a href="../user/settings/settings.html">"Modifying Quacc Settings"</a>, such as by defining the following environment variables in your <code>~/.bashrc</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_GULP_CMD</span><span class="o">=</span><span class="s2">"/path/to/gulp"</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_GULP_LIB</span><span class="o">=</span><span class="s2">"/path/to/gulp-#.#.#/Libraries"</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_GULP_CMD</span><span class="o">=</span><span class="s2">"/path/to/gulp"</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_GULP_LIB</span><span class="o">=</span><span class="s2">"/path/to/gulp-#.#.#/Libraries"</span>
 </span></code></pre></div>
 <details class="tip">
 <summary>Receive a Compilation Error?</summary>
@@ -6605,36 +6636,36 @@
 <h2 id="foundation-mlips">Foundation MLIPs<a class="headerlink" href="#foundation-mlips" title="Permanent link">&para;</a></h2>
 <p>Several pre-trained "foundation" machine-learned interatomic potentials (MLIPs) are natively supported in quacc. Quacc supports all MLIPs provided by <a href="https://github.com/Garden-AI/rootstock">rootstock</a>, <a href="https://github.com/materialyzeai/matcalc/tree/main#supported-foundation-potentials">matcalc</a>, and <a href="https://github.com/FAIR-Chem/fairchem">FAIR-Chem</a>.</p>
 <p>To use these potentials, you will need to install the corresponding packages:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pip<span class="w"> </span>install<span class="w"> </span>quacc<span class="o">[</span>mlip<span class="o">]</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pip<span class="w"> </span>install<span class="w"> </span>quacc<span class="o">[</span>mlip<span class="o">]</span>
 </span></code></pre></div>
 <h2 id="onetep">ONETEP<a class="headerlink" href="#onetep" title="Permanent link">&para;</a></h2>
 <p>If you plan on using ONETEP with quacc, you will need to obtain and install ONETEP. This can be done as described in the <a href="https://onetep.org/code/">How to Get Onetep</a> section of the software documentation.</p>
 <p>At minimum, you will need to define and set <code>ONETEP_CMD</code> to be the full path to your ONETEP binary. You can also specify the <code>ONETEP_PP_PATH</code> to be the path to the pseudopotentials. This can be done as described in the section on <a href="../user/settings/settings.html">"Modifying Quacc Settings"</a>.</p>
 <p>An example is provided below on how to define the commands in your <code>~/.bashrc</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ONETEP_CMD</span><span class="o">=</span><span class="s2">"/path/to/onetep/binary"</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ONETEP_PP_PATH</span><span class="o">=</span><span class="s2">"/path/to/my/pseudos"</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ONETEP_CMD</span><span class="o">=</span><span class="s2">"/path/to/onetep/binary"</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ONETEP_PP_PATH</span><span class="o">=</span><span class="s2">"/path/to/my/pseudos"</span>
 </span></code></pre></div>
 <h2 id="orca">ORCA<a class="headerlink" href="#orca" title="Permanent link">&para;</a></h2>
 <p>To use quacc with ORCA, you will need to define the <code>ORCA_CMD</code> setting to be the full, absolute path to your ORCA executable. This can be done as described in the section on <a href="../user/settings/settings.html">"Modifying Quacc Settings"</a>, such as by defining the following environment variable in your <code>~/.bashrc</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_ORCA_CMD</span><span class="o">=</span><span class="s2">"/path/to/orca/orca"</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_ORCA_CMD</span><span class="o">=</span><span class="s2">"/path/to/orca/orca"</span>
 </span></code></pre></div>
 <h2 id="psi4">Psi4<a class="headerlink" href="#psi4" title="Permanent link">&para;</a></h2>
 <p>If you plan to use Psi4 with quacc, you will need to install it prior to use. This can be done as follows:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-n<span class="w"> </span>base<span class="w"> </span>conda-libmamba-solver
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>conda<span class="w"> </span>install<span class="w"> </span>psi4<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--solver<span class="w"> </span>libmamba
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-n<span class="w"> </span>base<span class="w"> </span>conda-libmamba-solver
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>conda<span class="w"> </span>install<span class="w"> </span>psi4<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>--solver<span class="w"> </span>libmamba
 </span></code></pre></div>
 <h2 id="q-chem">Q-Chem<a class="headerlink" href="#q-chem" title="Permanent link">&para;</a></h2>
 <p>If you plan to use Q-Chem with Quacc, you will need to install <code>openbabel</code>. This can be done as follows:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>openbabel
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>openbabel
 </span></code></pre></div>
 <h2 id="quantum-espresso">Quantum ESPRESSO<a class="headerlink" href="#quantum-espresso" title="Permanent link">&para;</a></h2>
 <p>To use quacc with Quantum ESPRESSO, you will first need to download and install <a href="https://www.quantum-espresso.org/">Quantum ESPRESSO</a>. This can be most easily down as follows:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>qe
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>qe
 </span></code></pre></div>
 <p>You will also need to download the relevant <a href="https://www.materialscloud.org/discover/sssp/table/efficiency">pseudopotentials</a>.</p>
 <p>Finally, you will need to define multiple environment variables. This can be done as described in the section on <a href="../user/settings/settings.html">"Modifying Quacc Settings"</a>.</p>
 <p>At minimum, you should define the <code>ESPRESSO_PSEUDO</code> setting:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_ESPRESSO_PSEUDO</span><span class="o">=</span><span class="s2">"/path/to/pseudopotentials"</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_ESPRESSO_PSEUDO</span><span class="o">=</span><span class="s2">"/path/to/pseudopotentials"</span>
 </span></code></pre></div>
 <p>The various ESPRESSO binaries should be present in your <code>PATH</code>, or you should modify the <code>ESPRESSO_BIN_PATHS</code> quacc setting accordingly.</p>
 <h2 id="tblite">TBLite<a class="headerlink" href="#tblite" title="Permanent link">&para;</a></h2>
@@ -6642,11 +6673,11 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Conda</label><label for="__tabbed_1_2">Pip</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>tblite-python
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>tblite-python
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>pip<span class="w"> </span>install<span class="w"> </span>quacc<span class="o">[</span>tblite<span class="o">]</span><span class="w"> </span><span class="c1"># only on Linux</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>pip<span class="w"> </span>install<span class="w"> </span>quacc<span class="o">[</span>tblite<span class="o">]</span><span class="w"> </span><span class="c1"># only on Linux</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -6654,9 +6685,9 @@
 <p>Refer to the <a href="https://tblite.readthedocs.io/en/latest/tutorial/parallel.html">TBLite documentation</a> for details on how to parallelize calculations and adjust the memory limits.</p>
 <h2 id="vasp">VASP<a class="headerlink" href="#vasp" title="Permanent link">&para;</a></h2>
 <p>To use quacc with VASP, you will need to define several environment variables, as described in the section on <a href="../user/settings/settings.html">"Modifying Quacc Settings"</a>. The most important are listed below:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_VASP_PARALLEL_CMD</span><span class="o">=</span><span class="s2">"srun -N 2 --ntasks-per-node 24"</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_VASP_PP_PATH</span><span class="o">=</span><span class="s2">"/path/to/POTCARs"</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_VASP_PP_VERSION</span><span class="o">=</span><span class="s2">"64"</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_VASP_PARALLEL_CMD</span><span class="o">=</span><span class="s2">"srun -N 2 --ntasks-per-node 24"</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_VASP_PP_PATH</span><span class="o">=</span><span class="s2">"/path/to/POTCARs"</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="nb">export</span><span class="w"> </span><span class="nv">QUACC_VASP_PP_VERSION</span><span class="o">=</span><span class="s2">"64"</span>
 </span></code></pre></div>
 <p>The <code>VASP_PARALLEL_CMD</code> setting tells Custodian and/or ASE how to parallelize VASP. Note that it does not include the executable.</p>
 <p>The <code>VASP_PP_PATH</code> setting should be defined as described in the <a href="https://wiki.fysik.dtu.dk/ase/ase/calculators/vasp.html#pseudopotentials">ASE documentation</a> such that it is a directory containing each VASP pseudopotential folder. Similarly, the <code>VASP_PP_VERSION</code> setting defines the default version of the pseudopotentials to use if none is specified in a chosen recipe.</p>
@@ -6784,7 +6815,7 @@
       <script id="__config" type="application/json">{"annotate":null,"base":"..","features":["content.action.edit","content.code.copy","content.code.select","content.code.annotate","content.tabs.link","content.tooltips","navigation.footer","navigation.path","navigation.tracking","navigation.sections","navigation.top","search.highlight","search.suggest","search.share","header.autohide","toc.follow"],"redirect":null,"search":"../assets/javascripts/workers/search.c47bb847.min.js","tags":null,"translations":{"clipboard.copied":"Copied to clipboard","clipboard.copy":"Copy to clipboard","clipboard.error":"Could not copy to clipboard","search.result.more.one":"1 more on this page","search.result.more.other":"# more on this page","search.result.none":"No matching documents","search.result.one":"1 matching document","search.result.other":"# matching documents","search.result.placeholder":"Type to start searching","search.result.term.missing":"Missing","select.version":"Select version"},"version":null}</script>
     
     
-      <script src="../assets/javascripts/bundle.10ee5ab6.min.js"></script>
+      <script src="../assets/javascripts/bundle.77dd0ce9.min.js"></script>
       
     
   </body>
