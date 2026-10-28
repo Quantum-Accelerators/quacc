@@ -18,6 +18,22 @@ conda install -c conda-forge dftbplus
 
 No setup needed!
 
+## FHI-aims
+
+To use quacc with FHI-aims, you will first need to obtain and compile FHI-aims, as described on the [official website](https://fhi-aims.org/get-the-code). Then you will need to define several settings, as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variables in your `~/.bashrc`:
+
+```bash
+export QUACC_AIMS_BIN="/path/to/aims.x"
+export QUACC_AIMS_PARALLEL_CMD="mpirun -np 4"
+export QUACC_AIMS_SPECIES_DEFAULTS="/path/to/FHIaims/species_defaults/defaults_2020"
+```
+
+The `AIMS_BIN` setting is the path to the FHI-aims executable (or the name of the executable if it is already in your `PATH`). The default is `aims.x`.
+
+The `AIMS_PARALLEL_CMD` setting tells quacc how to parallelize FHI-aims. Note that it does not include the executable. If left unset, FHI-aims will be run in serial.
+
+The `AIMS_SPECIES_DEFAULTS` setting should point to a specific set of species defaults that ships with FHI-aims (e.g. `defaults_2020`), which itself contains the `light`, `intermediate`, `tight`, and `really_tight` subdirectories. The quacc recipes select the appropriate subdirectory via the `species_defaults` keyword argument, so you should not include it in this path.
+
 ## Gaussian
 
 To use quacc with Gaussian, you will need to define the `GAUSSIAN_CMD` setting to be the path of the Gaussian executable (or the name of the executable if it is already in your `PATH`). This can be done as described in the section on ["Modifying Quacc Settings"](../user/settings/settings.md), such as by defining the following environment variable:
