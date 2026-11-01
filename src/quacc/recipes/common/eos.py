@@ -38,12 +38,12 @@ def eos_flow(
     atoms
         Atoms object
     relax_job
-        The relaxation function. It is called with `relax_cell=True` on the bulk
-        structure and with `relax_cell=False` on each volume-strained structure.
+        The relaxation function. Pass one with `relax_cell=True` to relax the
+        bulk cell in `pre_relax`.
     static_job
         The static function.
     pre_relax
-        Whether to run a cell relaxation on the bulk structure before straining it
+        Whether to run a relaxation on the bulk structure before straining it
         (true) or run a static calculation (false).
     run_static
         Whether to run static calculations after the relaxations on the undeformed
@@ -63,7 +63,7 @@ def eos_flow(
         See the return type-hint for the data structure.
     """
     if pre_relax:
-        undeformed_result = relax_job(atoms, relax_cell=True)
+        undeformed_result = relax_job(atoms)
         if run_static:
             undeformed_result = static_job(undeformed_result["atoms"])
     else:
