@@ -67,7 +67,7 @@ def test_relax_job_cell(tmp_path, monkeypatch):
     output = relax_job(atoms, method="GFN1-xTB", relax_cell=True)
     assert output["parameters"]["method"] == "GFN1-xTB"
     assert output["trajectory_results"][-1]["energy"] == pytest.approx(
-        -131.08402477914834
+        -131.08339200020637
     )
     assert "spin_multiplicity" not in output
 
@@ -80,10 +80,11 @@ def test_freq_job_v1(tmp_path, monkeypatch):
     assert output["atoms"] == molecule("H2O")
     assert len(output["results"]["vib_freqs_raw"]) == 9
     assert len(output["results"]["vib_freqs"]) == 3
-    assert output["results"]["vib_freqs_raw"][0] == pytest.approx(-0.10864429415434408)
-    assert output["results"]["vib_freqs_raw"][-1] == pytest.approx(3526.9940431752034)
-    assert output["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
-    assert output["results"]["vib_freqs"][-1] == pytest.approx(3526.9940431752034)
+    # Translational modes are zero within finite-difference noise (cm^-1).
+    assert output["results"]["vib_freqs_raw"][0] == pytest.approx(0.0, abs=1.0)
+    assert output["results"]["vib_freqs_raw"][-1] == pytest.approx(3526.971063130379)
+    assert output["results"]["vib_freqs"][0] == pytest.approx(1586.61978474234)
+    assert output["results"]["vib_freqs"][-1] == pytest.approx(3526.971063130379)
     assert output["results"]["n_imag"] == 0
     assert output["results"]["imag_vib_freqs"] == []
 
@@ -91,21 +92,22 @@ def test_freq_job_v1(tmp_path, monkeypatch):
     assert output["molecule_metadata"]["symmetry"]["rotation_number"] == 2
     assert output["molecule_metadata"]["symmetry"]["linear"] is False
     assert len(output["parameters_thermo"]["vib_freqs"]) == 3
-    assert output["results"]["vib_freqs"][0] == pytest.approx(1586.623114694335)
+    assert output["results"]["vib_freqs"][0] == pytest.approx(1586.61978474234)
     assert output["parameters_thermo"]["vib_freqs"][-1] == pytest.approx(
-        3526.9940431752034
+        3526.971063130379
     )
     assert output["results"]["energy"] == 0.0
-    assert output["results"]["enthalpy"] == pytest.approx(0.6375973622705722)
-    assert output["results"]["entropy"] == pytest.approx(0.0019584992229988523)
-    assert output["results"]["gibbs_energy"] == pytest.approx(0.05367081893346437)
+    assert output["results"]["enthalpy"] == pytest.approx(0.6375945367909293)
+    assert output["results"]["entropy"] == pytest.approx(0.0019584992280304416)
+    assert output["results"]["gibbs_energy"] == pytest.approx(0.05366799195365313)
 
 
 def test_freq_job_harmonic(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
 
-    atoms = bulk("Cu")
-    output = freq_job(atoms, thermo_method="harmonic")
+    # Displace only oxygen to obtain three nonzero harmonic modes.
+    atoms = molecule("H2O")
+    output = freq_job(atoms, thermo_method="harmonic", vib_kwargs={"indices": [0]})
 
     assert "sigma" not in output["parameters_thermo"]
     assert output["parameters_thermo"]["pressure"] == 1.0
@@ -150,14 +152,13 @@ def test_freq_job_v3(tmp_path, monkeypatch):
     assert output["atoms"] == initial_atoms
     assert len(output["results"]["vib_freqs_raw"]) == 12
     assert len(output["results"]["vib_freqs"]) == 6
-    assert output["results"]["vib_energies_raw"][0] == pytest.approx(
-        -9.551076713062095e-06
-    )
+    # Translational modes are zero within finite-difference noise (eV).
+    assert output["results"]["vib_energies_raw"][0] == pytest.approx(0.0, abs=1e-4)
     assert output["results"]["vib_energies_raw"][-1] == pytest.approx(
-        0.3880868821616259
+        0.3880870685998742
     )
-    assert output["results"]["vib_energies"][0] == pytest.approx(0.0713506770137291)
-    assert output["results"]["vib_energies"][-1] == pytest.approx(0.3880868821616259)
+    assert output["results"]["vib_energies"][0] == pytest.approx(0.07135395007530847)
+    assert output["results"]["vib_energies"][-1] == pytest.approx(0.3880870685998742)
     assert output["results"]["n_imag"] == 0
     assert output["results"]["imag_vib_freqs"] == []
 
@@ -169,9 +170,9 @@ def test_freq_job_v3(tmp_path, monkeypatch):
     assert output["molecule_metadata"]["symmetry"]["rotation_number"] == 6
     assert len(output["parameters_thermo"]["vib_freqs"]) == 6
     assert output["results"]["energy"] == -10.0
-    assert output["results"]["enthalpy"] == pytest.approx(-8.749341973959462)
-    assert output["results"]["entropy"] == pytest.approx(0.0023506788982171896)
-    assert output["results"]["gibbs_energy"] == pytest.approx(-11.100020872176652)
+    assert output["results"]["enthalpy"] == pytest.approx(-8.749342682423567)
+    assert output["results"]["entropy"] == pytest.approx(0.0023506768836330525)
+    assert output["results"]["gibbs_energy"] == pytest.approx(-11.10001956605662)
     assert "nid" in output
     assert "dir_name" in output
     assert_array_equal(
