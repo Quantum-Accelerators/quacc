@@ -47,3 +47,46 @@ def make_deformations_from_bulk(
         shear_strains=shear_strains,
         symmetry=symmetry,
     )
+
+
+def make_volume_strains_from_bulk(
+    atoms: Atoms,
+    volume_strains: Sequence[float] = (
+        -0.075,
+        -0.06,
+        -0.045,
+        -0.03,
+        -0.015,
+        0.015,
+        0.03,
+        0.045,
+        0.06,
+        0.075,
+    ),
+) -> list[Atoms]:
+    """
+    Function to generate isotropically strained copies of a bulk atoms object.
+
+    Parameters
+    ----------
+    atoms
+        bulk atoms
+    volume_strains
+        Fractional changes in cell volume, e.g. -0.06 for a 6% compression. Each
+        lattice vector is scaled by (1 + volume_strain) ** (1/3), and the
+        fractional coordinates are kept fixed.
+
+    Returns
+    -------
+    list[Atoms]
+        The strained atoms objects, one per volume strain.
+    """
+    if any(strain <= -1 for strain in volume_strains):
+        raise ValueError("Volume strains must be greater than -1.")
+
+    strained_atoms = []
+    for strain in volume_strains:
+        new_atoms = atoms.copy()
+        new_atoms.set_cell(atoms.get_cell() * (1 + strain) ** (1 / 3), scale_atoms=True)
+        strained_atoms.append(new_atoms)
+    return strained_atoms
