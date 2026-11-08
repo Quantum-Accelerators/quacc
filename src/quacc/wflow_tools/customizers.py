@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Literal
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable
+    from collections.abc import Callable, Iterable, Mapping
     from typing import Any
 
 
@@ -159,8 +159,8 @@ def _check_keys(kind: str, given: Iterable[str], names: list[str]) -> None:
 
 def resolve_job_params(
     names: Iterable[str],
-    param_defaults: dict[str, dict[str, Any] | None] | None = None,
-    param_swaps: dict[str, dict[str, Any] | None] | None = None,
+    param_defaults: Mapping[str, dict[str, Any] | None] | None = None,
+    param_swaps: Mapping[str, dict[str, Any] | None] | None = None,
 ) -> dict[str, dict[str, Any]]:
     """
     Resolve the final keyword arguments for each named job in a workflow.
@@ -225,8 +225,8 @@ def _check_signature(name: str, func: Callable, keys: Iterable[str]) -> None:
 
 def customize_jobs(
     jobs: dict[str, Callable],
-    param_defaults: dict[str, dict[str, Any] | None] | None = None,
-    param_swaps: dict[str, dict[str, Any] | None] | None = None,
+    param_defaults: Mapping[str, dict[str, Any] | None] | None = None,
+    param_swaps: Mapping[str, dict[str, Any] | None] | None = None,
     decorators: dict[str, Callable | None] | None = None,
 ) -> dict[str, Callable]:
     """
