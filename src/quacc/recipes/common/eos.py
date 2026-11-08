@@ -29,6 +29,7 @@ def eos_flow(
     run_static: bool = False,
     strain_kwargs: dict[str, Any] | None = None,
     include_undeformed: bool = True,
+    relax_cell: bool | None = True,
 ) -> EOSSchema[Schema]:
     """
     Common workflow for fitting an equation of state.
@@ -38,13 +39,13 @@ def eos_flow(
     atoms
         Atoms object
     relax_job
-        The relaxation function. Pass one with `relax_cell=True` to relax the
-        bulk cell in `pre_relax`.
+        The relaxation function.
     static_job
         The static function.
     pre_relax
         Whether to run a relaxation on the bulk structure before straining it
-        (true) or run a static calculation (false).
+        (true) or run a static calculation (false). The bulk cell is relaxed by
+        default; see `relax_cell` to override this.
     run_static
         Whether to run static calculations after the relaxations on the undeformed
         and volume-strained structures. Recommended when the final energy of a
@@ -56,6 +57,10 @@ def eos_flow(
     include_undeformed
         Whether to include the energy of the undeformed result as a data point in
         the fit. See [quacc.recipes.common.eos.eos_subflow][].
+    relax_cell
+        Whether to relax the bulk cell during `pre_relax`. Set to False to keep
+        the bulk cell fixed, or None to use the supplied `relax_job` settings.
+        Volume-strained structures are always relaxed at fixed cell.
 
     Returns
     -------
@@ -63,7 +68,8 @@ def eos_flow(
         See the return type-hint for the data structure.
     """
     if pre_relax:
-        undeformed_result = relax_job(atoms)
+        relax_kwargs = {} if relax_cell is None else {"relax_cell": relax_cell}
+        undeformed_result = relax_job(atoms, **relax_kwargs)
         if run_static:
             undeformed_result = static_job(undeformed_result["atoms"])
     else:

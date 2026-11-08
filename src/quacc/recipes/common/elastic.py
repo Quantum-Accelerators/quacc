@@ -31,6 +31,7 @@ def elastic_tensor_flow(
     pre_relax: bool = True,
     run_static: bool = False,
     deform_kwargs: dict[str, Any] | None = None,
+    relax_cell: bool | None = True,
 ) -> ElasticSchema:
     """
     Common workflow for calculating elastic tensors.
@@ -45,11 +46,16 @@ def elastic_tensor_flow(
         The static function
     pre_relax
         Whether to run a relaxation on the bulk structure before deformation (true) or run a static
-        calculation (false)
+        calculation (false). The bulk cell is relaxed by default; see `relax_cell`
+        to override this.
     run_static
         Whether to run static calculations after any relaxations on the undeformed or deformed structures
     deform_kwargs
         Additional keyword arguments to pass to [quacc.atoms.deformation.make_deformations_from_bulk][]
+    relax_cell
+        Whether to relax the bulk cell during `pre_relax`. Set to False to keep
+        the bulk cell fixed, or None to use the supplied `relax_job` settings.
+        Deformed structures are always relaxed at fixed cell.
 
     Returns
     -------
@@ -57,7 +63,8 @@ def elastic_tensor_flow(
         See the return type-hint for the data structure.
     """
     if pre_relax:
-        undeformed_result = relax_job(atoms)
+        relax_kwargs = {} if relax_cell is None else {"relax_cell": relax_cell}
+        undeformed_result = relax_job(atoms, **relax_kwargs)
         if run_static:
             undeformed_result = static_job(undeformed_result["atoms"])
     else:

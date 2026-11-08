@@ -194,9 +194,7 @@ def test_eos_flow(tmp_path, monkeypatch):
 
     # Start from a compressed cell so the pre-relaxation has to change the volume
     atoms = bulk("Cu", a=3.5)
-    outputs = eos_flow(
-        atoms, update_parameters(relax_job, {"relax_cell": True}), static_job
-    )
+    outputs = eos_flow(atoms, relax_job, static_job)
 
     # A cell relaxation on the bulk structure
     undeformed = outputs["undeformed_result"]
@@ -219,11 +217,7 @@ def test_eos_flow_run_static(tmp_path, monkeypatch, pre_relax):
 
     atoms = bulk("Cu", a=3.5)
     outputs = eos_flow(
-        atoms,
-        update_parameters(relax_job, {"relax_cell": True}),
-        static_job,
-        pre_relax=pre_relax,
-        run_static=True,
+        atoms, relax_job, static_job, pre_relax=pre_relax, run_static=True
     )
 
     # The bulk structure gets a static calculation, after a cell relaxation if

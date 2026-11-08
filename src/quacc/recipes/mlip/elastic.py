@@ -55,7 +55,10 @@ def elastic_tensor_flow(
     atoms
         Atoms object
     pre_relax
-        Whether to run a relaxation on the structure before deformation (true)
+        Whether to relax the bulk structure before deformation (true) or run a
+        static calculation (false). The bulk cell is relaxed by default. Set
+        `job_params={"relax_job": {"relax_cell": False}}` to keep it fixed.
+        Deformed structures are always relaxed at fixed cell.
     run_static
         Whether to run static calculations after any relaxations on the undeformed or deformed structures
     deform_kwargs
@@ -91,4 +94,5 @@ def elastic_tensor_flow(
         pre_relax=pre_relax,
         run_static=run_static,
         deform_kwargs=deform_kwargs,
+        relax_cell=None,  # Use the defaults and overrides from customize_jobs.
     )
