@@ -71,19 +71,6 @@ result = bulk_to_slabs_flow(atoms, job_params={"all": {"asap_cutoff": True}})
 print(result)
 ```
 
-### Precedence
-
-When several entries set the same parameter, the precedence is (lowest to highest): the recipe's defaults for all jobs, the recipe's defaults for that job, your `"all"` entry, and your entry for that job. Nested dictionaries (e.g. `opt_params` or `calc_kwargs`) are merged rather than replaced, and you can remove a default entirely by setting it to [quacc.Remove][]:
-
-```python
-from quacc import Remove
-
-job_params = {
-    "all": {"opt_params": {"fmax": 1e-3}},
-    "relax_job": {"opt_params": {"max_steps": 500}},  # relax_job keeps fmax=1e-3
-}
-```
-
 ## Concluding Comments
 
 At this point, you now have the basic idea of how quacc recipes work!
