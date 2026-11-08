@@ -19,12 +19,13 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import datetime
     from pathlib import Path
-    from typing import Any, Literal, NotRequired
+    from typing import Any, Generic, Literal, NotRequired, TypeVar
 
     from ase.atoms import Atoms
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
     from emmet.core.elasticity import ElasticityDoc
+    from emmet.core.eos import EOSDoc
     from emmet.core.math import ListMatrix3D, Matrix3D, Vector3D
     from emmet.core.symmetry import CrystalSystem
     from emmet.core.vasp.calc_types import CalcType
@@ -570,6 +571,15 @@ if TYPE_CHECKING:
         deformed_results: dict[str, list[RunSchema | OptSchema]]
         undeformed_result: RunSchema | OptSchema
         elasticity_doc: ElasticityDoc
+
+    EOSResultT = TypeVar("EOSResultT", bound=RunSchema)
+
+    class EOSSchema(TypedDict, Generic[EOSResultT]):
+        """Equation of state fitting schema"""
+
+        undeformed_result: RunSchema
+        deformed_results: dict[str, list[EOSResultT]]
+        eos_doc: EOSDoc
 
     class VibThermoResults(VibResults, ThermoResults):
         """Merged vibrational and thermochemical results."""
