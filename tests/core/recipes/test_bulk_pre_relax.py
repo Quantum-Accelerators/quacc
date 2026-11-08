@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import wraps
 from importlib import import_module
 
 import pytest
@@ -17,9 +18,7 @@ from quacc.wflow_tools.customizers import update_parameters
     ("flow_params", "job_relax_cell", "cell_relaxed"),
     [
         ({}, False, True),
-        ({"relax_cell": False}, True, False),
-        ({"relax_cell": None}, False, False),
-        ({"relax_cell": None}, True, True),
+        ({"job_params": {"relax_job": {"relax_cell": False}}}, True, False),
         ({"pre_relax": False}, True, False),
     ],
 )
@@ -35,12 +34,31 @@ def test_common_pre_relax(
     monkeypatch.chdir(tmp_path)
     atoms = bulk("Cu", a=3.5)
     customized_relax = update_parameters(relax_job, {"relax_cell": job_relax_cell})
+    job_params = {
+        "static_job": {"asap_cutoff": True},
+        **flow_params.get("job_params", {}),
+    }
+
+    def mark_job(func):
+        @wraps(func)
+        def wrapped(*args, **kwargs):
+            result = func(*args, **kwargs)
+            result["custom_decorator"] = True
+            return result
+
+        return wrapped
 
     outputs = workflow(
-        atoms, customized_relax, static_job, run_static=run_static, **flow_params
+        atoms,
+        customized_relax,
+        static_job,
+        run_static=run_static,
+        **{**flow_params, "job_params": job_params},
+        job_decorators={"all": mark_job},
     )
 
     undeformed = outputs["undeformed_result"]
+    assert undeformed["custom_decorator"] is True
     assert (
         undeformed["atoms"].get_volume() != pytest.approx(atoms.get_volume())
     ) is cell_relaxed
@@ -49,6 +67,8 @@ def test_common_pre_relax(
         if run_static or not flow_params.get("pre_relax", True)
         else "EMT Relax"
     )
+    if undeformed["name"] == "EMT Static":
+        assert undeformed["parameters"]["asap_cutoff"] is True
 
     # Pre-relaxation settings must never release the strained cells.
     if workflow is eos_flow:
@@ -63,12 +83,15 @@ def test_common_pre_relax(
         deformed_atoms, outputs["deformed_results"]["relax"], strict=True
     ):
         assert result["atoms"].cell.array == pytest.approx(expected.cell.array)
+        assert result["custom_decorator"] is True
     if run_static:
         for relaxed, static in zip(
             outputs["deformed_results"]["relax"],
             outputs["deformed_results"]["static"],
             strict=True,
         ):
+            assert static["custom_decorator"] is True
+            assert static["parameters"]["asap_cutoff"] is True
             assert static["atoms"].cell.array == pytest.approx(
                 relaxed["atoms"].cell.array
             )

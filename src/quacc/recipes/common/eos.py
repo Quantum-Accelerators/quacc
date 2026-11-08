@@ -8,6 +8,7 @@ from emmet.core.eos import EOSDoc
 
 from quacc import flow, job, subflow
 from quacc.atoms.deformation import make_volume_strains_from_bulk
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -29,7 +30,8 @@ def eos_flow(
     run_static: bool = False,
     strain_kwargs: dict[str, Any] | None = None,
     include_undeformed: bool = True,
-    relax_cell: bool | None = True,
+    job_params: dict[str, dict[str, Any]] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> EOSSchema[Schema]:
     """
     Common workflow for fitting an equation of state.
@@ -45,7 +47,8 @@ def eos_flow(
     pre_relax
         Whether to run a relaxation on the bulk structure before straining it
         (true) or run a static calculation (false). The bulk cell is relaxed by
-        default; see `relax_cell` to override this.
+        default. Set `job_params={"relax_job": {"relax_cell": False}}` to keep
+        it fixed. Volume-strained structures are always relaxed at fixed cell.
     run_static
         Whether to run static calculations after the relaxations on the undeformed
         and volume-strained structures. Recommended when the final energy of a
@@ -57,19 +60,30 @@ def eos_flow(
     include_undeformed
         Whether to include the energy of the undeformed result as a data point in
         the fit. See [quacc.recipes.common.eos.eos_subflow][].
-    relax_cell
-        Whether to relax the bulk cell during `pre_relax`. Set to False to keep
-        the bulk cell fixed, or None to use the supplied `relax_job` settings.
-        Volume-strained structures are always relaxed at fixed cell.
+    job_params
+        Custom parameters for `relax_job` and `static_job`, keyed by job name.
+        The key `"all"` applies parameters to both jobs before job-specific
+        parameters. The relaxation job defaults to `relax_cell=True`; strained
+        structures always override this with `relax_cell=False`.
+    job_decorators
+        Custom decorators for `relax_job` and `static_job`, keyed by job name.
+        The key `"all"` applies a decorator to both jobs. A value of None strips
+        the existing decorator.
 
     Returns
     -------
     EOSSchema
         See the return type-hint for the data structure.
     """
+    relax_job, static_job = customize_jobs(
+        {"relax_job": relax_job, "static_job": static_job},
+        param_defaults={"relax_job": {"relax_cell": True}},
+        param_swaps=job_params,
+        decorators=job_decorators,
+    ).values()
+
     if pre_relax:
-        relax_kwargs = {} if relax_cell is None else {"relax_cell": relax_cell}
-        undeformed_result = relax_job(atoms, **relax_kwargs)
+        undeformed_result = relax_job(atoms)
         if run_static:
             undeformed_result = static_job(undeformed_result["atoms"])
     else:

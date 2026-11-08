@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-- The common EOS and elastic tensor flows now relax the bulk cell during `pre_relax` by default. Set `relax_cell=False` to keep the bulk cell fixed, or `relax_cell=None` to use the supplied relaxation job's settings. EMT and MLIP elastic flows retain their cell-relaxation defaults and `job_params` overrides. Strained structures remain fixed-cell relaxations.
+- The common EOS and elastic tensor flows now relax the bulk cell during `pre_relax` by default. Use `job_params={"relax_job": {"relax_cell": False}}` to keep the bulk cell fixed. Both common flows support `job_params` and `job_decorators`, and the EMT and MLIP elastic wrappers delegate customization to the common flow. Strained structures remain fixed-cell relaxations.
 
 ## [1.8.2]
 

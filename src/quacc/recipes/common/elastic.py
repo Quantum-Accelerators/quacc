@@ -12,8 +12,10 @@ from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc import flow, job, subflow
 from quacc.atoms.deformation import make_deformations_from_bulk
+from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from typing import Any
 
     from ase.atoms import Atoms
@@ -31,7 +33,8 @@ def elastic_tensor_flow(
     pre_relax: bool = True,
     run_static: bool = False,
     deform_kwargs: dict[str, Any] | None = None,
-    relax_cell: bool | None = True,
+    job_params: dict[str, dict[str, Any]] | None = None,
+    job_decorators: dict[str, Callable | None] | None = None,
 ) -> ElasticSchema:
     """
     Common workflow for calculating elastic tensors.
@@ -46,25 +49,37 @@ def elastic_tensor_flow(
         The static function
     pre_relax
         Whether to run a relaxation on the bulk structure before deformation (true) or run a static
-        calculation (false). The bulk cell is relaxed by default; see `relax_cell`
-        to override this.
+        calculation (false). The bulk cell is relaxed by default. Set
+        `job_params={"relax_job": {"relax_cell": False}}` to keep it fixed.
+        Deformed structures are always relaxed at fixed cell.
     run_static
         Whether to run static calculations after any relaxations on the undeformed or deformed structures
     deform_kwargs
         Additional keyword arguments to pass to [quacc.atoms.deformation.make_deformations_from_bulk][]
-    relax_cell
-        Whether to relax the bulk cell during `pre_relax`. Set to False to keep
-        the bulk cell fixed, or None to use the supplied `relax_job` settings.
-        Deformed structures are always relaxed at fixed cell.
+    job_params
+        Custom parameters for `relax_job` and `static_job`, keyed by job name.
+        The key `"all"` applies parameters to both jobs before job-specific
+        parameters. The relaxation job defaults to `relax_cell=True`; deformed
+        structures always override this with `relax_cell=False`.
+    job_decorators
+        Custom decorators for `relax_job` and `static_job`, keyed by job name.
+        The key `"all"` applies a decorator to both jobs. A value of None strips
+        the existing decorator.
 
     Returns
     -------
     ElasticSchema
         See the return type-hint for the data structure.
     """
+    relax_job, static_job = customize_jobs(
+        {"relax_job": relax_job, "static_job": static_job},
+        param_defaults={"relax_job": {"relax_cell": True}},
+        param_swaps=job_params,
+        decorators=job_decorators,
+    ).values()
+
     if pre_relax:
-        relax_kwargs = {} if relax_cell is None else {"relax_cell": relax_cell}
-        undeformed_result = relax_job(atoms, **relax_kwargs)
+        undeformed_result = relax_job(atoms)
         if run_static:
             undeformed_result = static_job(undeformed_result["atoms"])
     else:
