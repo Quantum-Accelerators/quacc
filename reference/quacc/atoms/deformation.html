@@ -1547,6 +1547,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#quacc.atoms.deformation.make_volume_strains_from_bulk" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        make_volume_strains_from_bulk
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -2504,6 +2515,33 @@
     
   
   elastic
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+                
+              
+                
+                  
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../recipes/common/eos.html" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+  eos
 
     
   </span>
@@ -6248,6 +6286,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#quacc.atoms.deformation.make_volume_strains_from_bulk" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        make_volume_strains_from_bulk
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -6595,6 +6644,162 @@ structures and their strains, useful for fitting later.</p>
 </span><span id="quacc.atoms.deformation.make_deformations_from_bulk--source--__span-0-47"><a id="quacc.atoms.deformation.make_deformations_from_bulk--source--__codelineno-0-47" name="quacc.atoms.deformation.make_deformations_from_bulk--source--__codelineno-0-47"></a>        <span class="n">shear_strains</span><span class="o">=</span><span class="n">shear_strains</span><span class="p">,</span>
 </span><span id="quacc.atoms.deformation.make_deformations_from_bulk--source--__span-0-48"><a id="quacc.atoms.deformation.make_deformations_from_bulk--source--__codelineno-0-48" name="quacc.atoms.deformation.make_deformations_from_bulk--source--__codelineno-0-48"></a>        <span class="n">symmetry</span><span class="o">=</span><span class="n">symmetry</span><span class="p">,</span>
 </span><span id="quacc.atoms.deformation.make_deformations_from_bulk--source--__span-0-49"><a id="quacc.atoms.deformation.make_deformations_from_bulk--source--__codelineno-0-49" name="quacc.atoms.deformation.make_deformations_from_bulk--source--__codelineno-0-49"></a>    <span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="quacc.atoms.deformation.make_volume_strains_from_bulk" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">make_volume_strains_from_bulk</span>
+
+
+<a href="#quacc.atoms.deformation.make_volume_strains_from_bulk" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">make_volume_strains_from_bulk</span><span class="p">(</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;ase.atoms.Atoms&lt;/code&gt;" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">,</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">volume_strains</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;collections.abc.Sequence&lt;/code&gt;" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence">Sequence</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a></span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        <span class="o">-</span><span class="mf">0.075</span><span class="p">,</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>        <span class="o">-</span><span class="mf">0.06</span><span class="p">,</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        <span class="o">-</span><span class="mf">0.045</span><span class="p">,</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        <span class="o">-</span><span class="mf">0.03</span><span class="p">,</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>        <span class="o">-</span><span class="mf">0.015</span><span class="p">,</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="mf">0.015</span><span class="p">,</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="mf">0.03</span><span class="p">,</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="mf">0.045</span><span class="p">,</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>        <span class="mf">0.06</span><span class="p">,</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        <span class="mf">0.075</span><span class="p">,</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>    <span class="p">),</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a></span><span class="p">[</span><span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;ase.atoms.Atoms&lt;/code&gt;" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></span><span class="p">]</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Function to generate isotropically strained copies of a bulk atoms object.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>atoms</code></b>
+              (<code><a class="autorefs autorefs-external" title="&lt;code&gt;ase.atoms.Atoms&lt;/code&gt;" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>bulk atoms</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>volume_strains</code></b>
+              (<code><a class="autorefs autorefs-external" title="&lt;code&gt;collections.abc.Sequence&lt;/code&gt;" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence">Sequence</a>[<a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/functions.html#float">float</a>]</code>, default:
+                  <code>(-0.075, -0.06, -0.045, -0.03, -0.015, 0.015, 0.03, 0.045, 0.06, 0.075)</code>
+)
+          –
+          <div class="doc-md-description">
+            <p>Fractional changes in cell volume, e.g. -0.06 for a 6% compression. Each
+lattice vector is scaled by (1 + volume_strain) ** (&#8531;), and the
+fractional coordinates are kept fixed.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/builtins/stdtypes.html#list">list</a>[<a class="autorefs autorefs-external" title="&lt;code&gt;ase.atoms.Atoms&lt;/code&gt;" href="https://docs.ase-lib.org/ase/atoms.html#ase.Atoms">Atoms</a>]</code>
+          –
+          <div class="doc-md-description">
+            <p>The strained atoms objects, one per volume strain.</p>
+          </div>
+        </li>
+    </ul>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>quacc/atoms/deformation.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-52">52</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-53">53</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-56">56</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-57">57</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-58">58</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-68">68</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-69">69</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-72">72</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-78">78</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-79">79</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-80">80</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-81">81</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-82">82</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-83">83</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-84">84</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-85">85</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-86">86</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-87">87</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-88">88</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-89">89</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-90">90</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-91">91</a></span>
+<span class="normal"><a href="#quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-92">92</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-52"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-52" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-52"></a><span class="k">def</span><span class="w"> </span><span class="nf">make_volume_strains_from_bulk</span><span class="p">(</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-53"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-53" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-53"></a>    <span class="n">atoms</span><span class="p">:</span> <span class="n">Atoms</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-54"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-54" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-54"></a>    <span class="n">volume_strains</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-55"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-55" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-55"></a>        <span class="o">-</span><span class="mf">0.075</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-56"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-56" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-56"></a>        <span class="o">-</span><span class="mf">0.06</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-57"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-57" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-57"></a>        <span class="o">-</span><span class="mf">0.045</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-58"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-58" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-58"></a>        <span class="o">-</span><span class="mf">0.03</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-59"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-59" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-59"></a>        <span class="o">-</span><span class="mf">0.015</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-60"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-60" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-60"></a>        <span class="mf">0.015</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-61"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-61" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-61"></a>        <span class="mf">0.03</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-62"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-62" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-62"></a>        <span class="mf">0.045</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-63"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-63" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-63"></a>        <span class="mf">0.06</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-64"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-64" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-64"></a>        <span class="mf">0.075</span><span class="p">,</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-65"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-65" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-65"></a>    <span class="p">),</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-66"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-66" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-66"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Atoms</span><span class="p">]:</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-67"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-67" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-67"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-68"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-68" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-68"></a><span class="sd">    Function to generate isotropically strained copies of a bulk atoms object.</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-69"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-69" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-69"></a>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-70"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-70" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-70"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-71"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-71" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-71"></a><span class="sd">    ----------</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-72"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-72" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-72"></a><span class="sd">    atoms</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-73"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-73" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-73"></a><span class="sd">        bulk atoms</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-74"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-74" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-74"></a><span class="sd">    volume_strains</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-75"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-75" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-75"></a><span class="sd">        Fractional changes in cell volume, e.g. -0.06 for a 6% compression. Each</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-76"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-76" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-76"></a><span class="sd">        lattice vector is scaled by (1 + volume_strain) ** (1/3), and the</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-77"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-77" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-77"></a><span class="sd">        fractional coordinates are kept fixed.</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-78"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-78" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-78"></a>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-79"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-79" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-79"></a><span class="sd">    Returns</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-80"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-80" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-80"></a><span class="sd">    -------</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-81"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-81" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-81"></a><span class="sd">    list[Atoms]</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-82"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-82" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-82"></a><span class="sd">        The strained atoms objects, one per volume strain.</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-83"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-83" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-83"></a><span class="sd">    """</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-84"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-84" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-84"></a>    <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">strain</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">for</span> <span class="n">strain</span> <span class="ow">in</span> <span class="n">volume_strains</span><span class="p">):</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-85"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-85" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-85"></a>        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Volume strains must be greater than -1."</span><span class="p">)</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-86"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-86" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-86"></a>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-87"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-87" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-87"></a>    <span class="n">strained_atoms</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-88"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-88" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-88"></a>    <span class="k">for</span> <span class="n">strain</span> <span class="ow">in</span> <span class="n">volume_strains</span><span class="p">:</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-89"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-89" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-89"></a>        <span class="n">new_atoms</span> <span class="o">=</span> <span class="n">atoms</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-90"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-90" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-90"></a>        <span class="n">new_atoms</span><span class="o">.</span><span class="n">set_cell</span><span class="p">(</span><span class="n">atoms</span><span class="o">.</span><span class="n">get_cell</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">strain</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">3</span><span class="p">),</span> <span class="n">scale_atoms</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-91"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-91" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-91"></a>        <span class="n">strained_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_atoms</span><span class="p">)</span>
+</span><span id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__span-0-92"><a id="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-92" name="quacc.atoms.deformation.make_volume_strains_from_bulk--source--__codelineno-0-92"></a>    <span class="k">return</span> <span class="n">strained_atoms</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
