@@ -175,11 +175,15 @@ def test_customize_jobs_signature_check():
     def flexible(atoms, **kwargs):
         return kwargs
 
-    with pytest.raises(ValueError, match=r"Invalid parameters for 'relax_job': \['fmx'\]"):
+    with pytest.raises(
+        ValueError, match=r"Invalid parameters for 'relax_job': \['fmx'\]"
+    ):
         customize_jobs({"relax_job": relax}, param_swaps={"relax_job": {"fmx": 0.01}})
 
     with pytest.raises(ValueError, match=r"Invalid parameters for 'relax_job'"):
-        customize_jobs({"relax_job": relax}, param_defaults={"relax_job": {"fmx": 0.01}})
+        customize_jobs(
+            {"relax_job": relax}, param_defaults={"relax_job": {"fmx": 0.01}}
+        )
 
     # "all" may contain parameters that only some jobs accept
     jobs = customize_jobs(

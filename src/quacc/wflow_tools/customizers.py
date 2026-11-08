@@ -276,7 +276,9 @@ def customize_jobs(
 
         stripped = False
         if name in decorators or "all" in decorators:
-            new_decorator = decorators[name] if name in decorators else decorators["all"]
+            new_decorator = (
+                decorators[name] if name in decorators else decorators["all"]
+            )
             func_ = redecorate(func_, new_decorator)
             stripped = new_decorator is None
 
