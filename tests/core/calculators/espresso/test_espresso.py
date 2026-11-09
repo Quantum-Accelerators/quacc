@@ -24,6 +24,64 @@ def test_projwfc_preserves_first_energy_point(tmp_path: Path) -> None:
     assert_array_equal(projected["pdos"], [3.0, 5.0, 7.0])
 
 
+@pytest.mark.parametrize("single_row", [False, True])
+def test_projwfc_spin_polarized(tmp_path: Path, single_row: bool) -> None:
+    """Keep distinct DOS/PDOS spin channels and expose their sums."""
+    rows = "-1.0 3.0 4.0 0.3 0.4\n0.0 10.0 20.0 1.0 2.0\n"
+    if single_row:
+        rows = rows.splitlines(keepends=True)[0]
+    (tmp_path / "pwscf.pdos_tot").write_text(
+        "# E (eV) dosup(E) dosdw(E) pdosup(E) pdosdw(E)\n" + rows
+    )
+
+    projected = EspressoTemplate("projwfc").read_results(tmp_path)["projwfc_results"]
+    stop = 1 if single_row else 2
+
+    assert_array_equal(projected["energy"], [-1.0, 0.0][:stop])
+    assert_array_equal(projected["dos_up"], [3.0, 10.0][:stop])
+    assert_array_equal(projected["dos_down"], [4.0, 20.0][:stop])
+    assert_array_equal(projected["pdos_up"], [0.3, 1.0][:stop])
+    assert_array_equal(projected["pdos_down"], [0.4, 2.0][:stop])
+    assert_array_equal(projected["dos"], [7.0, 30.0][:stop])
+    assert_array_equal(projected["pdos"], [0.7, 3.0][:stop])
+
+
+def test_projwfc_single_nonmagnetic_row(tmp_path: Path) -> None:
+    """A one-point grid retains one-dimensional arrays and the existing keys."""
+    (tmp_path / "pwscf.pdos_tot").write_text("# E (eV) dos(E) pdos(E)\n0 10 1\n")
+
+    projected = EspressoTemplate("projwfc").read_results(tmp_path)["projwfc_results"]
+
+    assert set(projected) == {"energy", "dos", "pdos"}
+    assert_array_equal(projected["energy"], [0])
+    assert_array_equal(projected["dos"], [10])
+    assert_array_equal(projected["pdos"], [1])
+
+
+@pytest.mark.parametrize(
+    ("header", "row", "message"),
+    [
+        ("# E (eV) dos(E) pdosup(E) pdosdw(E)", "0 3 1 2", "Unsupported"),
+        ("# ik E (eV) dos(E) pdos(E)", "1 0 3 1", "k-resolved"),
+        ("# ik E (eV) dos(E) pdosup(E) pdosdw(E)", "1 0 3 1 2", "k-resolved"),
+        (
+            "# ik E (eV) dosup(E) dosdw(E) pdosup(E) pdosdw(E)",
+            "1 0 3 4 1 2",
+            "k-resolved",
+        ),
+        ("# E (eV) dos(E)", "0 3", "Unsupported"),
+    ],
+)
+def test_projwfc_unsupported_layout(
+    tmp_path: Path, header: str, row: str, message: str
+) -> None:
+    """Reject unsupported layouts rather than silently assigning wrong columns."""
+    (tmp_path / "pwscf.pdos_tot").write_text(f"{header}\n{row}\n")
+
+    with pytest.raises(ValueError, match=message):
+        EspressoTemplate("projwfc").read_results(tmp_path)
+
+
 def test_grid_copy_files_non_gamma():
     directory = Path("previous")
 
