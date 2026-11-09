@@ -11,4 +11,4 @@ pymatgen-core==2026.10.31
 # https://github.com/boto/botocore/issues/3844
 python-dateutil<3
 ruamel.yaml==0.19.1
-typer==0.27.3
+typer==0.28.0
