@@ -231,9 +231,9 @@ class EspressoTemplate(EspressoTemplate_):
         elif self.binary == "projwfc":
             with Path(directory, "pwscf.pdos_tot").open() as fd:
                 pdos_data = np.loadtxt(fd.readlines())
-                energy = pdos_data[1:, 0]
-                dos = pdos_data[1:, 1]
-                pdos = pdos_data[1:, 2]
+                energy = pdos_data[:, 0]
+                dos = pdos_data[:, 1]
+                pdos = pdos_data[:, 2]
             results = {"projwfc_results": {"energy": energy, "dos": dos, "pdos": pdos}}
         elif self.binary == "matdyn":
             fldos = Path(directory, "matdyn.dos")

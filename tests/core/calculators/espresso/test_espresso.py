@@ -4,9 +4,24 @@ from pathlib import Path
 
 import pytest
 from ase.atoms import Atoms
+from numpy.testing import assert_array_equal
 
 from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 from quacc.calculators.espresso.utils import grid_copy_files, prepare_copy_files
+
+
+def test_projwfc_preserves_first_energy_point(tmp_path: Path) -> None:
+    """The text loader already skips the comment header, retaining every data row."""
+    (tmp_path / "pwscf.pdos_tot").write_text(
+        "# E (eV) dos(E) pdos(E)\n-1.0 2.0 3.0\n0.0 4.0 5.0\n1.0 6.0 7.0\n"
+    )
+
+    results = EspressoTemplate("projwfc").read_results(tmp_path)
+    projected = results["projwfc_results"]
+
+    assert_array_equal(projected["energy"], [-1.0, 0.0, 1.0])
+    assert_array_equal(projected["dos"], [2.0, 4.0, 6.0])
+    assert_array_equal(projected["pdos"], [3.0, 5.0, 7.0])
 
 
 def test_grid_copy_files_non_gamma():
