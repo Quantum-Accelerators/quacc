@@ -211,6 +211,16 @@ class EspressoTemplate(EspressoTemplate_):
         -------
         dict
             The results dictionnary
+
+        Notes
+        -----
+        For ``projwfc``, ``projwfc_results`` contains ``energy`` in eV and
+        ``dos`` and ``pdos`` in states per eV. Energies retain the reference of
+        the QE output file. For collinear spin-polarized calculations, ``dos``
+        and ``pdos`` are sums over both spin channels, and ``dos_up``,
+        ``dos_down``, ``pdos_up``, and ``pdos_down`` retain the individual
+        channels without changing their signs. Noncollinear output without
+        spin-orbit coupling and k-resolved output are not supported.
         """
         results = {}
         if self.binary == "pw":
@@ -230,11 +240,33 @@ class EspressoTemplate(EspressoTemplate_):
             results = {"dos_results": {"dos": dos, "fermi": fermi}}
         elif self.binary == "projwfc":
             with Path(directory, "pwscf.pdos_tot").open() as fd:
-                pdos_data = np.loadtxt(fd.readlines())
-                energy = pdos_data[1:, 0]
-                dos = pdos_data[1:, 1]
-                pdos = pdos_data[1:, 2]
-            results = {"projwfc_results": {"energy": energy, "dos": dos, "pdos": pdos}}
+                lines = fd.readlines()
+            if any(re.match(r"\s*#\s*ik\b", line, re.IGNORECASE) for line in lines):
+                raise ValueError("k-resolved projwfc DOS output is not supported.")
+            pdos_data = np.loadtxt(lines, ndmin=2)
+            if pdos_data.shape[1] == 3:
+                projected = {
+                    "energy": pdos_data[:, 0],
+                    "dos": pdos_data[:, 1],
+                    "pdos": pdos_data[:, 2],
+                }
+            elif pdos_data.shape[1] == 5:
+                projected = {
+                    "energy": pdos_data[:, 0],
+                    "dos": pdos_data[:, 1] + pdos_data[:, 2],
+                    "pdos": pdos_data[:, 3] + pdos_data[:, 4],
+                    "dos_up": pdos_data[:, 1],
+                    "dos_down": pdos_data[:, 2],
+                    "pdos_up": pdos_data[:, 3],
+                    "pdos_down": pdos_data[:, 4],
+                }
+            else:
+                raise ValueError(
+                    "Unsupported projwfc DOS layout: expected 3 nonmagnetic/SOC "
+                    "or 5 collinear spin-polarized columns, "
+                    f"got {pdos_data.shape[1]}."
+                )
+            results = {"projwfc_results": projected}
         elif self.binary == "matdyn":
             fldos = Path(directory, "matdyn.dos")
             if fldos.exists():
