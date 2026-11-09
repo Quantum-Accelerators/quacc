@@ -4,7 +4,7 @@ emmet-core==0.87.3
 frozendict==2.5.1
 monty==2026.10.21
 psutil==7.2.2
-pydantic==2.14.2
+pydantic==2.14.3
 pydantic-settings==2.16.2
 pymatgen-core==2026.10.31
 # Avoid obsolete Boto dependency chains until python-dateutil 3 is supported.
