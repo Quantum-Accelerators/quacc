@@ -7,9 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.dft.kpoints import bandpath
-from pymatgen.io.ase import AseAtomsAdaptor
-from pymatgen.symmetry.analyzer import SpacegroupAnalyzer
+from ase.dft.kpoints import BandPath
 
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
@@ -59,8 +57,10 @@ def bands_pw_job(
         will directly read the necessary files from this directory, eliminating the need
         to manually copy files. The directory will be ungzipped if necessary.
     make_bandpath
-        If True, it returns the primitive cell for your structure and generates
-        the high symmetry k-path using Latmer-Munro approach.
+        If True, generates the high symmetry k-path using the Latimer-Munro
+        approach for the cell as given. The atoms must have the same cell and
+        atom count as the SCF structure that produced copy_files or prev_outdir,
+        because pw.x reads the structure from the SCF save.
         For more information look at
         [pymatgen.symmetry.bandstructure.HighSymmKpath][]
     line_density
@@ -85,15 +85,15 @@ def bands_pw_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {
+    calc_defaults: dict[str, Any] = {
         "input_data": {"control": {"calculation": "bands", "verbosity": "high"}}
     }
     if make_bandpath:
-        structure = AseAtomsAdaptor.get_structure(atoms)
-        primitive = SpacegroupAnalyzer(structure).get_primitive_standard_structure()
-        atoms = primitive.to_ase_atoms()
-        calc_defaults["kpts"] = bandpath(
-            convert_pmg_kpts(
+        # These k-points already use the input cell's reciprocal basis. Use BandPath
+        # directly: ase.dft.kpoints.bandpath(array, cell) would re-read them in ASE's
+        # standard-lattice basis if one uses a non-standard cell.
+        calc_defaults["kpts"] = BandPath(
+            kpts=convert_pmg_kpts(
                 {"line_density": line_density}, atoms, force_gamma=force_gamma
             )[0],
             cell=atoms.get_cell(),
@@ -252,8 +252,10 @@ def bands_flow(
         This allows to generate the fermi surface of your structure.
         It requires a uniform unshifted k-point grid bands calculation.
     make_bandpath
-        If True, it returns the primitive cell for your structure and generates
-        the high symmetry k-path using Latmer-Munro approach.
+        If True, generates the high symmetry k-path using the Latimer-Munro
+        approach for the cell as given. The atoms must have the same cell and
+        atom count as the SCF structure that produced copy_files (or prev_outdir
+        passed through job_params), because pw.x reads the structure from the SCF save.
         For more information look at
         [pymatgen.symmetry.bandstructure.HighSymmKpath][]
     line_density
