@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ase.dft.kpoints import bandpath
+from ase.dft.kpoints import BandPath
 
 from quacc import flow, job
 from quacc.calculators.espresso.espresso import EspressoTemplate
@@ -85,12 +85,15 @@ def bands_pw_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = {
+    calc_defaults: dict[str, Any] = {
         "input_data": {"control": {"calculation": "bands", "verbosity": "high"}}
     }
     if make_bandpath:
-        calc_defaults["kpts"] = bandpath(
-            convert_pmg_kpts(
+        # These k-points already use the input cell's reciprocal basis. Use BandPath
+        # directly: ase.dft.kpoints.bandpath(array, cell) would re-read them in ASE's
+        # standard-lattice basis if one uses a non-standard cell.
+        calc_defaults["kpts"] = BandPath(
+            kpts=convert_pmg_kpts(
                 {"line_density": line_density}, atoms, force_gamma=force_gamma
             )[0],
             cell=atoms.get_cell(),

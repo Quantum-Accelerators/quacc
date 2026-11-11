@@ -5,7 +5,6 @@ from shutil import which
 
 import pytest
 from ase.build import bulk
-from ase.dft.kpoints import bandpath
 from numpy.testing import assert_allclose
 
 from quacc.recipes.espresso.bands import bands_flow
@@ -48,13 +47,10 @@ def test_bands_flow_conventional_cell(
     bands_results = output["bands_pw"]
     assert len(bands_results["atoms"]) == 8
     assert_allclose(bands_results["atoms"].get_cell(), atoms.get_cell(), atol=1.0e-4)
-    expected_path = bandpath(
-        convert_pmg_kpts({"line_density": 1}, atoms, force_gamma=True)[0],
-        cell=atoms.get_cell(),
-    )
+    expected_kpts = convert_pmg_kpts({"line_density": 1}, atoms, force_gamma=True)[0]
     assert_allclose(bands_results["parameters"]["kpts"].cell, atoms.get_cell())
     assert_allclose(
-        bands_results["parameters"]["kpts"].kpts, expected_path.kpts, atol=1.0e-8
+        bands_results["parameters"]["kpts"].kpts, expected_kpts, atol=1.0e-8
     )
     assert Path(output["bands_pp"]["dir_name"], "bands.dat.gz").is_file()
 
