@@ -318,7 +318,7 @@ def test_matdyn_job(tmp_path, monkeypatch):
         assert recycled_input[0]["input"]["fleig"] == "matdyn.eig"
 
 
-def test_phonon_dos_flow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_phonon_dos_flow(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 

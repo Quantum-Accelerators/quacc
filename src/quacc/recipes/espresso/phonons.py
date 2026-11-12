@@ -204,8 +204,9 @@ def phonon_dos_flow(
     out on a coarse q-grid, the force constants are calculated and extrapolated to a
     finer q-grid, and the phonon DOS is calculated.
 
-    Only dynamical matrices and real-space force constants are staged between the
-    respective post-processing jobs.
+    Between steps, only the files the next program reads are copied: the dynamical
+    matrices (`matdyn*`) from ph.x to q2r.x, and the force constants (`q2r.fc*`) from
+    q2r.x to matdyn.x.
 
     Consists of following jobs that can be modified:
 

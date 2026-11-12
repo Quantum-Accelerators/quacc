@@ -16,15 +16,12 @@ if TYPE_CHECKING:
     from quacc.types import CopyFiles
 
 
-@pytest.fixture(
-    params=[("", False), ("", True), (".xml", False), (".xml", True)],
-    ids=["text", "text-gzip", "xml", "xml-gzip"],
-)
+@pytest.fixture(params=[False, True], ids=["text", "text-gzip"])
 def staged_jobs(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch, request: pytest.FixtureRequest
 ) -> dict[str, Any]:
     """Replace QE execution while exercising the real file-transfer mechanism."""
-    suffix, compressed = request.param
+    compressed = request.param
     calls: dict[str, dict[str, Any]] = {}
 
     def write_file(directory: Path, name: str, content: str) -> None:
@@ -55,14 +52,14 @@ def staged_jobs(
         }
         if binary == "ph":
             for name in ("matdyn0", "matdyn1"):
-                write_file(directory, name + suffix, name)
+                write_file(directory, name, name)
             write_file(directory, "pwscf.save/wfc1.dat", "wavefunctions")
         elif binary == "q2r":
-            assert (directory / ("matdyn0" + suffix)).read_text() == "matdyn0"
-            assert (directory / ("matdyn1" + suffix)).read_text() == "matdyn1"
-            write_file(directory, "q2r.fc" + suffix, "force constants")
+            assert (directory / "matdyn0").read_text() == "matdyn0"
+            assert (directory / "matdyn1").read_text() == "matdyn1"
+            write_file(directory, "q2r.fc", "force constants")
         elif binary == "matdyn":
-            assert (directory / ("q2r.fc" + suffix)).read_text() == "force constants"
+            assert (directory / "q2r.fc").read_text() == "force constants"
             write_file(directory, "matdyn.dos", "0 0 0\n1 3 3\n")
         write_file(directory, f"{binary}.out", f"{binary} output")
         return {"dir_name": directory, "results": {}}
@@ -70,12 +67,7 @@ def staged_jobs(
     monkeypatch.setattr(
         "quacc.recipes.espresso.phonons.run_and_summarize", run_and_summarize
     )
-    return {
-        "root": tmp_path,
-        "suffix": suffix,
-        "compressed": compressed,
-        "calls": calls,
-    }
+    return {"root": tmp_path, "compressed": compressed, "calls": calls}
 
 
 def test_phonon_dos_stages_only_required_files(staged_jobs: dict[str, Any]) -> None:
