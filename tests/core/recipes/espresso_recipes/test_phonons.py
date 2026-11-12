@@ -318,7 +318,7 @@ def test_matdyn_job(tmp_path, monkeypatch):
         assert recycled_input[0]["input"]["fleig"] == "matdyn.eig"
 
 
-def test_phonon_dos_flow(tmp_path, monkeypatch):
+def test_phonon_dos_flow(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.chdir(tmp_path)
     monkeypatch.setenv("OMP_NUM_THREADS", "1")
 
@@ -340,7 +340,19 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
             pseudopotentials=pseudopotentials,
             kspacing=1.0,
         )
-        assert phonon_dos_flow(prev_outdir=relax_output["dir_name"])
+        results = phonon_dos_flow(prev_outdir=relax_output["dir_name"])
+
+        q2r_dir = Path(results["q2r_job"]["dir_name"])
+        matdyn_dir = Path(results["matdyn_job"]["dir_name"])
+        assert (q2r_dir / "matdyn0.gz").exists()
+        assert not (q2r_dir / "ph.out.gz").exists()
+        assert (matdyn_dir / "q2r.fc.gz").exists()
+        assert not (matdyn_dir / "matdyn0.gz").exists()
+        assert not (matdyn_dir / "q2r.out.gz").exists()
+        assert (
+            results["matdyn_job"]["results"]["matdyn_results"]["phonon_dos"].shape[1]
+            == 3
+        )
 
 
 def test_phonon_calculation_spin_orbit_example_06(tmp_path, monkeypatch):

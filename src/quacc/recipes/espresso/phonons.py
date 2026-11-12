@@ -204,6 +204,9 @@ def phonon_dos_flow(
     out on a coarse q-grid, the force constants are calculated and extrapolated to a
     finer q-grid, and the phonon DOS is calculated.
 
+    Only dynamical matrices and real-space force constants are staged between the
+    respective post-processing jobs.
+
     Consists of following jobs that can be modified:
 
     1. ph.x calculation
@@ -273,10 +276,20 @@ def phonon_dos_flow(
         decorators=job_decorators,
     ).values()
 
+    dynamical_matrix_files = "matdyn*"
+    real_space_force_constant_files = "q2r.fc*"
+
     ph_job_results = ph_job(copy_files=copy_files, prev_outdir=prev_outdir)
-    fc_job_results = fc_job([{"source": ph_job_results["dir_name"], "filenames": "*"}])
+    fc_job_results = fc_job(
+        [{"source": ph_job_results["dir_name"], "filenames": dynamical_matrix_files}]
+    )
     dos_job_results = dos_job(
-        [{"source": fc_job_results["dir_name"], "filenames": "*"}]
+        [
+            {
+                "source": fc_job_results["dir_name"],
+                "filenames": real_space_force_constant_files,
+            }
+        ]
     )
 
     return {
