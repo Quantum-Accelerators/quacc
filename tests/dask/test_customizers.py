@@ -133,3 +133,15 @@ def test_double_change_settings_redecorate_job(tmp_path_factory):
     client.compute(write_file_job()).result()
     assert not Path(tmp_dir1 / "job.txt").exists()
     assert Path(tmp_dir2 / "job.txt").exists()
+
+
+def test_customize_jobs_stripped_decorator_stays_stripped():
+    @job
+    def add(a, b=1):
+        return a + b
+
+    jobs = customize_jobs(
+        {"add": add}, param_swaps={"all": {"b": 2}}, decorators={"add": None}
+    )
+    # Not re-wrapped with @job, so it runs eagerly instead of returning a Delayed
+    assert jobs["add"](1) == 3

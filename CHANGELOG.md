@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Added `quacc.wflow_tools.customizers.resolve_job_params` to get the fully merged parameters for each job in a flow
+- `customize_jobs` now checks job-specific parameter names against the job's signature when the flow is built
+
+### Changed
+
+- In `job_params`, a user's `"all"` entry now takes precedence over a recipe's job-specific defaults
+- `"all"` and job-specific entries in `job_params` are now merged recursively, consistent with how user parameters are merged with recipe defaults
+
+### Fixed
+
+- Fixed `espresso.phonons.grid_phonon_flow` raising a `KeyError` when `job_params["ph_job"]` was not set, and dropping the recipe's default `ph_job` input data for the grid jobs
+- Fixed `job_decorators={"name": None}` being undone on Dask and Ray when that job also had custom parameters
+
 ## [1.8.2]
 
 ### Added

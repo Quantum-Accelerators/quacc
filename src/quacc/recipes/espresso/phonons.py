@@ -19,7 +19,7 @@ from quacc.calculators.espresso.espresso import EspressoTemplate
 from quacc.calculators.espresso.utils import grid_copy_files, grid_prepare_repr
 from quacc.recipes.espresso._base import run_and_summarize
 from quacc.utils.dicts import recursive_dict_merge
-from quacc.wflow_tools.customizers import customize_jobs
+from quacc.wflow_tools.customizers import customize_jobs, resolve_job_params
 
 if TYPE_CHECKING:
     from collections import UserDict
@@ -475,6 +475,9 @@ def grid_phonon_flow(
             job_params.get("ph_job"),
         ),
     }
+    resolved_job_params = resolve_job_params(
+        ["ph_init_job", "ph_job", "ph_recover_job"], default_job_params, job_params
+    )
     ph_init_job, ph_job, ph_recover_job = customize_jobs(
         {"ph_init_job": phonon_job, "ph_job": phonon_job, "ph_recover_job": phonon_job},
         param_defaults=default_job_params,
@@ -484,7 +487,10 @@ def grid_phonon_flow(
 
     ph_init_job_results = ph_init_job(copy_files=copy_files, prev_outdir=prev_outdir)
     grid_results = _grid_phonon_subflow(
-        job_params["ph_job"]["input_data"], ph_init_job_results, ph_job, nblocks=nblocks
+        resolved_job_params["ph_job"].get("input_data", {}),
+        ph_init_job_results,
+        ph_job,
+        nblocks=nblocks,
     )
 
     return _ph_recover_subflow(grid_results)
