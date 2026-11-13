@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from quacc import flow
 from quacc.recipes.common.elastic import elastic_tensor_flow as elastic_tensor_flow_
 from quacc.recipes.mlip.core import relax_job, static_job
-from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -55,7 +54,10 @@ def elastic_tensor_flow(
     atoms
         Atoms object
     pre_relax
-        Whether to run a relaxation on the structure before deformation (true)
+        Whether to relax the bulk structure before deformation (true) or run a
+        static calculation (false). The bulk cell is relaxed by default. Set
+        `job_params={"relax_job": {"relax_cell": False}}` to keep it fixed.
+        Deformed structures are always relaxed at fixed cell.
     run_static
         Whether to run static calculations after any relaxations on the undeformed or deformed structures
     deform_kwargs
@@ -77,18 +79,13 @@ def elastic_tensor_flow(
     ElasticSchema
         See the return type-hint for the data structure.
     """
-    relax_job_, static_job_ = customize_jobs(
-        {"relax_job": relax_job, "static_job": static_job},
-        param_defaults={"relax_job": {"relax_cell": True}},
-        param_swaps=job_params,
-        decorators=job_decorators,
-    ).values()
-
     return elastic_tensor_flow_(
         atoms=atoms,
-        relax_job=relax_job_,
-        static_job=static_job_,
+        relax_job=relax_job,
+        static_job=static_job,
         pre_relax=pre_relax,
         run_static=run_static,
         deform_kwargs=deform_kwargs,
+        job_params=job_params,
+        job_decorators=job_decorators,
     )
