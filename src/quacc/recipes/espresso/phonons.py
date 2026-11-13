@@ -34,6 +34,12 @@ if TYPE_CHECKING:
     )
 
 
+_PHONON_ASR_DEFAULTS: dict[str, dict[str, Any]] = {
+    "q2r_job": {"input_data": {"input": {"zasr": "crystal"}}},
+    "matdyn_job": {"input_data": {"input": {"asr": "crystal"}}},
+}
+
+
 @job
 def phonon_job(
     copy_files: CopyFiles | None = None,
@@ -208,6 +214,26 @@ def phonon_dos_flow(
     matrices (`matdyn*`) from ph.x to q2r.x, and the force constants (`q2r.fc*`) from
     q2r.x to matdyn.x.
 
+    By default, the acoustic sum rule `crystal` is applied in q2r.x and matdyn.x. For
+    the force constants (matdyn.x `asr`), it imposes the three translational sum rules
+    by an optimized projection; for the Born effective charges (q2r.x `zasr`), it
+    imposes charge neutrality. This assumes a 3D crystal. Override it through
+    `job_params`, for example:
+
+    ```python
+    {"matdyn_job": {"input_data": {"input": {"asr": "simple"}}}}
+    ```
+
+    - `all` (matdyn.x only): adds rotational invariance and the Huang conditions,
+      e.g. for 2D materials or accurate long-wavelength acoustic branches. The
+      Huang conditions assume a stress-free structure. For infrared-active solids,
+      also set `write_lr=True` in `q2r_job` and `read_lr=True` in `matdyn_job`, e.g.,
+      `{"q2r_job": {"input_data": {"input": {"write_lr": True}}}}`.
+    - `one-dim` / `zero-dim`: for 1D systems and molecules.
+
+    The Gamma-point frequencies printed by ph.x are not ASR-corrected; a large
+    correction may indicate an unconverged calculation.
+
     Consists of following jobs that can be modified:
 
     1. ph.x calculation
@@ -216,9 +242,11 @@ def phonon_dos_flow(
     2. q2r.x calculation
         - name: "q2r_job"
         - job: [quacc.recipes.espresso.phonons.q2r_job][]
+        - default: `zasr="crystal"`
     3. matdyn.x calculation
         - name: "matdyn_job"
         - job: [quacc.recipes.espresso.phonons.matdyn_job][]
+        - default: `asr="crystal"`
 
     !!! Note
 
@@ -270,6 +298,7 @@ def phonon_dos_flow(
             "input_data": {"input": {"dos": True, "nk1": 32, "nk2": 32, "nk3": 32}}
         },
     }
+    default_job_params = recursive_dict_merge(_PHONON_ASR_DEFAULTS, default_job_params)
     ph_job, fc_job, dos_job = customize_jobs(
         {"phonon_job": phonon_job, "q2r_job": q2r_job, "matdyn_job": matdyn_job},
         param_defaults=default_job_params,
