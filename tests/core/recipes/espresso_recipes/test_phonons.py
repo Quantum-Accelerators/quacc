@@ -344,6 +344,14 @@ def test_phonon_dos_flow(tmp_path, monkeypatch):
 
         q2r_dir = Path(results["q2r_job"]["dir_name"])
         matdyn_dir = Path(results["matdyn_job"]["dir_name"])
+        for directory, binary, keyword in (
+            (q2r_dir, "q2r", "zasr"),
+            (matdyn_dir, "matdyn", "asr"),
+        ):
+            decompress_file(directory / f"{binary}.in.gz")
+            with (directory / f"{binary}.in").open() as f:
+                input_data, _ = read_fortran_namelist(f)
+            assert input_data["input"][keyword] == "crystal"
         assert (q2r_dir / "matdyn0.gz").exists()
         assert not (q2r_dir / "ph.out.gz").exists()
         assert (matdyn_dir / "q2r.fc.gz").exists()
