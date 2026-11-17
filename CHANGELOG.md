@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- The common EOS and elastic tensor flows now relax the bulk cell during `pre_relax` by default. Use `job_params={"relax_job": {"relax_cell": False}}` to keep the bulk cell fixed. Both common flows support `job_params` and `job_decorators`, and the EMT and MLIP elastic wrappers delegate customization to the common flow. Strained structures remain fixed-cell relaxations.
+
 ## [1.8.2]
 
 ### Added
