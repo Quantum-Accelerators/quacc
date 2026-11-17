@@ -22,7 +22,7 @@ All of these recipes require `pip install quacc[atomate2]`.
 
 !!! Tip "Which r2SCAN Workflow Should I Use?"
 
-    To compare against or combine with the r2SCAN entries currently in the Materials Project database (e.g. to compute an energy above the convex hull), use the legacy r2SCAN recipes. The MP24 recipes use MP's newer settings, which differ in the pseudopotentials for 16 elements and in several INCAR and k-point settings.
+    To compare against or combine with the r2SCAN entries currently in the Materials Project database (e.g. to compute an energy above the convex hull), use the legacy r2SCAN recipes until there has been a complete transition to the MP24 settings from the Materials Project.
 
 !!! Note "Related Datasets"
 
