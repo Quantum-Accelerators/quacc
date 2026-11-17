@@ -26,7 +26,7 @@
       
       
       <link rel="icon" href="../../images/quacc_favicon.png">
-      <meta name="generator" content="zensical-0.1.1">
+      <meta name="generator" content="zensical-0.1.2">
     
     
       
@@ -681,6 +681,34 @@
       </span>
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Materials Project">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-r2scan-workflow-should-i-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Which r2SCAN Workflow Should I Use?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Error Handling
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -6279,6 +6307,34 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Materials Project">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#which-r2scan-workflow-should-i-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Which r2SCAN Workflow Should I Use?
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        Error Handling
+      </span>
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -6420,18 +6476,15 @@
 <h1 id="database-compatible-recipes">Database-Compatible Recipes<a class="headerlink" href="#database-compatible-recipes" title="Permanent link">&para;</a></h1>
 <p>Some materials databases are built from large collections of DFT calculations run with a specific, fixed workflow. To let users generate new entries that are consistent with one of these databases, quacc ships a set of recipes that reproduce those workflows.</p>
 <h2 id="materials-project">Materials Project<a class="headerlink" href="#materials-project" title="Permanent link">&para;</a></h2>
-<p>The <a href="https://materialsproject.org/">Materials Project</a> is a database of computed properties for inorganic materials. It has used two generations of VASP workflows:</p>
-<ul>
-<li><strong>Legacy PBE(+U)</strong>: the original PBE(+U) workflow used for the majority of the database.</li>
-<li><strong>PBEsol/r2SCAN (MP24)</strong>: the newer workflow, which pre-relaxes with PBEsol before a production r2SCAN relaxation and static calculation.</li>
-</ul>
+<p>The <a href="https://materialsproject.org/">Materials Project</a> (MP) is a database of computed properties for inorganic materials. Over the years, MP has computed its data with several generations of VASP settings, and quacc provides a recipe for each of them. To combine your own calculations with MP data (e.g. to compute an energy above the convex hull), your calculations must use the same settings, including the same pseudopotentials, as the MP entries you compare against.</p>
 <table>
 <thead>
 <tr>
 <th>Workflow</th>
 <th>Relax Flow</th>
 <th>Static Job</th>
-<th>Extra Dependencies</th>
+<th>Input Sets (pymatgen)</th>
+<th>Pseudopotentials</th>
 </tr>
 </thead>
 <tbody>
@@ -6439,16 +6492,65 @@
 <td>Legacy PBE(+U)</td>
 <td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;mp_gga_relax_flow&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/mp_legacy.html#quacc.recipes.vasp.mp_legacy.mp_gga_relax_flow">quacc.recipes.vasp.mp_legacy.mp_gga_relax_flow</a></td>
 <td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;mp_gga_static_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/mp_legacy.html#quacc.recipes.vasp.mp_legacy.mp_gga_static_job">quacc.recipes.vasp.mp_legacy.mp_gga_static_job</a></td>
-<td><code>quacc[atomate2]</code></td>
+<td><code>MPRelaxSet</code>, <code>MPStaticSet</code></td>
+<td>Original PBE (<code>potpaw_PBE.original</code>)</td>
 </tr>
 <tr>
-<td>PBEsol/r2SCAN (MP24)</td>
+<td>Legacy r2SCAN</td>
+<td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;mp_metagga_relax_flow&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/mp_legacy.html#quacc.recipes.vasp.mp_legacy.mp_metagga_relax_flow">quacc.recipes.vasp.mp_legacy.mp_metagga_relax_flow</a></td>
+<td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;mp_metagga_static_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/mp_legacy.html#quacc.recipes.vasp.mp_legacy.mp_metagga_static_job">quacc.recipes.vasp.mp_legacy.mp_metagga_static_job</a></td>
+<td><code>MPScanRelaxSet</code>, <code>MPScanStaticSet</code></td>
+<td>PBE.54 (<code>potpaw_PBE.54</code>)</td>
+</tr>
+<tr>
+<td>MP24 r2SCAN</td>
 <td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;mp_metagga_relax_flow&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/mp24.html#quacc.recipes.vasp.mp24.mp_metagga_relax_flow">quacc.recipes.vasp.mp24.mp_metagga_relax_flow</a></td>
 <td><a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;mp_metagga_static_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/mp24.html#quacc.recipes.vasp.mp24.mp_metagga_static_job">quacc.recipes.vasp.mp24.mp_metagga_static_job</a></td>
-<td><code>quacc[atomate2]</code></td>
+<td><code>MP24RelaxSet</code>, <code>MP24StaticSet</code></td>
+<td>PBE.64 (<code>potpaw_PBE.64</code>)</td>
 </tr>
 </tbody>
 </table>
+<p>All of these recipes require <code>pip install quacc[atomate2]</code>.</p>
+<ul>
+<li>
+<p><strong>Legacy PBE(+U)</strong>: the original PBE and PBE+U workflow used for most of the GGA data in MP. The flow runs two PBE(+U) relaxations followed by a static calculation, matching atomate2's <code>MPGGADoubleRelaxStaticMaker</code>.</p>
+</li>
+<li>
+<p><strong>Legacy r2SCAN</strong>: the r2SCAN workflow used to compute the r2SCAN data currently in MP's core database. The flow runs a PBEsol pre-relaxation, an r2SCAN relaxation, and an r2SCAN static calculation, matching atomate2's <code>MPMetaGGADoubleRelaxStaticMaker</code>.</p>
+</li>
+<li>
+<p><strong>MP24 r2SCAN</strong>: the r2SCAN settings MP adopted after its 2023–2024 benchmarking effort. The flow runs a PBEsol pre-relaxation, an r2SCAN relaxation, and an r2SCAN static calculation, matching atomate2's <code>MP24DoubleRelaxStaticMaker</code>.</p>
+</li>
+</ul>
+<h3 id="which-r2scan-workflow-should-i-use">Which r2SCAN Workflow Should I Use?<a class="headerlink" href="#which-r2scan-workflow-should-i-use" title="Permanent link">&para;</a></h3>
+<p>If you want to compare against or combine with the r2SCAN entries currently available from MP (e.g. via <code>MPRester</code>), use the <strong>legacy r2SCAN</strong> recipes. They use the same input sets and pseudopotentials as that data.</p>
+<p>The <strong>MP24</strong> recipes reflect MP's newer settings. Their energies can be compared with the legacy r2SCAN data only when the pseudopotentials are the same for every element in your chemical system. The differences between the two workflows are:</p>
+<ul>
+<li>
+<p><strong>Pseudopotentials</strong>: MP24 uses the PBE.64 PAW potentials, whereas the legacy workflow uses PBE.54. For most elements, the two releases contain numerically identical datasets (only the <code>SHA256</code> and <code>COPYR</code> header lines differ, so the files have different hashes). However, 16 elements differ:</p>
+<ul>
+<li>Different POTCAR: Ba (<code>Ba_sv</code> → <code>Ba_sv_GW</code>), Xe (<code>Xe</code> → <code>Xe_GW</code>), and Dy, Er, Ho, Nd, Pm, Pr, Sm, Tb, Tm, and Yb (<code>_3</code> → <code>_h</code>).</li>
+<li>Same name, but regenerated in PBE.64: <code>Cs_sv</code>, <code>Eu</code>, <code>Gd</code>, and <code>Rn</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>INCAR settings</strong>: MP24 uses <code>ALGO = Normal</code> instead of <code>All</code>, <code>LREAL = False</code> for relaxations instead of <code>Auto</code>, <code>LMAXMIX = 6</code> for all systems, and <code>GGA_COMPAT = False</code>. <code>ALGO</code> and <code>LMAXMIX</code> only affect how the electronic minimization converges, and both workflows use <code>LREAL = False</code> for the static calculation. <code>GGA_COMPAT</code> can change total energies, although the <a href="https://www.vasp.at/wiki/index.php/GGA_COMPAT">VASP documentation</a> notes that the effect is usually sub-meV.</p>
+</li>
+<li>
+<p><strong>k-points</strong>: Both workflows choose <code>KSPACING</code> from the band gap of the previous step and use <code>KSPACING = 0.22</code> for metals, but they use different interpolation schemes for semiconductors and insulators. The legacy workflow ranges from 0.22 to 0.44 Å<sup>-1</sup>, whereas MP24 ranges from 0.22 to 0.50 Å<sup>-1</sup>.</p>
+</li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Pseudopotential Setup</p>
+<p>quacc selects the pseudopotential library by its folder name in your <code>VASP_PP_PATH</code>. Make sure the folders listed in the table above are present before running the corresponding recipes.</p>
+</div>
+<h3 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h3>
+<p>The r2SCAN workflows set <code>KSPACING</code> based on the band gap from the previous step. As in atomate2's MP workflows, these recipes add Custodian's <code>KspacingMetalHandler</code>, which reruns a calculation with <code>KSPACING = 0.22</code> if it turns out to be metallic. The handler is added to those in your <code>VASP_CUSTODIAN_HANDLERS</code> setting. To use a different set of handlers for a given job, pass <code>custodian_handlers</code> (a list of handler names) as a keyword argument.</p>
+<div class="admonition note">
+<p class="admonition-title">Related Datasets</p>
+<p>Recipes for the MatPES and MP-ALOE datasets, which are also generated with MP-style settings, are listed on the <a href="mlip_recipes.html">MLIP recipes</a> page.</p>
+</div>
 <h2 id="qmof-database">QMOF Database<a class="headerlink" href="#qmof-database" title="Permanent link">&para;</a></h2>
 <p>The <a href="https://doi.org/10.1016/j.matt.2021.02.015">QMOF</a> Database is a collection of computed properties for metal-organic frameworks (MOFs). <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;qmof_relax_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/qmof.html#quacc.recipes.vasp.qmof.qmof_relax_job">quacc.recipes.vasp.qmof.qmof_relax_job</a> reproduces the QMOF Database's multi-step relaxation workflow (an optional pre-relaxation, loose position/volume relaxations, a production-quality double relaxation, and a final static calculation) in a single job.</p>
 <table>
@@ -6470,15 +6572,19 @@
 <p>A standalone QMOF-compatible static calculation can be run through <a class="autorefs autorefs-internal" title="&lt;span class=&quot;doc doc-object-name doc-function-name&quot;&gt;static_job&lt;/span&gt;" href="../../reference/quacc/recipes/vasp/core.html#quacc.recipes.vasp.core.static_job">quacc.recipes.vasp.core.static_job</a> directly, with <code>preset="QMOFSet"</code> (see <a href="https://github.com/Quantum-Accelerators/quacc/blob/main/src/quacc/calculators/vasp/presets/QMOFSet.yaml">QMOFSet.yaml</a>).</p>
 <h2 id="a-representative-example">A Representative Example<a class="headerlink" href="#a-representative-example" title="Permanent link">&para;</a></h2>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">ase.build</span><span class="w"> </span><span class="kn">import</span> <span class="n">bulk</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.vasp.mp24</span><span class="w"> </span><span class="kn">import</span> <span class="n">mp_metagga_relax_flow</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">quacc.recipes.vasp.mp_legacy</span><span class="w"> </span><span class="kn">import</span> <span class="n">mp_metagga_relax_flow</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Make an Atoms object of a bulk Cu structure</span>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">atoms</span> <span class="o">=</span> <span class="n">bulk</span><span class="p">(</span><span class="s2">"Cu"</span><span class="p">)</span>
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Run the full MP24 (PBEsol/r2SCAN) relaxation workflow</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="n">result</span> <span class="o">=</span> <span class="n">mp_metagga_relax_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Run the legacy r2SCAN workflow, which is compatible with the</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="c1"># r2SCAN data currently in the Materials Project database</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="n">result</span> <span class="o">=</span> <span class="n">mp_metagga_relax_flow</span><span class="p">(</span><span class="n">atoms</span><span class="p">)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="c1"># The final energy comes from the r2SCAN static calculation</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s2">"static"</span><span class="p">][</span><span class="s2">"results"</span><span class="p">][</span><span class="s2">"energy"</span><span class="p">])</span>
 </span></code></pre></div>
+<p>To use the MP24 settings instead, import <code>mp_metagga_relax_flow</code> from <code>quacc.recipes.vasp.mp24</code>. Both flows return a dictionary with <code>prerelax</code>, <code>relax</code>, and <code>static</code> keys.</p>
 
 
 
