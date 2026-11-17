@@ -69,9 +69,25 @@ def test_customize_jobs(monkeypatch, tmp_path):
 
     add_ = update_parameters(add, {"b": 3}, decorator="job")
     dynamic_workflow_ = update_parameters(dynamic_workflow, {"c": 4}, decorator="flow")
+    customized_subflow = customize_jobs(
+        {"add_distributed": add_distributed}, param_swaps={"all": {"d": 1}}
+    )["add_distributed"]
+
+    @flow
+    def customized_subflow_workflow(a, b, c=3):
+        result1 = add(a, b)
+        result2 = make_more(result1)
+        return customized_subflow(result2, c)
+
+    customized_flow = customize_jobs(
+        {"dynamic_workflow": dynamic_workflow}, param_swaps={"all": {"c": 4}}
+    )["dynamic_workflow"]
+
     assert client.compute(add_(1)).result() == 4
     assert client.compute(dynamic_workflow_(1, 2)).result() == [7, 7, 7]
     assert client.compute(test_dynamic_workflow(1, 2)).result() == [7, 7, 7]
+    assert client.compute(customized_subflow_workflow(1, 2)).result() == [7, 7, 7]
+    assert client.compute(customized_flow(1, 2)).result() == [7, 7, 7]
 
 
 def test_change_settings_redecorate_job(tmp_path_factory):
