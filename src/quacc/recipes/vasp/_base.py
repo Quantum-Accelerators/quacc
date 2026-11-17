@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from quacc import get_settings
 from quacc.calculators.vasp import Vasp
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import VibSummarize
@@ -23,6 +24,27 @@ if TYPE_CHECKING:
         VibKwargs,
         VibThermoSchema,
     )
+
+
+def get_mp_kspacing_handlers() -> list[str]:
+    """
+    Get the Custodian handlers for Materials Project jobs that use automatic KSPACING.
+
+    The Materials Project r2SCAN input sets choose KSPACING from the band gap of
+    the previous calculation. atomate2's Materials Project workflows run these
+    calculations with Custodian's `KspacingMetalHandler`, which reruns a
+    calculation with `KSPACING = 0.22` if it turns out to be metallic. This returns the handlers
+    from the `VASP_CUSTODIAN_HANDLERS` setting with `KspacingMetalHandler` added.
+
+    Returns
+    -------
+    list[str]
+        The names of the Custodian handlers to use.
+    """
+    handlers = list(get_settings().VASP_CUSTODIAN_HANDLERS or [])
+    if "KspacingMetalHandler" not in handlers:
+        handlers.append("KspacingMetalHandler")
+    return handlers
 
 
 def run_and_summarize(

@@ -8,7 +8,7 @@ import pytest
 from ase.build import bulk, molecule
 from monty.shutil import copy_r
 
-from quacc import change_settings
+from quacc import change_settings, get_settings
 from quacc.recipes.vasp.core import (
     ase_relax_job,
     double_relax_flow,
@@ -38,6 +38,16 @@ from quacc.recipes.vasp.mp_legacy import (
     mp_gga_static_job,
     mp_relax_set_job,
 )
+from quacc.recipes.vasp.mp_legacy import (
+    mp_metagga_relax_flow as legacy_mp_metagga_relax_flow,
+)
+from quacc.recipes.vasp.mp_legacy import (
+    mp_metagga_relax_job as legacy_mp_metagga_relax_job,
+)
+from quacc.recipes.vasp.mp_legacy import (
+    mp_metagga_static_job as legacy_mp_metagga_static_job,
+)
+from quacc.recipes.vasp.mp_legacy import mp_prerelax_job as legacy_mp_prerelax_job
 from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
@@ -743,22 +753,22 @@ def test_mp_metagga_relax_flow_metallic(tmp_path, patch_metallic_taskdoc):
         copy_r(MOCKED_DIR / "metallic", tmp_path)
         atoms = bulk("Al")
         output = mp_metagga_relax_flow(atoms)
+        assert set(output) == {"prerelax", "relax", "static"}
         assert output["static"]["structure_metadata"]["nsites"] == len(atoms)
         assert output["prerelax"]["parameters"]["gga"] == "ps"
         assert output["prerelax"]["parameters"]["ismear"] == 0
         assert output["prerelax"]["parameters"]["pp"] == "pbe"
         assert output["prerelax"]["parameters"]["pp_version"] == "64"
         assert output["prerelax"]["parameters"]["magmom"] == [0.6]
-        assert output["relax1"]["parameters"]["magmom"] == [0.0]
-        assert output["relax2"]["parameters"]["magmom"] == [0.0]
-        assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
-        assert output["relax2"]["parameters"]["ediffg"] == -0.02
-        assert output["relax2"]["parameters"]["encut"] == 680
-        assert output["relax2"]["parameters"]["ismear"] == 0
-        assert output["relax2"]["parameters"]["sigma"] == 0.05
-        assert output["relax2"]["parameters"]["kspacing"] == 0.22
-        assert output["relax2"]["parameters"]["pp"] == "pbe"
-        assert output["relax2"]["parameters"]["pp_version"] == "64"
+        assert output["relax"]["parameters"]["magmom"] == [0.0]
+        assert output["relax"]["parameters"]["metagga"].lower() == "r2scan"
+        assert output["relax"]["parameters"]["ediffg"] == -0.02
+        assert output["relax"]["parameters"]["encut"] == 680
+        assert output["relax"]["parameters"]["ismear"] == 0
+        assert output["relax"]["parameters"]["sigma"] == 0.05
+        assert output["relax"]["parameters"]["kspacing"] == 0.22
+        assert output["relax"]["parameters"]["pp"] == "pbe"
+        assert output["relax"]["parameters"]["pp_version"] == "64"
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
@@ -771,16 +781,15 @@ def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
         assert output["prerelax"]["parameters"]["ismear"] == 0
         assert output["prerelax"]["parameters"]["pp"] == "pbe"
         assert output["prerelax"]["parameters"]["magmom"] == [0.0, 0.0]
-        assert output["relax1"]["parameters"]["magmom"] == [0.0, 0.0]
-        assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
-        assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
-        assert output["relax2"]["parameters"]["ediffg"] == -0.02
-        assert output["relax2"]["parameters"]["encut"] == 680
-        assert output["relax2"]["parameters"]["ismear"] == 0
-        assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
+        assert output["relax"]["parameters"]["magmom"] == [0.0, 0.0]
+        assert output["relax"]["parameters"]["metagga"].lower() == "r2scan"
+        assert output["relax"]["parameters"]["ediffg"] == -0.02
+        assert output["relax"]["parameters"]["encut"] == 680
+        assert output["relax"]["parameters"]["ismear"] == 0
+        assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
             0.22007848304887767
         )
-        assert output["relax2"]["parameters"]["pp"] == "pbe"
+        assert output["relax"]["parameters"]["pp"] == "pbe"
         assert output["static"]["structure_metadata"]["nsites"] == len(atoms)
 
         atoms = molecule("O2")
@@ -791,21 +800,227 @@ def test_mp_metagga_relax_flow_nonmetallic(tmp_path, patch_nonmetallic_taskdoc):
         assert output["prerelax"]["parameters"]["ismear"] == 0
         assert output["prerelax"]["parameters"]["pp"] == "pbe"
         assert output["prerelax"]["parameters"]["magmom"] == [1.0, 0.0]
-        assert output["relax1"]["parameters"]["magmom"] == [0.0, 0.0]
-        assert output["relax2"]["parameters"]["metagga"].lower() == "r2scan"
-        assert output["relax2"]["parameters"]["ediffg"] == -0.02
-        assert output["relax2"]["parameters"]["encut"] == 680
-        assert output["relax2"]["parameters"]["ismear"] == 0
-        assert output["relax2"]["parameters"]["kspacing"] == pytest.approx(
+        assert output["relax"]["parameters"]["magmom"] == [0.0, 0.0]
+        assert output["relax"]["parameters"]["metagga"].lower() == "r2scan"
+        assert output["relax"]["parameters"]["ediffg"] == -0.02
+        assert output["relax"]["parameters"]["encut"] == 680
+        assert output["relax"]["parameters"]["ismear"] == 0
+        assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
             0.22007848304887767
         )
-        assert output["relax2"]["parameters"]["pp"] == "pbe"
-        assert output["relax2"]["parameters"]["magmom"] == [0.0, 0.0]
+        assert output["relax"]["parameters"]["pp"] == "pbe"
         assert output["static"]["structure_metadata"]["nsites"] == len(atoms)
         assert output["static"]["parameters"]["ismear"] == -5
         assert output["static"]["parameters"]["nsw"] == 0
         assert output["static"]["parameters"]["algo"] == "normal"
         assert output["static"]["parameters"]["magmom"] == [0.0, 0.0]
+
+
+def test_get_mp_kspacing_handlers():
+    from quacc.recipes.vasp._base import get_mp_kspacing_handlers
+
+    handlers = get_mp_kspacing_handlers()
+    assert handlers[-1] == "KspacingMetalHandler"
+    assert handlers[:-1] == get_settings().VASP_CUSTODIAN_HANDLERS
+
+    with change_settings(
+        {"VASP_CUSTODIAN_HANDLERS": ["VaspErrorHandler", "KspacingMetalHandler"]}
+    ):
+        assert get_mp_kspacing_handlers() == [
+            "VaspErrorHandler",
+            "KspacingMetalHandler",
+        ]
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+@pytest.mark.parametrize(
+    "job",
+    [
+        mp_prerelax_job,
+        mp_metagga_relax_job,
+        mp_metagga_static_job,
+        legacy_mp_prerelax_job,
+        legacy_mp_metagga_relax_job,
+        legacy_mp_metagga_static_job,
+    ],
+)
+def test_mp_metagga_custodian_handlers(monkeypatch, patch_metallic_taskdoc, job):
+    from ase.io import write
+
+    from quacc.calculators.vasp.vasp import Vasp
+
+    used_handlers = []
+
+    def mock_run(self, *args, **kwargs):
+        used_handlers.append(self.custodian_handlers)
+        write(Path(self.directory, "CONTCAR"), self.atoms)
+        return None, None
+
+    monkeypatch.setattr(Vasp, "_run", mock_run)
+    output = job(bulk("Al"))
+    assert "custodian_handlers" not in output["parameters"]
+    assert used_handlers == [
+        [*get_settings().VASP_CUSTODIAN_HANDLERS, "KspacingMetalHandler"]
+    ]
+
+    used_handlers.clear()
+    job(bulk("Al"), custodian_handlers=None)
+    assert used_handlers == [None]
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+def test_legacy_mp_prerelax_job(patch_metallic_taskdoc):
+    atoms = bulk("Al")
+    output = legacy_mp_prerelax_job(atoms, ncore=None)
+    output["parameters"].pop("ncore")
+    assert output["name"] == "MP Legacy PBEsol Pre-Relax"
+    assert output["structure_metadata"]["nsites"] == len(atoms)
+    assert output["parameters"] == {
+        "algo": "all",
+        "ediff": 1e-05,
+        "ediffg": -0.05,
+        "encut": 680.0,
+        "gga": "ps",
+        "ibrion": 2,
+        "isif": 3,
+        "ismear": 0,
+        "ispin": 2,
+        "kspacing": 0.22,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lelf": False,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": "auto",
+        "lvtot": True,
+        "lwave": True,
+        "magmom": [0.6],
+        "nelm": 200,
+        "nsw": 99,
+        "pp": "pbe",
+        "pp_version": "54",
+        "prec": "accurate",
+        "setups": {"Al": ""},
+        "sigma": 0.05,
+    }
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+def test_legacy_mp_metagga_relax_job_metallic(patch_metallic_taskdoc):
+    atoms = bulk("Al")
+    output = legacy_mp_metagga_relax_job(atoms, ncore=None)
+    output["parameters"].pop("ncore")
+    assert output["name"] == "MP Legacy r2SCAN Relax"
+    assert output["parameters"] == {
+        "algo": "all",
+        "ediff": 1e-05,
+        "ediffg": -0.02,
+        "encut": 680.0,
+        "ibrion": 2,
+        "isif": 3,
+        "ismear": 0,
+        "ispin": 2,
+        "kspacing": 0.22,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lelf": False,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": "auto",
+        "lvtot": True,
+        "lwave": True,
+        "magmom": [0.6],
+        "metagga": "r2scan",
+        "nelm": 200,
+        "nsw": 99,
+        "pp": "pbe",
+        "pp_version": "54",
+        "prec": "accurate",
+        "setups": {"Al": ""},
+        "sigma": 0.05,
+    }
+
+    output = legacy_mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "metallic")
+    assert output["parameters"]["kspacing"] == 0.22
+    assert output["parameters"]["pp_version"] == "54"
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+def test_legacy_mp_metagga_relax_job_nonmetallic(patch_nonmetallic_taskdoc):
+    atoms = bulk("Si")
+    output = legacy_mp_metagga_relax_job(atoms, prev_dir=MOCKED_DIR / "nonmetallic")
+    assert output["parameters"]["metagga"] == "r2scan"
+    assert output["parameters"]["algo"] == "all"
+    assert output["parameters"]["lreal"] == "auto"
+    assert output["parameters"]["ismear"] == 0
+    assert output["parameters"]["sigma"] == 0.05
+    # The legacy MPScanRelaxSet KSPACING scheme differs from the MP24 scheme
+    assert output["parameters"]["kspacing"] == pytest.approx(0.28752476644932956)
+    assert output["parameters"]["pp_version"] == "54"
+    assert output["parameters"]["setups"] == {"Si": ""}
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+def test_legacy_mp_metagga_static_job(patch_metallic_taskdoc):
+    atoms = bulk("Al")
+    output = legacy_mp_metagga_static_job(atoms, ncore=None)
+    output["parameters"].pop("ncore")
+    assert output["name"] == "MP Legacy r2SCAN Static"
+    assert output["parameters"] == {
+        "algo": "fast",
+        "ediff": 1e-05,
+        "encut": 680.0,
+        "ismear": -5,
+        "ispin": 2,
+        "kspacing": 0.22,
+        "laechg": True,
+        "lasph": True,
+        "lcharg": True,
+        "lelf": False,
+        "lmixtau": True,
+        "lorbit": 11,
+        "lreal": False,
+        "lvtot": True,
+        "lwave": False,
+        "magmom": [0.6],
+        "metagga": "r2scan",
+        "nelm": 200,
+        "nsw": 0,
+        "pp": "pbe",
+        "pp_version": "54",
+        "prec": "accurate",
+        "setups": {"Al": ""},
+        "sigma": 0.05,
+    }
+
+
+@pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
+def test_legacy_mp_metagga_relax_flow(tmp_path, patch_nonmetallic_taskdoc):
+    with change_settings({"CREATE_UNIQUE_DIR": False, "RESULTS_DIR": tmp_path}):
+        copy_r(MOCKED_DIR / "nonmetallic", tmp_path)
+        atoms = bulk("Si")
+        atoms.set_initial_magnetic_moments([0.0, 0.0])
+        output = legacy_mp_metagga_relax_flow(atoms)
+        assert set(output) == {"prerelax", "relax", "static"}
+        assert output["prerelax"]["name"] == "MP Legacy PBEsol Pre-Relax"
+        assert output["prerelax"]["parameters"]["gga"] == "ps"
+        assert output["prerelax"]["parameters"]["ediffg"] == -0.05
+        assert output["prerelax"]["parameters"]["kspacing"] == 0.22
+        assert output["relax"]["name"] == "MP Legacy r2SCAN Relax"
+        assert output["relax"]["parameters"]["metagga"] == "r2scan"
+        assert "gga" not in output["relax"]["parameters"]
+        assert output["relax"]["parameters"]["kspacing"] == pytest.approx(
+            0.28752476644932956
+        )
+        assert output["static"]["name"] == "MP Legacy r2SCAN Static"
+        assert output["static"]["parameters"]["nsw"] == 0
+        assert output["static"]["parameters"]["ismear"] == -5
+        assert output["static"]["parameters"]["algo"] == "fast"
+        for step in ("prerelax", "relax", "static"):
+            assert output[step]["parameters"]["pp_version"] == "54"
+            assert output[step]["parameters"]["encut"] == 680
 
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
@@ -981,7 +1196,7 @@ def test_mp_relax_flow_custom(tmp_path, patch_nonmetallic_taskdoc):
             ]["atoms"],
             job_params={"mp_metagga_relax_job": {"nsw": 0}},
         )
-        assert output["relax2"]["parameters"]["nsw"] == 0
+        assert output["relax"]["parameters"]["nsw"] == 0
 
 
 def test_freq_job():

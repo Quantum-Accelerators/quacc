@@ -710,6 +710,14 @@ class MPtoASEConverter:
             The ASE VASP parameters.
         """
         self.incar_dict = {k.lower(): v for k, v in self.incar_dict.items()}
+
+        # The input set was generated for the ASE-sorted structure, so MAGMOM is
+        # in ASE's POSCAR order. ASE expects `magmom` in the original Atoms order
+        # and re-applies its own sort when writing the INCAR, so undo the sort here.
+        if self.atoms is not None and self.incar_dict.get("magmom") is not None:
+            magmom = list(self.incar_dict["magmom"])
+            self.incar_dict["magmom"] = [magmom[i] for i in self.ase_resort]
+
         assert self.potcar_functional is not None
         parts = self.potcar_functional.split("_")
         pp = parts[0]
