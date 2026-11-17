@@ -20,27 +20,9 @@ All of these recipes require `pip install quacc[atomate2]`.
 
 - **MP24 r2SCAN**: the r2SCAN settings MP adopted after its 2023–2024 benchmarking effort. The flow runs a PBEsol pre-relaxation, an r2SCAN relaxation, and an r2SCAN static calculation, matching atomate2's `MP24DoubleRelaxStaticMaker`.
 
-### Which r2SCAN Workflow Should I Use?
+!!! Tip "Which r2SCAN Workflow Should I Use?"
 
-If you want to compare against or combine with the r2SCAN entries currently available from MP (e.g. via `MPRester`), use the **legacy r2SCAN** recipes. They use the same input sets and pseudopotentials as that data.
-
-The **MP24** recipes reflect MP's newer settings. Their energies can be compared with the legacy r2SCAN data only when the pseudopotentials are the same for every element in your chemical system. The differences between the two workflows are:
-
-- **Pseudopotentials**: MP24 uses the PBE.64 PAW potentials, whereas the legacy workflow uses PBE.54. For most elements, the two releases contain numerically identical datasets (only the `SHA256` and `COPYR` header lines differ, so the files have different hashes). However, 16 elements differ:
-    - Different POTCAR: Ba (`Ba_sv` → `Ba_sv_GW`), Xe (`Xe` → `Xe_GW`), and Dy, Er, Ho, Nd, Pm, Pr, Sm, Tb, Tm, and Yb (`_3` → `_h`).
-    - Same name, but regenerated in PBE.64: `Cs_sv`, `Eu`, `Gd`, and `Rn`.
-
-- **INCAR settings**: MP24 uses `ALGO = Normal` instead of `All`, `LREAL = False` for relaxations instead of `Auto`, `LMAXMIX = 6` for all systems, and `GGA_COMPAT = False`. `ALGO` and `LMAXMIX` only affect how the electronic minimization converges, and both workflows use `LREAL = False` for the static calculation. `GGA_COMPAT` can change total energies, although the [VASP documentation](https://www.vasp.at/wiki/index.php/GGA_COMPAT) notes that the effect is usually sub-meV.
-
-- **k-points**: Both workflows choose `KSPACING` from the band gap of the previous step and use `KSPACING = 0.22` for metals, but they use different interpolation schemes for semiconductors and insulators. The legacy workflow ranges from 0.22 to 0.44 Å<sup>-1</sup>, whereas MP24 ranges from 0.22 to 0.50 Å<sup>-1</sup>.
-
-!!! Important "Pseudopotential Setup"
-
-    quacc selects the pseudopotential library by its folder name in your `VASP_PP_PATH`. Make sure the folders listed in the table above are present before running the corresponding recipes.
-
-### Error Handling
-
-The r2SCAN workflows set `KSPACING` based on the band gap from the previous step. As in atomate2's MP workflows, these recipes add Custodian's `KspacingMetalHandler`, which reruns a calculation with `KSPACING = 0.22` if it turns out to be metallic. The handler is added to those in your `VASP_CUSTODIAN_HANDLERS` setting. To use a different set of handlers for a given job, pass `custodian_handlers` (a list of handler names) as a keyword argument.
+    To compare against or combine with the r2SCAN entries currently in the Materials Project database (e.g. to compute an energy above the convex hull), use the legacy r2SCAN recipes. The MP24 recipes use MP's newer settings, which differ in the pseudopotentials for 16 elements and in several INCAR and k-point settings.
 
 !!! Note "Related Datasets"
 
