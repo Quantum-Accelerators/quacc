@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added legacy Materials Project r2SCAN recipes (`mp_prerelax_job`, `mp_metagga_relax_job`, `mp_metagga_static_job`, and `mp_metagga_relax_flow`) to `quacc.recipes.vasp.mp_legacy`. They use the `MPScanRelaxSet`/`MPScanStaticSet` settings and PBE.54 pseudopotentials, which are compatible with the r2SCAN data currently in the Materials Project database
 - Added a `custodian_handlers` argument to the `Vasp` calculator to override the Custodian handlers for a single calculation
+- Added a calculator-agnostic equation of state workflow, `quacc.recipes.common.eos.eos_flow` and `eos_subflow`, which runs fixed-cell relaxations (and optionally static calculations) on isotropically strained structures and fits the energy–volume data with the Murnaghan, Birch, Birch–Murnaghan, and Vinet models. The strained structures come from the new `quacc.atoms.deformation.make_volume_strains_from_bulk` function
 
 ### Changed
 
@@ -17,10 +18,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The Materials Project r2SCAN recipes now add Custodian's `KspacingMetalHandler`, matching atomate2's MP workflows
 - The MP24 and MP-ALOE recipes no longer try to apply the `MaterialsProject2020Compatibility` corrections, which only apply to GGA/GGA+U calculations and previously only logged a warning for r2SCAN and PBEsol calculations
 - Expanded the documentation on the Materials Project recipes, including the pseudopotential and parameter differences between the legacy r2SCAN and MP24 workflows
+- `quacc.recipes.espresso.phonons.phonon_dos_flow` now applies the acoustic sum rule by default (`zasr = "crystal"` for q2r.x and `asr = "crystal"` for matdyn.x), so the acoustic frequencies at Γ vanish. The defaults can be overridden through `job_params`
+- `phonon_dos_flow` now only copies the files that each step reads (the `matdyn*` dynamical matrices to q2r.x and the `q2r.fc*` force constants to matdyn.x) instead of every file from the previous step
 
 ### Fixed
 
 - Fixed `MPtoASEConverter` assigning `MAGMOM` values to the wrong atoms when atoms of the same element were not contiguous in the `Atoms` object. This affected all recipes built on `MPtoASEConverter`, including the Materials Project, MatPES, and MP-ALOE recipes
+- Fixed the k-paths in `quacc.recipes.espresso.bands.bands_pw_job` and `bands_flow`. The path was built for a standardized cell rather than the cell used by pw.x, which caused pw.x to fail when the atom count differed and silently computed bands along the wrong directions for cells not in a standard setting. The path is now built on the input `atoms`, which must be the structure used in the SCF calculation
+- Fixed the parsing of Quantum ESPRESSO `projwfc.x` DOS output in the `Espresso` calculator. The first energy point is no longer dropped, and collinear spin-polarized output is now parsed correctly: `dos` and `pdos` are summed over spin channels, and the individual channels are returned as `dos_up`, `dos_down`, `pdos_up`, and `pdos_down`
 
 ## [1.8.2]
 
