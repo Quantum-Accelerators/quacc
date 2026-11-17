@@ -59,6 +59,7 @@ class Vasp(Vasp_):
         input_atoms: Atoms,
         preset: str | Path | None = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
+        custodian_handlers: list[str] | None = None,
         incar_copilot_mode: Literal["off", "critical", "standard", "aggressive"]
         | DefaultSetting = QuaccDefault,
         copy_magmoms: bool | DefaultSetting = QuaccDefault,
@@ -85,6 +86,10 @@ class Vasp(Vasp_):
             override any corresponding preset values.
         use_custodian
             Whether to use Custodian to run VASP. Default is True in settings.
+        custodian_handlers
+            Names of the Custodian error handlers to use for this calculation.
+            If None, the `VASP_CUSTODIAN_HANDLERS` setting is used. Only used
+            if `use_custodian` is True.
         incar_copilot_mode
             Controls VASP co-pilot mode for automated INCAR parameter handling.
 
@@ -157,6 +162,7 @@ class Vasp(Vasp_):
         self.input_atoms = input_atoms
         self.preset = preset
         self.use_custodian = use_custodian
+        self.custodian_handlers = custodian_handlers
         self.incar_copilot_mode = incar_copilot_mode
         self.copy_magmoms = copy_magmoms
         self.preset_mag_default = preset_mag_default
@@ -363,7 +369,11 @@ class Vasp(Vasp_):
 
         if self.use_custodian:
             custodian_kwargs: dict[str, Any] = {"directory": directory}
-            if self.int_params.get("ibrion") == 0 and self.int_params.get("nsw", 0) > 0:
+            if self.custodian_handlers is not None:
+                custodian_kwargs["vasp_custodian_handlers"] = self.custodian_handlers
+            elif (
+                self.int_params.get("ibrion") == 0 and self.int_params.get("nsw", 0) > 0
+            ):
                 custodian_kwargs["vasp_custodian_handlers"] = AIMD_CUSTODIAN_HANDLERS
             run_custodian(**custodian_kwargs)
             return 0, None

@@ -16,7 +16,7 @@ from ase.calculators.singlepoint import SinglePointDFTCalculator
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.constraints import FixAtoms
 from ase.io import read
-from pymatgen.io.vasp.sets import MPRelaxSet, MPScanRelaxSet
+from pymatgen.io.vasp.sets import MP24RelaxSet, MPRelaxSet, MPScanRelaxSet
 
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
@@ -1604,6 +1604,24 @@ def test_ldau_mp():
     assert parameters["magmom"] == [0.6, 0.6, 0.6, 5.0]
 
 
+def test_mp_converter_magmom_order():
+    # Species are interleaved, so ASE's POSCAR sort is not the identity
+    atoms = bulk("NaCl", "rocksalt", a=4.5, cubic=True)
+    atoms.set_chemical_symbols(["Fe", "O", "Eu", "O", "Fe", "O", "Eu", "O"])
+    expected = {"Fe": 5.0, "O": 0.6, "Eu": 10.0}
+
+    parameters = MPtoASEConverter(atoms=atoms).convert_input_set(MP24RelaxSet())
+
+    # ASE expects `magmom` in the original Atoms order...
+    assert parameters["magmom"] == [expected[s] for s in atoms.get_chemical_symbols()]
+
+    # ...and the MAGMOM it writes (sorted into POSCAR order) must match each site
+    sort, _ = Vasp_()._make_sort(atoms)
+    poscar_symbols = np.array(atoms.get_chemical_symbols())[sort]
+    written = np.array(parameters["magmom"])[sort]
+    assert written.tolist() == [expected[s] for s in poscar_symbols]
+
+
 def test_command():
     atoms = bulk("Cu")
     assert Vasp(atoms, kpts=[1, 1, 1]).command.strip() == "vasp_gam"
@@ -1727,3 +1745,28 @@ def test_run_aimd_custodian_handlers(monkeypatch, tmp_path):
             "IncorrectSmearingHandler",
         ],
     }
+
+
+def test_run_custom_custodian_handlers(monkeypatch, tmp_path):
+    custodian_kwargs = {}
+
+    def mock_run_custodian(**kwargs):
+        custodian_kwargs.update(kwargs)
+
+    monkeypatch.setattr("quacc.calculators.vasp.vasp.run_custodian", mock_run_custodian)
+
+    # Explicit handlers take precedence, even over the AIMD defaults
+    calc = Vasp(
+        bulk("Cu"), ibrion=0, nsw=10, custodian_handlers=["KspacingMetalHandler"]
+    )
+    calc._run(directory=tmp_path)
+    assert custodian_kwargs == {
+        "directory": tmp_path,
+        "vasp_custodian_handlers": ["KspacingMetalHandler"],
+    }
+    assert "custodian_handlers" not in calc.parameters
+
+    # Without explicit handlers, the settings are used
+    custodian_kwargs.clear()
+    Vasp(bulk("Cu"))._run(directory=tmp_path)
+    assert custodian_kwargs == {"directory": tmp_path}

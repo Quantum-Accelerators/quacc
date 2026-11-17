@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Added legacy Materials Project r2SCAN recipes (`mp_prerelax_job`, `mp_metagga_relax_job`, `mp_metagga_static_job`, and `mp_metagga_relax_flow`) to `quacc.recipes.vasp.mp_legacy`. They use the `MPScanRelaxSet`/`MPScanStaticSet` settings and PBE.54 pseudopotentials, which are compatible with the r2SCAN data currently in the Materials Project database
+- Added a `custodian_handlers` argument to the `Vasp` calculator to override the Custodian handlers for a single calculation
+
+### Changed
+
+- BREAKING: `quacc.recipes.vasp.mp24.mp_metagga_relax_flow` now runs a single r2SCAN relaxation (PBEsol pre-relax, r2SCAN relax, r2SCAN static) to match atomate2's `MP24DoubleRelaxStaticMaker`. The output keys are now `prerelax`, `relax`, and `static` (previously `prerelax`, `relax1`, `relax2`, and `static`)
+- The Materials Project r2SCAN recipes now add Custodian's `KspacingMetalHandler`, matching atomate2's MP workflows
+- The MP24 and MP-ALOE recipes no longer try to apply the `MaterialsProject2020Compatibility` corrections, which only apply to GGA/GGA+U calculations and previously only logged a warning for r2SCAN and PBEsol calculations
+- Expanded the documentation on the Materials Project recipes, including the pseudopotential and parameter differences between the legacy r2SCAN and MP24 workflows
+
+### Fixed
+
+- Fixed `MPtoASEConverter` assigning `MAGMOM` values to the wrong atoms when atoms of the same element were not contiguous in the `Atoms` object. This affected all recipes built on `MPtoASEConverter`, including the Materials Project, MatPES, and MP-ALOE recipes
+
 ## [1.8.2]
 
 ### Added

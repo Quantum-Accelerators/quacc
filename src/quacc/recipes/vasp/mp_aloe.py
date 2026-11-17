@@ -58,7 +58,6 @@ def mp_aloe_static_job(
         atoms,
         calc_defaults=calc_defaults,
         calc_swaps=calc_kwargs,
-        report_mp_corrections=True,
         additional_fields={"name": "MP-ALOE Static"} | (additional_fields or {}),
         copy_files=[{"source": prev_dir, "filenames": ["CHGCAR*", "WAVECAR*"]}]
         if prev_dir
