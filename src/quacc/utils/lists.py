@@ -19,34 +19,26 @@ def merge_list_params(
     removal_prefix
         Prefix to use to remove an entry from the final list.
     case_insensitive
-        Whether to perform case-insensitive comparisons
+        Whether to perform case-insensitive comparisons when identifying
+        duplicate entries and entries to remove. The case of each entry is
+        preserved in the returned list, since entries can contain
+        case-sensitive content such as file paths.
 
     Returns
     -------
     list
         Merged list
     """
-    merged_list = []
-    lists_ = [list_ for list_ in lists if list_]
-    for list_ in lists_:
-        for item in list_:
-            item_ = item
-            if case_insensitive:
-                item_ = item.lower()
-            if item_ not in merged_list:
-                merged_list.append(item_)
+    merged: dict[str, str] = {}
+    for list_ in lists:
+        for item in list_ or []:
+            key = item.lower() if case_insensitive else item
+            merged[key] = item
 
     if removal_prefix:
-        items_to_remove1 = [
-            item[1:] for item in merged_list if item.startswith(removal_prefix)
-        ]
-        items_to_remove2 = [
-            item for item in merged_list if item.startswith(removal_prefix)
-        ]
-        items_to_remove = items_to_remove1 + items_to_remove2
-        for item in items_to_remove:
-            if item in merged_list:
-                merged_list.remove(item)
+        removal_keys = [key for key in merged if key.startswith(removal_prefix)]
+        for key in removal_keys:
+            merged.pop(key, None)
+            merged.pop(key[len(removal_prefix) :], None)
 
-    merged_list.sort()
-    return merged_list
+    return [merged[key] for key in sorted(merged)]

@@ -211,7 +211,7 @@ def test_fairchem_omol(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "allpop def2-tzvpd def2/j defgrid3 diis engrad nonbo nonpa normalconv nososcf nousesym rijcosx wb97m-v xyzfile"
+        == "ALLPOP def2-TZVPD def2/J DEFGRID3 DIIS EnGrad NONBO NONPA NormalConv NOSOSCF NoUseSym RIJCOSX wB97M-V xyzfile"
     )
 
 
@@ -229,12 +229,12 @@ def test_fairchem_omol_swaps(tmp_path, monkeypatch):
     )
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "allpop def2-tzvpd def2/j diis engrad nonbo nonpa normalconv nososcf nousesym rijcosx tightscf wb97m-v xyzfile"
+        == "ALLPOP def2-TZVPD def2/J DIIS EnGrad NONBO NONPA NormalConv NOSOSCF NoUseSym RIJCOSX TightSCF wB97M-V xyzfile"
     )
     assert "%maxcore 1000" in output["parameters"]["orcablocks"]
     assert "%pal nprocs 2 end" in output["parameters"]["orcablocks"]
     assert (
-        "%scf convergence tight maxiter 300 end" in output["parameters"]["orcablocks"]
+        "%scf Convergence Tight maxiter 300 end" in output["parameters"]["orcablocks"]
     )
 
 
@@ -251,14 +251,14 @@ def test_fairchem_omol_open_shell_singlet(tmp_path, monkeypatch):
     # HOMO-LUMO rotation to break spin symmetry
     atoms = Atoms("H2", positions=[[0, 0, 0], [0, 0, 2.5]])
     output = omol_static_job(atoms, vertical=Vertical.Oss, nprocs=2)
-    assert "uks" in output["parameters"]["orcasimpleinput"].split()
+    assert "UKS" in output["parameters"]["orcasimpleinput"].split()
     assert "%scf rotate {0, 1, 20, 1, 1} end end" in output["parameters"]["orcablocks"]
 
     # Swaps are still applied alongside the symmetry breaking
     output = omol_static_job(
         atoms, vertical=Vertical.Oss, orcasimpleinput=["TightSCF"], nprocs=2
     )
-    assert {"uks", "tightscf"} <= set(output["parameters"]["orcasimpleinput"].split())
+    assert {"UKS", "TightSCF"} <= set(output["parameters"]["orcasimpleinput"].split())
     assert "%scf rotate {0, 1, 20, 1, 1} end end" in output["parameters"]["orcablocks"]
 
     # Triplets are already unrestricted, and the default vertical is unchanged
@@ -267,5 +267,5 @@ def test_fairchem_omol_open_shell_singlet(tmp_path, monkeypatch):
     )
     assert "rotate" not in output["parameters"]["orcablocks"]
     output = omol_static_job(atoms, nprocs=2)
-    assert "uks" not in output["parameters"]["orcasimpleinput"].split()
+    assert "UKS" not in output["parameters"]["orcasimpleinput"].split()
     assert "rotate" not in output["parameters"]["orcablocks"]
