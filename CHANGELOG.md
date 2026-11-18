@@ -4,6 +4,52 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project generally adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0]
+
+### Added
+
+- Added a `use_dipole_correction` argument to `quacc.recipes.vasp.fairchem.oc22_static_job` (default `True`). Set it to `False` for clean slabs, which OC22 ran without a dipole correction
+- Added an `additional_fields` argument to `quacc.recipes.vasp.core.freq_job`, matching the other VASP jobs
+- Added `PropertyFn.POTENTIAL_ENERGY` to `quacc.schemas.torchsim`. `PropertyFn.ENERGY` is kept as an alias
+- MD task documents now include the trajectory `loginterval` in `parameters_md`
+
+### Changed
+
+- BREAKING: `oc22_static_job` now takes `use_dipole_correction` as its second argument, so `copy_files` must be passed by keyword
+- BREAKING: `quacc.utils.dicts.recursive_dict_merge` now raises a `ValueError` if given fewer than two dictionaries, instead of returning `{}` for one dictionary or raising an `IndexError` for none
+- `quacc.recipes.vasp.core.double_relax_flow` now writes a WAVECAR in the first relaxation (`lwave=True`) so that it can be reused by the second relaxation, as documented. Pass `relax1_kwargs={"lwave": False}` to disable this
+- `merge_list_params`, which builds the ORCA and GULP inputs, now preserves the case of each entry. Duplicates and `#`-removals are still matched case-insensitively. As a result, the OMol25 ORCA input now uses fairchem's original keyword capitalization
+- `oc22_static_job` now initializes Co at 5 μB and keeps `LASPH = False`, matching the larger (82%) batch of the released OC22 trajectories. The docstring describes how to reproduce the later batch
+- Documented that the cached MLIP calculators from `quacc.recipes.mlip._base.pick_calculator` are shared by all jobs in the same Python process, so MLIP jobs must not run concurrently in multiple threads of one process
+- Simplified the Materials Project section of the database recipes documentation
+
+### Removed
+
+- BREAKING: Removed the unused `profile` argument from `run_and_summarize`, `run_and_summarize_opt`, and `prepare_calc` in `quacc.recipes.espresso._base`. It was silently ignored by the `Espresso` calculator and leaked into the task document's `parameters`
+
+### Fixed
+
+- `job_params={"all": ...}` now overrides a recipe's job-specific defaults, as documented. Previously, any job-specific default (e.g. the `kspacing` and `input_data` of the Espresso DOS and phonon flows, or `dispersion` in `mof_off_static_flow`) silently took priority over the `"all"` swaps. Nested dictionaries in `"all"` and job-specific parameters are now merged rather than replaced
+- Fixed the Q-Chem calculator replacing the user's `vdw_mode`, `cdft`, and `almo_coupling` with the `QChemDictSet` values whenever `qchem_dict_set_params` was used. For example, `vdw_mode="sequential"` was written as `atomic`, which applied custom van der Waals radii to the wrong atoms
+- Fixed ideal-gas thermochemistry ignoring the computed magnetic moment when auto-detecting the spin multiplicity, which affected the `freq_job` recipes with `thermo_method="ideal_gas"`
+- Fixed the MD `trajectory_log` times when `loginterval` is not 1. The times were previously too small by a factor of `loginterval`
+- Fixed frequency and thermochemistry task documents storing `dir_name: "."` instead of the job's results directory
+- Fixed the POTCAR setups parsing for preset YAMLs and `MPtoASEConverter`, which turned GW setups such as `W_sv_GW` into the plain `W` POTCAR. String setups (e.g. `setups: materialsproject`) and setups keyed by atom index in preset YAMLs no longer crash
+- Fixed the `Vasp` calculator lowercasing file paths and folder names, such as a custom `setups` YAML path or a `pp` folder like `potpaw_PBE.64`
+- Fixed ORCA blocks and GULP options containing file paths or quoted names being lowercased, e.g. `%moinp "/Data/Prev.gbw"`
+- Fixed the VASP Chargemol analysis storing the unserializable `ChargemolAnalysis` object in the task document instead of its summary dictionary
+- Fixed `mp_relax_set_job` using Monkhorst-Pack k-point grids for some structures. It is now Gamma-centered, like the Materials Project relaxations that MPtrj was drawn from
+- Fixed the `QMOFSet` initial magnetic moments to match the QMOF Database workflow: unlisted elements (e.g. H, C, N, O, Zn) now start at 0 μB instead of 0.5 μB, Cd, Hg, and Cn at 0 μB, and Ac at 7 μB
+- Fixed `quacc.recipes.orca.fairchem.omol_static_job` running open-shell singlets (`Vertical.Oss`) as restricted closed-shell calculations. They now use UKS with OMol25's spin-symmetry-breaking rotation
+- Fixed the FHI-aims recipes writing quacc's `kspacing` to `control.in` when `k_grid` or `k_grid_density` is also set. `kspacing` is not an FHI-aims keyword
+- Fixed the Espresso `static_job`, `relax_job`, and `ase_relax_job` modifying the module-level base settings, which could mix up the `calculation` of jobs running concurrently in threads
+- Fixed `make_adsorbate_structures` crashing on slabs built with ASE (which tag each layer) combined with untagged adsorbates
+- Fixed `make_adsorbate_structures` modifying the caller's `find_ads_sites_kwargs` and adsorbate, which made reusing the same kwargs for another slab raise a `ValueError`
+- Fixed `Summarize.neb` taking the transition state from the first returned iteration instead of the final one when `n_iter_return` is set
+- Fixed `Runner.run_neb` ignoring `run_kwargs`
+- Fixed `PropertyFn.ENERGY` in the TorchSim recipes, which raised a `KeyError` because its value (`"energy"`) was not in the property registry
+- Fixed the documented pressure units for `VibSummarize.vib_and_thermo` (bar, not atm)
+
 ## [1.9.0]
 
 ### Added
