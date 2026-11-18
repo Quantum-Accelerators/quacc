@@ -1300,6 +1300,30 @@ def test_hse06_d4_not_applied(parameters):
         assert calc.parameters.get(key) is None
 
 
+def test_case_sensitive_params(tmp_path):
+    setups_dir = tmp_path / "MyPresets"
+    setups_dir.mkdir()
+    (setups_dir / "MySetups.yaml").write_text("inputs:\n  setups:\n    Cu: Cu_pv\n")
+
+    atoms = bulk("Cu")
+    calc = Vasp(
+        atoms,
+        setups=str(setups_dir / "MySetups.yaml"),
+        pp="potpaw_PBE.64",
+        system="My Cu Structure",
+        algo="Fast",
+    )
+    assert calc.parameters["setups"] == {"Cu": "_pv"}
+    assert calc.parameters["pp"] == "potpaw_PBE.64"
+    assert calc.parameters["system"] == "My Cu Structure"
+    assert calc.parameters["algo"] == "fast"
+
+    # Aliases and named setups are still normalized
+    calc = Vasp(atoms, setups="MaterialsProject", pp="PBE")
+    assert calc.parameters["setups"] == "materialsproject"
+    assert calc.parameters["pp"] == "pbe"
+
+
 def test_setups():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="DefaultSetGGA")
