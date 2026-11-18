@@ -2314,3 +2314,17 @@ def test_mp_relax_set_job(patch_nonmetallic_taskdoc):
         "sigma": 0.05,
     }
     assert output["name"] == "MP RelaxSet Static"
+
+
+def test_mp_relax_set_job_gamma_centered(patch_nonmetallic_taskdoc):
+    from ase import Atoms
+
+    # CsCl-type (simple cubic) cell with an all-even 8x8x8 mesh. pymatgen's
+    # MPRelaxSet defaults to Monkhorst-Pack here, but the Materials Project
+    # relaxations behind MPtrj used Gamma-centered grids (force_gamma=True).
+    atoms = Atoms(
+        "NiO", scaled_positions=[[0, 0, 0], [0.5, 0.5, 0.5]], cell=[3.0] * 3, pbc=True
+    )
+    output = mp_relax_set_job(atoms, ncore=1)
+    assert output["parameters"]["kpts"] == (8, 8, 8)
+    assert output["parameters"]["gamma"] is True
