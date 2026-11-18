@@ -503,7 +503,7 @@ class VibSummarize:
         temperature
             Temperature in K for thermochemistry calculations.
         pressure
-            Pressure in atm for thermochemistry calculations
+            Pressure in bar for thermochemistry calculations
 
         Returns
         -------
