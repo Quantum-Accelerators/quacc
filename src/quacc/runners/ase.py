@@ -414,6 +414,7 @@ class Runner(BaseRunner[AtomsT]):
         )
         vars(dyn)["requested_steps"] = steps
         vars(dyn)["completed_steps"] = dyn.nsteps
+        vars(dyn)["loginterval"] = dynamics_kwargs.get("loginterval", 1)
         if dyn.nsteps < steps:
             vars(dyn)["stop_reason"] = stop_reason
 
