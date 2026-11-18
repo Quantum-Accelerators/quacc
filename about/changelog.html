@@ -6125,15 +6125,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#unreleased" class="md-nav__link">
+  <a href="#190" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        [Unreleased]
+        [1.9.0]
       </span>
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="[Unreleased]">
+    <nav class="md-nav" aria-label="[1.9.0]">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -12072,15 +12072,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#unreleased" class="md-nav__link">
+  <a href="#190" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
-        [Unreleased]
+        [1.9.0]
       </span>
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="[Unreleased]">
+    <nav class="md-nav" aria-label="[1.9.0]">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -17991,11 +17991,12 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <p>All notable changes to this project will be documented in this file.</p>
 <p>The format is based on <a href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>, and this project generally adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
-<h2 id="unreleased">[Unreleased]<a class="headerlink" href="#unreleased" title="Permanent link">&para;</a></h2>
+<h2 id="190">[1.9.0]<a class="headerlink" href="#190" title="Permanent link">&para;</a></h2>
 <h3 id="added">Added<a class="headerlink" href="#added" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Added legacy Materials Project r2SCAN recipes (<code>mp_prerelax_job</code>, <code>mp_metagga_relax_job</code>, <code>mp_metagga_static_job</code>, and <code>mp_metagga_relax_flow</code>) to <code>quacc.recipes.vasp.mp_legacy</code>. They use the <code>MPScanRelaxSet</code>/<code>MPScanStaticSet</code> settings and PBE.54 pseudopotentials, which are compatible with the r2SCAN data currently in the Materials Project database</li>
 <li>Added a <code>custodian_handlers</code> argument to the <code>Vasp</code> calculator to override the Custodian handlers for a single calculation</li>
+<li>Added a calculator-agnostic equation of state workflow, <code>quacc.recipes.common.eos.eos_flow</code> and <code>eos_subflow</code>, which runs fixed-cell relaxations (and optionally static calculations) on isotropically strained structures and fits the energy–volume data with the Murnaghan, Birch, Birch–Murnaghan, and Vinet models. The strained structures come from the new <code>quacc.atoms.deformation.make_volume_strains_from_bulk</code> function</li>
 </ul>
 <h3 id="changed">Changed<a class="headerlink" href="#changed" title="Permanent link">&para;</a></h3>
 <ul>
@@ -18003,10 +18004,14 @@
 <li>The Materials Project r2SCAN recipes now add Custodian's <code>KspacingMetalHandler</code>, matching atomate2's MP workflows</li>
 <li>The MP24 and MP-ALOE recipes no longer try to apply the <code>MaterialsProject2020Compatibility</code> corrections, which only apply to GGA/GGA+U calculations and previously only logged a warning for r2SCAN and PBEsol calculations</li>
 <li>Expanded the documentation on the Materials Project recipes, including the pseudopotential and parameter differences between the legacy r2SCAN and MP24 workflows</li>
+<li><code>quacc.recipes.espresso.phonons.phonon_dos_flow</code> now applies the acoustic sum rule by default (<code>zasr = "crystal"</code> for q2r.x and <code>asr = "crystal"</code> for matdyn.x), so the acoustic frequencies at Γ vanish. The defaults can be overridden through <code>job_params</code></li>
+<li><code>phonon_dos_flow</code> now only copies the files that each step reads (the <code>matdyn*</code> dynamical matrices to q2r.x and the <code>q2r.fc*</code> force constants to matdyn.x) instead of every file from the previous step</li>
 </ul>
 <h3 id="fixed">Fixed<a class="headerlink" href="#fixed" title="Permanent link">&para;</a></h3>
 <ul>
 <li>Fixed <code>MPtoASEConverter</code> assigning <code>MAGMOM</code> values to the wrong atoms when atoms of the same element were not contiguous in the <code>Atoms</code> object. This affected all recipes built on <code>MPtoASEConverter</code>, including the Materials Project, MatPES, and MP-ALOE recipes</li>
+<li>Fixed the k-paths in <code>quacc.recipes.espresso.bands.bands_pw_job</code> and <code>bands_flow</code>. The path was built for a standardized cell rather than the cell used by pw.x, which caused pw.x to fail when the atom count differed and silently computed bands along the wrong directions for cells not in a standard setting. The path is now built on the input <code>atoms</code>, which must be the structure used in the SCF calculation</li>
+<li>Fixed the parsing of Quantum ESPRESSO <code>projwfc.x</code> DOS output in the <code>Espresso</code> calculator. The first energy point is no longer dropped, and collinear spin-polarized output is now parsed correctly: <code>dos</code> and <code>pdos</code> are summed over spin channels, and the individual channels are returned as <code>dos_up</code>, <code>dos_down</code>, <code>pdos_up</code>, and <code>pdos_down</code></li>
 </ul>
 <h2 id="182">[1.8.2]<a class="headerlink" href="#182" title="Permanent link">&para;</a></h2>
 <h3 id="added_1">Added<a class="headerlink" href="#added_1" title="Permanent link">&para;</a></h3>
