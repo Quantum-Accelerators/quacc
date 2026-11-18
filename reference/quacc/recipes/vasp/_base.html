@@ -7171,7 +7171,7 @@ Vasp calculator keyword arguments are supported.</p>
 )
           –
           <div class="doc-md-description">
-            <p>Energy of the system</p>
+            <p>Potential energy in eV. If 0, then the output is just the correction.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -7181,7 +7181,7 @@ Vasp calculator keyword arguments are supported.</p>
 )
           –
           <div class="doc-md-description">
-            <p>Temperature of the system</p>
+            <p>Temperature in Kelvins.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -7191,7 +7191,7 @@ Vasp calculator keyword arguments are supported.</p>
 )
           –
           <div class="doc-md-description">
-            <p>Pressure of the system</p>
+            <p>Pressure in bar.</p>
           </div>
         </li>
         <li class="doc-section-item field-body">
@@ -7367,11 +7367,11 @@ Vasp calculator keyword arguments are supported.</p>
 </span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-169"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-169" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-169"></a><span class="sd">    atoms</span>
 </span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-170"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-170" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-170"></a><span class="sd">        Atoms object</span>
 </span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-171"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-171" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-171"></a><span class="sd">    energy</span>
-</span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-172"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-172" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-172"></a><span class="sd">        Energy of the system</span>
+</span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-172"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-172" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-172"></a><span class="sd">        Potential energy in eV. If 0, then the output is just the correction.</span>
 </span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-173"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-173" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-173"></a><span class="sd">    temperature</span>
-</span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-174"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-174" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-174"></a><span class="sd">        Temperature of the system</span>
+</span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-174"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-174" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-174"></a><span class="sd">        Temperature in Kelvins.</span>
 </span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-175"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-175" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-175"></a><span class="sd">    pressure</span>
-</span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-176"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-176" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-176"></a><span class="sd">        Pressure of the system</span>
+</span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-176"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-176" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-176"></a><span class="sd">        Pressure in bar.</span>
 </span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-177"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-177" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-177"></a><span class="sd">    thermo_method</span>
 </span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-178"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-178" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-178"></a><span class="sd">        Method to use for thermochemistry. Options are "harmonic" or "ideal_gas".</span>
 </span><span id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__span-0-179"><a id="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-179" name="quacc.recipes.vasp._base.run_and_summarize_vib_and_thermo--source--__codelineno-0-179"></a><span class="sd">    preset</span>
