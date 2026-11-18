@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import pytest
 from ase import Atoms
 from ase.build import bulk, molecule
+from ase.io.aims import write_control
 
 from quacc import Remove, change_settings
 from quacc.recipes.aims import _base, core
@@ -67,9 +69,32 @@ def test_prep_calculator_respects_explicit_spin_and_k_grid():
         atoms, calc_defaults={"kspacing": 0.1, "k_grid": [3, 4, 5], "spin": "none"}
     )
 
-    assert calc.parameters["kspacing"] == 0.1
+    assert "kspacing" not in calc.parameters
     assert calc.parameters["k_grid"] == [3, 4, 5]
     assert calc.parameters["spin"] == "none"
+
+
+@pytest.mark.parametrize("k_points", [{"k_grid": [3, 4, 5]}, {"k_grid_density": 4.0}])
+def test_prep_calculator_does_not_write_kspacing(tmp_path, k_points):
+    # FHI-aims has no `kspacing` keyword, so it must not reach control.in when
+    # the user sets a native k-point keyword
+    atoms = bulk("Si")
+    calc = _base.prep_calculator(
+        atoms, calc_defaults={"kspacing": 0.1, "xc": "pbe"}, calc_swaps=k_points
+    )
+    assert "kspacing" not in calc.parameters
+    for key, value in k_points.items():
+        assert calc.parameters[key] == value
+
+    species_dir = tmp_path / "species"
+    species_dir.mkdir()
+    (species_dir / "14_Si_default").write_text("  species Si\n")
+    write_control(
+        str(tmp_path / "control.in"),
+        atoms,
+        calc.parameters | {"species_dir": str(species_dir)},
+    )
+    assert "kspacing" not in (tmp_path / "control.in").read_text()
 
 
 def test_run_and_summarize(monkeypatch):

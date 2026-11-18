@@ -87,16 +87,17 @@ def prep_calculator(
     settings = get_settings()
     species_dir = calc_flags.pop("species_dir", None)
 
+    # `kspacing` is a quacc convenience, not an FHI-aims keyword, so it must never
+    # reach control.in. It is only used if no native k-point keyword is set.
+    kspacing = calc_flags.pop("kspacing", None)
     if not any(atoms.pbc):
-        for key in ["kspacing", "k_grid", "k_grid_density"]:
-            if key in calc_flags:
-                calc_flags.pop(key)
+        for key in ["k_grid", "k_grid_density"]:
+            calc_flags.pop(key, None)
     elif (
-        "kspacing" in calc_flags
+        kspacing is not None
         and "k_grid" not in calc_flags
         and "k_grid_density" not in calc_flags
     ):
-        kspacing = calc_flags.pop("kspacing")
         calc_flags["k_grid"] = kspacing_to_kpts(kspacing, atoms)
 
     if "spin" not in calc_flags and hasattr(atoms, "get_initial_magnetic_moments"):
