@@ -29,7 +29,13 @@ if TYPE_CHECKING:
     from ase.md.md import MolecularDynamics
     from ase.optimize.optimize import Optimizer
 
-    from quacc.types import BaderSchema, DefaultSetting, VaspASEOptSchema, VaspSchema
+    from quacc.types import (
+        BaderSchema,
+        ChargemolSchema,
+        DefaultSetting,
+        VaspASEOptSchema,
+        VaspSchema,
+    )
 
 
 LOGGER = getLogger(__name__)
@@ -276,7 +282,7 @@ def bader_runner(path: Path | str) -> BaderSchema:
 
 def chargemol_runner(
     path: Path | str, atomic_densities_path: str | Path | None = None
-) -> ChargemolAnalysis:
+) -> ChargemolSchema:
     """
     Runs a Chargemol (i.e. DDEC6 + CM5) analysis using the VASP output files in
     the given path. This function requires that the chargemol executable, given
@@ -299,8 +305,9 @@ def chargemol_runner(
 
     Returns
     -------
-    ChargemolAnalysis
-        Chargemol analysis object, with results available in its summary attribute.
+    ChargemolSchema
+        Dictionary containing the Chargemol analysis summary (i.e. the `summary`
+        attribute of the Pymatgen `ChargemolAnalysis` object).
     """
     # Make sure files are present
     relevant_files = ["AECCAR0", "AECCAR2", "CHGCAR", "POTCAR"]
@@ -315,4 +322,7 @@ def chargemol_runner(
         raise OSError(msg)
 
     # Run Chargemol analysis
-    return ChargemolAnalysis(path=path, atomic_densities_path=atomic_densities_path)
+    chargemol_analysis = ChargemolAnalysis(
+        path=path, atomic_densities_path=atomic_densities_path
+    )
+    return cast("ChargemolSchema", chargemol_analysis.summary)

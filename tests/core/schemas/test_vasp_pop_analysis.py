@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import gzip
 import os
+from types import SimpleNamespace
 
 import pytest
 
@@ -23,17 +24,20 @@ def mock_bader_analysis(*args, **kwargs):
 
 
 def mock_chargemol_analysis(*args, **kwargs):
-    return {
-        "ddec": {
-            "partial_charges": [1.0],
-            "spin_moments": [0.0],
-            "dipoles": [1.0],
-            "rsquared_moments": [1.0],
-            "rcubed_moments": [1.0],
-            "rfourth_moments": [1.0],
-        },
-        "cm5": {"partial_charges": [1.0]},
-    }
+    # Mimic Pymatgen's ChargemolAnalysis, which stores its results in `.summary`
+    return SimpleNamespace(
+        summary={
+            "ddec": {
+                "partial_charges": [1.0],
+                "spin_moments": [0.0],
+                "dipoles": [1.0],
+                "rsquared_moments": [1.0],
+                "rcubed_moments": [1.0],
+                "rfourth_moments": [1.0],
+            },
+            "cm5": {"partial_charges": [1.0]},
+        }
+    )
 
 
 @pytest.fixture(autouse=True)
