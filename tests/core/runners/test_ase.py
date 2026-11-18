@@ -412,6 +412,25 @@ def test_run_neb_copy_files(monkeypatch, tmp_path, copy_files):
     assert (Path(results_dir) / "test_file.txt").exists()
 
 
+def test_run_neb_run_kwargs(monkeypatch, tmp_path):
+    monkeypatch.chdir(tmp_path)
+    images = read(test_files_path / "neb_path.xyz", index=":")
+    neb_kwargs = {"method": "aseneb", "precon": None}
+
+    # The run_kwargs must reach the optimizer's run() method
+    with pytest.raises(ValueError, match="unknown method"):
+        Runner(images, EMT()).run_neb(
+            optimizer=NEBOptimizer,
+            neb_kwargs=neb_kwargs,
+            run_kwargs={"method": "not-a-method"},
+        )
+
+    dyn = Runner(images, EMT()).run_neb(
+        optimizer=NEBOptimizer, neb_kwargs=neb_kwargs, run_kwargs={"method": "static"}
+    )
+    assert read(dyn.trajectory.filename, index=":")[-1].calc.results is not None
+
+
 def test_run_neb_relax_cell():
     images = read(test_files_path / "neb_path.xyz", index=":")
 
