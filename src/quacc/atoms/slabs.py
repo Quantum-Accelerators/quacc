@@ -284,8 +284,12 @@ def make_adsorbate_structures(
     if modes is None:
         modes = ["ontop", "bridge", "hollow"]
 
-    ads_site_finder_kwargs = dict(ads_site_finder_kwargs or {})
-    find_ads_sites_kwargs = dict(find_ads_sites_kwargs or {})
+    ads_site_finder_kwargs = (
+        ads_site_finder_kwargs.copy() if ads_site_finder_kwargs is not None else {}
+    )
+    find_ads_sites_kwargs = (
+        find_ads_sites_kwargs.copy() if find_ads_sites_kwargs is not None else {}
+    )
 
     # Check for double-used parameters
     if min_distance and "distance" in find_ads_sites_kwargs:
