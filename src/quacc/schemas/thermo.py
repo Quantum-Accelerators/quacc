@@ -59,6 +59,9 @@ class ThermoSummarize:
         -------
         None
         """
+        # Keep a reference to the original Atoms because `Atoms.copy()` drops the
+        # calculator, whose results may hold the computed magnetic moment.
+        self._input_atoms = atoms
         self.atoms = atoms.copy()
         # Make sure vibrational freqs are imaginary, not negative
         vib_freqs_: list[float | complex] = list(vib_freqs)
@@ -104,7 +107,7 @@ class ThermoSummarize:
 
         # Get the spin multiplicity
         if spin_multiplicity is None:
-            spin_multiplicity = get_spin_multiplicity_attribute(self.atoms)
+            spin_multiplicity = get_spin_multiplicity_attribute(self._input_atoms)
             LOGGER.warning(
                 f"Using a spin multiplicity of {spin_multiplicity} for IdealGasThermo."
             )
