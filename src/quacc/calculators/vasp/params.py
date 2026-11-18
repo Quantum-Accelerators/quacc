@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, cast
 import numpy as np
 import psutil
 from ase.calculators.vasp import Vasp as Vasp_
+from ase.calculators.vasp import setups as ase_setups
 from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 
@@ -522,12 +523,45 @@ def normalize_params(user_calc_params: dict[str, Any]) -> dict[str, Any]:
     dict
         The updated user-provided calculator parameters.
     """
-    return {
-        (k.lower() if isinstance(k, str) else k): (
-            v.lower() if isinstance(v, str) else v
-        )
-        for k, v in user_calc_params.items()
-    }
+    normalized_params = {}
+    for k, v in user_calc_params.items():
+        key = k.lower() if isinstance(k, str) else k
+        normalized_params[key] = _normalize_value(key, v)
+    return normalized_params
+
+
+def _normalize_value(key: Any, value: Any) -> Any:
+    """
+    Lowercase a string parameter value, unless it can be case-sensitive.
+
+    Parameters
+    ----------
+    key
+        The (lowercase) parameter name.
+    value
+        The parameter value.
+
+    Returns
+    -------
+    Any
+        The normalized value.
+    """
+    if not isinstance(value, str):
+        return value
+
+    # `pp` is either an ASE alias or the name of a pseudopotential folder
+    if key == "pp":
+        return value.lower() if value.lower() in ("lda", "pbe") else value
+
+    # `setups` is either a named ASE setup or the path to a YAML file
+    if key == "setups":
+        return value.lower() if value.lower() in ase_setups.setups_defaults else value
+
+    # Free text and file paths
+    if key in ("system", "txt"):
+        return value
+
+    return value.lower()
 
 
 def set_auto_dipole(
