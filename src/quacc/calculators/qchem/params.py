@@ -78,9 +78,16 @@ def make_qc_input(qchem: QChem, atoms: Atoms) -> QCInput:
             prop1 = getattr(qchem, prop)
             if prop2 := getattr(qc_dict_set, prop):
                 setattr(qchem, prop, recursive_dict_merge(prop2, prop1))
-        for prop in ["vdw_mode", "cdft", "almo_coupling"]:
+        # Only fall back to the QChemDictSet value if the user left the
+        # calculator kwarg at its default.
+        for prop, default in [
+            ("vdw_mode", "atomic"),
+            ("cdft", None),
+            ("almo_coupling", None),
+        ]:
+            prop1 = getattr(qchem, prop)
             prop2 = getattr(qc_dict_set, prop)
-            if prop2 and not prop1:
+            if prop2 and (not prop1 or prop1 == default):
                 setattr(qchem, prop, prop2)
 
     qchem.rem = sort_dict(
