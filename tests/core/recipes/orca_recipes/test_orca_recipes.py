@@ -211,7 +211,7 @@ def test_fairchem_omol(tmp_path, monkeypatch):
     assert output["parameters"]["mult"] == 1
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "allpop def2-tzvpd def2/j defgrid3 diis engrad nonbo nonpa normalconv nososcf nousesym rijcosx wb97m-v xyzfile"
+        == "ALLPOP def2-TZVPD def2/J DEFGRID3 DIIS EnGrad NONBO NONPA NormalConv NOSOSCF NoUseSym RIJCOSX wB97M-V xyzfile"
     )
 
 
@@ -229,12 +229,12 @@ def test_fairchem_omol_swaps(tmp_path, monkeypatch):
     )
     assert (
         output["parameters"]["orcasimpleinput"]
-        == "allpop def2-tzvpd def2/j diis engrad nonbo nonpa normalconv nososcf nousesym rijcosx tightscf wb97m-v xyzfile"
+        == "ALLPOP def2-TZVPD def2/J DIIS EnGrad NONBO NONPA NormalConv NOSOSCF NoUseSym RIJCOSX TightSCF wB97M-V xyzfile"
     )
     assert "%maxcore 1000" in output["parameters"]["orcablocks"]
     assert "%pal nprocs 2 end" in output["parameters"]["orcablocks"]
     assert (
-        "%scf convergence tight maxiter 300 end" in output["parameters"]["orcablocks"]
+        "%scf Convergence Tight maxiter 300 end" in output["parameters"]["orcablocks"]
     )
 
 
