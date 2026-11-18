@@ -189,7 +189,7 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
     assert output["relax1"]["parameters"]["isif"] == 3
-    assert output["relax1"]["parameters"]["lwave"] is False
+    assert output["relax1"]["parameters"]["lwave"] is True
     assert output["relax1"]["parameters"]["encut"] == 520
     assert output["relax2"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"]["isym"] == 0
@@ -203,7 +203,7 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
     assert output["relax1"]["parameters"]["isif"] == 3
-    assert output["relax1"]["parameters"]["lwave"] is False
+    assert output["relax1"]["parameters"]["lwave"] is True
     assert output["relax1"]["parameters"]["encut"] == 520
     assert output["relax2"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"]["isym"] == 0
@@ -217,7 +217,7 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     assert output["relax1"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
-    assert output["relax1"]["parameters"]["lwave"] is False
+    assert output["relax1"]["parameters"]["lwave"] is True
     assert output["relax1"]["parameters"]["isif"] == 2
     assert output["relax1"]["parameters"]["encut"] == 520
     assert output["relax2"]["structure_metadata"]["nsites"] == len(atoms)
@@ -228,6 +228,28 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     assert output["relax2"]["parameters"]["isif"] == 2
 
     assert double_relax_flow(atoms, relax1_kwargs={"kpts": [1, 1, 1]})
+
+    output = double_relax_flow(atoms, relax1_kwargs={"lwave": False})
+    assert output["relax1"]["parameters"]["lwave"] is False
+
+
+def test_doublerelax_flow_copies_wavecar(patch_metallic_taskdoc, monkeypatch):
+    from quacc.calculators.vasp.vasp import Vasp
+
+    def mock_run_with_wavecar(self, *args, **kwargs):
+        from ase.io import write
+
+        write(Path(self.directory, "CONTCAR"), self.atoms)
+        if self.bool_params.get("lwave"):
+            Path(self.directory, "WAVECAR").write_text("wavecar")
+        return None, None
+
+    monkeypatch.setattr(Vasp, "_run", mock_run_with_wavecar)
+
+    with change_settings({"GZIP_FILES": False}):
+        output = double_relax_flow(bulk("Al"))
+    assert Path(output["relax1"]["dir_name"], "WAVECAR").exists()
+    assert Path(output["relax2"]["dir_name"], "WAVECAR").exists()
 
 
 def test_ase_relax_job(patch_metallic_taskdoc):
