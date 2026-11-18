@@ -71,6 +71,16 @@ def test_recursive_dict_merge2():
     }
 
 
+def test_recursive_dict_merge_requires_multiple_dicts():
+    with pytest.raises(ValueError, match="at least two dictionaries, got 1"):
+        recursive_dict_merge({"a": 1})
+    with pytest.raises(ValueError, match="at least two dictionaries, got 0"):
+        recursive_dict_merge()
+
+    assert recursive_dict_merge(None, None) == {}
+    assert recursive_dict_merge({"a": 1}, {"b": 2}, {"a": 3}) == {"a": 3, "b": 2}
+
+
 def test_recursive_dict_merge_readonly_mapping():
     defaults = MappingProxyType({"a": {"x": 1}})
 

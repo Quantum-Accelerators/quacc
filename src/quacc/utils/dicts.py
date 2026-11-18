@@ -44,7 +44,7 @@ def recursive_dict_merge(
     Parameters
     ----------
     *dicts
-        Dictionaries to merge
+        Dictionaries to merge. At least two must be provided.
     remove_trigger
         Value to that triggers removal of the entry
     verbose
@@ -54,7 +54,16 @@ def recursive_dict_merge(
     -------
     dict[str, Any]
         Merged dictionary
+
+    Raises
+    ------
+    ValueError
+        If fewer than two dictionaries are provided.
     """
+    if len(dicts) < 2:
+        msg = f"recursive_dict_merge requires at least two dictionaries, got {len(dicts)}."
+        raise ValueError(msg)
+
     old_dict = dicts[0]
     merged: dict[str, Any] = {}
     for i in range(len(dicts) - 1):
