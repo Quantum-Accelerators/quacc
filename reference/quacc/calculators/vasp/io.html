@@ -2112,6 +2112,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#quacc.calculators.vasp.io.get_setup_suffix" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        get_setup_suffix
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quacc.calculators.vasp.io.load_vasp_yaml_calc" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -6267,6 +6278,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#quacc.calculators.vasp.io.get_setup_suffix" class="md-nav__link">
+    <span class="md-ellipsis">
+      <span class="md-typeset">
+        get_setup_suffix
+      </span>
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quacc.calculators.vasp.io.load_vasp_yaml_calc" class="md-nav__link">
     <span class="md-ellipsis">
       <span class="md-typeset">
@@ -6504,6 +6526,109 @@
 <div class="doc doc-object doc-function">
 
 
+<h2 id="quacc.calculators.vasp.io.get_setup_suffix" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">get_setup_suffix</span>
+
+
+<a href="#quacc.calculators.vasp.io.get_setup_suffix" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">get_setup_suffix</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;typing.Any&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">,</span> <span class="n">setup</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;typing.Any&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-external" title="&lt;code&gt;typing.Any&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Convert a full POTCAR name (e.g. "Cu_pv") to the suffix (e.g. "_pv") that
+ASE expects for an element-keyed setup. Suffixes (e.g. "_pv") and setups
+keyed by atom index (which ASE expects as full POTCAR names) are returned
+unchanged.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+            <b><code>symbol</code></b>
+              (<code><a class="autorefs autorefs-external" title="&lt;code&gt;typing.Any&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The key of the setups dictionary (an element symbol or atom index).</p>
+          </div>
+        </li>
+        <li class="doc-section-item field-body">
+            <b><code>setup</code></b>
+              (<code><a class="autorefs autorefs-external" title="&lt;code&gt;typing.Any&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></code>)
+          –
+          <div class="doc-md-description">
+            <p>The setup for that key.</p>
+          </div>
+        </li>
+    </ul>
+
+
+<p><span class="doc-section-title">Returns:</span></p>
+    <ul>
+        <li class="doc-section-item field-body">
+              <code><a class="autorefs autorefs-external" title="&lt;code&gt;typing.Any&lt;/code&gt;" href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></code>
+          –
+          <div class="doc-md-description">
+            <p>The setup suffix.</p>
+          </div>
+        </li>
+    </ul>
+
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>quacc/calculators/vasp/io.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-59">59</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-60">60</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-61">61</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-62">62</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-63">63</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-64">64</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-65">65</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-66">66</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-67">67</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-68">68</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-69">69</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-72">72</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-73">73</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-74">74</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-75">75</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-76">76</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-77">77</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-78">78</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-79">79</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-80">80</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-59"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-59" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-59"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_setup_suffix</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">setup</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-60"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-60" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-60"></a><span class="w">    </span><span class="sd">"""</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-61"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-61" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-61"></a><span class="sd">    Convert a full POTCAR name (e.g. "Cu_pv") to the suffix (e.g. "_pv") that</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-62"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-62" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-62"></a><span class="sd">    ASE expects for an element-keyed setup. Suffixes (e.g. "_pv") and setups</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-63"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-63" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-63"></a><span class="sd">    keyed by atom index (which ASE expects as full POTCAR names) are returned</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-64"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-64" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-64"></a><span class="sd">    unchanged.</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-65"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-65" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-65"></a>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-66"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-66" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-66"></a><span class="sd">    Parameters</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-67"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-67" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-67"></a><span class="sd">    ----------</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-68"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-68" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-68"></a><span class="sd">    symbol</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-69"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-69" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-69"></a><span class="sd">        The key of the setups dictionary (an element symbol or atom index).</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-70"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-70" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-70"></a><span class="sd">    setup</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-71"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-71" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-71"></a><span class="sd">        The setup for that key.</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-72"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-72" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-72"></a>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-73"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-73" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-73"></a><span class="sd">    Returns</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-74"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-74" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-74"></a><span class="sd">    -------</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-75"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-75" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-75"></a><span class="sd">    Any</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-76"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-76" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-76"></a><span class="sd">        The setup suffix.</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-77"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-77" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-77"></a><span class="sd">    """</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-78"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-78" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-78"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">setup</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-79"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-79" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-79"></a>        <span class="k">return</span> <span class="n">setup</span><span class="o">.</span><span class="n">removeprefix</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
+</span><span id="quacc.calculators.vasp.io.get_setup_suffix--source--__span-0-80"><a id="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-80" name="quacc.calculators.vasp.io.get_setup_suffix--source--__codelineno-0-80"></a>    <span class="k">return</span> <span class="n">setup</span>
+</span></code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
 <h2 id="quacc.calculators.vasp.io.load_vasp_yaml_calc" class="doc doc-heading">
             <span class="doc doc-object-name doc-function-name">load_vasp_yaml_calc</span>
 
@@ -6599,7 +6724,9 @@ dictionary of element-wise initial magmoms.</p>
 <span class="normal"><a href="#quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-51">51</a></span>
 <span class="normal"><a href="#quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-52">52</a></span>
 <span class="normal"><a href="#quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-53">53</a></span>
-<span class="normal"><a href="#quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-54">54</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-14"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-14" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-14"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_vasp_yaml_calc</span><span class="p">(</span><span class="n">yaml_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-54">54</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-55">55</a></span>
+<span class="normal"><a href="#quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-56">56</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-14"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-14" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-14"></a><span class="k">def</span><span class="w"> </span><span class="nf">load_vasp_yaml_calc</span><span class="p">(</span><span class="n">yaml_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 </span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-15"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-15" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-15"></a><span class="w">    </span><span class="sd">"""</span>
 </span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-16"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-16" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-16"></a><span class="sd">    Loads a YAML file containing calculator settings. Used for VASP calculations</span>
 </span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-17"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-17" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-17"></a><span class="sd">    and can read quacc-formatted YAMLs that are of the following format:</span>
@@ -6635,11 +6762,13 @@ dictionary of element-wise initial magmoms.</p>
 </span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-47"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-47" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-47"></a>            <span class="n">k</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span> <span class="n">v</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">v</span>
 </span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-48"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-48" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-48"></a>            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">"inputs"</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
 </span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-49"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-49" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-49"></a>        <span class="p">}</span>
-</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-50"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-50" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-50"></a>        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">config</span><span class="p">[</span><span class="s2">"inputs"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"setups"</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-51"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-51" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-51"></a>            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
-</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-52"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-52" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-52"></a>                <span class="n">config</span><span class="p">[</span><span class="s2">"inputs"</span><span class="p">][</span><span class="s2">"setups"</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">k</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-53"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-53" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-53"></a>
-</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-54"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-54" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-54"></a>    <span class="k">return</span> <span class="n">config</span>
+</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-50"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-50" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-50"></a>        <span class="n">setups</span> <span class="o">=</span> <span class="n">config</span><span class="p">[</span><span class="s2">"inputs"</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"setups"</span><span class="p">)</span>
+</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-51"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-51" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-51"></a>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">setups</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-52"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-52" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-52"></a>            <span class="n">config</span><span class="p">[</span><span class="s2">"inputs"</span><span class="p">][</span><span class="s2">"setups"</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-53"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-53" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-53"></a>                <span class="n">k</span><span class="p">:</span> <span class="n">get_setup_suffix</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">setups</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-54"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-54" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-54"></a>            <span class="p">}</span>
+</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-55"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-55" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-55"></a>
+</span><span id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__span-0-56"><a id="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-56" name="quacc.calculators.vasp.io.load_vasp_yaml_calc--source--__codelineno-0-56"></a>    <span class="k">return</span> <span class="n">config</span>
 </span></code></pre></div></td></tr></table></div>
             </details>
     </div>
