@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pytest
 from ase.build import bulk, molecule
@@ -83,3 +85,13 @@ def test_freq_job(tmp_path, monkeypatch):
     assert len(output["results"]["vib_freqs"]) == 3 * len(atoms) - 6
     assert len(output["parameters_thermo"]["vib_freqs"]) == 3 * len(atoms) - 6
     assert output["parameters_thermo"]["n_imag"] == 0
+
+
+def test_freq_job_dir_name(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+
+    output = freq_job(molecule("N2"))
+    dir_name = Path(output["dir_name"])
+    assert dir_name.is_absolute()
+    assert dir_name != Path.cwd()
+    assert (dir_name / "vib_summary.log.gz").exists()
