@@ -55,11 +55,10 @@ def recursive_dict_merge(
     dict[str, Any]
         Merged dictionary
     """
-    old_dict = dicts[0]
-    merged: dict[str, Any] = {}
-    for i in range(len(dicts) - 1):
-        merged = _recursive_dict_pair_merge(old_dict, dicts[i + 1], verbose=verbose)
-        old_dict = deepcopy(merged)
+    # Deep-copy the first dictionary, then merge each subsequent one into it
+    merged = _recursive_dict_pair_merge(dicts[0], None) if dicts else {}
+    for dict_ in dicts[1:]:
+        merged = _recursive_dict_pair_merge(merged, dict_, verbose=verbose)
     return remove_dict_entries(merged, remove_trigger=remove_trigger)
 
 

@@ -71,6 +71,18 @@ def test_recursive_dict_merge2():
     }
 
 
+def test_recursive_dict_merge_any_number_of_dicts():
+    single = {"a": 1, "b": {"c": [1, 2]}, "d": Remove}
+    merged = recursive_dict_merge(single)
+    assert merged == {"a": 1, "b": {"c": [1, 2]}}
+    merged["b"]["c"].append(3)
+    assert single["b"]["c"] == [1, 2]
+
+    assert recursive_dict_merge() == {}
+    assert recursive_dict_merge(None) == {}
+    assert recursive_dict_merge({"a": 1}, {"b": 2}, {"a": 3}) == {"a": 3, "b": 2}
+
+
 def test_recursive_dict_merge_readonly_mapping():
     defaults = MappingProxyType({"a": {"x": 1}})
 
