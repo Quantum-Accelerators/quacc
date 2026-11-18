@@ -418,6 +418,7 @@ def oc20_static_job(
 @job
 def oc22_static_job(
     atoms: Atoms,
+    use_dipole_correction: bool = True,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
@@ -425,16 +426,29 @@ def oc22_static_job(
     """
     Carry out a static calculation with OC22 settings.
 
-    Follows the [OC22 input generator](https://github.com/Open-Catalyst-Project/Open-Catalyst-Dataset/blob/23cdca3e7f14f6f5d8c3971ef2dbdcdba9dfeee3/ocdata/oc22_dataset/sets.py).
-    Dipole corrections are enabled; pass ``ldipol=False`` for clean symmetric slabs.
+    Follows the [OC22 input generator](https://github.com/Open-Catalyst-Project/Open-Catalyst-Dataset/blob/23cdca3e7f14f6f5d8c3971ef2dbdcdba9dfeee3/ocdata/oc22_dataset/sets.py)
+    and the settings recorded in the released OC22 trajectories.
+
+    !!! Note
+
+        OC22 was generated in two batches that used different pymatgen versions.
+        About 82% of the OC22 trajectories use `LASPH = False` and initialize Co
+        at 5 μB, which are the defaults here. The remaining trajectories use
+        `LASPH = True` and initialize Co at 0.6 μB. To match those, pass
+        `lasph=True, elemental_magmoms={"Co": 0.6}`.
 
     Parameters
     ----------
     atoms
         Oxide slab with its surface normal along z. Uses quacc's magnetic-moment
-        handling with the `MVLSlabSet` element defaults, which matches the OC22
-        generation code (its crystal-field `set_bulk_magmoms` helper is never
-        called).
+        handling with the `MVLSlabSet` element defaults (0.6 μB for unlisted
+        elements), except that Co starts at 5 μB as in most of OC22. The OC22
+        crystal-field `set_bulk_magmoms` helper is never called.
+    use_dipole_correction
+        Whether to apply a dipole correction along z (`LDIPOL`, `IDIPOL = 3`,
+        and `DIPOL` at the center of mass). OC22 applied it to every
+        adsorbate+slab calculation and to none of the clean slabs, so set this
+        to False for clean slabs.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -457,7 +471,7 @@ def oc22_static_job(
     calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(
         MVLSlabSet(
             set_mix=False,
-            auto_dipole=True,
+            auto_dipole=use_dipole_correction,
             user_potcar_functional="PBE_54",
             user_potcar_settings={"W": "W_sv"},
             user_incar_settings={
@@ -475,7 +489,8 @@ def oc22_static_job(
         )
     )
     calc_defaults |= {
-        "elemental_magmoms": MVLSlabSet.CONFIG["INCAR"]["MAGMOM"],
+        # Co was 5 μB in pymatgen's MPRelaxSet until October 2020, and in most of OC22
+        "elemental_magmoms": MVLSlabSet.CONFIG["INCAR"]["MAGMOM"] | {"Co": 5},
         "preset_mag_default": 0.6,
         "kpts": (ceil(30 / a), ceil(30 / b), 1),
         "incar_copilot_mode": "off",

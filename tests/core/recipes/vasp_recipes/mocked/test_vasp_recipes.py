@@ -1934,7 +1934,9 @@ def test_fairchem_oc22(
     calc_kwargs = (
         {"ediff": 1e-6, "ldipol": False, "magmom": [0.2, 3.1, 0.4]} if override else {}
     )
-    default_magmom = MVLSlabSet.CONFIG["INCAR"]["MAGMOM"].get(element, 0.6)
+    default_magmom = (
+        5 if element == "Co" else MVLSlabSet.CONFIG["INCAR"]["MAGMOM"].get(element, 0.6)
+    )
     magmoms = calc_kwargs.get("magmom", initial_magmoms or [0.6, default_magmom, 0.6])
     output = oc22_static_job(atoms, **calc_kwargs)
     assert output["name"] == "OC22 Static"
@@ -1962,6 +1964,36 @@ def test_fairchem_oc22(
     assert output["parameters"].get("ldauu", [0, 0]) == [0, u]
     assert {key: output["parameters"][key] for key in expected} == expected
     assert output["parameters"]["dipol"] == pytest.approx([2 / 8.2, 0, 0.25])
+
+
+def test_fairchem_oc22_clean_slab_and_later_batch(patch_nonmetallic_taskdoc):
+    from ase import Atoms
+    from pymatgen.io.vasp import Incar
+
+    from quacc.recipes.vasp.fairchem import oc22_static_job
+
+    def make_atoms():
+        return Atoms(
+            "OCoO",
+            positions=[[0, 0, 5], [2, 0, 5], [4, 0, 5]],
+            cell=[8.2, 9.4, 20],
+            pbc=True,
+        )
+
+    # OC22 ran clean slabs without any dipole correction
+    output = oc22_static_job(make_atoms(), use_dipole_correction=False)
+    for key in ("ldipol", "idipol", "dipol"):
+        assert key not in output["parameters"]
+    assert output["parameters"]["lasph"] is False
+    incar = Incar.from_file(Path(output["dir_name"]) / "INCAR.gz")
+    assert incar["MAGMOM"] == [0.6, 0.6, 5]
+
+    # The later OC22 batch used LASPH = True and Co at 0.6 uB
+    output = oc22_static_job(make_atoms(), lasph=True, elemental_magmoms={"Co": 0.6})
+    assert output["parameters"]["lasph"] is True
+    assert output["parameters"]["ldipol"] is True
+    incar = Incar.from_file(Path(output["dir_name"]) / "INCAR.gz")
+    assert incar["MAGMOM"] == [0.6, 0.6, 0.6]
 
 
 @pytest.mark.skipif(not has_fairchem_oc, reason="fairchem not installed")
