@@ -1238,6 +1238,11 @@ def test_freq_job():
     assert len(output["results"]["vib_freqs_raw"]) == 3 * len(atoms)
     assert len(output["results"]["vib_freqs"]) == 3 * len(atoms) - 5
 
+    output = freq_job(atoms, kpts=(1, 1, 1), additional_fields={"tag": "test"})
+    assert output["name"] == "VASP Frequency and Thermo"
+    assert output["tag"] == "test"
+    assert "additional_fields" not in output["parameters"]
+
 
 @pytest.mark.skipif(not has_atomate2, reason="atomate2 not installed")
 def test_matpes(patch_metallic_taskdoc):
