@@ -237,13 +237,17 @@ class Summarize:
         parameters_md = base_task_doc.pop("parameters_opt")
         parameters_md.pop("logfile", None)
 
+        # The trajectory is only written every `loginterval` steps
+        loginterval = getattr(dyn, "loginterval", 1)
+        parameters_md["loginterval"] = loginterval
+
         trajectory_log = []
         for t, atoms in enumerate(base_task_doc["trajectory"]):
             trajectory_log.append(
                 {
                     "kinetic_energy": atoms.get_kinetic_energy(),
                     "temperature": atoms.get_temperature(),
-                    "time": t * parameters_md["timestep"],
+                    "time": t * loginterval * parameters_md["timestep"],
                 }
             )
 
