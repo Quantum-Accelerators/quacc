@@ -6,6 +6,7 @@ import numpy as np
 import pytest
 from ase.build import molecule
 from ase.calculators.emt import EMT
+from ase.calculators.singlepoint import SinglePointCalculator
 from ase.units import invcm
 from monty.json import MontyDecoder, jsanitize
 
@@ -110,6 +111,16 @@ def test_summarize_ideal_gas_thermo4(caplog):
     assert results["parameters_thermo"]["pressure"] == 20.0
     assert results["parameters_thermo"]["sigma"] == 6
     assert results["parameters_thermo"]["spin_multiplicity"] == 2
+
+
+def test_summarize_ideal_gas_spin_from_calculator():
+    # The spin should come from the calculator results, which `Atoms.copy()` drops
+    atoms = molecule("O2")
+    del atoms.arrays["initial_magmoms"]
+    atoms.calc = SinglePointCalculator(atoms, energy=0.0, magmom=2.0)
+    results = ThermoSummarize(atoms, [1580.0]).ideal_gas()
+    assert results["parameters_thermo"]["spin_multiplicity"] == 3
+    assert atoms.calc is not None
 
 
 def test_summarize_ideal_gas_thermo5():
