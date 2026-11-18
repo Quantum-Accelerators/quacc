@@ -8,11 +8,7 @@ from ase.atoms import Atoms
 from ase.io.espresso import Namelist
 from ase.io.espresso_namelist.keys import ALL_KEYS
 
-from quacc.calculators.espresso.espresso import (
-    Espresso,
-    EspressoProfile,
-    EspressoTemplate,
-)
+from quacc.calculators.espresso.espresso import Espresso, EspressoTemplate
 from quacc.calculators.espresso.utils import remove_conflicting_kpts_kspacing
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize
@@ -29,7 +25,6 @@ def run_and_summarize(
     atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
-    profile: EspressoProfile | None = None,
     calc_defaults: Mapping[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -46,8 +41,6 @@ def run_and_summarize(
         Name of the preset to use
     template
         EspressoTemplate to use
-    profile
-        EspressoProfile to use
     calc_defaults
         The default calculator parameters.
     calc_swaps
@@ -69,7 +62,6 @@ def run_and_summarize(
         atoms,
         preset=preset,
         template=template,
-        profile=profile,
         calc_defaults=calc_defaults,
         calc_swaps=calc_swaps,
     )
@@ -89,7 +81,6 @@ def run_and_summarize_opt(
     atoms: Atoms | None = None,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
-    profile: EspressoProfile | None = None,
     calc_defaults: Mapping[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
@@ -108,8 +99,6 @@ def run_and_summarize_opt(
         Name of the preset to use
     template
         EspressoTemplate to use
-    profile
-        EspressoProfile to use
     calc_defaults
         The default calculator parameters.
     calc_swaps
@@ -136,7 +125,6 @@ def run_and_summarize_opt(
         atoms,
         preset=preset,
         template=template,
-        profile=profile,
         calc_defaults=calc_defaults,
         calc_swaps=calc_swaps,
     )
@@ -152,7 +140,6 @@ def prepare_calc(
     atoms: Atoms,
     preset: str | None = None,
     template: EspressoTemplate | None = None,
-    profile: EspressoProfile | None = None,
     calc_defaults: Mapping[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
 ) -> Espresso:
@@ -168,8 +155,6 @@ def prepare_calc(
         Name of the preset to use
     template
         EspressoTemplate to use
-    profile
-        EspressoProfile to use
     calc_defaults
         The default calculator parameters.
     calc_swaps
@@ -197,10 +182,4 @@ def prepare_calc(
     calc_defaults = remove_conflicting_kpts_kspacing(calc_defaults, calc_swaps)
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    return Espresso(
-        input_atoms=atoms,
-        preset=preset,
-        template=template,
-        profile=profile,
-        **calc_flags,
-    )
+    return Espresso(input_atoms=atoms, preset=preset, template=template, **calc_flags)
