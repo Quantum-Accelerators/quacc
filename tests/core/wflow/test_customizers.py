@@ -29,6 +29,43 @@ def test_customize_jobs():
         customize_jobs({"all": add})
 
 
+def test_customize_jobs_all_swaps_override_job_defaults():
+    def static_job(kspacing=None, input_data=None, relax_cell=False):
+        return {
+            "kspacing": kspacing,
+            "input_data": input_data,
+            "relax_cell": relax_cell,
+        }
+
+    jobs = customize_jobs(
+        {"static_job": static_job, "other_job": static_job},
+        param_defaults={
+            "all": {"relax_cell": True},
+            "static_job": {
+                "kspacing": 0.2,
+                "input_data": {"system": {"occupations": "tetrahedra"}},
+            },
+        },
+        param_swaps={
+            "all": {"kspacing": 0.1, "input_data": {"system": {"ecutwfc": 60}}},
+            "other_job": {"kspacing": 0.3},
+        },
+    )
+    assert jobs["static_job"]() == {
+        "kspacing": 0.1,
+        "input_data": {"system": {"occupations": "tetrahedra", "ecutwfc": 60}},
+        "relax_cell": True,
+    }
+    assert jobs["other_job"]() == {
+        "kspacing": 0.3,
+        "input_data": {"system": {"ecutwfc": 60}},
+        "relax_cell": True,
+    }
+
+    with pytest.raises(ValueError, match="Invalid parameter keys"):
+        customize_jobs({"add": static_job}, param_defaults={"bad": {"b": 2}})
+
+
 def test_basic_customizers():
     def add(a, b=1, c=2):
         return a + b + c
