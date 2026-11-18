@@ -1770,3 +1770,46 @@ def test_run_custom_custodian_handlers(monkeypatch, tmp_path):
     custodian_kwargs.clear()
     Vasp(bulk("Cu"))._run(directory=tmp_path)
     assert custodian_kwargs == {"directory": tmp_path}
+
+
+def test_qmof_magmoms():
+    # QMOF (pymofscreen) initializes d-block metals (groups 3-11) at 5,
+    # f-block metals (La-Yb, Ac-No) at 7, and every other element at 0
+    atoms = Atoms(
+        "C2H2ZnCuCdAc",
+        positions=[
+            [0, 0, 0],
+            [1.2, 0, 0],
+            [-1, 0, 0],
+            [2.2, 0, 0],
+            [5, 0, 0],
+            [0, 5, 0],
+            [0, 0, 5],
+            [5, 5, 5],
+        ],
+        cell=[12, 12, 12],
+        pbc=True,
+    )
+    calc = Vasp(atoms, preset="QMOFSet")
+    assert calc.input_atoms.get_initial_magnetic_moments().tolist() == [
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        7,
+    ]
+
+    # A closed-shell Zn MOF is not spin-polarized, as in QMOF
+    atoms = Atoms(
+        "C2H2Zn",
+        positions=[[0, 0, 0], [1.2, 0, 0], [-1, 0, 0], [2.2, 0, 0], [5, 0, 0]],
+        cell=[12, 12, 12],
+        pbc=True,
+    )
+    calc = Vasp(atoms, preset="QMOFSet")
+    assert not calc.input_atoms.get_initial_magnetic_moments().any()
+    assert "magmom" not in calc.parameters
+    assert calc.parameters.get("ispin") is None
