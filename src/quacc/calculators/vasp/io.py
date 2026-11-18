@@ -47,8 +47,34 @@ def load_vasp_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
             k.lower(): v.lower() if isinstance(v, str) else v
             for k, v in config["inputs"].items()
         }
-        for k, v in config["inputs"].get("setups", {}).items():
-            if k in v:
-                config["inputs"]["setups"][k] = v.split(k)[-1]
+        setups = config["inputs"].get("setups")
+        if isinstance(setups, dict):
+            config["inputs"]["setups"] = {
+                k: get_setup_suffix(k, v) for k, v in setups.items()
+            }
 
     return config
+
+
+def get_setup_suffix(symbol: Any, setup: Any) -> Any:
+    """
+    Convert a full POTCAR name (e.g. "Cu_pv") to the suffix (e.g. "_pv") that
+    ASE expects for an element-keyed setup. Suffixes (e.g. "_pv") and setups
+    keyed by atom index (which ASE expects as full POTCAR names) are returned
+    unchanged.
+
+    Parameters
+    ----------
+    symbol
+        The key of the setups dictionary (an element symbol or atom index).
+    setup
+        The setup for that key.
+
+    Returns
+    -------
+    Any
+        The setup suffix.
+    """
+    if isinstance(symbol, str) and isinstance(setup, str):
+        return setup.removeprefix(symbol)
+    return setup
