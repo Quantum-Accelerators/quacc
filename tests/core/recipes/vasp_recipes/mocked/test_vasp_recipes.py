@@ -189,7 +189,7 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
     assert output["relax1"]["parameters"]["isif"] == 3
-    assert output["relax1"]["parameters"]["lwave"] is False
+    assert output["relax1"]["parameters"]["lwave"] is True
     assert output["relax1"]["parameters"]["encut"] == 520
     assert output["relax2"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"]["isym"] == 0
@@ -203,7 +203,7 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
     assert output["relax1"]["parameters"]["isif"] == 3
-    assert output["relax1"]["parameters"]["lwave"] is False
+    assert output["relax1"]["parameters"]["lwave"] is True
     assert output["relax1"]["parameters"]["encut"] == 520
     assert output["relax2"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax2"]["parameters"]["isym"] == 0
@@ -217,7 +217,7 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     assert output["relax1"]["structure_metadata"]["nsites"] == len(atoms)
     assert output["relax1"]["parameters"]["isym"] == 0
     assert output["relax1"]["parameters"]["nsw"] > 0
-    assert output["relax1"]["parameters"]["lwave"] is False
+    assert output["relax1"]["parameters"]["lwave"] is True
     assert output["relax1"]["parameters"]["isif"] == 2
     assert output["relax1"]["parameters"]["encut"] == 520
     assert output["relax2"]["structure_metadata"]["nsites"] == len(atoms)
@@ -228,6 +228,28 @@ def test_doublerelax_flow(patch_metallic_taskdoc):
     assert output["relax2"]["parameters"]["isif"] == 2
 
     assert double_relax_flow(atoms, relax1_kwargs={"kpts": [1, 1, 1]})
+
+    output = double_relax_flow(atoms, relax1_kwargs={"lwave": False})
+    assert output["relax1"]["parameters"]["lwave"] is False
+
+
+def test_doublerelax_flow_copies_wavecar(patch_metallic_taskdoc, monkeypatch):
+    from quacc.calculators.vasp.vasp import Vasp
+
+    def mock_run_with_wavecar(self, *args, **kwargs):
+        from ase.io import write
+
+        write(Path(self.directory, "CONTCAR"), self.atoms)
+        if self.bool_params.get("lwave"):
+            Path(self.directory, "WAVECAR").write_text("wavecar")
+        return None, None
+
+    monkeypatch.setattr(Vasp, "_run", mock_run_with_wavecar)
+
+    with change_settings({"GZIP_FILES": False}):
+        output = double_relax_flow(bulk("Al"))
+    assert Path(output["relax1"]["dir_name"], "WAVECAR").exists()
+    assert Path(output["relax2"]["dir_name"], "WAVECAR").exists()
 
 
 def test_ase_relax_job(patch_metallic_taskdoc):
@@ -1934,7 +1956,9 @@ def test_fairchem_oc22(
     calc_kwargs = (
         {"ediff": 1e-6, "ldipol": False, "magmom": [0.2, 3.1, 0.4]} if override else {}
     )
-    default_magmom = MVLSlabSet.CONFIG["INCAR"]["MAGMOM"].get(element, 0.6)
+    default_magmom = (
+        5 if element == "Co" else MVLSlabSet.CONFIG["INCAR"]["MAGMOM"].get(element, 0.6)
+    )
     magmoms = calc_kwargs.get("magmom", initial_magmoms or [0.6, default_magmom, 0.6])
     output = oc22_static_job(atoms, **calc_kwargs)
     assert output["name"] == "OC22 Static"
@@ -1962,6 +1986,36 @@ def test_fairchem_oc22(
     assert output["parameters"].get("ldauu", [0, 0]) == [0, u]
     assert {key: output["parameters"][key] for key in expected} == expected
     assert output["parameters"]["dipol"] == pytest.approx([2 / 8.2, 0, 0.25])
+
+
+def test_fairchem_oc22_clean_slab_and_later_batch(patch_nonmetallic_taskdoc):
+    from ase import Atoms
+    from pymatgen.io.vasp import Incar
+
+    from quacc.recipes.vasp.fairchem import oc22_static_job
+
+    def make_atoms():
+        return Atoms(
+            "OCoO",
+            positions=[[0, 0, 5], [2, 0, 5], [4, 0, 5]],
+            cell=[8.2, 9.4, 20],
+            pbc=True,
+        )
+
+    # OC22 ran clean slabs without any dipole correction
+    output = oc22_static_job(make_atoms(), use_dipole_correction=False)
+    for key in ("ldipol", "idipol", "dipol"):
+        assert key not in output["parameters"]
+    assert output["parameters"]["lasph"] is False
+    incar = Incar.from_file(Path(output["dir_name"]) / "INCAR.gz")
+    assert incar["MAGMOM"] == [0.6, 0.6, 5]
+
+    # The later OC22 batch used LASPH = True and Co at 0.6 uB
+    output = oc22_static_job(make_atoms(), lasph=True, elemental_magmoms={"Co": 0.6})
+    assert output["parameters"]["lasph"] is True
+    assert output["parameters"]["ldipol"] is True
+    incar = Incar.from_file(Path(output["dir_name"]) / "INCAR.gz")
+    assert incar["MAGMOM"] == [0.6, 0.6, 0.6]
 
 
 @pytest.mark.skipif(not has_fairchem_oc, reason="fairchem not installed")
@@ -2314,3 +2368,17 @@ def test_mp_relax_set_job(patch_nonmetallic_taskdoc):
         "sigma": 0.05,
     }
     assert output["name"] == "MP RelaxSet Static"
+
+
+def test_mp_relax_set_job_gamma_centered(patch_nonmetallic_taskdoc):
+    from ase import Atoms
+
+    # CsCl-type (simple cubic) cell with an all-even 8x8x8 mesh. pymatgen's
+    # MPRelaxSet defaults to Monkhorst-Pack here, but the Materials Project
+    # relaxations behind MPtrj used Gamma-centered grids (force_gamma=True).
+    atoms = Atoms(
+        "NiO", scaled_positions=[[0, 0, 0], [0.5, 0.5, 0.5]], cell=[3.0] * 3, pbc=True
+    )
+    output = mp_relax_set_job(atoms, ncore=1)
+    assert output["parameters"]["kpts"] == (8, 8, 8)
+    assert output["parameters"]["gamma"] is True

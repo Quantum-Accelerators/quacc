@@ -1,20 +1,35 @@
 # QMOF Database settings
-# All d-block metals get 5; all f-block metals get 7
-# Last modified: 08-01-2023
+# All d-block metals (groups 3-11) get 5; all f-block metals (La-Yb, Ac-No) get 7;
+# all other elements get 0, matching pymofscreen's high-spin initialization.
+# Last modified: 11-17-2026
 inputs:
   elemental_magmoms:
+    Ac: 7
     Ag: 5
+    Al: 0
     Am: 7
+    Ar: 0
+    As: 0
+    At: 0
     Au: 5
+    B: 0
+    Ba: 0
+    Be: 0
     Bh: 5
+    Bi: 0
     Bk: 7
-    Cd: 5
+    Br: 0
+    C: 0
+    Ca: 0
+    Cd: 0
     Ce: 7
     Cf: 7
+    Cl: 0
     Cm: 7
-    Cn: 5
+    Cn: 0
     Co: 5
     Cr: 5
+    Cs: 0
     Cu: 5
     Db: 5
     Ds: 5
@@ -22,50 +37,88 @@ inputs:
     Er: 7
     Es: 7
     Eu: 7
+    F: 0
     Fe: 5
+    Fl: 0
     Fm: 7
+    Fr: 0
+    Ga: 0
     Gd: 7
+    Ge: 0
+    H: 0
+    He: 0
     Hf: 5
-    Hg: 5
+    Hg: 0
     Ho: 7
     Hs: 5
+    I: 0
+    In: 0
     Ir: 5
+    K: 0
+    Kr: 0
     La: 7
+    Li: 0
     Lr: 5
     Lu: 5
+    Lv: 0
+    Mc: 0
     Md: 7
+    Mg: 0
     Mn: 5
     Mo: 5
     Mt: 5
+    N: 0
+    Na: 0
     Nb: 5
     Nd: 7
+    Ne: 0
+    Nh: 0
     Ni: 5
     No: 7
     Np: 7
+    O: 0
+    Og: 0
     Os: 5
+    P: 0
     Pa: 7
+    Pb: 0
     Pd: 5
     Pm: 7
+    Po: 0
     Pr: 7
     Pt: 5
     Pu: 7
+    Ra: 0
+    Rb: 0
     Re: 5
     Rf: 5
     Rg: 5
     Rh: 5
+    Rn: 0
     Ru: 5
+    S: 0
+    Sb: 0
     Sc: 5
+    Se: 0
     Sg: 5
+    Si: 0
     Sm: 7
+    Sn: 0
+    Sr: 0
     Ta: 5
     Tb: 7
     Tc: 5
+    Te: 0
     Th: 7
     Ti: 5
+    Tl: 0
     Tm: 7
+    Ts: 0
     U: 7
     V: 5
     W: 5
+    Xe: 0
     Y: 5
     Yb: 7
+    Zn: 0
     Zr: 5

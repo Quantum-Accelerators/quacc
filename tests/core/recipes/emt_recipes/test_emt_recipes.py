@@ -136,6 +136,20 @@ def test_md_job1():
     assert atoms.positions == pytest.approx(old_positions)
 
 
+def test_md_job_loginterval():
+    output = md_job(
+        molecule("H2O"),
+        timestep_fs=1.0,
+        steps=20,
+        md_params={"dynamics_kwargs": {"loginterval": 5}},
+    )
+    assert len(output["trajectory"]) == 5
+    assert output["parameters_md"]["loginterval"] == 5
+    assert [entry["time"] for entry in output["trajectory_log"]] == pytest.approx(
+        [0.0, 5 * fs, 10 * fs, 15 * fs, 20 * fs]
+    )
+
+
 def test_md_job_partial():
     output = md_job(
         molecule("H2O"),

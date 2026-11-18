@@ -10,6 +10,7 @@ from ase.io import read
 from pymatgen.io.qchem.inputs import QCInput
 
 from quacc.calculators.qchem import QChem
+from quacc.calculators.qchem.params import make_qc_input
 
 has_obabel = bool(find_spec("openbabel"))
 
@@ -75,6 +76,65 @@ def test_qchem_write_input_intermediate(tmp_path, monkeypatch, test_atoms):
         str(FILE_DIR / "examples" / "intermediate" / "mol.qin")
     )
     assert qcinp.as_dict() == ref_qcinp.as_dict()
+
+
+def test_qchem_dict_set_does_not_override_user_kwargs(test_atoms):
+    dict_set_params = {
+        "job_type": "force",
+        "basis_set": "def2-svpd",
+        "scf_algorithm": "diis",
+    }
+
+    calc = QChem(
+        test_atoms,
+        van_der_waals={"2": 1.3},
+        vdw_mode="sequential",
+        qchem_dict_set_params=dict_set_params,
+    )
+    assert make_qc_input(calc, test_atoms).vdw_mode == "sequential"
+
+    user_cdft = [
+        [
+            {
+                "value": 1.0,
+                "coefficients": [1.0],
+                "first_atoms": [1],
+                "last_atoms": [2],
+                "types": [None],
+            }
+        ]
+    ]
+    dict_set_cdft = [
+        [
+            {
+                "value": 0.0,
+                "coefficients": [1.0],
+                "first_atoms": [1],
+                "last_atoms": [3],
+                "types": ["s"],
+            }
+        ]
+    ]
+    calc = QChem(
+        test_atoms,
+        cdft=user_cdft,
+        qchem_dict_set_params=dict_set_params | {"cdft_constraints": dict_set_cdft},
+    )
+    assert make_qc_input(calc, test_atoms).cdft == user_cdft
+
+    # The QChemDictSet value is still used when the user leaves the default
+    calc = QChem(
+        test_atoms,
+        qchem_dict_set_params=dict_set_params
+        | {
+            "vdw_mode": "sequential",
+            "overwrite_inputs": {"van_der_waals": {"1": 1.5}},
+            "cdft_constraints": dict_set_cdft,
+        },
+    )
+    qc_input = make_qc_input(calc, test_atoms)
+    assert qc_input.vdw_mode == "sequential"
+    assert qc_input.cdft == dict_set_cdft
 
 
 def test_qchem_write_input_advanced(tmp_path, monkeypatch, test_atoms):

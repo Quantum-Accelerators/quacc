@@ -171,7 +171,9 @@ def double_relax_flow(
         True if a volume relaxation (ISIF = 3) should be performed. False if
         only the positions (ISIF = 2) should be updated.
     relax1_kwargs
-        Dictionary of custom kwargs for the first relaxation.
+        Dictionary of custom kwargs for the first relaxation. By default, the
+        first relaxation writes a WAVECAR (`lwave=True`) that is copied to the
+        second relaxation; set `lwave=False` here to skip this.
     relax2_kwargs
         Dictionary of custom kwargs for the second relaxation.
 
@@ -180,7 +182,7 @@ def double_relax_flow(
     DoubleRelaxSchema
         Dictionary of results from each step.
     """
-    relax1_kwargs = relax1_kwargs or {}
+    relax1_kwargs = {"lwave": True} | (relax1_kwargs or {})
     relax2_kwargs = relax2_kwargs or {}
 
     # Run first relaxation

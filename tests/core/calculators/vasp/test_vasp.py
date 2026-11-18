@@ -21,6 +21,7 @@ from pymatgen.io.vasp.sets import MP24RelaxSet, MPRelaxSet, MPScanRelaxSet
 from quacc import change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp import vasp as vasp_module
+from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import MPtoASEConverter, get_param_swaps
 from quacc.schemas.prep import prep_next_run
 
@@ -1334,6 +1335,46 @@ def test_setups():
     assert calc.parameters["setups"]["Yb"] == "_3"
 
 
+def test_setups_yaml_full_names_and_suffixes(tmp_path):
+    (tmp_path / "setups.yaml").write_text(
+        "inputs:\n"
+        "  setups:\n"
+        "    W: W_sv_GW\n"
+        "    Cu: Cu_pv\n"
+        "    O: O\n"
+        "    Fe: _pv\n"
+        "    Ti: _sv_GW\n"
+        "    0: Fe_sv\n"
+    )
+    setups = load_vasp_yaml_calc(tmp_path / "setups.yaml")["inputs"]["setups"]
+    assert setups == {
+        "W": "_sv_GW",
+        "Cu": "_pv",
+        "O": "",
+        "Fe": "_pv",
+        "Ti": "_sv_GW",
+        0: "Fe_sv",
+    }
+
+
+def test_setups_yaml_string(tmp_path):
+    (tmp_path / "preset.yaml").write_text(
+        "inputs:\n  xc: pbe\n  setups: materialsproject\n"
+    )
+    assert (
+        load_vasp_yaml_calc(tmp_path / "preset.yaml")["inputs"]["setups"]
+        == "materialsproject"
+    )
+
+
+def test_pmg_converter_gw_setups():
+    atoms = bulk("W")
+    parameters = MPtoASEConverter(atoms=atoms).convert_input_set(
+        MPRelaxSet(user_potcar_settings={"W": "W_sv_GW"})
+    )
+    assert parameters["setups"] == {"W": "_sv_GW"}
+
+
 def test_kpoint_schemes():
     atoms = bulk("Cu")
     calc = Vasp(atoms, preset="DefaultSetGGA")
@@ -1770,3 +1811,46 @@ def test_run_custom_custodian_handlers(monkeypatch, tmp_path):
     custodian_kwargs.clear()
     Vasp(bulk("Cu"))._run(directory=tmp_path)
     assert custodian_kwargs == {"directory": tmp_path}
+
+
+def test_qmof_magmoms():
+    # QMOF (pymofscreen) initializes d-block metals (groups 3-11) at 5,
+    # f-block metals (La-Yb, Ac-No) at 7, and every other element at 0
+    atoms = Atoms(
+        "C2H2ZnCuCdAc",
+        positions=[
+            [0, 0, 0],
+            [1.2, 0, 0],
+            [-1, 0, 0],
+            [2.2, 0, 0],
+            [5, 0, 0],
+            [0, 5, 0],
+            [0, 0, 5],
+            [5, 5, 5],
+        ],
+        cell=[12, 12, 12],
+        pbc=True,
+    )
+    calc = Vasp(atoms, preset="QMOFSet")
+    assert calc.input_atoms.get_initial_magnetic_moments().tolist() == [
+        0,
+        0,
+        0,
+        0,
+        0,
+        5,
+        0,
+        7,
+    ]
+
+    # A closed-shell Zn MOF is not spin-polarized, as in QMOF
+    atoms = Atoms(
+        "C2H2Zn",
+        positions=[[0, 0, 0], [1.2, 0, 0], [-1, 0, 0], [2.2, 0, 0], [5, 0, 0]],
+        cell=[12, 12, 12],
+        pbc=True,
+    )
+    calc = Vasp(atoms, preset="QMOFSet")
+    assert not calc.input_atoms.get_initial_magnetic_moments().any()
+    assert "magmom" not in calc.parameters
+    assert calc.parameters.get("ispin") is None

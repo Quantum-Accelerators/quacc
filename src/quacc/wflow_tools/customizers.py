@@ -174,6 +174,10 @@ def customize_jobs(
         dictionary correspond to the keys in `jobs`. If the key `"all"` is
         present, its parameters are applied to every job before job-specific
         parameters. If the value is `None`, no parameters are applied to that job.
+        All swaps, including those under `"all"`, take priority over
+        `param_defaults`. Parameters are merged with
+        [quacc.utils.dicts.recursive_dict_merge][], so nested dictionaries are
+        merged rather than replaced.
     decorators
         Custom decorators to apply to each job. The keys of this dictionary
         correspond to the keys in `jobs`. If the key `"all"` is present, its
@@ -185,7 +189,8 @@ def customize_jobs(
     dict[str, Callable]
         Mapping of customized jobs in the same order as `jobs`.
     """
-    parameters = recursive_dict_merge(param_defaults, param_swaps)
+    param_defaults = param_defaults or {}
+    param_swaps = param_swaps or {}
     decorators = decorators or {}
     names = list(jobs)
 
@@ -195,7 +200,9 @@ def customize_jobs(
         raise ValueError(
             f"Invalid decorator keys: {bad_decorator_keys}. Valid keys are: {names}"
         )
-    if bad_parameter_keys := [k for k in parameters if k not in jobs and k != "all"]:
+    if bad_parameter_keys := [
+        k for k in {**param_defaults, **param_swaps} if k not in jobs and k != "all"
+    ]:
         raise ValueError(
             f"Invalid parameter keys: {bad_parameter_keys}. Valid keys are: {names}"
         )
@@ -207,9 +214,16 @@ def customize_jobs(
             func_ = redecorate(func_, decorators["all"])
         if name in decorators:
             func_ = redecorate(func_, decorators[name])
-        if params := parameters.get("all"):
-            func_ = update_parameters(func_, params)
-        if params := parameters.get(name):
+
+        # User swaps always take priority over the recipe defaults, so a swap
+        # under "all" must also override a job-specific default.
+        params = recursive_dict_merge(
+            param_defaults.get("all"),
+            param_defaults.get(name),
+            param_swaps.get("all"),
+            param_swaps.get(name),
+        )
+        if params:
             func_ = update_parameters(func_, params)
         updated_jobs[name] = func_
 

@@ -14,6 +14,7 @@ from monty.dev import requires
 from pymatgen.io.ase import AseAtomsAdaptor
 
 from quacc.atoms.core import check_is_metal
+from quacc.calculators.vasp.io import get_setup_suffix
 from quacc.utils.kpts import convert_pmg_kpts
 
 has_atomate2 = bool(find_spec("atomate2"))
@@ -723,10 +724,10 @@ class MPtoASEConverter:
         pp = parts[0]
         pp_version = parts[1] if len(parts) > 1 else "original"
         assert pp.lower() in ["lda", "pbe"]
-        potcar_setups = {symbol.split("_")[0]: symbol for symbol in self.potcar_symbols}
-        for k, v in potcar_setups.items():
-            if k in v:
-                potcar_setups[k] = v.split(k)[-1]
+        potcar_setups = {}
+        for symbol in self.potcar_symbols:
+            element = symbol.split("_")[0]
+            potcar_setups[element] = get_setup_suffix(element, symbol)
 
         full_input_params = self.incar_dict | {
             "setups": potcar_setups,
