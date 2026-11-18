@@ -443,6 +443,7 @@ def freq_job(
     thermo_method: Literal["harmonic", "ideal_gas"] = "harmonic",
     vib_kwargs: VibKwargs | None = None,
     copy_files: CopyFiles | None = None,
+    additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
 ) -> VibThermoSchema:
     """
@@ -466,6 +467,8 @@ def freq_job(
         Dictionary of kwargs for the [ase.vibrations.Vibrations][] class.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -491,5 +494,6 @@ def freq_job(
         calc_swaps=calc_kwargs,
         vib_kwargs=vib_kwargs,
         copy_files=copy_files,
-        additional_fields={"name": "VASP Frequency and Thermo"},
+        additional_fields={"name": "VASP Frequency and Thermo"}
+        | (additional_fields or {}),
     )
