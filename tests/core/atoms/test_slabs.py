@@ -174,6 +174,35 @@ def test_make_adsorbate_structures():
     assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == h2o
 
 
+def test_make_adsorbate_structures_does_not_mutate_inputs():
+    atoms = fcc100("Cu", size=(2, 2, 2))
+    atoms.set_tags(None)
+    atoms.set_initial_magnetic_moments([1.0] * len(atoms))
+    atoms.center(vacuum=10, axis=2)
+    h2o = molecule("H2O")
+    find_ads_sites_kwargs = {"symm_reduce": 0.1}
+    ads_site_finder_kwargs = {"height": 0.9}
+
+    first = make_adsorbate_structures(
+        atoms,
+        h2o,
+        find_ads_sites_kwargs=find_ads_sites_kwargs,
+        ads_site_finder_kwargs=ads_site_finder_kwargs,
+    )
+    assert find_ads_sites_kwargs == {"symm_reduce": 0.1}
+    assert ads_site_finder_kwargs == {"height": 0.9}
+    assert not h2o.has("initial_magmoms")
+
+    # Reusing the same kwargs (e.g. in a loop over slabs) must work
+    second = make_adsorbate_structures(
+        atoms,
+        h2o,
+        find_ads_sites_kwargs=find_ads_sites_kwargs,
+        ads_site_finder_kwargs=ads_site_finder_kwargs,
+    )
+    assert len(second) == len(first)
+
+
 def test_make_adsorbate_structures_tags():
     # ASE's surface builders tag each layer, but molecules have no tags
     atoms = fcc111("Cu", size=(2, 2, 3), vacuum=8)
