@@ -251,14 +251,14 @@ def test_fairchem_omol_open_shell_singlet(tmp_path, monkeypatch):
     # HOMO-LUMO rotation to break spin symmetry
     atoms = Atoms("H2", positions=[[0, 0, 0], [0, 0, 2.5]])
     output = omol_static_job(atoms, vertical=Vertical.Oss, nprocs=2)
-    assert "uks" in output["parameters"]["orcasimpleinput"].split()
+    assert "UKS" in output["parameters"]["orcasimpleinput"].split()
     assert "%scf rotate {0, 1, 20, 1, 1} end end" in output["parameters"]["orcablocks"]
 
     # Swaps are still applied alongside the symmetry breaking
     output = omol_static_job(
         atoms, vertical=Vertical.Oss, orcasimpleinput=["TightSCF"], nprocs=2
     )
-    assert {"uks", "tightscf"} <= set(output["parameters"]["orcasimpleinput"].split())
+    assert {"UKS", "TightSCF"} <= set(output["parameters"]["orcasimpleinput"].split())
     assert "%scf rotate {0, 1, 20, 1, 1} end end" in output["parameters"]["orcablocks"]
 
     # Triplets are already unrestricted, and the default vertical is unchanged
@@ -267,5 +267,5 @@ def test_fairchem_omol_open_shell_singlet(tmp_path, monkeypatch):
     )
     assert "rotate" not in output["parameters"]["orcablocks"]
     output = omol_static_job(atoms, nprocs=2)
-    assert "uks" not in output["parameters"]["orcasimpleinput"].split()
+    assert "UKS" not in output["parameters"]["orcasimpleinput"].split()
     assert "rotate" not in output["parameters"]["orcablocks"]
