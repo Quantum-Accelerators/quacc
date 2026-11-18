@@ -277,13 +277,15 @@ def make_adsorbate_structures(
     list[Atoms]
         The structures with adsorbates
     """
+    # Copy all inputs that are modified below so the caller's objects are untouched
     atoms = copy_atoms(atoms)
+    adsorbate = copy_atoms(adsorbate)
 
     if modes is None:
         modes = ["ontop", "bridge", "hollow"]
 
-    ads_site_finder_kwargs = ads_site_finder_kwargs or {}
-    find_ads_sites_kwargs = find_ads_sites_kwargs or {}
+    ads_site_finder_kwargs = dict(ads_site_finder_kwargs or {})
+    find_ads_sites_kwargs = dict(find_ads_sites_kwargs or {})
 
     # Check for double-used parameters
     if min_distance and "distance" in find_ads_sites_kwargs:
