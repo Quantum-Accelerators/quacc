@@ -682,34 +682,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Materials Project">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#which-r2scan-workflow-should-i-use" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Which r2SCAN Workflow Should I Use?
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Error Handling
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -6307,34 +6279,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Materials Project">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#which-r2scan-workflow-should-i-use" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Which r2SCAN Workflow Should I Use?
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
-    <span class="md-ellipsis">
-      <span class="md-typeset">
-        Error Handling
-      </span>
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -6523,30 +6467,10 @@
 <p><strong>MP24 r2SCAN</strong>: the r2SCAN settings MP adopted after its 2023–2024 benchmarking effort. The flow runs a PBEsol pre-relaxation, an r2SCAN relaxation, and an r2SCAN static calculation, matching atomate2's <code>MP24DoubleRelaxStaticMaker</code>.</p>
 </li>
 </ul>
-<h3 id="which-r2scan-workflow-should-i-use">Which r2SCAN Workflow Should I Use?<a class="headerlink" href="#which-r2scan-workflow-should-i-use" title="Permanent link">&para;</a></h3>
-<p>If you want to compare against or combine with the r2SCAN entries currently available from MP (e.g. via <code>MPRester</code>), use the <strong>legacy r2SCAN</strong> recipes. They use the same input sets and pseudopotentials as that data.</p>
-<p>The <strong>MP24</strong> recipes reflect MP's newer settings. Their energies can be compared with the legacy r2SCAN data only when the pseudopotentials are the same for every element in your chemical system. The differences between the two workflows are:</p>
-<ul>
-<li>
-<p><strong>Pseudopotentials</strong>: MP24 uses the PBE.64 PAW potentials, whereas the legacy workflow uses PBE.54. For most elements, the two releases contain numerically identical datasets (only the <code>SHA256</code> and <code>COPYR</code> header lines differ, so the files have different hashes). However, 16 elements differ:</p>
-<ul>
-<li>Different POTCAR: Ba (<code>Ba_sv</code> → <code>Ba_sv_GW</code>), Xe (<code>Xe</code> → <code>Xe_GW</code>), and Dy, Er, Ho, Nd, Pm, Pr, Sm, Tb, Tm, and Yb (<code>_3</code> → <code>_h</code>).</li>
-<li>Same name, but regenerated in PBE.64: <code>Cs_sv</code>, <code>Eu</code>, <code>Gd</code>, and <code>Rn</code>.</li>
-</ul>
-</li>
-<li>
-<p><strong>INCAR settings</strong>: MP24 uses <code>ALGO = Normal</code> instead of <code>All</code>, <code>LREAL = False</code> for relaxations instead of <code>Auto</code>, <code>LMAXMIX = 6</code> for all systems, and <code>GGA_COMPAT = False</code>. <code>ALGO</code> and <code>LMAXMIX</code> only affect how the electronic minimization converges, and both workflows use <code>LREAL = False</code> for the static calculation. <code>GGA_COMPAT</code> can change total energies, although the <a href="https://www.vasp.at/wiki/index.php/GGA_COMPAT">VASP documentation</a> notes that the effect is usually sub-meV.</p>
-</li>
-<li>
-<p><strong>k-points</strong>: Both workflows choose <code>KSPACING</code> from the band gap of the previous step and use <code>KSPACING = 0.22</code> for metals, but they use different interpolation schemes for semiconductors and insulators. The legacy workflow ranges from 0.22 to 0.44 Å<sup>-1</sup>, whereas MP24 ranges from 0.22 to 0.50 Å<sup>-1</sup>.</p>
-</li>
-</ul>
-<div class="admonition important">
-<p class="admonition-title">Pseudopotential Setup</p>
-<p>quacc selects the pseudopotential library by its folder name in your <code>VASP_PP_PATH</code>. Make sure the folders listed in the table above are present before running the corresponding recipes.</p>
+<div class="admonition tip">
+<p class="admonition-title">Which r2SCAN Workflow Should I Use?</p>
+<p>To compare against or combine with the r2SCAN entries currently in the Materials Project database (e.g. to compute an energy above the convex hull), use the legacy r2SCAN recipes until there has been a complete transition to the MP24 settings from the Materials Project.</p>
 </div>
-<h3 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h3>
-<p>The r2SCAN workflows set <code>KSPACING</code> based on the band gap from the previous step. As in atomate2's MP workflows, these recipes add Custodian's <code>KspacingMetalHandler</code>, which reruns a calculation with <code>KSPACING = 0.22</code> if it turns out to be metallic. The handler is added to those in your <code>VASP_CUSTODIAN_HANDLERS</code> setting. To use a different set of handlers for a given job, pass <code>custodian_handlers</code> (a list of handler names) as a keyword argument.</p>
 <div class="admonition note">
 <p class="admonition-title">Related Datasets</p>
 <p>Recipes for the MatPES and MP-ALOE datasets, which are also generated with MP-style settings, are listed on the <a href="mlip_recipes.html">MLIP recipes</a> page.</p>
