@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-from ase.build import bulk, fcc100, molecule
+from ase.build import bulk, fcc100, fcc111, molecule
 from ase.io import read
 from pymatgen.core import Structure
 
@@ -172,6 +172,22 @@ def test_make_adsorbate_structures():
     assert len(new_atoms) == 6
     assert new_atoms[0].info.get("adsorbates", None) is not None
     assert new_atoms[0].info["adsorbates"][0]["adsorbate"] == h2o
+
+
+def test_make_adsorbate_structures_tags():
+    # ASE's surface builders tag each layer, but molecules have no tags
+    atoms = fcc111("Cu", size=(2, 2, 3), vacuum=8)
+    co = molecule("CO")
+    new_atoms = make_adsorbate_structures(atoms, co, modes=["ontop"])
+    assert new_atoms
+    assert new_atoms[0].get_tags().tolist() == [*atoms.get_tags(), 0, 0]
+    assert not co.has("tags")
+
+    # The reverse case: a tagged adsorbate on an untagged slab
+    atoms.set_tags(None)
+    co.set_tags(1)
+    new_atoms = make_adsorbate_structures(atoms, co, modes=["ontop"])
+    assert new_atoms[0].get_tags().tolist() == [0] * len(atoms) + [1, 1]
 
 
 def test_get_surface_energy():

@@ -309,6 +309,14 @@ def make_adsorbate_structures(
     if adsorbate.has("initial_magmoms") and not atoms.has("initial_magmoms"):
         atoms.set_initial_magnetic_moments([0.0] * len(atoms))
 
+    # Likewise, add tags of 0 if only one of atoms/adsorbate has them (e.g. ASE's
+    # surface builders tag each layer), since Pymatgen cannot combine the two
+    if atoms.has("tags") and not adsorbate.has("tags"):
+        adsorbate = adsorbate.copy()
+        adsorbate.set_tags(0)
+    if adsorbate.has("tags") and not atoms.has("tags"):
+        atoms.set_tags(0)
+
     # Make a Pymatgen structure and molecule
     struct = AseAtomsAdaptor.get_structure(atoms)
     mol = AseAtomsAdaptor.get_molecule(adsorbate, charge_spin_check=False)
