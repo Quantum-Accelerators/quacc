@@ -236,3 +236,36 @@ def test_fairchem_omol_swaps(tmp_path, monkeypatch):
     assert (
         "%scf convergence tight maxiter 300 end" in output["parameters"]["orcablocks"]
     )
+
+
+@pytest.mark.skipif(not has_fairchem_omol, reason="fairchem not installed")
+def test_fairchem_omol_open_shell_singlet(tmp_path, monkeypatch):
+    from ase import Atoms
+    from fairchem.data.omol.orca.calc import Vertical
+
+    from quacc.recipes.orca.fairchem import omol_static_job
+
+    monkeypatch.chdir(tmp_path)
+
+    # Stretched H2: OMol25 ran open-shell singlets with UKS and a 20 degree
+    # HOMO-LUMO rotation to break spin symmetry
+    atoms = Atoms("H2", positions=[[0, 0, 0], [0, 0, 2.5]])
+    output = omol_static_job(atoms, vertical=Vertical.Oss, nprocs=2)
+    assert "uks" in output["parameters"]["orcasimpleinput"].split()
+    assert "%scf rotate {0, 1, 20, 1, 1} end end" in output["parameters"]["orcablocks"]
+
+    # Swaps are still applied alongside the symmetry breaking
+    output = omol_static_job(
+        atoms, vertical=Vertical.Oss, orcasimpleinput=["TightSCF"], nprocs=2
+    )
+    assert {"uks", "tightscf"} <= set(output["parameters"]["orcasimpleinput"].split())
+    assert "%scf rotate {0, 1, 20, 1, 1} end end" in output["parameters"]["orcablocks"]
+
+    # Triplets are already unrestricted, and the default vertical is unchanged
+    output = omol_static_job(
+        atoms, vertical=Vertical.Oss, spin_multiplicity=3, nprocs=2
+    )
+    assert "rotate" not in output["parameters"]["orcablocks"]
+    output = omol_static_job(atoms, nprocs=2)
+    assert "uks" not in output["parameters"]["orcasimpleinput"].split()
+    assert "rotate" not in output["parameters"]["orcablocks"]
