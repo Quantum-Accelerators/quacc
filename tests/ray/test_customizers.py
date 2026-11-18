@@ -128,3 +128,27 @@ def test_double_change_settings_redecorate_job(tmp_path_factory):
     (write_file_job()).result()
     assert not Path(tmp_dir1 / "job.txt").exists()
     assert Path(tmp_dir2 / "job.txt").exists()
+
+
+def test_customize_jobs_keeps_custom_decorator_with_params():
+    @job
+    def get_cpus(a=0):
+        return ray.get_runtime_context().get_assigned_resources().get("CPU")
+
+    get_cpus_ = customize_jobs(
+        {"get_cpus": get_cpus},
+        param_swaps={"get_cpus": {"a": 1}},
+        decorators={"get_cpus": job(num_cpus=2)},
+    )["get_cpus"]
+    assert get_cpus_().result() == 2
+
+
+def test_customize_jobs_strips_decorator_with_params():
+    @job
+    def add(a, b=1):
+        return a + b
+
+    add_ = customize_jobs(
+        {"add": add}, param_swaps={"add": {"b": 5}}, decorators={"add": None}
+    )["add"]
+    assert add_(1) == 6

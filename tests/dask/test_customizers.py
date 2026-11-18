@@ -5,6 +5,7 @@ import pytest
 dask = pytest.importorskip("dask")
 pytest.importorskip("distributed")
 
+from functools import wraps
 from pathlib import Path
 
 from dask.distributed import get_client
@@ -133,3 +134,40 @@ def test_double_change_settings_redecorate_job(tmp_path_factory):
     client.compute(write_file_job()).result()
     assert not Path(tmp_dir1 / "job.txt").exists()
     assert Path(tmp_dir2 / "job.txt").exists()
+
+
+def test_customize_jobs_keeps_custom_decorator_with_params():
+    def add_100_job(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            return func(*args, **kwargs) + 100
+
+        return job(wrapper)
+
+    @job
+    def add(a, b=1):
+        return a + b
+
+    # The custom decorator is applied exactly once
+    add_ = customize_jobs(
+        {"add": add}, param_swaps={"add": {"b": 5}}, decorators={"add": add_100_job}
+    )["add"]
+    assert client.compute(add_(1)).result() == 106
+
+    # Dask kwargs of the custom decorator are kept
+    add_ = customize_jobs(
+        {"add": add}, param_swaps={"add": {"b": 5}}, decorators={"add": job(pure=True)}
+    )["add"]
+    assert add_(1).key == add_(1).key
+    assert client.compute(add_(1)).result() == 6
+
+
+def test_customize_jobs_strips_decorator_with_params():
+    @job
+    def add(a, b=1):
+        return a + b
+
+    add_ = customize_jobs(
+        {"add": add}, param_swaps={"add": {"b": 5}}, decorators={"add": None}
+    )["add"]
+    assert add_(1) == 6
