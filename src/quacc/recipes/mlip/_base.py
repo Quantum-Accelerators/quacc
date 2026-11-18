@@ -61,6 +61,17 @@ def pick_calculator(
     """
     Instantiate an ASE calculator from one of the supported MLIP libraries.
 
+    !!! Warning "Calculators are cached and shared within a process"
+
+        Calculators are cached so that each model is only loaded once per
+        Python process. Every MLIP job in the same process that requests the
+        same library and kwargs therefore uses the *same* calculator object,
+        including its `results` and `directory`. ASE calculators are not
+        thread-safe, so do not run these MLIP jobs concurrently in multiple
+        threads of one process (e.g. a Dask worker with several threads, or
+        Parsl's `ThreadPoolExecutor` with more than one worker). Use one
+        thread per worker process instead.
+
     Parameters
     ----------
     library

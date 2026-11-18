@@ -367,7 +367,9 @@ class VibSummarize:
         vib_object
             Instantiated ASE Vibrations object.
         directory
-            Path to the directory where the results will be stored.
+            Path to the directory where the results will be stored. If None, the
+            calculator's directory is used for a `Vibrations` object and the
+            current working directory for a `VibrationsData` object.
         additional_fields
             Additional fields to add to the task document.
 
@@ -376,7 +378,7 @@ class VibSummarize:
         None
         """
         self.vib_object = vib_object
-        self.directory = directory or "."
+        self.directory = directory
         self.additional_fields = additional_fields or {}
         self._settings = get_settings()
 
@@ -402,7 +404,7 @@ class VibSummarize:
         vib_energies_raw = self.vib_object.get_energies().tolist()
         if isinstance(self.vib_object, VibrationsData):
             atoms = self.vib_object._atoms
-            directory = self.directory
+            directory = self.directory or "."
             inputs: dict[str, Any] = {
                 "nid": get_uri(directory).split(":")[0],
                 "dir_name": directory,
@@ -501,7 +503,7 @@ class VibSummarize:
         temperature
             Temperature in K for thermochemistry calculations.
         pressure
-            Pressure in atm for thermochemistry calculations
+            Pressure in bar for thermochemistry calculations
 
         Returns
         -------

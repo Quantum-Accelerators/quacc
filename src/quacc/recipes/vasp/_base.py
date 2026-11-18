@@ -169,11 +169,11 @@ def run_and_summarize_vib_and_thermo(
     atoms
         Atoms object
     energy
-        Energy of the system
+        Potential energy in eV. If 0, then the output is just the correction.
     temperature
-        Temperature of the system
+        Temperature in Kelvins.
     pressure
-        Pressure of the system
+        Pressure in bar.
     thermo_method
         Method to use for thermochemistry. Options are "harmonic" or "ideal_gas".
     preset

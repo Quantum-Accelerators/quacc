@@ -38,7 +38,8 @@ class PropertyFn(StrEnum):
     compatibility.
     """
 
-    ENERGY = "energy"
+    POTENTIAL_ENERGY = "potential_energy"
+    ENERGY = "potential_energy"  # alias of POTENTIAL_ENERGY
     FORCES = "forces"
     STRESS = "stress"
     KINETIC_ENERGY = "kinetic_energy"

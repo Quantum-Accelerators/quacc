@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from ase.optimize import BFGSLineSearch
@@ -87,7 +88,9 @@ def static_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = BASE_SET_METAL if check_is_metal(atoms) else BASE_SET_NON_METAL
+    calc_defaults = deepcopy(
+        BASE_SET_METAL if check_is_metal(atoms) else BASE_SET_NON_METAL
+    )
     calc_defaults["input_data"]["control"] = {"calculation": "scf"}
 
     return run_and_summarize(
@@ -148,7 +151,9 @@ def relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = BASE_SET_METAL if check_is_metal(atoms) else BASE_SET_NON_METAL
+    calc_defaults = deepcopy(
+        BASE_SET_METAL if check_is_metal(atoms) else BASE_SET_NON_METAL
+    )
     calc_defaults["input_data"]["control"] = {
         "calculation": "vc-relax" if relax_cell else "relax"
     }
@@ -217,7 +222,9 @@ def ase_relax_job(
         Dictionary of results from [quacc.schemas.ase.Summarize.run][].
         See the type-hint for the data structure.
     """
-    calc_defaults = BASE_SET_METAL if check_is_metal(atoms) else BASE_SET_NON_METAL
+    calc_defaults = deepcopy(
+        BASE_SET_METAL if check_is_metal(atoms) else BASE_SET_NON_METAL
+    )
     calc_defaults["input_data"]["control"] = {
         "calculation": "scf",
         "tstress": relax_cell,

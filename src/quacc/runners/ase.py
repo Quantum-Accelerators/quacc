@@ -505,7 +505,7 @@ class Runner(BaseRunner[AtomsT]):
 
         dyn = optimizer(cast("Atoms", neb), **optimizer_kwargs)
         dyn.attach(traj.write)
-        dyn.run(fmax, max_steps)
+        dyn.run(**({"fmax": fmax, "steps": max_steps} | run_kwargs))
         traj.close()
 
         calc_cleanup(None, neb_tmpdir, neb_results_dir)

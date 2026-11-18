@@ -46,17 +46,20 @@ def mock_bader_analysis(*args, **kwargs):
 
 
 def mock_chargemol_analysis(*args, **kwargs):
-    return {
-        "ddec": {
-            "partial_charges": [1.0] * 16,
-            "spin_moments": [0.0] * 16,
-            "dipoles": [1.0] * 16,
-            "rsquared_moments": [1.0] * 16,
-            "rcubed_moments": [1.0] * 16,
-            "rfourth_moments": [1.0] * 16,
-        },
-        "cm5": {"partial_charges": [1.0] * 16},
-    }
+    # Mimic Pymatgen's ChargemolAnalysis, which stores its results in `.summary`
+    return SimpleNamespace(
+        summary={
+            "ddec": {
+                "partial_charges": [1.0] * 16,
+                "spin_moments": [0.0] * 16,
+                "dipoles": [1.0] * 16,
+                "rsquared_moments": [1.0] * 16,
+                "rcubed_moments": [1.0] * 16,
+                "rfourth_moments": [1.0] * 16,
+            },
+            "cm5": {"partial_charges": [1.0] * 16},
+        }
+    )
 
 
 def test_vasp_summarize_run(run1, monkeypatch, tmp_path):

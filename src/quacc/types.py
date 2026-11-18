@@ -35,7 +35,6 @@ if TYPE_CHECKING:
     from numpy.random import Generator
     from numpy.typing import ArrayLike, NDArray
     from pymatgen.analysis.elasticity.strain import DeformedStructureSet
-    from pymatgen.command_line.chargemol_caller import ChargemolAnalysis
     from pymatgen.core.composition import Composition
     from pymatgen.core.lattice import Lattice
     from pymatgen.core.periodic_table import Element
@@ -676,7 +675,7 @@ if TYPE_CHECKING:
         """Type hint associated with [quacc.schemas.vasp.VaspSummarize.run][]"""
 
         bader: NotRequired[BaderSchema]
-        chargemol: NotRequired[ChargemolAnalysis]
+        chargemol: NotRequired[ChargemolSchema]
         steps: NotRequired[dict[int, TaskDoc]]  # when store_intermediate_results=True
 
     # ----------- Recipe (VASP) type hints -----------
