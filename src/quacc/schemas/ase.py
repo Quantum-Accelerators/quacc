@@ -318,6 +318,10 @@ class Summarize:
                 n_iter_return,
             )
         trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
+
+        # The transition state is the highest-energy intermediate image of the
+        # final iteration, i.e. of the last `n_images` frames.
+        final_images = atoms_trajectory[-n_images:]
         ts_index = (
             np.argmax(
                 [
@@ -327,7 +331,7 @@ class Summarize:
             )
             + 1
         )
-        ts_atoms = atoms_trajectory[ts_index]
+        ts_atoms = final_images[ts_index]
         base_task_doc = atoms_to_metadata(atoms_trajectory[0])
 
         # Clean up the opt parameters

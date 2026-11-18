@@ -414,9 +414,20 @@ def test_summarize_neb(monkeypatch, tmp_path, trajectory_source):
         1.0875330074934446, abs=1e-4
     )
 
+    # The transition state must come from the final iteration, even when
+    # earlier iterations are also returned
+    final_images = neb_summary["trajectory"][-len(images) :]
+    final_energies = [
+        result["energy"]
+        for result in neb_summary["trajectory_results"][-len(images) + 1 : -1]
+    ]
     ts_atoms = neb_summary["ts_atoms"]
+    assert any(ts_atoms is image for image in final_images)
     ts_atoms.calc = EMT()
-    assert ts_atoms.get_potential_energy() == pytest.approx(1.1603536513693768, 1e-4)
+    assert ts_atoms.get_potential_energy() == pytest.approx(max(final_energies))
+    assert ts_atoms.get_potential_energy() == pytest.approx(
+        1.1431951331447698, abs=1e-4
+    )
 
     final_iteration = Summarize().neb(
         optimizer, len(images), n_iter_return=-1, trajectory=read("opt.traj", index=":")
