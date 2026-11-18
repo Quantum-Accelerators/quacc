@@ -56,6 +56,10 @@ def omol_static_job(
         Multiplicity of the system.
     vertical
         Vertical of the OMol dataset to use. Defaults to `Vertical.Default`.
+        For singlets, `Vertical.MetalOrganics` and `Vertical.Oss` use UKS with a
+        20° HOMO-LUMO rotation to break spin symmetry, as in OMol25. OMol25 ran
+        every singlet containing a transition metal or lanthanide this way, so
+        use `Vertical.MetalOrganics` for such systems.
     orcasimpleinput
         List of `orcasimpleinput` swaps for the calculator. To remove entries
         from the defaults, put a `#` in front of the name. Refer to the
@@ -76,16 +80,29 @@ def omol_static_job(
     RunSchema
         Results from the ORCA single-point calculation.
     """
-    from fairchem.data.omol.orca.calc import ORCA_BLOCKS, ORCA_SIMPLE_INPUT, Vertical
+    from fairchem.data.omol.orca.calc import (
+        ORCA_BLOCKS,
+        ORCA_SIMPLE_INPUT,
+        Vertical,
+        get_symm_break_block,
+    )
     from fairchem.data.omol.orca.recipes import single_point_calculation
 
     nprocs = (psutil.cpu_count(logical=False) if nprocs == "max" else nprocs) or 1
+    vertical = Vertical.Default if vertical is None else vertical
+
+    # fairchem's single_point_calculation only breaks spin symmetry for
+    # metal-organics singlets, but OMol25 treated open-shell singlets the same
+    # way (see write_orca_inputs in fairchem.data.omol.orca.calc).
+    if vertical == Vertical.Oss and spin_multiplicity == 1:
+        orcasimpleinput = [*(orcasimpleinput or []), "UKS"]
+        orcablocks = [*(orcablocks or []), get_symm_break_block(atoms, charge)]
 
     return single_point_calculation(
         atoms,
         charge,
         spin_multiplicity,
-        vertical=Vertical.Default if vertical is None else vertical,
+        vertical=vertical,
         orcasimpleinput=merge_list_params(ORCA_SIMPLE_INPUT, orcasimpleinput)
         if orcasimpleinput
         else None,
