@@ -23,12 +23,70 @@ if TYPE_CHECKING:
 LOGGER = getLogger(__name__)
 
 
+class _FrozenList(tuple):
+    """A hashable stand-in for a list, which `thaw` converts back to a list."""
+
+    __slots__ = ()
+
+
 @requires(has_frozen, "frozendict must be installed. Run pip install frozendict.")
+def freeze(value: Any) -> Any:
+    """
+    Recursively convert dictionaries and lists into hashable equivalents.
+
+    Parameters
+    ----------
+    value
+        The value to freeze.
+
+    Returns
+    -------
+    Any
+        The frozen value.
+    """
+    from frozendict import frozendict
+
+    if isinstance(value, dict):
+        return frozendict({k: freeze(v) for k, v in value.items()})
+    if isinstance(value, list):
+        return _FrozenList(freeze(v) for v in value)
+    if isinstance(value, tuple) and not isinstance(value, _FrozenList):
+        return tuple(freeze(v) for v in value)
+    return value
+
+
+@requires(has_frozen, "frozendict must be installed. Run pip install frozendict.")
+def thaw(value: Any) -> Any:
+    """
+    Undo [quacc.recipes.mlip._base.freeze][].
+
+    Parameters
+    ----------
+    value
+        The value to thaw.
+
+    Returns
+    -------
+    Any
+        The thawed value.
+    """
+    from frozendict import frozendict
+
+    if isinstance(value, frozendict):
+        return {k: thaw(v) for k, v in value.items()}
+    if isinstance(value, _FrozenList):
+        return [thaw(v) for v in value]
+    if isinstance(value, tuple):
+        return tuple(thaw(v) for v in value)
+    return value
+
+
 def freezeargs(func: Callable) -> Callable:
     """
-    Convert a mutable dictionary into immutable.
-    Useful to make sure dictionary args are compatible with cache
-    From https://stackoverflow.com/a/53394430
+    Recursively convert mutable dictionary and list arguments into hashable
+    equivalents so that they are compatible with a cache. Use
+    [quacc.recipes.mlip._base.thaw][] in the wrapped function to recover them.
+    Adapted from https://stackoverflow.com/a/53394430
 
     Parameters
     ----------
@@ -38,16 +96,13 @@ def freezeargs(func: Callable) -> Callable:
     Returns
     -------
     Callable
-        Wrapped function with frozen dictionary arguments.
+        Wrapped function with frozen arguments.
     """
-    from frozendict import frozendict
 
     @wraps(func)
     def wrapped(*args: Any, **kwargs: Any) -> Any:
-        args = tuple(frozendict(arg) if isinstance(arg, dict) else arg for arg in args)
-        kwargs = {
-            k: frozendict(v) if isinstance(v, dict) else v for k, v in kwargs.items()
-        }
+        args = tuple(freeze(arg) for arg in args)
+        kwargs = {k: freeze(v) for k, v in kwargs.items()}
         return func(*args, **kwargs)
 
     return wrapped
@@ -101,6 +156,9 @@ def pick_calculator(
     """
 
     from quacc import get_settings
+
+    # Undo the freezing that made the kwargs hashable for the cache
+    calc_kwargs = {k: thaw(v) for k, v in calc_kwargs.items()}
 
     if has_torch:
         import torch
