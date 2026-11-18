@@ -297,7 +297,8 @@ def mp_relax_set_job(
 ) -> VaspSchema:
     """
     Run a static calculation with the original pymatgen `MPRelaxSet` VASP settings,
-    compatible with the MPtrj, WBM, sAlex, and MatterSim datasets.
+    compatible with the MPtrj, WBM, sAlex, and MatterSim datasets. As in the
+    Materials Project relaxation workflows, Gamma-centered k-point grids are used.
 
     Parameters
     ----------
@@ -317,7 +318,10 @@ def mp_relax_set_job(
     VaspSchema
         Dictionary of results from [quacc.schemas.vasp.VaspSummarize.run][].
     """
-    calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(MPRelaxSet())
+    # Materials Project relaxations (atomate and atomate2) use Gamma-centered grids
+    calc_defaults = MPtoASEConverter(atoms=atoms).convert_input_set(
+        MPRelaxSet(force_gamma=True)
+    )
     calc_defaults |= {"nsw": 0, "incar_copilot_mode": "critical"}
 
     return run_and_summarize(
