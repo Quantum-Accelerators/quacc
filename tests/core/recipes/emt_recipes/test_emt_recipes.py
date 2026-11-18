@@ -118,6 +118,22 @@ def test_relax_job(tmp_path, monkeypatch):
     assert output_fire_pressure["parameters"]["asap_cutoff"] is True
 
 
+@pytest.mark.parametrize("relax_cell", [False, True])
+def test_relax_job_without_files(tmp_path, monkeypatch, relax_cell):
+    monkeypatch.chdir(tmp_path)
+
+    atoms = bulk("Cu") * (2, 2, 2)
+    atoms[0].position += [0.1, 0.1, 0.1]
+
+    output = relax_job(atoms, relax_cell=relax_cell, opt_params={"write_files": False})
+    assert output["converged"]
+    assert len(output["trajectory"]) == 1
+    assert output["trajectory"][0] == output["atoms"]
+    assert output["input_atoms"]["atoms"] == atoms
+    assert output["atoms"] != atoms
+    assert not list(tmp_path.rglob("opt.traj*"))
+
+
 def test_md_job1():
     atoms = molecule("H2O")
     old_positions = atoms.positions.copy()

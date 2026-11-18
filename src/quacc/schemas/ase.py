@@ -146,6 +146,9 @@ class Summarize:
             ASE Optimizer object.
         trajectory
             ASE Trajectory object or list[Atoms] from reading a trajectory file.
+            If None, the trajectory is read from `dyn.trajectory`. If no
+            trajectory file was written (e.g. `write_files=False`), only the
+            final structure is stored.
         check_convergence
             Whether to check the convergence of the calculation. Defaults to True in
             settings.
@@ -164,8 +167,12 @@ class Summarize:
         )
 
         # Get trajectory
+        final_atoms = get_final_atoms_from_dynamics(dyn)
         if trajectory is not None:
             atoms_trajectory = list(trajectory)
+        elif dyn.trajectory is None:
+            # No trajectory file was written (e.g. `write_files=False`)
+            atoms_trajectory = [final_atoms]
         elif isinstance(dyn.trajectory, (str, Path)):
             atoms_trajectory = cast("list[Atoms]", read(dyn.trajectory, index=":"))
         else:
@@ -174,8 +181,9 @@ class Summarize:
             )
         trajectory_results = [atoms.calc.results for atoms in atoms_trajectory]
 
-        initial_atoms = atoms_trajectory[0]
-        final_atoms = get_final_atoms_from_dynamics(dyn)
+        initial_atoms = getattr(dyn, "input_atoms", None)
+        if initial_atoms is None:
+            initial_atoms = atoms_trajectory[0]
         directory = self.directory or final_atoms.calc.directory
 
         # Check convergence

@@ -215,6 +215,7 @@ class Runner(BaseRunner[AtomsT]):
             The instantiated ASE optimizer or molecular dynamics object.
         """
         # Set defaults
+        input_atoms = self.atoms.copy()
         merged_optimizer_kwargs = recursive_dict_merge(
             {
                 "logfile": self.tmpdir / "opt.log" if write_files else None,
@@ -287,6 +288,9 @@ class Runner(BaseRunner[AtomsT]):
         self.cleanup()
         if traj is not None:
             traj.filename = zpath(str(self.job_results_dir / traj_filename))
+        else:
+            # Without a trajectory file, keep the input structure for summarizers
+            vars(dyn)["input_atoms"] = input_atoms
         dyn.trajectory = traj
 
         return dyn
