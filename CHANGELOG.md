@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
+- BREAKING: Renamed the `quacc.QuaccDefault` sentinel to `quacc.UseSettings` to make it clear that omitted arguments are resolved from the corresponding global setting
 - BREAKING: `oc22_static_job` now takes `use_dipole_correction` as its second argument, so `copy_files` must be passed by keyword
 - BREAKING: `quacc.utils.dicts.recursive_dict_merge` now raises a `ValueError` if given fewer than two dictionaries, instead of returning `{}` for one dictionary or raising an `IndexError` for none
 - `quacc.recipes.vasp.core.double_relax_flow` now writes a WAVECAR in the first relaxation (`lwave=True`) so that it can be reused by the second relaxation, as documented. Pass `relax1_kwargs={"lwave": False}` to disable this
