@@ -13,6 +13,10 @@ from quacc.settings import QuaccSettings
 FILE_DIR = Path(__file__).parent
 
 
+def test_vasp_preset_default():
+    assert QuaccSettings().VASP_PRESET == "DefaultSetGGA"
+
+
 def test_file(tmp_path, monkeypatch):
     with open(tmp_path / "quacc_test.yaml", "w") as f:
         f.write("GZIP_FILES: false\nWORKFLOW_ENGINE: None")
