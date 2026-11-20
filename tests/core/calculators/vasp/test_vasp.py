@@ -1945,8 +1945,7 @@ def test_rosen_oct2026_setups():
 
 
 @pytest.mark.parametrize(
-    "preset",
-    ["RosenSetGGAOct2026", "RosenSetMetaGGAOct2026", "RosenSetHybridOct2026"],
+    "preset", ["RosenSetGGAOct2026", "RosenSetMetaGGAOct2026", "RosenSetHybridOct2026"]
 )
 def test_rosen_oct2026_gamma_and_overrides(preset):
     # bcc Fe exposes the centering difference hidden by the fcc Cu test.
