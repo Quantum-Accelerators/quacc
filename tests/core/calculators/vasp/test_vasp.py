@@ -1348,6 +1348,13 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
+    calc = Vasp(
+        atoms, setups="setups_vasp_recommended_oct2026.yaml", preset="DefaultSetGGA"
+    )
+    assert calc.parameters["setups"]["Cu"] == "_pv"
+    assert calc.parameters["setups"]["Yb"] == "_3"
+
+    atoms = bulk("Cu")
     calc = Vasp(atoms, setups="minimal", preset="DefaultSetGGA")
     assert isinstance(calc.parameters["setups"], str)
     assert calc.parameters["setups"] == "minimal"
