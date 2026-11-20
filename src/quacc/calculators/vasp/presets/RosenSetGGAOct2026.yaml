@@ -1,5 +1,5 @@
 # Last modified: 11-20-2026
-# PBE-D3(BJ) with the October 2026 VASP-recommended potentials
+# PBE-D4 with the October 2026 VASP-recommended potentials
 inputs:
   algo: fast
   ediff: 1.0e-6
@@ -10,7 +10,7 @@ inputs:
   gga_compat: false
   ibrion: 2
   ismear: 0
-  ivdw: 12
+  ivdw: 13
   lasph: true
   lcharg: false
   lorbit: 11
