@@ -1012,6 +1012,20 @@ def test_algo():
     assert calc.parameters["algo"] == "all"
 
 
+@pytest.mark.parametrize("mode", ["critical", "standard", "aggressive"])
+@pytest.mark.parametrize("algo", ["all", "conjugate", "damped", "normal"])
+def test_hybrid_supported_algos(algo, mode):
+    calc = Vasp(bulk("Cu"), xc="hse06", algo=algo, incar_copilot_mode=mode)
+    assert calc.parameters["algo"] == algo
+
+
+@pytest.mark.parametrize("mode", ["critical", "standard", "aggressive"])
+@pytest.mark.parametrize("algo", ["fast", "veryfast"])
+def test_hybrid_unsupported_algos_default_to_normal(algo, mode):
+    calc = Vasp(bulk("Cu"), xc="hse06", algo=algo, incar_copilot_mode=mode)
+    assert calc.parameters["algo"] == "normal"
+
+
 def test_algo_aggressive():
     with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
@@ -1025,8 +1039,13 @@ def test_algo_aggressive():
         calc = Vasp(atoms, xc="m06l", algo="fast")
         assert calc.parameters["algo"] == "all"
 
-        calc = Vasp(atoms, xc="hse06", algo="all")
-        assert calc.parameters["algo"] == "normal"
+        for algo in ("all", "conjugate", "damped", "normal"):
+            calc = Vasp(atoms, xc="hse06", algo=algo)
+            assert calc.parameters["algo"] == algo
+
+        for algo in ("fast", "veryfast"):
+            calc = Vasp(atoms, xc="hse06", algo=algo)
+            assert calc.parameters["algo"] == "normal"
 
 
 def test_kpar():
