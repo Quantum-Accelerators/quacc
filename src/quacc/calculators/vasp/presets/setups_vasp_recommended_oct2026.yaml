@@ -23,6 +23,7 @@ inputs:
     Cd: Cd
     Ce: Ce
     Cl: Cl
+    Cf: Cf
     Cm: Cm
     Co: Co_pv
     Cr: Cr_pv
