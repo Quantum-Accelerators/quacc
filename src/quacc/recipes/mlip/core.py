@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from quacc import job
-from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.recipes.mlip._base import pick_calculator
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import Summarize
@@ -128,8 +127,6 @@ def relax_job(
         relax_cell=relax_cell, write_files=write_files, **opt_flags
     )
 
-    trajectory = None if write_files else [get_final_atoms_from_dynamics(dyn)]
-
     return Summarize(
         additional_fields={"name": f"{library} Relax"} | (additional_fields or {})
-    ).opt(dyn, trajectory=trajectory)
+    ).opt(dyn)
