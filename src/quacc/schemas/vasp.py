@@ -17,7 +17,7 @@ from pymatgen.entries.compatibility import (
     MaterialsProject2020Compatibility,
 )
 
-from quacc import QuaccDefault, get_settings
+from quacc import UseSettings, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.ase import Summarize
 from quacc.utils.dicts import clean_dict, recursive_dict_merge
@@ -50,9 +50,9 @@ class VaspSummarize:
         self,
         directory: str | Path | None = None,
         move_magmoms: bool = True,
-        run_bader: bool | DefaultSetting = QuaccDefault,
-        run_chargemol: bool | DefaultSetting = QuaccDefault,
-        check_convergence: bool | DefaultSetting = QuaccDefault,
+        run_bader: bool | DefaultSetting = UseSettings,
+        run_chargemol: bool | DefaultSetting = UseSettings,
+        check_convergence: bool | DefaultSetting = UseSettings,
         report_mp_corrections: bool = False,
         additional_fields: dict[str, Any] | None = None,
     ) -> None:
@@ -111,17 +111,17 @@ class VaspSummarize:
         """
         run_bader = (
             self._settings.VASP_BADER
-            if self.run_bader == QuaccDefault
+            if self.run_bader == UseSettings
             else self.run_bader
         )
         run_chargemol = (
             self._settings.VASP_CHARGEMOL
-            if self.run_chargemol == QuaccDefault
+            if self.run_chargemol == UseSettings
             else self.run_chargemol
         )
         check_convergence = (
             self._settings.CHECK_CONVERGENCE
-            if self.check_convergence == QuaccDefault
+            if self.check_convergence == UseSettings
             else self.check_convergence
         )
         directory = Path(self.directory or final_atoms.calc.directory)

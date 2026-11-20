@@ -11,7 +11,7 @@ from ase.vibrations.data import VibrationsData
 from emmet.core.symmetry import PointGroupData
 from pymatgen.io.ase import AseAtomsAdaptor
 
-from quacc import QuaccDefault, __version__, get_settings
+from quacc import UseSettings, __version__, get_settings
 from quacc.atoms.core import get_final_atoms_from_dynamics
 from quacc.schemas.atoms import atoms_to_metadata
 from quacc.schemas.prep import prep_next_run
@@ -135,7 +135,7 @@ class Summarize:
         self,
         dyn: Optimizer | MolecularDynamics,
         trajectory: Sequence[Atoms] | TrajectoryReader | None = None,
-        check_convergence: bool | DefaultSetting = QuaccDefault,
+        check_convergence: bool | DefaultSetting = UseSettings,
     ) -> OptSchema:
         """
         Get tabulated results from an ASE optimization.
@@ -159,7 +159,7 @@ class Summarize:
         # Check and set up variables
         check_convergence = (
             self._settings.CHECK_CONVERGENCE
-            if check_convergence == QuaccDefault
+            if check_convergence == UseSettings
             else check_convergence
         )
 

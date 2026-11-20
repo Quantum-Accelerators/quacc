@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from monty.dev import requires
 
-from quacc import QuaccDefault, get_settings
+from quacc import UseSettings, get_settings
 from quacc.types import DefaultSetting
 
 if TYPE_CHECKING:
@@ -21,12 +21,12 @@ has_ob = bool(find_spec("openbabel"))
     has_ob, "Openbabel must be installed. Try conda install -c conda-forge openbabel"
 )
 def run_custodian(
-    qchem_cmd: str | DefaultSetting = QuaccDefault,
-    qchem_cores: int | DefaultSetting = QuaccDefault,
-    qchem_local_scratch: str | Path | DefaultSetting = QuaccDefault,
-    qchem_use_error_handlers: bool | DefaultSetting = QuaccDefault,
-    qchem_custodian_max_errors: int | DefaultSetting = QuaccDefault,
-    qchem_nbo_exe: str | Path | DefaultSetting | None = QuaccDefault,
+    qchem_cmd: str | DefaultSetting = UseSettings,
+    qchem_cores: int | DefaultSetting = UseSettings,
+    qchem_local_scratch: str | Path | DefaultSetting = UseSettings,
+    qchem_use_error_handlers: bool | DefaultSetting = UseSettings,
+    qchem_custodian_max_errors: int | DefaultSetting = UseSettings,
+    qchem_nbo_exe: str | Path | DefaultSetting | None = UseSettings,
     directory: str | Path | None = None,
 ) -> list[list[dict]]:
     """

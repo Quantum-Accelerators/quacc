@@ -12,7 +12,7 @@ import numpy as np
 from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 
-from quacc import QuaccDefault, get_settings
+from quacc import UseSettings, get_settings
 from quacc.calculators.vasp.io import load_vasp_yaml_calc
 from quacc.calculators.vasp.params import (
     get_param_swaps,
@@ -58,13 +58,13 @@ class Vasp(Vasp_):
         self,
         input_atoms: Atoms,
         preset: str | Path | None = None,
-        use_custodian: bool | DefaultSetting = QuaccDefault,
+        use_custodian: bool | DefaultSetting = UseSettings,
         custodian_handlers: list[str] | None = None,
         incar_copilot_mode: Literal["off", "critical", "standard", "aggressive"]
-        | DefaultSetting = QuaccDefault,
-        copy_magmoms: bool | DefaultSetting = QuaccDefault,
-        preset_mag_default: float | DefaultSetting = QuaccDefault,
-        mag_cutoff: float | DefaultSetting = QuaccDefault,
+        | DefaultSetting = UseSettings,
+        copy_magmoms: bool | DefaultSetting = UseSettings,
+        preset_mag_default: float | DefaultSetting = UseSettings,
+        mag_cutoff: float | DefaultSetting = UseSettings,
         elemental_magmoms: dict[str, float] | None = None,
         pmg_kpts: PmgKpts | None = None,
         auto_dipole: bool | None = None,

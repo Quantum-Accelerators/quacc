@@ -26,7 +26,7 @@ __all__ = [
     "Flow",
     "Job",
     "JobFailure",
-    "QuaccDefault",
+    "UseSettings",
     "Remove",
     "Subflow",
     "change_settings",
@@ -100,7 +100,7 @@ if _settings.WORKFLOW_ENGINE == "jobflow":
     )
 
 # Dummy value for when a default setting will be applied
-QuaccDefault = DefaultSetting()
+UseSettings = DefaultSetting()
 
 # Set logging info
 basicConfig(filename=_settings.LOG_FILENAME, level=_settings.LOG_LEVEL)

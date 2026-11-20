@@ -24,7 +24,7 @@ from custodian.vasp.handlers import (
 from custodian.vasp.jobs import VaspJob
 from custodian.vasp.validators import VaspFilesValidator, VasprunXMLValidator
 
-from quacc import QuaccDefault, get_settings
+from quacc import UseSettings, get_settings
 from quacc.types import DefaultSetting
 
 if TYPE_CHECKING:
@@ -35,15 +35,15 @@ if TYPE_CHECKING:
 
 
 def run_custodian(
-    vasp_parallel_cmd: str | DefaultSetting = QuaccDefault,
-    vasp_cmd: str | DefaultSetting = QuaccDefault,
-    vasp_gamma_cmd: str | DefaultSetting = QuaccDefault,
-    vasp_custodian_max_errors: int | DefaultSetting = QuaccDefault,
-    vasp_custodian_wall_time: float | DefaultSetting | None = QuaccDefault,
-    vtst_fixes: bool | DefaultSetting = QuaccDefault,
-    vasp_custodian_handlers: list[str] | DefaultSetting | None = QuaccDefault,
-    vasp_custodian_error_exclude: list[str] | DefaultSetting = QuaccDefault,
-    vasp_custodian_validators: list[str] | DefaultSetting | None = QuaccDefault,
+    vasp_parallel_cmd: str | DefaultSetting = UseSettings,
+    vasp_cmd: str | DefaultSetting = UseSettings,
+    vasp_gamma_cmd: str | DefaultSetting = UseSettings,
+    vasp_custodian_max_errors: int | DefaultSetting = UseSettings,
+    vasp_custodian_wall_time: float | DefaultSetting | None = UseSettings,
+    vtst_fixes: bool | DefaultSetting = UseSettings,
+    vasp_custodian_handlers: list[str] | DefaultSetting | None = UseSettings,
+    vasp_custodian_error_exclude: list[str] | DefaultSetting = UseSettings,
+    vasp_custodian_validators: list[str] | DefaultSetting | None = UseSettings,
     scratch_dir: str | None = None,
     directory: str | Path | None = None,
     vasp_job_kwargs: VaspJobKwargs | None = None,
