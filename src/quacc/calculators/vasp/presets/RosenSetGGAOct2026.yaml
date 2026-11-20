@@ -2,7 +2,7 @@
 # PBE-D3(BJ) with the October 2026 VASP-recommended potentials
 inputs:
   algo: fast
-  ediff: 1.0e-5
+  ediff: 1.0e-6
   ediffg: -0.02
   efermi: midgap
   encut: 650
