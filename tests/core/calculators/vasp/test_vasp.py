@@ -1903,17 +1903,24 @@ def test_rosen_oct2026_presets(preset, default):
     assert default_calc.parameters["ediff"] == 1e-5
     assert calc.parameters["encut"] == 650
     assert calc.parameters["gamma"] is True
+    assert calc.parameters["ivdw"] == 13
     assert calc.parameters["setups"]["Cu"] == "_pv"
     assert calc.parameters["setups"]["Yb"] == "_3"
-    params = {
-        k: v
-        for k, v in calc.parameters.items()
-        if k not in ("ediff", "encut", "gamma", "kpts", "setups")
-    }
+    excluded = (
+        "ediff",
+        "encut",
+        "gamma",
+        "ivdw",
+        "kpts",
+        "setups",
+        "vdw_a1",
+        "vdw_a2",
+        "vdw_s6",
+        "vdw_s8",
+    )
+    params = {k: v for k, v in calc.parameters.items() if k not in excluded}
     default_params = {
-        k: v
-        for k, v in default_calc.parameters.items()
-        if k not in ("ediff", "encut", "gamma", "kpts", "setups")
+        k: v for k, v in default_calc.parameters.items() if k not in excluded
     }
     assert params == default_params
 
