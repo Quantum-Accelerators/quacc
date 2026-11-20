@@ -107,7 +107,8 @@ def test_presets2():
     assert calc.parameters["encut"] == 520
 
 
-def test_preset_setting():
+@pytest.mark.parametrize("preset_type", ["name", "str", "path"])
+def test_preset_setting(preset_type, tmp_path):
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
 
@@ -115,9 +116,16 @@ def test_preset_setting():
     assert calc.preset is None
     assert "encut" not in calc.parameters
 
-    with change_settings({"VASP_PRESET": "DefaultSetGGA"}):
+    preset = "DefaultSetGGA"
+    if preset_type != "name":
+        preset = tmp_path / "CustomPreset.yaml"
+        preset.write_text("inputs:\n  encut: 520\n")
+        if preset_type == "str":
+            preset = str(preset)
+
+    with change_settings({"VASP_PRESET": preset}):
         calc = Vasp(atoms)
-        assert calc.preset == "DefaultSetGGA"
+        assert calc.preset == preset
         assert calc.parameters["encut"] == 520
 
         calc = Vasp(atoms, preset="SlabSetPBE")

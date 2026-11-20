@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added a `VASP_PRESET` setting to set the default preset of the `Vasp` calculator when none is specified. Recipes that set their own preset are unaffected, and passing `preset=None` disables the preset
 
+### Removed
+
+- BREAKING: Removed `VASP_PRESET_DIR`. Named VASP presets and setup files now use the bundled preset directory. Set `VASP_PRESET` to a YAML file path to use a custom default preset
+
 ## [1.10.0]
 
 ### Added
