@@ -339,6 +339,17 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
+    VASP_PRESET: str | Path | None = Field(
+        None,
+        description=(
+            """
+            Default preset to use for the VASP calculator when one is not
+            specified. This can be the name of a YAML file in `VASP_PRESET_DIR`
+            (without the extension) or the path to a YAML file. If None, no
+            preset is used. Recipes that set their own preset are unaffected.
+            """
+        ),
+    )
     VASP_PRESET_DIR: Path = Field(
         Path(__file__).parent / "calculators" / "vasp" / "presets",
         description="Path to the VASP preset directory",

@@ -107,6 +107,27 @@ def test_presets2():
     assert calc.parameters["encut"] == 520
 
 
+def test_preset_setting():
+    atoms = bulk("Co") * (2, 2, 1)
+    atoms[-1].symbol = "Fe"
+
+    calc = Vasp(atoms)
+    assert calc.preset is None
+    assert "encut" not in calc.parameters
+
+    with change_settings({"VASP_PRESET": "DefaultSetGGA"}):
+        calc = Vasp(atoms)
+        assert calc.preset == "DefaultSetGGA"
+        assert calc.parameters["encut"] == 520
+
+        calc = Vasp(atoms, preset="SlabSetPBE")
+        assert calc.preset == "SlabSetPBE"
+
+        calc = Vasp(atoms, preset=None)
+        assert calc.preset is None
+        assert "encut" not in calc.parameters
+
+
 def test_presets_mp():
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
