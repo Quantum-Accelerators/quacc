@@ -22,8 +22,8 @@ inputs:
     Ca: Ca_sv
     Cd: Cd
     Ce: Ce
-    Cl: Cl
     Cf: Cf
+    Cl: Cl
     Cm: Cm
     Co: Co_pv
     Cr: Cr_pv
