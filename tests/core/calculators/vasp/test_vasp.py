@@ -1885,3 +1885,25 @@ def test_qmof_magmoms():
     assert not calc.input_atoms.get_initial_magnetic_moments().any()
     assert "magmom" not in calc.parameters
     assert calc.parameters.get("ispin") is None
+
+
+@pytest.mark.parametrize(
+    ("preset", "default"),
+    [
+        ("RosenSetGGAOct2026", "DefaultSetGGA"),
+        ("RosenSetMetaGGAOct2026", "DefaultSetMetaGGA"),
+        ("RosenSetHybridOct2026", "DefaultSetHybrid"),
+    ],
+)
+def test_rosen_oct2026_presets(preset, default):
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, preset=preset)
+    default_calc = Vasp(atoms, preset=default)
+    assert calc.parameters["encut"] == 650
+    assert calc.parameters["setups"]["Cu"] == "_pv"
+    assert calc.parameters["setups"]["Yb"] == "_3"
+    params = {k: v for k, v in calc.parameters.items() if k not in ("encut", "setups")}
+    default_params = {
+        k: v for k, v in default_calc.parameters.items() if k not in ("encut", "setups")
+    }
+    assert params == default_params

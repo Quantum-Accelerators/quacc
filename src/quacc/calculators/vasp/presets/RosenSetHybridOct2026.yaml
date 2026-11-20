@@ -1,0 +1,6 @@
+# Last modified: 11-20-2026
+# HSE06-D3(BJ)
+inputs:
+  algo: normal
+  xc: HSE06
+parent: RosenSetGGAOct2026
