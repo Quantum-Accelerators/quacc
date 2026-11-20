@@ -6,6 +6,7 @@ inputs:
   ediffg: -0.02
   efermi: midgap
   encut: 650
+  gamma: true
   gga_compat: false
   ibrion: 2
   ismear: 0

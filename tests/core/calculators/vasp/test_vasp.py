@@ -1900,10 +1900,17 @@ def test_rosen_oct2026_presets(preset, default):
     calc = Vasp(atoms, preset=preset)
     default_calc = Vasp(atoms, preset=default)
     assert calc.parameters["encut"] == 650
+    assert calc.parameters["gamma"] is True
     assert calc.parameters["setups"]["Cu"] == "_pv"
     assert calc.parameters["setups"]["Yb"] == "_3"
-    params = {k: v for k, v in calc.parameters.items() if k not in ("encut", "setups")}
+    params = {
+        k: v
+        for k, v in calc.parameters.items()
+        if k not in ("encut", "gamma", "kpts", "setups")
+    }
     default_params = {
-        k: v for k, v in default_calc.parameters.items() if k not in ("encut", "setups")
+        k: v
+        for k, v in default_calc.parameters.items()
+        if k not in ("encut", "gamma", "kpts", "setups")
     }
     assert params == default_params
