@@ -8,7 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added a `VASP_PRESET` setting to set the default preset of the `Vasp` calculator when none is specified. Recipes that set their own preset are unaffected, and passing `preset=None` disables the preset
+- Added a `VASP_PRESET` setting, defaulting to `DefaultSetGGA`, to choose the default preset for the `Vasp` calculator and core and MD recipes. Explicit presets take priority, including the specialized slab and QMOF presets, and passing `preset=None` disables the preset
+
+### Changed
+
+- BREAKING: Direct `Vasp` calculator calls now use `DefaultSetGGA` by default. Pass `preset=None` or set `VASP_PRESET` to `None` for no preset
 
 ### Removed
 

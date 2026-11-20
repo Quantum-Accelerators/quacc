@@ -85,7 +85,8 @@ class Vasp(Vasp_):
             an extension, the corresponding bundled VASP preset will be used.
             Any user-supplied calculator **kwargs will
             override any corresponding preset values. Defaults to the
-            `VASP_PRESET` setting (None, i.e. no preset, unless changed).
+            `VASP_PRESET` setting (`DefaultSetGGA` unless changed). Pass `None`
+            to disable the preset.
         use_custodian
             Whether to use Custodian to run VASP. Default is True in settings.
         custodian_handlers

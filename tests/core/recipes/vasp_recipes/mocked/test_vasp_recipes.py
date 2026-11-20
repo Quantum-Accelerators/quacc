@@ -119,6 +119,17 @@ def test_mp_aloe_static_job(patch_metallic_taskdoc):
     }
 
 
+@pytest.mark.parametrize("preset", ["QMOFSet", None])
+def test_static_job_preset_setting(patch_metallic_taskdoc, preset):
+    with change_settings({"VASP_PRESET": preset}):
+        output = static_job(bulk("Al"), xc="pbe", pp_version="64")
+        assert output["parameters"].get("encut") == (520 if preset else None)
+        assert output["parameters"].get("efermi") is None
+
+        output = static_job(bulk("Al"), preset="DefaultSetGGA")
+        assert output["parameters"]["efermi"] == "midgap"
+
+
 def test_static_job(patch_metallic_taskdoc):
     atoms = bulk("Al")
 

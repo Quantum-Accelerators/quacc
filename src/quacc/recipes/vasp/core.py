@@ -9,7 +9,7 @@ import numpy as np
 from monty.os.path import zpath
 from pymatgen.io.vasp import Vasprun
 
-from quacc import flow, job
+from quacc import QuaccDefault, flow, job
 from quacc.recipes.vasp._base import (
     run_and_summarize,
     run_and_summarize_opt,
@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 
     from quacc.types import (
         CopyFiles,
+        DefaultSetting,
         DoubleRelaxSchema,
         OptParams,
         PmgKpts,
@@ -38,7 +39,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    preset: str | None = "DefaultSetGGA",
+    preset: str | Path | DefaultSetting | None = QuaccDefault,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
@@ -51,7 +52,8 @@ def static_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Defaults to the `VASP_PRESET` setting.
+        Pass `None` to disable the preset.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -89,7 +91,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    preset: str | None = "DefaultSetGGA",
+    preset: str | Path | DefaultSetting | None = QuaccDefault,
     relax_cell: bool = False,
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -103,7 +105,8 @@ def relax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Defaults to the `VASP_PRESET` setting.
+        Pass `None` to disable the preset.
     relax_cell
         True if a volume relaxation (ISIF = 3) should be performed. False if
         only the positions (ISIF = 2) should be updated.
@@ -145,7 +148,7 @@ def relax_job(
 @flow
 def double_relax_flow(
     atoms: Atoms,
-    preset: str | None = "DefaultSetGGA",
+    preset: str | Path | DefaultSetting | None = QuaccDefault,
     relax_cell: bool = True,
     relax1_kwargs: dict[str, Any] | None = None,
     relax2_kwargs: dict[str, Any] | None = None,
@@ -166,7 +169,8 @@ def double_relax_flow(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Defaults to the `VASP_PRESET` setting.
+        Pass `None` to disable the preset.
     relax_cell
         True if a volume relaxation (ISIF = 3) should be performed. False if
         only the positions (ISIF = 2) should be updated.
@@ -203,7 +207,7 @@ def double_relax_flow(
 @job
 def ase_relax_job(
     atoms: Atoms,
-    preset: str | None = "DefaultSetGGA",
+    preset: str | Path | DefaultSetting | None = QuaccDefault,
     relax_cell: bool = False,
     opt_params: OptParams | None = None,
     copy_files: CopyFiles | None = None,
@@ -218,7 +222,8 @@ def ase_relax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Defaults to the `VASP_PRESET` setting.
+        Pass `None` to disable the preset.
     relax_cell
         True if a volume relaxation should be performed. False if only the positions
         should be updated.
@@ -257,7 +262,7 @@ def ase_relax_job(
 def non_scf_job(
     atoms: Atoms,
     prev_dir: SourceDirectory,
-    preset: str | None = "DefaultSetGGA",
+    preset: str | Path | DefaultSetting | None = QuaccDefault,
     nbands_factor: float = 1.2,
     kpts_mode: Literal["uniform", "line"] = "uniform",
     uniform_kppvol: float = 100,
@@ -276,7 +281,8 @@ def non_scf_job(
     prev_dir
         Directory of the prior job. Must contain a CHGCAR and vasprun.xml file.
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Defaults to the `VASP_PRESET` setting.
+        Pass `None` to disable the preset.
     nbands_factor
         A multiplicative factor used to adjust NBANDS when vasprun.xml(.gz) exists in
         prev_dir
@@ -352,7 +358,7 @@ def non_scf_job(
 @job
 def non_scf_opt_job(
     atoms: Atoms,
-    preset: str | None = "DefaultSetGGA",
+    preset: str | Path | DefaultSetting | None = QuaccDefault,
     kpts_mode: Literal["uniform", "line"] = "uniform",
     uniform_kppvol: float = 100,
     line_kpt_density: float = 20,
@@ -371,7 +377,8 @@ def non_scf_opt_job(
     atoms
         Atoms object.
     preset
-        Preset to use from `quacc.calculators.vasp.presets`. The preset and
+        Preset name or YAML file path. Defaults to the `VASP_PRESET` setting.
+        Pass `None` to disable the preset. The preset and
         ordinary k-point kwargs control the uniform SCF grid.
     kpts_mode
         NSCF k-point mode: "uniform" or "line".
@@ -436,7 +443,7 @@ def non_scf_opt_job(
 @job
 def freq_job(
     atoms: Atoms,
-    preset: str | None = "DefaultSetGGA",
+    preset: str | Path | DefaultSetting | None = QuaccDefault,
     energy: float = 0.0,
     temperature: float = 298.15,
     pressure: float = 1.0,
@@ -454,7 +461,8 @@ def freq_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Defaults to the `VASP_PRESET` setting.
+        Pass `None` to disable the preset.
     energy
         Potential energy in eV. If 0, then the output is just the correction.
     temperature

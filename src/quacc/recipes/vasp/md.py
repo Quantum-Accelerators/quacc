@@ -4,21 +4,22 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal, cast
 
-from quacc import job
+from quacc import QuaccDefault, job
 from quacc.recipes.vasp._base import run_and_summarize
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
-    from quacc.types import CopyFiles, VaspSchema
+    from quacc.types import CopyFiles, DefaultSetting, VaspSchema
 
 
 @job
 def md_job(
     atoms: Atoms,
-    preset: str | None = "DefaultSetGGA",
+    preset: str | Path | DefaultSetting | None = QuaccDefault,
     timestep: float = 0.5,
     nsteps: int = 20000,
     ensemble: Literal["nve", "nvt", "npt"] = "nvt",
@@ -36,7 +37,8 @@ def md_job(
     atoms
         Atoms object.
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Defaults to the `VASP_PRESET` setting.
+        Pass `None` to disable the preset.
     timestep
         Molecular dynamics timestep in femtoseconds, corresponding to POTIM.
     nsteps

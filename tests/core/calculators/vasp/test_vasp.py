@@ -31,6 +31,13 @@ LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
+@pytest.fixture(autouse=True)
+def no_default_preset():
+    # Keep tests of individual calculator flags independent of preset values.
+    with change_settings({"VASP_PRESET": None}):
+        yield
+
+
 @pytest.fixture
 def atoms_mag():
     return read(FILE_DIR / "OUTCAR_mag.gz")
@@ -48,20 +55,22 @@ def atoms_nospin():
 
 def test_vanilla_vasp():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, incar_copilot_mode="off")
+    calc = Vasp(atoms, preset=None, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, use_custodian=False, incar_copilot_mode="off")
+    calc = Vasp(atoms, preset=None, use_custodian=False, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot_mode="off")
+    calc = Vasp(
+        atoms, preset=None, use_custodian=False, kspacing=0.5, incar_copilot_mode="off"
+    )
     assert calc.parameters.get("gamma") is None
     assert calc.kpts is None
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, encut=None, incar_copilot_mode="off")
+    calc = Vasp(atoms, preset=None, encut=None, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
 
@@ -112,9 +121,10 @@ def test_preset_setting(preset_type, tmp_path):
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
 
-    calc = Vasp(atoms)
-    assert calc.preset is None
-    assert "encut" not in calc.parameters
+    with change_settings({"VASP_PRESET": "DefaultSetGGA"}):
+        calc = Vasp(atoms)
+        assert calc.preset == "DefaultSetGGA"
+        assert calc.parameters["encut"] == 520
 
     preset = "DefaultSetGGA"
     if preset_type != "name":

@@ -340,7 +340,7 @@ class QuaccSettings(BaseSettings):
         ),
     )
     VASP_PRESET: str | Path | None = Field(
-        None,
+        "DefaultSetGGA",
         description=(
             """
             Default preset to use for the VASP calculator when one is not
