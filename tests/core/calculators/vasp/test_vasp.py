@@ -1367,6 +1367,13 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
+    calc = Vasp(
+        atoms, setups="setups_vasp_recommended_oct2026.yaml", preset="DefaultSetGGA"
+    )
+    assert calc.parameters["setups"]["Cu"] == "_pv"
+    assert calc.parameters["setups"]["Yb"] == "_3"
+
+    atoms = bulk("Cu")
     calc = Vasp(atoms, setups="minimal", preset="DefaultSetGGA")
     assert isinstance(calc.parameters["setups"], str)
     assert calc.parameters["setups"] == "minimal"
@@ -1897,3 +1904,87 @@ def test_qmof_magmoms():
     assert not calc.input_atoms.get_initial_magnetic_moments().any()
     assert "magmom" not in calc.parameters
     assert calc.parameters.get("ispin") is None
+
+
+@pytest.mark.parametrize(
+    ("preset", "default"),
+    [
+        ("RosenSetGGAOct2026", "DefaultSetGGA"),
+        ("RosenSetMetaGGAOct2026", "DefaultSetMetaGGA"),
+        ("RosenSetHybridOct2026", "DefaultSetHybrid"),
+    ],
+)
+def test_rosen_oct2026_presets(preset, default):
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, preset=preset)
+    default_calc = Vasp(atoms, preset=default)
+    assert calc.parameters["ediff"] == 1e-6
+    assert default_calc.parameters["ediff"] == 1e-5
+    assert calc.parameters["encut"] == 650
+    assert calc.parameters["gamma"] is True
+    assert calc.parameters["ivdw"] == 13
+    assert calc.parameters["setups"]["Cu"] == "_pv"
+    assert calc.parameters["setups"]["Yb"] == "_3"
+    excluded = (
+        "ediff",
+        "encut",
+        "gamma",
+        "ivdw",
+        "kpts",
+        "setups",
+        "vdw_a1",
+        "vdw_a2",
+        "vdw_s6",
+        "vdw_s8",
+    )
+    params = {k: v for k, v in calc.parameters.items() if k not in excluded}
+    default_params = {
+        k: v for k, v in default_calc.parameters.items() if k not in excluded
+    }
+    assert params == default_params
+
+
+def test_rosen_oct2026_setups():
+    preset_dir = Path(presets.__file__).parent
+    old = load_vasp_yaml_calc(preset_dir / "setups_vasp_recommended.yaml")["inputs"]
+    new = load_vasp_yaml_calc(preset_dir / "setups_vasp_recommended_oct2026.yaml")[
+        "inputs"
+    ]
+    assert new == old | {
+        "setups": old["setups"]
+        | {
+            "Be": "_sv",
+            "Mg": "_pv",
+            "Fe": "_pv",
+            "Co": "_pv",
+            "Ni": "_pv",
+            "Cu": "_pv",
+            "Re": "_pv",
+            "Os": "_pv",
+            "Eu": "_3",
+            "Yb": "_3",
+        }
+    }
+    assert new["pp"] == "pbe"
+    assert new["pp_version"] == "64"
+    assert new["setups"]["Cf"] == ""
+
+
+@pytest.mark.parametrize(
+    "preset", ["RosenSetGGAOct2026", "RosenSetMetaGGAOct2026", "RosenSetHybridOct2026"]
+)
+def test_rosen_oct2026_gamma_and_overrides(preset):
+    # bcc Fe exposes the centering difference hidden by the fcc Cu test.
+    atoms = bulk("Fe")
+    calc = Vasp(atoms, preset=preset)
+    assert calc.parameters["gamma"] is True
+    assert len(calc.kpts) == 3
+    assert all(k > 0 for k in calc.kpts)
+
+    calc = Vasp(atoms, preset=preset, ediff=1e-8, encut=800, kpts=[1, 1, 1])
+    assert calc.parameters["ediff"] == 1e-8
+    assert calc.parameters["encut"] == 800
+    assert calc.kpts == [1, 1, 1]
+
+    calc = Vasp(atoms, preset=preset, gamma=False)
+    assert calc.parameters["gamma"] is False
