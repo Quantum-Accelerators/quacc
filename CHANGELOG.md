@@ -8,11 +8,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added a `VASP_PRESET` setting, defaulting to `DefaultSetGGA`, to choose the default preset for the `Vasp` calculator and core and MD recipes. Explicit presets take priority, including the specialized slab and QMOF presets, and passing `preset=None` disables the preset
+- Added a `setups_vasp_recommended_oct2026.yaml` VASP setups preset with the current [VASP-recommended PBE potentials](https://vasp.at/wiki/Recommended_pseudopotentials#Current_recommendation) (potpaw.64, valid since October 2026). The existing `setups_vasp_recommended.yaml` is unchanged
+- Added `RosenSetGGAOct2026`, `RosenSetMetaGGAOct2026`, and `RosenSetHybridOct2026` VASP presets. They match `DefaultSetGGA`, `DefaultSetMetaGGA`, and `DefaultSetHybrid` except for using `setups_vasp_recommended_oct2026`, ENCUT = 650 eV, EDIFF = 1e-6, Gamma-centered k-points, and D4 dispersion
 
-### Changed
-
-- BREAKING: Direct `Vasp` calculator calls now use `DefaultSetGGA` by default. Pass `preset=None` or set `VASP_PRESET` to `None` for no preset
+- Added a `VASP_PRESET` setting, defaulting to `DefaultSetGGA`, for the core and MD VASP recipes. Explicit presets take priority, including the specialized slab and QMOF presets, and passing `preset=None` disables the preset. Direct `Vasp` calculator calls default to `preset=None`.
 
 ### Removed
 

@@ -31,13 +31,6 @@ LOGGER = getLogger(__name__)
 LOGGER.propagate = True
 
 
-@pytest.fixture(autouse=True)
-def no_default_preset():
-    # Keep tests of individual calculator flags independent of preset values.
-    with change_settings({"VASP_PRESET": None}):
-        yield
-
-
 @pytest.fixture
 def atoms_mag():
     return read(FILE_DIR / "OUTCAR_mag.gz")
@@ -55,22 +48,22 @@ def atoms_nospin():
 
 def test_vanilla_vasp():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset=None, incar_copilot_mode="off")
+    with change_settings({"VASP_PRESET": "DefaultSetGGA"}):
+        calc = Vasp(atoms, incar_copilot_mode="off")
+    assert calc.preset is None
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset=None, use_custodian=False, incar_copilot_mode="off")
+    calc = Vasp(atoms, use_custodian=False, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
-    calc = Vasp(
-        atoms, preset=None, use_custodian=False, kspacing=0.5, incar_copilot_mode="off"
-    )
+    calc = Vasp(atoms, use_custodian=False, kspacing=0.5, incar_copilot_mode="off")
     assert calc.parameters.get("gamma") is None
     assert calc.kpts is None
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset=None, encut=None, incar_copilot_mode="off")
+    calc = Vasp(atoms, encut=None, incar_copilot_mode="off")
     assert calc.asdict() == Vasp_().asdict()
 
 
@@ -114,36 +107,6 @@ def test_presets2():
     assert calc.parameters["algo"] == "fast"
     assert calc.parameters["ediff"] == 1e-5
     assert calc.parameters["encut"] == 520
-
-
-@pytest.mark.parametrize("preset_type", ["name", "str", "path"])
-def test_preset_setting(preset_type, tmp_path):
-    atoms = bulk("Co") * (2, 2, 1)
-    atoms[-1].symbol = "Fe"
-
-    with change_settings({"VASP_PRESET": "DefaultSetGGA"}):
-        calc = Vasp(atoms)
-        assert calc.preset == "DefaultSetGGA"
-        assert calc.parameters["encut"] == 520
-
-    preset = "DefaultSetGGA"
-    if preset_type != "name":
-        preset = tmp_path / "CustomPreset.yaml"
-        preset.write_text("inputs:\n  encut: 520\n")
-        if preset_type == "str":
-            preset = str(preset)
-
-    with change_settings({"VASP_PRESET": preset}):
-        calc = Vasp(atoms)
-        assert calc.preset == preset
-        assert calc.parameters["encut"] == 520
-
-        calc = Vasp(atoms, preset="SlabSetPBE")
-        assert calc.preset == "SlabSetPBE"
-
-        calc = Vasp(atoms, preset=None)
-        assert calc.preset is None
-        assert "encut" not in calc.parameters
 
 
 def test_presets_mp():
@@ -1051,6 +1014,20 @@ def test_algo():
     assert calc.parameters["algo"] == "all"
 
 
+@pytest.mark.parametrize("mode", ["critical", "standard", "aggressive"])
+@pytest.mark.parametrize("algo", ["all", "conjugate", "damped", "normal"])
+def test_hybrid_supported_algos(algo, mode):
+    calc = Vasp(bulk("Cu"), xc="hse06", algo=algo, incar_copilot_mode=mode)
+    assert calc.parameters["algo"] == algo
+
+
+@pytest.mark.parametrize("mode", ["critical", "standard", "aggressive"])
+@pytest.mark.parametrize("algo", ["fast", "veryfast"])
+def test_hybrid_unsupported_algos_default_to_normal(algo, mode):
+    calc = Vasp(bulk("Cu"), xc="hse06", algo=algo, incar_copilot_mode=mode)
+    assert calc.parameters["algo"] == "normal"
+
+
 def test_algo_aggressive():
     with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")
@@ -1064,8 +1041,13 @@ def test_algo_aggressive():
         calc = Vasp(atoms, xc="m06l", algo="fast")
         assert calc.parameters["algo"] == "all"
 
-        calc = Vasp(atoms, xc="hse06", algo="all")
-        assert calc.parameters["algo"] == "normal"
+        for algo in ("all", "conjugate", "damped", "normal"):
+            calc = Vasp(atoms, xc="hse06", algo=algo)
+            assert calc.parameters["algo"] == algo
+
+        for algo in ("fast", "veryfast"):
+            calc = Vasp(atoms, xc="hse06", algo=algo)
+            assert calc.parameters["algo"] == "normal"
 
 
 def test_kpar():
@@ -1385,6 +1367,13 @@ def test_setups():
     atoms = bulk("Cu")
     calc = Vasp(atoms, setups="setups_vasp_recommended.yaml", preset="DefaultSetGGA")
     assert calc.parameters["setups"]["Cu"] == ""
+
+    atoms = bulk("Cu")
+    calc = Vasp(
+        atoms, setups="setups_vasp_recommended_oct2026.yaml", preset="DefaultSetGGA"
+    )
+    assert calc.parameters["setups"]["Cu"] == "_pv"
+    assert calc.parameters["setups"]["Yb"] == "_3"
 
     atoms = bulk("Cu")
     calc = Vasp(atoms, setups="minimal", preset="DefaultSetGGA")
@@ -1917,3 +1906,87 @@ def test_qmof_magmoms():
     assert not calc.input_atoms.get_initial_magnetic_moments().any()
     assert "magmom" not in calc.parameters
     assert calc.parameters.get("ispin") is None
+
+
+@pytest.mark.parametrize(
+    ("preset", "default"),
+    [
+        ("RosenSetGGAOct2026", "DefaultSetGGA"),
+        ("RosenSetMetaGGAOct2026", "DefaultSetMetaGGA"),
+        ("RosenSetHybridOct2026", "DefaultSetHybrid"),
+    ],
+)
+def test_rosen_oct2026_presets(preset, default):
+    atoms = bulk("Cu")
+    calc = Vasp(atoms, preset=preset)
+    default_calc = Vasp(atoms, preset=default)
+    assert calc.parameters["ediff"] == 1e-6
+    assert default_calc.parameters["ediff"] == 1e-5
+    assert calc.parameters["encut"] == 650
+    assert calc.parameters["gamma"] is True
+    assert calc.parameters["ivdw"] == 13
+    assert calc.parameters["setups"]["Cu"] == "_pv"
+    assert calc.parameters["setups"]["Yb"] == "_3"
+    excluded = (
+        "ediff",
+        "encut",
+        "gamma",
+        "ivdw",
+        "kpts",
+        "setups",
+        "vdw_a1",
+        "vdw_a2",
+        "vdw_s6",
+        "vdw_s8",
+    )
+    params = {k: v for k, v in calc.parameters.items() if k not in excluded}
+    default_params = {
+        k: v for k, v in default_calc.parameters.items() if k not in excluded
+    }
+    assert params == default_params
+
+
+def test_rosen_oct2026_setups():
+    preset_dir = Path(presets.__file__).parent
+    old = load_vasp_yaml_calc(preset_dir / "setups_vasp_recommended.yaml")["inputs"]
+    new = load_vasp_yaml_calc(preset_dir / "setups_vasp_recommended_oct2026.yaml")[
+        "inputs"
+    ]
+    assert new == old | {
+        "setups": old["setups"]
+        | {
+            "Be": "_sv",
+            "Mg": "_pv",
+            "Fe": "_pv",
+            "Co": "_pv",
+            "Ni": "_pv",
+            "Cu": "_pv",
+            "Re": "_pv",
+            "Os": "_pv",
+            "Eu": "_3",
+            "Yb": "_3",
+        }
+    }
+    assert new["pp"] == "pbe"
+    assert new["pp_version"] == "64"
+    assert new["setups"]["Cf"] == ""
+
+
+@pytest.mark.parametrize(
+    "preset", ["RosenSetGGAOct2026", "RosenSetMetaGGAOct2026", "RosenSetHybridOct2026"]
+)
+def test_rosen_oct2026_gamma_and_overrides(preset):
+    # bcc Fe exposes the centering difference hidden by the fcc Cu test.
+    atoms = bulk("Fe")
+    calc = Vasp(atoms, preset=preset)
+    assert calc.parameters["gamma"] is True
+    assert len(calc.kpts) == 3
+    assert all(k > 0 for k in calc.kpts)
+
+    calc = Vasp(atoms, preset=preset, ediff=1e-8, encut=800, kpts=[1, 1, 1])
+    assert calc.parameters["ediff"] == 1e-8
+    assert calc.parameters["encut"] == 800
+    assert calc.kpts == [1, 1, 1]
+
+    calc = Vasp(atoms, preset=preset, gamma=False)
+    assert calc.parameters["gamma"] is False

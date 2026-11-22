@@ -256,9 +256,13 @@ def get_param_swaps(
             )
 
         if calc.parameters.get("lhfcalc", False) and (
-            calc.parameters.get("algo", "normal").lower() != "normal"
+            calc.parameters.get("algo", "normal").lower()
+            not in {"all", "conjugate", "damped", "normal"}
         ):
-            recommend("ALGO=Normal is required for hybrid calculations.", algo="normal")
+            recommend(
+                "The selected ALGO is not supported for hybrid calculations.",
+                algo="normal",
+            )
 
         if (
             calc.parameters.get("ncore", 1) > 1

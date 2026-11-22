@@ -58,7 +58,7 @@ class Vasp(Vasp_):
     def __init__(
         self,
         input_atoms: Atoms,
-        preset: str | Path | DefaultSetting | None = QuaccDefault,
+        preset: str | Path | None = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
         custodian_handlers: list[str] | None = None,
         incar_copilot_mode: Literal["off", "critical", "standard", "aggressive"]
@@ -83,10 +83,8 @@ class Vasp(Vasp_):
             for the calculator. If `preset` has a .yml or .yaml file extension, the
             path to this file will be used directly. If `preset` is a string without
             an extension, the corresponding bundled VASP preset will be used.
-            Any user-supplied calculator **kwargs will
-            override any corresponding preset values. Defaults to the
-            `VASP_PRESET` setting (`DefaultSetGGA` unless changed). Pass `None`
-            to disable the preset.
+            Any user-supplied calculator **kwargs will override any corresponding
+            preset values. Defaults to `None`, which uses no preset.
         use_custodian
             Whether to use Custodian to run VASP. Default is True in settings.
         custodian_handlers
@@ -135,9 +133,6 @@ class Vasp(Vasp_):
         self._settings = get_settings()
 
         # Set defaults
-        preset = (
-            self._settings.VASP_PRESET if isinstance(preset, DefaultSetting) else preset
-        )
         use_custodian = (
             self._settings.VASP_USE_CUSTODIAN
             if isinstance(use_custodian, DefaultSetting)

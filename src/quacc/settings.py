@@ -343,10 +343,11 @@ class QuaccSettings(BaseSettings):
         "DefaultSetGGA",
         description=(
             """
-            Default preset to use for the VASP calculator when one is not
-            specified. This can be the name of a bundled VASP preset
-            (without the extension) or the path to a YAML file. If None, no
-            preset is used. Recipes that set their own preset are unaffected.
+            Default preset for the core and MD VASP recipes when their preset
+            argument is omitted. Use a bundled preset name (without the
+            extension), a path to a YAML file, or None to disable the recipe
+            default. Explicit recipe presets take precedence. Direct Vasp
+            calculator calls default to preset=None.
             """
         ),
     )

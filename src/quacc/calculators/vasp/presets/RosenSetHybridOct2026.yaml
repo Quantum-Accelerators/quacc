@@ -1,0 +1,7 @@
+# Last modified: 11-20-2026
+# HSE06-D4
+inputs:
+  algo: normal
+  ivdw: 13
+  xc: HSE06
+parent: RosenSetGGAOct2026

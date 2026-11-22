@@ -119,15 +119,29 @@ def test_mp_aloe_static_job(patch_metallic_taskdoc):
     }
 
 
-@pytest.mark.parametrize("preset", ["QMOFSet", None])
-def test_static_job_preset_setting(patch_metallic_taskdoc, preset):
+@pytest.mark.parametrize("preset_type", ["name", "str", "path", "none"])
+def test_static_job_preset_setting(patch_metallic_taskdoc, preset_type, tmp_path):
+    if preset_type in ("str", "path"):
+        preset_path = tmp_path / "CustomPreset.yaml"
+        preset_path.write_text("inputs:\n  encut: 540\n")
+        preset = str(preset_path) if preset_type == "str" else preset_path
+        encut = 540
+    elif preset_type == "name":
+        preset = "QMOFSet"
+        encut = 520
+    else:
+        preset = encut = None
+
     with change_settings({"VASP_PRESET": preset}):
         output = static_job(bulk("Al"), xc="pbe", pp_version="64")
-        assert output["parameters"].get("encut") == (520 if preset else None)
+        assert output["parameters"].get("encut") == encut
         assert output["parameters"].get("efermi") is None
 
         output = static_job(bulk("Al"), preset="DefaultSetGGA")
         assert output["parameters"]["efermi"] == "midgap"
+
+        output = static_job(bulk("Al"), preset=None, xc="pbe", pp_version="64")
+        assert "encut" not in output["parameters"]
 
 
 def test_static_job(patch_metallic_taskdoc):

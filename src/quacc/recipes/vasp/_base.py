@@ -9,6 +9,7 @@ from quacc.calculators.vasp import Vasp
 from quacc.runners.ase import Runner
 from quacc.schemas.ase import VibSummarize
 from quacc.schemas.vasp import VaspSummarize
+from quacc.types import DefaultSetting
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
@@ -19,7 +20,6 @@ if TYPE_CHECKING:
 
     from quacc.types import (
         CopyFiles,
-        DefaultSetting,
         OptParams,
         VaspASEOptSchema,
         VaspSchema,
@@ -49,6 +49,10 @@ def get_mp_kspacing_handlers() -> list[str]:
     return handlers
 
 
+def _resolve_preset(preset: str | Path | DefaultSetting | None) -> str | Path | None:
+    return get_settings().VASP_PRESET if isinstance(preset, DefaultSetting) else preset
+
+
 def run_and_summarize(
     atoms: Atoms,
     preset: str | Path | DefaultSetting | None = None,
@@ -66,7 +70,7 @@ def run_and_summarize(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Pass `QuaccDefault` to use `VASP_PRESET`.
     calc_defaults
         Default parameters for the recipe.
     calc_swaps
@@ -88,7 +92,7 @@ def run_and_summarize(
     """
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    calc = Vasp(atoms, preset=preset, **calc_flags)
+    calc = Vasp(atoms, preset=_resolve_preset(preset), **calc_flags)
     final_atoms = Runner(atoms, calc, copy_files=copy_files).run_calc()
 
     return VaspSummarize(
@@ -115,7 +119,7 @@ def run_and_summarize_opt(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Pass `QuaccDefault` to use `VASP_PRESET`.
     calc_defaults
         Default parameters for the recipe.
     calc_swaps
@@ -142,7 +146,7 @@ def run_and_summarize_opt(
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
     opt_flags = recursive_dict_merge(opt_defaults, opt_params)
 
-    calc = Vasp(atoms, preset=preset, **calc_flags)
+    calc = Vasp(atoms, preset=_resolve_preset(preset), **calc_flags)
     dyn = Runner(atoms, calc, copy_files=copy_files).run_opt(**opt_flags)
 
     return VaspSummarize(
@@ -179,7 +183,7 @@ def run_and_summarize_vib_and_thermo(
     thermo_method
         Method to use for thermochemistry. Options are "harmonic" or "ideal_gas".
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Pass `QuaccDefault` to use `VASP_PRESET`.
     calc_defaults
         Default parameters for the recipe.
     calc_swaps
@@ -203,7 +207,7 @@ def run_and_summarize_vib_and_thermo(
     # Set defaults
     calc_flags = recursive_dict_merge(calc_defaults, calc_swaps)
 
-    calc = Vasp(atoms, preset=preset, **calc_flags)
+    calc = Vasp(atoms, preset=_resolve_preset(preset), **calc_flags)
     vib = Runner(atoms, calc, copy_files=copy_files).run_vib(vib_kwargs=vib_kwargs)
     return VibSummarize(vib, additional_fields=additional_fields).vib_and_thermo(
         thermo_method, energy=energy, temperature=temperature, pressure=pressure
