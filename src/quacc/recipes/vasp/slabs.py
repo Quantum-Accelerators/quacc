@@ -45,8 +45,8 @@ def static_job(
         the a, b, and c axes, used to build the k-point mesh (see
         `length_densities` in [quacc.utils.kpts.convert_pmg_kpts][]). The default
         of 1 along c assumes the vacuum is along the c axis. Set to `None` to use
-        the k-points from the preset instead. Ignored if `kpts`, `kspacing`, or
-        `pmg_kpts` is passed in `calc_kwargs`.
+        the k-points from the preset instead. Ignored if `kpts` or `kspacing` is
+        passed in `calc_kwargs`.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -68,7 +68,10 @@ def static_job(
         "lwave": True,
         "nedos": 3001,
         "nsw": 0,
-    } | _get_kpts_defaults(kpts_length_densities, calc_kwargs)
+        "pmg_kpts": {"length_densities": kpts_length_densities}
+        if kpts_length_densities
+        else None,
+    }
     return run_and_summarize(
         atoms,
         preset=preset,
@@ -106,8 +109,8 @@ def relax_job(
         the a, b, and c axes, used to build the k-point mesh (see
         `length_densities` in [quacc.utils.kpts.convert_pmg_kpts][]). The default
         of 1 along c assumes the vacuum is along the c axis. Set to `None` to use
-        the k-points from the preset instead. Ignored if `kpts`, `kspacing`, or
-        `pmg_kpts` is passed in `calc_kwargs`.
+        the k-points from the preset instead. Ignored if `kpts` or `kspacing` is
+        passed in `calc_kwargs`.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -129,8 +132,11 @@ def relax_job(
         "lcharg": False,
         "lwave": False,
         "nsw": 200,
+        "pmg_kpts": {"length_densities": kpts_length_densities}
+        if kpts_length_densities
+        else None,
         "symprec": 1e-8,
-    } | _get_kpts_defaults(kpts_length_densities, calc_kwargs)
+    }
     return run_and_summarize(
         atoms,
         preset=preset,
@@ -257,32 +263,3 @@ def slab_to_ads_flow(
         static_job=static_job_ if run_static else None,
         make_ads_kwargs=make_ads_kwargs,
     )
-
-
-def _get_kpts_defaults(
-    kpts_length_densities: tuple[float, float, float] | None,
-    calc_kwargs: dict[str, Any],
-) -> dict[str, Any]:
-    """
-    Get the k-point defaults for the slab jobs.
-
-    Parameters
-    ----------
-    kpts_length_densities
-        Number of k-points per inverse Angstrom of lattice-vector length along
-        the a, b, and c axes. If `None`, no k-point defaults are set.
-    calc_kwargs
-        Custom kwargs for the Vasp calculator. If any k-point setting is
-        present, no k-point defaults are set so that the user's choice is used
-        as-is (rather than merged with the defaults).
-
-    Returns
-    -------
-    dict[str, Any]
-        The `pmg_kpts` default, or an empty dictionary.
-    """
-    if kpts_length_densities is None or any(
-        calc_kwargs.get(k) for k in ("kpts", "kspacing", "pmg_kpts")
-    ):
-        return {}
-    return {"pmg_kpts": {"length_densities": list(kpts_length_densities)}}

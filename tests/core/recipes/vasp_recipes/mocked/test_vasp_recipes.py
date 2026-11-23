@@ -464,8 +464,8 @@ def test_slab_kpts_length_densities(patch_metallic_taskdoc, slab_job):
     output = slab_job(atoms, kpts_length_densities=None)
     assert output["parameters"]["kpts"] == _kpts({"kppvol": 100})
 
-    # A user-provided k-point setting is used as-is
-    output = slab_job(atoms, pmg_kpts={"kppa": 1000})
+    # A user-provided k-point scheme replaces the default
+    output = slab_job(atoms, kpts_length_densities=None, pmg_kpts={"kppa": 1000})
     assert output["parameters"]["kpts"] == _kpts({"kppa": 1000})
 
     output = slab_job(atoms, kpts=[3, 3, 1], kpts_length_densities=(25, 25, 25))
