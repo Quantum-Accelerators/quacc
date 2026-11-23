@@ -108,7 +108,7 @@ jobs:
 
       - name: Install conda packages
         if: matrix.wflow_engine == 'dask'
-        run: conda install -c conda-forge qe=7.5 'libgfortran<15'
+        run: conda install -c conda-forge qe=7.6
 
       - name: Install pip packages
         run: |
@@ -213,7 +213,7 @@ jobs:
           activate-environment: quacc-env
 
       - name: Install conda packages
-        run: conda install -c conda-forge qe=7.5 'libgfortran<15'
+        run: conda install -c conda-forge qe=7.6
 
       - name: Install pip packages
         run: |
