@@ -52,6 +52,7 @@ from quacc.recipes.vasp.qmof import qmof_relax_job
 from quacc.recipes.vasp.slabs import bulk_to_slabs_flow, slab_to_ads_flow
 from quacc.recipes.vasp.slabs import relax_job as slab_relax_job
 from quacc.recipes.vasp.slabs import static_job as slab_static_job
+from quacc.utils.kpts import convert_pmg_kpts
 
 has_atomate2 = util.find_spec("atomate2") is not None
 has_fairchem = util.find_spec("fairchem") is not None
@@ -443,6 +444,32 @@ def test_slab_relax_job(patch_metallic_taskdoc):
     assert output["parameters"]["lwave"] is False
     assert output["parameters"]["encut"] == 520
     assert output["parameters"]["nelmin"] == 6
+
+
+@pytest.mark.parametrize("slab_job", [slab_static_job, slab_relax_job])
+def test_slab_kpts_length_densities(patch_metallic_taskdoc, slab_job):
+    atoms = bulk("Al")
+
+    def _kpts(pmg_kpts):
+        return list(convert_pmg_kpts(pmg_kpts, atoms)[0])
+
+    output = slab_job(atoms)
+    assert output["parameters"]["kpts"] == _kpts({"length_densities": [50, 50, 1]})
+    assert output["parameters"]["kpts"][2] == 1
+
+    output = slab_job(atoms, kpts_length_densities=(25, 25, 25))
+    assert output["parameters"]["kpts"] == _kpts({"length_densities": [25, 25, 25]})
+
+    # None falls back to the k-points of the preset (DefaultSetGGA)
+    output = slab_job(atoms, kpts_length_densities=None)
+    assert output["parameters"]["kpts"] == _kpts({"kppvol": 100})
+
+    # A user-provided k-point setting is used as-is
+    output = slab_job(atoms, pmg_kpts={"kppa": 1000})
+    assert output["parameters"]["kpts"] == _kpts({"kppa": 1000})
+
+    output = slab_job(atoms, kpts=[3, 3, 1], kpts_length_densities=(25, 25, 25))
+    assert list(output["parameters"]["kpts"]) == [3, 3, 1]
 
 
 def test_slab_dynamic_jobs(patch_metallic_taskdoc):
