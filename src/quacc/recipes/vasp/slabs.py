@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    preset: str | None = "SlabSetPBE",
+    preset: str | None = "DefaultSetGGA",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
@@ -60,7 +60,11 @@ def static_job(
         "lwave": True,
         "nedos": 3001,
         "nsw": 0,
+        "pmg_kpts": {"length_densities": [50, 50, 1]},
     }
+    if "pmg_kpts" in calc_kwargs:
+        # Don't merge a user-provided k-point scheme with the slab default
+        calc_defaults.pop("pmg_kpts")
     return run_and_summarize(
         atoms,
         preset=preset,
@@ -74,7 +78,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    preset: str | None = "SlabSetPBE",
+    preset: str | None = "DefaultSetGGA",
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
@@ -113,8 +117,12 @@ def relax_job(
         "lcharg": False,
         "lwave": False,
         "nsw": 200,
+        "pmg_kpts": {"length_densities": [50, 50, 1]},
         "symprec": 1e-8,
     }
+    if "pmg_kpts" in calc_kwargs:
+        # Don't merge a user-provided k-point scheme with the slab default
+        calc_defaults.pop("pmg_kpts")
     return run_and_summarize(
         atoms,
         preset=preset,

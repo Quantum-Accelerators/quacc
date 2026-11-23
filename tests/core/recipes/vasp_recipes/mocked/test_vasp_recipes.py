@@ -468,9 +468,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = bulk_to_slabs_flow(
-        atoms,
-        job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
-        run_static=False,
+        atoms, job_params={"relax_job": {"nelmin": 6}}, run_static=False
     )["relax"]
     assert len(outputs) == 4
     assert (
@@ -481,9 +479,9 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert [output["parameters"]["nelmin"] == 6 for output in outputs]
     assert [output["parameters"]["encut"] == 520 for output in outputs]
 
-    outputs = bulk_to_slabs_flow(
-        atoms, job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}}
-    )["static"]
+    outputs = bulk_to_slabs_flow(atoms, job_params={"relax_job": {"nelmin": 6}})[
+        "static"
+    ]
     assert len(outputs) == 4
     assert (
         sorted(output["structure_metadata"]["nsites"] for output in outputs)
@@ -507,10 +505,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert [output["parameters"]["nsw"] == 0 for output in outputs]
 
     outputs = slab_to_ads_flow(
-        atoms,
-        adsorbate,
-        job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
-        run_static=False,
+        atoms, adsorbate, job_params={"relax_job": {"nelmin": 6}}, run_static=False
     )["relax"]
 
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
@@ -519,9 +514,7 @@ def test_slab_dynamic_jobs(patch_metallic_taskdoc):
     assert [output["parameters"]["encut"] == 520 for output in outputs]
 
     outputs = slab_to_ads_flow(
-        atoms,
-        adsorbate,
-        job_params={"relax_job": {"preset": "SlabSetPBE", "nelmin": 6}},
+        atoms, adsorbate, job_params={"relax_job": {"nelmin": 6}}
     )["static"]
 
     assert [output["structure_metadata"]["nsites"] == 82 for output in outputs]
