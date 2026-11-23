@@ -13,8 +13,7 @@ from ase.calculators.vasp import Vasp as Vasp_
 from ase.calculators.vasp import setups as ase_setups
 
 from quacc import QuaccDefault, get_settings
-from quacc.calculators.vasp import presets
-from quacc.calculators.vasp.io import load_vasp_yaml_calc
+from quacc.calculators.vasp.io import load_vasp_yaml_calc, resolve_vasp_yaml_path
 from quacc.calculators.vasp.params import (
     get_param_swaps,
     normalize_params,
@@ -58,7 +57,7 @@ class Vasp(Vasp_):
     def __init__(
         self,
         input_atoms: Atoms,
-        preset: str | Path | None = None,
+        preset: str | Path | DefaultSetting | None = None,
         use_custodian: bool | DefaultSetting = QuaccDefault,
         custodian_handlers: list[str] | None = None,
         incar_copilot_mode: Literal["off", "critical", "standard", "aggressive"]
@@ -80,11 +79,13 @@ class Vasp(Vasp_):
             The input Atoms object to be used for the calculation.
         preset
             A YAML file containing a list of INCAR parameters to use as a "preset"
-            for the calculator. If `preset` has a .yml or .yaml file extension, the
-            path to this file will be used directly. If `preset` is a string without
-            an extension, the corresponding bundled VASP preset will be used.
-            Any user-supplied calculator **kwargs will override any corresponding
-            preset values. Defaults to `None`, which uses no preset.
+            for the calculator. A bare name (e.g. "DefaultSetGGA", with or without
+            a .yaml extension) is first looked up among the bundled presets in
+            `quacc.calculators.vasp.presets`; otherwise it is treated as a path to
+            a YAML file. Pass a `Path` or prefix with "./" to always use a file
+            on disk. Any user-supplied calculator **kwargs will override any corresponding
+            preset values. Pass `QuaccDefault` to use the `VASP_PRESET` setting.
+            Defaults to `None`, which uses no preset.
         use_custodian
             Whether to use Custodian to run VASP. Default is True in settings.
         custodian_handlers
@@ -133,6 +134,9 @@ class Vasp(Vasp_):
         self._settings = get_settings()
 
         # Set defaults
+        preset = (
+            self._settings.VASP_PRESET if isinstance(preset, DefaultSetting) else preset
+        )
         use_custodian = (
             self._settings.VASP_USE_CUSTODIAN
             if isinstance(use_custodian, DefaultSetting)
@@ -258,12 +262,9 @@ class Vasp(Vasp_):
 
         # Get user-defined preset parameters for the calculator
         if self.preset:
-            preset_path = (
-                self.preset
-                if Path(self.preset).suffix in (".yaml", ".yml")
-                else Path(presets.__file__).parent / f"{self.preset}.yaml"
-            )
-            calc_preset_inputs = load_vasp_yaml_calc(preset_path)["inputs"]
+            calc_preset_inputs = load_vasp_yaml_calc(
+                resolve_vasp_yaml_path(self.preset)
+            )["inputs"]
         else:
             calc_preset_inputs = {}
 
@@ -283,7 +284,7 @@ class Vasp(Vasp_):
             and self.user_calc_params["setups"] not in ase_setups.setups_defaults
         ):
             self.user_calc_params["setups"] = load_vasp_yaml_calc(
-                Path(presets.__file__).parent / self.user_calc_params["setups"]
+                resolve_vasp_yaml_path(self.user_calc_params["setups"])
             )["inputs"]["setups"]
 
         # Handle special arguments in the user calc parameters that ASE does not

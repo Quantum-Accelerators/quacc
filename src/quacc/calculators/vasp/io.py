@@ -2,13 +2,71 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
+from quacc.calculators.vasp import presets
 from quacc.utils.files import load_yaml_calc
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from typing import Any
+
+PRESET_DIR = Path(presets.__file__).parent
+
+
+def resolve_vasp_yaml_path(name_or_path: str | Path) -> Path:
+    """
+    Resolve a VASP preset or setups YAML to a file path.
+
+    The lookup order is:
+
+    1. If `name_or_path` is a bare string (no directory component), it is
+       matched against the bundled files in `quacc.calculators.vasp.presets`.
+       The .yaml/.yml extension is optional, so "DefaultSetGGA" and
+       "DefaultSetGGA.yaml" are equivalent.
+    2. Otherwise, or if no bundled file matches, it is treated as a path to a
+       YAML file on disk. Prefix with "./" or pass a `Path` to bypass the
+       bundled lookup.
+
+    Parameters
+    ----------
+    name_or_path
+        The name of a bundled preset or a path to a YAML file.
+
+    Returns
+    -------
+    Path
+        The path to the YAML file.
+
+    Raises
+    ------
+    FileNotFoundError
+        If neither a bundled preset nor an existing file matches.
+    """
+    if isinstance(name_or_path, str) and Path(name_or_path).name == name_or_path:
+        name = Path(name_or_path)
+        candidates = (
+            [name]
+            if name.suffix in (".yaml", ".yml")
+            else [Path(f"{name}.yaml"), Path(f"{name}.yml")]
+        )
+        # Compare against the directory listing so matching is case-sensitive
+        # on every OS (Windows/macOS filesystems are case-insensitive)
+        bundled = {p.name for p in PRESET_DIR.iterdir() if p.is_file()}
+        for candidate in candidates:
+            if candidate.name in bundled:
+                return PRESET_DIR / candidate
+
+    path = Path(name_or_path).expanduser()
+    if path.is_file():
+        return path
+
+    available = sorted(p.stem for p in PRESET_DIR.glob("*.y*ml"))
+    msg = (
+        f"Could not find VASP YAML {str(name_or_path)!r}. It is neither a bundled "
+        f"preset nor an existing file. Bundled options: {', '.join(available)}"
+    )
+    raise FileNotFoundError(msg)
 
 
 def load_vasp_yaml_calc(yaml_path: str | Path) -> dict[str, Any]:
