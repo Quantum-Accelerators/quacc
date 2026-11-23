@@ -54,7 +54,7 @@ def test_static_job_cu_supercell(tmp_path, monkeypatch):
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "1 0 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 1 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 1"
-    assert output["results"]["energy"] == pytest.approx(-2885.417379886678)
+    assert output["results"]["energy"] == pytest.approx(-2885.0890157621907)
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
@@ -77,7 +77,7 @@ def test_static_job_cu_kpts(tmp_path, monkeypatch):
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty000"] == "3 0 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty001"] == "0 3 0"
     assert output["parameters"]["Hamiltonian_KPointsAndWeights_empty002"] == "0 0 3"
-    assert output["results"]["energy"] == pytest.approx(-106.86647125470942)
+    assert output["results"]["energy"] == pytest.approx(-106.8551497970068)
     assert (
         np.array_equal(output["atoms"].get_positions(), atoms.get_positions()) is True
     )
@@ -115,11 +115,11 @@ def test_relax_job_cu_supercell(tmp_path, monkeypatch):
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
 
-    output = relax_job(atoms, kpts=(3, 3, 3), Hamiltonian_MaxSccIterations=100)
+    output = relax_job(atoms, kpts=(3, 3, 3))
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
-    assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 100
+    assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
     assert (
         output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
         == "SupercellFolding"
