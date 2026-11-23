@@ -22,9 +22,9 @@ if TYPE_CHECKING:
 def static_job(
     atoms: Atoms,
     preset: str | None = "DefaultSetGGA",
+    kpts_length_densities: tuple[float, float, float] | None = (50, 50, 1),
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    kpts_length_densities: tuple[float, float, float] | None = (50, 50, 1),
     **calc_kwargs: Any,
 ) -> VaspSchema:
     """
@@ -36,10 +36,6 @@ def static_job(
         Atoms object
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-    additional_fields
-        Additional fields to add to the results dictionary.
     kpts_length_densities
         Number of k-points per inverse Angstrom of lattice-vector length along
         the a, b, and c axes, used to build the k-point mesh (see
@@ -47,6 +43,10 @@ def static_job(
         of 1 along c assumes the vacuum is along the c axis. Set to `None` to use
         the k-points from the preset instead. Ignored if `kpts` or `kspacing` is
         passed in `calc_kwargs`.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
@@ -86,9 +86,9 @@ def static_job(
 def relax_job(
     atoms: Atoms,
     preset: str | None = "DefaultSetGGA",
+    kpts_length_densities: tuple[float, float, float] | None = (50, 50, 1),
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
-    kpts_length_densities: tuple[float, float, float] | None = (50, 50, 1),
     **calc_kwargs: Any,
 ) -> VaspSchema:
     """
@@ -100,10 +100,6 @@ def relax_job(
         Atoms object
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
-    copy_files
-        Files to copy (and decompress) from source to the runtime directory.
-    additional_fields
-        Additional fields to add to the results dictionary.
     kpts_length_densities
         Number of k-points per inverse Angstrom of lattice-vector length along
         the a, b, and c axes, used to build the k-point mesh (see
@@ -111,6 +107,10 @@ def relax_job(
         of 1 along c assumes the vacuum is along the c axis. Set to `None` to use
         the k-points from the preset instead. Ignored if `kpts` or `kspacing` is
         passed in `calc_kwargs`.
+    copy_files
+        Files to copy (and decompress) from source to the runtime directory.
+    additional_fields
+        Additional fields to add to the results dictionary.
     **calc_kwargs
         Custom kwargs for the Vasp calculator. Set a value to
         `None` to remove a pre-existing key entirely. For a list of available
