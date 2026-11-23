@@ -115,11 +115,11 @@ def test_relax_job_cu_supercell(tmp_path, monkeypatch):
     atoms = bulk("Cu") * (2, 1, 1)
     atoms[0].position += 0.1
 
-    output = relax_job(atoms, kpts=(3, 3, 3), Hamiltonian_MaxSccIterations=100)
+    output = relax_job(atoms, kpts=(3, 3, 3))
     assert output["structure_metadata"]["nsites"] == len(atoms)
     assert output["parameters"]["Hamiltonian_"] == "xTB"
     assert output["parameters"]["Hamiltonian_Method"] == "GFN2-xTB"
-    assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 100
+    assert output["parameters"]["Hamiltonian_MaxSccIterations"] == 200
     assert (
         output["parameters"]["Hamiltonian_KPointsAndWeights_"].strip()
         == "SupercellFolding"
