@@ -31,7 +31,8 @@ def aqcat25_static_job(
     fairchem implementation: max(1, round(40 / L)) in each in-plane direction,
     where L is the largest absolute Cartesian component of that cell vector
     in angstroms, and one k-point along the third cell vector (vacuum).
-    Override this sampling with `kpts` or `kspacing` in `calc_kwargs`.
+    Override this sampling with `kpts` in `calc_kwargs`, or use `kspacing`
+    together with `kpts=None`.
 
     For spin-polarized systems, initial magnetic moments are chosen in this
     order: explicit `magmom` list > `elemental_magmoms` overrides > AQCat25

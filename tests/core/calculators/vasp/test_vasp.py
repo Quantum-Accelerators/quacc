@@ -706,6 +706,22 @@ def test_kspacing():
     assert calc.parameters.get("kgamma") is None
 
 
+def test_kpts_and_kspacing_conflict():
+    atoms = bulk("Cu")
+    with pytest.raises(ValueError, match="Cannot specify both `kpts` and `kspacing`"):
+        Vasp(atoms, kpts=[2, 2, 2], kspacing=0.1)
+
+    with pytest.raises(
+        ValueError, match="Cannot specify both `kpts_opt` and `kspacing_opt`"
+    ):
+        Vasp(atoms, kpts_opt=[2, 2, 2], kspacing_opt=0.1)
+
+    # A user-specified k-point grid overrides the preset's, so there is no conflict
+    calc = Vasp(atoms, kpts=[2, 2, 2], preset="RosenSetPBE")
+    assert calc.kpts == [2, 2, 2]
+    assert calc.parameters.get("kspacing") is None
+
+
 def test_kspacing_aggressive():
     with change_settings({"VASP_INCAR_COPILOT_MODE": "aggressive"}):
         atoms = bulk("Cu")

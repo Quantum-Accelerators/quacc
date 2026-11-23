@@ -275,6 +275,19 @@ class Vasp(Vasp_):
         # case of duplicates.
         self.user_calc_params = calc_preset_inputs | self.kwargs
 
+        # Only one way of specifying each k-point grid is allowed
+        for kpts_key, kspacing_key in (
+            ("kpts", "kspacing"),
+            ("kpts_opt", "kspacing_opt"),
+        ):
+            if (
+                self.user_calc_params.get(kpts_key) is not None
+                and self.user_calc_params.get(kspacing_key) is not None
+            ):
+                raise ValueError(
+                    f"Cannot specify both `{kpts_key}` and `{kspacing_key}`."
+                )
+
         # Allow the user to use setups='mysetups.yaml' to load in a custom
         # setups from a YAML file
         if (

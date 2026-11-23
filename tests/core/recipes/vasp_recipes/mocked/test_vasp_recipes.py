@@ -2132,7 +2132,9 @@ def test_aqcat25_kspacing_override(monkeypatch, tmp_path):
         "quacc.recipes.vasp.aqcat.run_and_summarize", capture_calculator
     )
     atoms = bulk("Si")
-    calc = aqcat25_static_job(atoms, kspacing=0.2)
+    with pytest.raises(ValueError, match="Cannot specify both `kpts` and `kspacing`"):
+        aqcat25_static_job(atoms, kspacing=0.2)
+    calc = aqcat25_static_job(atoms, kspacing=0.2, kpts=None)
     assert calc.float_params["kspacing"] == 0.2
     # KSPACING in the INCAR takes precedence, so ASE writes no KPOINTS file.
     calc.write_kpoints(atoms=atoms, directory=tmp_path)
