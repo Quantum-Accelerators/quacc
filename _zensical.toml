@@ -42,6 +42,7 @@ nav = [
             "user/db/basics.md"
         ] },
         { "Additional Recipe Details" = [
+            "user/recipes/espresso_phonons.md",
             "user/miscellaneous/torchsim.md"
         ] }
     ] },

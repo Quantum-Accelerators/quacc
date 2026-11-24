@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from logging import getLogger
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -13,10 +14,169 @@ if TYPE_CHECKING:
     from typing import Any
 
     from ase.atoms import Atoms
+    from numpy.typing import ArrayLike
 
     from quacc.types import SourceDirectory
 
 LOGGER = getLogger(__name__)
+
+
+def matdyn_qpoint_cards(qpts: ArrayLike, q_in_band_form: bool = False) -> list[str]:
+    """Format matdyn q-points for ASE's ``additional_cards`` writer.
+
+    Explicit points have three columns. Band-form points have a fourth column
+    containing QE's interpolation count: ``n`` intervals to the next endpoint,
+    or zero for a discontinuity. QE ignores the last endpoint's count.
+    """
+    points = np.asarray(qpts, dtype=float)
+    ncols = 4 if q_in_band_form else 3
+    if points.ndim != 2 or points.shape[1] != ncols or len(points) == 0:
+        raise ValueError(f"matdyn qpts must be a nonempty (n, {ncols}) array.")
+    if not np.isfinite(points).all():
+        raise ValueError("matdyn qpts must contain only finite values.")
+    if q_in_band_form:
+        counts = points[:, 3]
+        if np.any(counts < 0) or np.any(counts != np.floor(counts)):
+            raise ValueError(
+                "matdyn interpolation counts must be nonnegative integers."
+            )
+
+    cards = [str(len(points))]
+    for point in points:
+        line = " ".join(f"{value:.16g}" for value in point[:3])
+        if q_in_band_form:
+            line += f" {int(point[3])}"
+        cards.append(line)
+    return cards
+
+
+def read_ifc_has_zstar(filename: str | Path) -> bool | None:
+    """Read whether q2r.x force constants contain the dielectric tensor and Z*.
+
+    This is QE's ``has_zstar`` flag. q2r.x sets it when the Gamma dynamical
+    matrix includes the dielectric tensor and Born effective charges, which
+    ph.x computes for insulators. matdyn.x then adds the dipole-dipole term
+    and, at Gamma, the non-analytic (LO-TO) term. Only text files are read.
+    None is returned for XML, missing, or unrecognized files: matdyn.x has
+    already read the file, so its results remain valid without this flag.
+    """
+    path = Path(filename)
+    if path.suffix == ".xml" or not path.is_file():
+        return None
+    with path.open() as fd:
+        try:
+            # The first record starts with ntyp, nat, ibrav, and celldm(1:6).
+            ntyp, nat, ibrav = (int(value) for value in fd.readline().split()[:3])
+            # Skip the lattice vectors (ibrav=0 only), species, and positions.
+            for _ in range(ntyp + nat + (3 if ibrav == 0 else 0)):
+                fd.readline()
+            flag = fd.readline().split()[0].strip(".").upper()[:1]
+        except (ValueError, IndexError):
+            flag = ""
+    if flag not in ("T", "F"):
+        LOGGER.warning(f"Could not read has_zstar from the header of {filename}.")
+        return None
+    return flag == "T"
+
+
+def read_matdyn_freq(filename: str | Path) -> dict[str, Any]:
+    """Read matdyn frequencies and, if present, the companion ``.gp`` table.
+
+    Frequencies retain QE's mode and q-point ordering and signs, in cm^-1.
+    The ``&plot`` file stores Cartesian q-points in units of 2pi/alat, even
+    when the input is fractional. Distances are read only from ``.gp``; QE's
+    cumulative distances include jumps between disconnected path segments.
+    If only ``.gp`` exists, q-point coordinates are unavailable and omitted.
+    """
+    filename = Path(filename)
+    results: dict[str, Any] = {}
+    if filename.is_file():
+        content = filename.read_text()
+        # ASE's namelist reader includes the section token in the first inline
+        # assignment key ("&plot nbnd"), so read QE's compact header directly.
+        header = re.match(r"\s*&plot\b([^/]+)/", content, re.IGNORECASE)
+        if header is None:
+            raise ValueError(f"Invalid matdyn frequency header in {filename}.")
+        dimensions = {
+            key.lower(): int(value)
+            for key, value in re.findall(
+                r"\b(nbnd|nks)\s*=\s*([+-]?\d+)\b", header[1], re.IGNORECASE
+            )
+        }
+        try:
+            nbnd, nks = dimensions["nbnd"], dimensions["nks"]
+        except KeyError as exc:
+            raise ValueError(f"Invalid matdyn frequency header in {filename}.") from exc
+        if nbnd <= 0 or nks <= 0:
+            raise ValueError(f"Invalid matdyn frequency dimensions in {filename}.")
+
+        qpoints = np.empty((nks, 3))
+        frequencies = np.empty((nks, nbnd))
+        records = iter(
+            line for line in content[header.end() :].splitlines() if line.strip()
+        )
+        try:
+            for iq in range(nks):
+                point = _matdyn_numbers(next(records))
+                # QE versions write either three coordinates or an additional
+                # weight/path coordinate. The latter is not a fractional q-point.
+                if len(point) not in (3, 4):
+                    raise ValueError("Expected three matdyn q-point coordinates.")
+                qpoints[iq] = point[:3]
+                modes: list[float] = []
+                while len(modes) < nbnd:
+                    modes.extend(_matdyn_numbers(next(records)))
+                if len(modes) != nbnd:
+                    raise ValueError("Incorrect number of matdyn frequencies.")
+                frequencies[iq] = modes
+        except StopIteration as exc:
+            raise ValueError(
+                f"Incomplete matdyn frequency data in {filename}."
+            ) from exc
+        if any(line.strip() for line in records):
+            raise ValueError(f"Unexpected extra matdyn frequency data in {filename}.")
+        results.update(
+            qpoints=qpoints,
+            qpoint_coordinate_system="cartesian",
+            qpoint_units="2pi/alat",
+            frequencies=frequencies,
+        )
+
+    gp_file = filename.with_name(filename.name + ".gp")
+    if gp_file.is_file():
+        rows = [
+            _matdyn_numbers(line)
+            for line in gp_file.read_text().splitlines()
+            if line.strip() and not line.lstrip().startswith("#")
+        ]
+        try:
+            table = np.asarray(rows, dtype=float)
+        except ValueError as exc:
+            raise ValueError(f"Inconsistent matdyn .gp rows in {gp_file}.") from exc
+        if table.ndim != 2 or table.shape[1] < 2:
+            raise ValueError(f"Invalid matdyn .gp table in {gp_file}.")
+        if "frequencies" in results and (
+            table[:, 1:].shape != results["frequencies"].shape
+            or not np.allclose(table[:, 1:], results["frequencies"], rtol=0, atol=1e-4)
+        ):
+            raise ValueError(f"matdyn frequency and .gp files disagree: {filename}.")
+        results.setdefault("frequencies", table[:, 1:])
+        results.update(distances=table[:, 0], distance_units="2pi/alat")
+
+    if results:
+        results["frequency_units"] = "cm^-1"
+    return results
+
+
+def _matdyn_numbers(line: str) -> list[float]:
+    """Read QE numeric records, including Fortran exponents and adjacent signs."""
+    pattern = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eEdD][+-]?\d+)?"
+    if re.sub(pattern, "", line).strip():
+        raise ValueError(f"Invalid numeric matdyn record: {line!r}")
+    return [
+        float(value.replace("D", "e").replace("d", "e"))
+        for value in re.findall(pattern, line)
+    ]
 
 
 def get_pseudopotential_info(

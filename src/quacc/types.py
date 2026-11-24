@@ -729,6 +729,28 @@ if TYPE_CHECKING:
         q2r_job: RunSchema
         matdyn_job: RunSchema
 
+    class EspressoPhononDispersionData(TypedDict):
+        """Phonon modes on an ordered path in the original SCF reciprocal basis."""
+
+        qpoints: NDArray
+        qpoint_coordinate_system: Literal["fractional"]
+        frequencies: NDArray  # shape (nqpoints, 3 * natoms), including negative modes
+        frequency_units: Literal["cm^-1"]
+        distances: NDArray
+        distance_units: Literal["angstrom^-1"]
+        labels: list[str]  # one label per q-point; empty strings between endpoints
+        tick_indices: list[int]
+        tick_labels: list[str]
+        tick_positions: NDArray
+        segments: list[tuple[int, int]]  # half-open [start, stop) ranges
+        metadata: dict[str, Any]
+
+    class EspressoPhononDispersionSchema(TypedDict):
+        phonon_job: RunSchema
+        q2r_job: RunSchema
+        matdyn_job: RunSchema
+        dispersion: EspressoPhononDispersionData
+
     class NebSchema(TypedDict):
         relax_reactant: OptSchema
         relax_product: OptSchema

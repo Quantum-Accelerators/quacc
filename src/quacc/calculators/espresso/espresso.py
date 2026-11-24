@@ -17,6 +17,7 @@ from ase.io import read, write
 from ase.io.espresso import (
     Namelist,
     read_espresso_ph,
+    read_fortran_namelist,
     write_espresso_ph,
     write_fortran_namelist,
 )
@@ -26,6 +27,9 @@ from quacc import get_settings
 from quacc.calculators.espresso.utils import (
     espresso_prepare_dir,
     get_pseudopotential_info,
+    matdyn_qpoint_cards,
+    read_ifc_has_zstar,
+    read_matdyn_freq,
     remove_conflicting_kpts_kspacing,
 )
 from quacc.utils.dicts import Remove, recursive_dict_merge, remove_dict_entries
@@ -221,6 +225,15 @@ class EspressoTemplate(EspressoTemplate_):
         ``dos_down``, ``pdos_up``, and ``pdos_down`` retain the individual
         channels without changing their signs. Noncollinear output without
         spin-orbit coupling and k-resolved output are not supported.
+
+        For ``matdyn``, ``matdyn_results`` includes ``frequencies`` in cm^-1
+        with shape (nqpoints, nmodes), preserving negative frequencies and QE's
+        ordering. ``qpoints`` are Cartesian in units of 2pi/alat, regardless of
+        the input convention. ``distances`` are available when the companion
+        ``.gp`` file exists, in the same units, including any path jumps.
+        ``has_zstar`` is included when the text force-constant file is present
+        and records whether it contains the dielectric tensor and Born effective
+        charges. ``phonon_dos`` retains the existing DOS table format.
         """
         results = {}
         if self.binary == "pw":
@@ -268,10 +281,27 @@ class EspressoTemplate(EspressoTemplate_):
                 )
             results = {"projwfc_results": projected}
         elif self.binary == "matdyn":
-            fldos = Path(directory, "matdyn.dos")
-            if fldos.exists():
-                phonon_dos = np.loadtxt(fldos)
-                results = {"matdyn_results": {"phonon_dos": phonon_dos}}
+            matdyn_input = {}
+            input_file = Path(directory, self.inputname)
+            if input_file.is_file():
+                with input_file.open() as fd:
+                    matdyn_input = read_fortran_namelist(fd)[0].get("input", {})
+            matdyn_results: dict[str, Any] = {}
+            fldos = Path(directory, matdyn_input.get("fldos", "matdyn.dos"))
+            if fldos.is_file():
+                matdyn_results["phonon_dos"] = np.loadtxt(fldos)
+            flfrq = matdyn_input.get("flfrq", "matdyn.freq")
+            # Keep the DOS results contract: the frequency files on its uniform
+            # mesh are not a dispersion path and were not previously parsed.
+            if not matdyn_input.get("dos", False) and flfrq.strip():
+                matdyn_results.update(read_matdyn_freq(Path(directory, flfrq)))
+                has_zstar = read_ifc_has_zstar(
+                    Path(directory, matdyn_input.get("flfrc", "").strip())
+                )
+                if has_zstar is not None:
+                    matdyn_results["has_zstar"] = has_zstar
+            if matdyn_results:
+                results = {"matdyn_results": matdyn_results}
 
         if "energy" not in results:
             results["energy"] = None
@@ -308,6 +338,13 @@ class EspressoTemplate(EspressoTemplate_):
         outkeys = espresso_prepare_dir(espresso_outdir, self.binary)
 
         input_data = parameters.get("input_data", {})
+        if self.binary == "matdyn":
+            # These output names are defaults, rather than fixed staging names.
+            # Read results from the actual input file so custom names also work
+            # when parsing an existing calculation with a fresh template.
+            for key in ("flfrq", "fldos"):
+                if key in input_data.get("input", {}):
+                    outkeys["input"][key] = input_data["input"][key]
         input_data = recursive_dict_merge(input_data, outkeys, verbose=True)
 
         parameters["input_data"] = input_data
@@ -378,6 +415,21 @@ class EspressoTemplate(EspressoTemplate_):
 
             parameters["input_data"]["inputph"] = input_ph
             parameters["qpts"] = qpts
+
+        elif self.binary == "matdyn" and parameters.get("qpts") is not None:
+            if parameters.get("additional_cards"):
+                raise ValueError("Specify matdyn qpts or additional_cards, not both.")
+            if input_data.get("input", {}).get("dos", False):
+                raise ValueError("matdyn qpts cannot be used with dos=True.")
+            if input_data.get("input", {}).get("readtau", False):
+                raise ValueError("Use additional_cards for matdyn readtau=True.")
+            # Keep the original qpts in calculator parameters and allow repeated
+            # writes without mistaking the generated cards for user-supplied ones.
+            parameters = parameters.copy()
+            parameters["additional_cards"] = matdyn_qpoint_cards(
+                parameters.pop("qpts"),
+                q_in_band_form=input_data.get("input", {}).get("q_in_band_form", False),
+            )
 
         return remove_dict_entries(parameters, remove_trigger=Remove)
 

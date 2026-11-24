@@ -20,12 +20,14 @@ if TYPE_CHECKING:
     from quacc.recipes.common.eos import eos_flow, eos_subflow
     from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
     from quacc.recipes.emt.slabs import bulk_to_slabs_flow
+    from quacc.recipes.espresso.phonons import phonon_dispersion_flow
     from quacc.recipes.vasp.qmof import QMOFRelaxSchema
     from quacc.recipes.vasp.slabs import relax_job, static_job
     from quacc.runners.ase import Runner
     from quacc.schemas.ase import Summarize
     from quacc.types import (
         DynSchema,
+        EspressoPhononDispersionSchema,
         MDParams,
         NebResultSchema,
         OptParams,
@@ -46,6 +48,10 @@ if TYPE_CHECKING:
         vasp_result: VaspSchema,
     ) -> None:
         assert_type(flip_atoms(atoms), Atoms)
+        assert_type(
+            phonon_dispersion_flow(atoms, prev_outdir="scf"),
+            EspressoPhononDispersionSchema,
+        )
         assert_type(flip_atoms(atoms, return_struct=True), Structure)
         assert_type(find_recent_logfile(".", ".log"), Path | None)
         assert_type(Runner(atoms, EMT()).run_calc(), Atoms)
