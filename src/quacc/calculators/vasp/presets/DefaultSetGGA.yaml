@@ -1,4 +1,4 @@
-# Last modified: 11-26-2026
+# Last modified: 08-22-2025
 # PBE-D3(BJ)
 inputs:
   algo: fast
@@ -23,8 +23,7 @@ inputs:
   prec: accurate
   sigma: 0.05
   xc: pbe
-  # Rosen-recommended PAW PBE potentials
-  # Same as VASP-recommended except for Eu_3 and Yb_3
+  # Same as VASP-recommended (pre-Oct2026) except for Eu_3 and Yb_3
   pp: pbe
   pp_version: "64"
   setups:
