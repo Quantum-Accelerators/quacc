@@ -31,7 +31,7 @@ DATA = Path(__file__).parent / "data" / "si_phonon_dispersion"
 
 
 def reference():
-    manifest = json.loads((DATA / "manifest.json").read_text())
+    manifest = json.loads((DATA / "manifest.json").read_text(encoding="utf-8"))
     files = {}
     for name, digest in manifest["output_sha256"].items():
         content = gzip.decompress((DATA / (name + ".gz")).read_bytes())
