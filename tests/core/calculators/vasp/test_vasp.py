@@ -100,7 +100,13 @@ def test_presets_basic(preset):
 def test_presets2():
     atoms = bulk("Co") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    calc = Vasp(atoms, xc="rpbe", preset="SlabSetPBE")
+    calc = Vasp(
+        atoms,
+        xc="rpbe",
+        preset="DefaultSetGGA",
+        auto_dipole=True,
+        pmg_kpts={"length_densities": [50, 50, 1]},
+    )
     assert calc.xc.lower() == "rpbe"
     assert calc.parameters["algo"] == "fast"
     assert calc.parameters["ediff"] == 1e-5
@@ -660,22 +666,45 @@ def test_autodipole():
     assert calc.parameters["idipol"] == 2
     assert np.array_equal(calc.parameters["dipol"], com)
 
-    calc = Vasp(atoms, preset="SlabSetPBE")
+    calc = Vasp(
+        atoms,
+        preset="DefaultSetGGA",
+        auto_dipole=True,
+        pmg_kpts={"length_densities": [50, 50, 1]},
+    )
     assert calc.parameters["ldipol"] is True
     assert calc.parameters["idipol"] == 3
     assert np.array_equal(calc.parameters["dipol"], com)
 
-    calc = Vasp(atoms, preset="SlabSetPBE", idipol=2)
+    calc = Vasp(
+        atoms,
+        preset="DefaultSetGGA",
+        auto_dipole=True,
+        pmg_kpts={"length_densities": [50, 50, 1]},
+        idipol=2,
+    )
     assert calc.parameters["ldipol"] is True
     assert calc.parameters["idipol"] == 2
     assert np.array_equal(calc.parameters["dipol"], com)
 
-    calc = Vasp(atoms, auto_dipole=False, preset="SlabSetPBE", idipol=2)
+    calc = Vasp(
+        atoms,
+        auto_dipole=False,
+        preset="DefaultSetGGA",
+        pmg_kpts={"length_densities": [50, 50, 1]},
+        idipol=2,
+    )
     assert calc.parameters.get("ldipol") is None
     assert calc.parameters["idipol"] == 2
     assert calc.parameters.get("dipol") is None
 
-    calc = Vasp(atoms, auto_dipole=False, preset="SlabSetPBE", idipol=2)
+    calc = Vasp(
+        atoms,
+        auto_dipole=False,
+        preset="DefaultSetGGA",
+        pmg_kpts={"length_densities": [50, 50, 1]},
+        idipol=2,
+    )
     assert calc.parameters.get("ldipol") is None
     assert calc.parameters["idipol"] == 2
     assert calc.parameters.get("dipol") is None
@@ -747,7 +776,12 @@ def test_magmoms(atoms_mag, atoms_nomag, atoms_nospin):
 
     atoms = bulk("Eu") * (2, 2, 1)
     atoms[-1].symbol = "Fe"
-    calc = Vasp(atoms, preset="SlabSetPBE")
+    calc = Vasp(
+        atoms,
+        preset="DefaultSetGGA",
+        auto_dipole=True,
+        pmg_kpts={"length_densities": [50, 50, 1]},
+    )
     atoms.calc = calc
     assert atoms.get_initial_magnetic_moments().tolist() == [7.0] * (len(atoms) - 1) + [
         5.0
@@ -1349,7 +1383,12 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, preset="SlabSetPBE")
+    calc = Vasp(
+        atoms,
+        preset="DefaultSetGGA",
+        auto_dipole=True,
+        pmg_kpts={"length_densities": [50, 50, 1]},
+    )
     assert calc.parameters["setups"]["Ba"] == "_sv"
     assert calc.parameters["setups"]["Cu"] == ""
 
@@ -1363,7 +1402,9 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == "_sv"
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, setups="setups_vasp_recommended.yaml", preset="DefaultSetGGA")
+    calc = Vasp(
+        atoms, setups="setups_vasp_recommended_preoct2026.yaml", preset="DefaultSetGGA"
+    )
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
@@ -1946,7 +1987,9 @@ def test_rosen_oct2026_presets(preset, default):
 
 def test_rosen_oct2026_setups():
     preset_dir = Path(presets.__file__).parent
-    old = load_vasp_yaml_calc(preset_dir / "setups_vasp_recommended.yaml")["inputs"]
+    old = load_vasp_yaml_calc(preset_dir / "setups_vasp_recommended_preoct2026.yaml")[
+        "inputs"
+    ]
     new = load_vasp_yaml_calc(preset_dir / "setups_vasp_recommended_oct2026.yaml")[
         "inputs"
     ]

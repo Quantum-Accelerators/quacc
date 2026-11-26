@@ -8,10 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added Quantum ESPRESSO `phonon_dispersion_flow` to interpolate DFPT phonon dispersions with ph.x, q2r.x, and matdyn.x along automatic or manual paths in the SCF cell's reciprocal basis, with labeled, segmented frequency results and direction-resolved LO–TO limits at Γ
-- `matdyn_job` accepts `qpts` (explicit or band-form) and custom `flfrq`/`fldos` names. For `dos=False`, it now parses the frequency file into `results["matdyn_results"]` and raises an error if that file is malformed. It also reports `has_zstar`, which records whether the text force-constant file contains the dielectric tensor and Born effective charges. Phonon DOS results are unchanged
-- Added a `setups_vasp_recommended_oct2026.yaml` VASP setups preset with the current [VASP-recommended PBE potentials](https://vasp.at/wiki/Recommended_pseudopotentials#Current_recommendation) (potpaw.64, valid since October 2026). The existing `setups_vasp_recommended.yaml` is unchanged
+- Added a `setups_vasp_recommended_oct2026.yaml` VASP setups preset with the current [VASP-recommended PBE potentials](https://vasp.at/wiki/Recommended_pseudopotentials#Current_recommendation) (potpaw.64, valid since October 2026). The previous recommendations are available as `setups_vasp_recommended_preoct2026.yaml`
 - Added `RosenSetGGAOct2026`, `RosenSetMetaGGAOct2026`, and `RosenSetHybridOct2026` VASP presets. They match `DefaultSetGGA`, `DefaultSetMetaGGA`, and `DefaultSetHybrid` except for using `setups_vasp_recommended_oct2026`, ENCUT = 650 eV, EDIFF = 1e-6, Gamma-centered k-points, and D4 dispersion
+- Added a `kpts_length_densities` keyword argument to `quacc.recipes.vasp.slabs.static_job` and `relax_job` to set the k-point density along each lattice vector
+
+### Changed
+
+- Renamed the `setups_vasp_recommended.yaml` VASP setups preset to `setups_vasp_recommended_preoct2026.yaml` to distinguish it from the October 2026 recommendations. Update any direct references to the old name
+
+### Removed
+
+- Removed the `SlabSetPBE` VASP preset. The slab recipes in `quacc.recipes.vasp.slabs` now use `preset="DefaultSetGGA"` and a new `kpts_length_densities` keyword argument (default `(50, 50, 1)`; set to `None` to use the preset's k-points), alongside the existing `auto_dipole=True` default, so their default calculator parameters are unchanged. If you used `preset="SlabSetPBE"` directly, use `preset="DefaultSetGGA", auto_dipole=True, pmg_kpts={"length_densities": [50, 50, 1]}` instead
 
 ## [1.10.0]
 
