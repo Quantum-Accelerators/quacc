@@ -235,6 +235,7 @@ def test_matdyn_gp_only(tmp_path):
     ("content", "message"),
     [
         ("0 0 0\n1 2 3\n", "header"),
+        (" &plot nbnd=3 /\n0 0 0\n1 2 3\n", "header"),
         (" &plot nbnd=0, nks=1 /\n", "dimensions"),
         (" &plot nbnd=3, nks=2 /\n0 0 0\n1 2 3\n", "Incomplete"),
         (" &plot nbnd=3, nks=1 /\n0 0\n1 2 3\n", "coordinates"),
@@ -248,6 +249,20 @@ def test_matdyn_malformed_freq(tmp_path, content, message):
     path.write_text(content)
     with pytest.raises(ValueError, match=message):
         read_matdyn_freq(path)
+
+
+@pytest.mark.parametrize(
+    ("gp_content", "message"),
+    [
+        ("0 1 2\n1 1\n", "Inconsistent"),
+        ("0\n1\n", "Invalid"),
+        ("# no data\n", "Invalid"),
+    ],
+)
+def test_matdyn_malformed_gp(tmp_path, gp_content, message):
+    (tmp_path / "matdyn.freq.gp").write_text(gp_content)
+    with pytest.raises(ValueError, match=message):
+        read_matdyn_freq(tmp_path / "matdyn.freq")
 
 
 @pytest.mark.parametrize("gp_content", ["0 1 2\n", "0 3 2 1\n", "0 1 2 3\n1 1 2 3\n"])

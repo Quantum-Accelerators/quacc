@@ -391,6 +391,35 @@ def test_mismatched_results(shape):
         summarize_phonon_dispersion(path, {}, {}, result)
 
 
+def test_wrong_frequency_units():
+    path = {"matdyn_qpts": np.zeros((1, 3)), "natoms": 1}
+    result = {
+        "results": {
+            "matdyn_results": {
+                "frequencies": np.zeros((1, 3)),
+                "frequency_units": "THz",
+            }
+        }
+    }
+    with pytest.raises(ValueError, match="cm\\^-1"):
+        summarize_phonon_dispersion(path, {}, {}, result)
+
+
+def test_matdyn_qpoint_count_mismatch():
+    path = {"matdyn_qpts": np.zeros((1, 3)), "natoms": 1, "cell": np.eye(3)}
+    result = {
+        "results": {
+            "matdyn_results": {
+                "frequencies": np.zeros((1, 3)),
+                "frequency_units": "cm^-1",
+                "qpoints": np.zeros((2, 3)),
+            }
+        }
+    }
+    with pytest.raises(ValueError, match="do not match the requested path"):
+        summarize_phonon_dispersion(path, {}, {}, result)
+
+
 def test_missing_frequencies():
     with pytest.raises(ValueError, match="did not produce"):
         summarize_phonon_dispersion({}, {}, {}, {"results": {}})

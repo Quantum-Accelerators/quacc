@@ -152,15 +152,14 @@ def _latimer_munro_endpoints(
         atol=1e-8,
     ):
         raise ValueError("The generated path has an inconsistent reciprocal basis.")
-    special_points = {}
-    for label, point in kpath.kpath["kpoints"].items():
-        cartesian = kpath.rec_lattice.get_cartesian_coords(point)
-        fractional = cartesian @ np.linalg.inv(reciprocal)
-        if not np.allclose(fractional @ reciprocal, cartesian, rtol=1e-8, atol=1e-8):
-            raise ValueError(
-                "Could not transform the q-path to the SCF reciprocal basis."
-            )
-        special_points[label] = fractional
+    # Convert through Cartesian coordinates into the SCF reciprocal basis.
+    inverse = np.linalg.inv(reciprocal)
+    special_points = {
+        label: kpath.rec_lattice.get_cartesian_coords(point) @ inverse
+        for label, point in kpath.kpath["kpoints"].items()
+    }
+    if not all(np.isfinite(point).all() for point in special_points.values()):
+        raise ValueError("The generated path contains non-finite special points.")
     endpoints = []
     labels = []
     for branch in kpath.kpath["path"]:

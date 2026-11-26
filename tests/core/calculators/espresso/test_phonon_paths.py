@@ -8,9 +8,11 @@ from ase import Atoms
 from ase.build import bulk
 from ase.spacegroup import crystal
 from numpy.testing import assert_allclose, assert_array_equal
+from pymatgen.core import Lattice, Structure
 from pymatgen.io.ase import AseAtomsAdaptor
 from pymatgen.symmetry.bandstructure import HighSymmKpath
 
+from quacc.calculators.espresso import phonons
 from quacc.calculators.espresso.phonons import prepare_phonon_path
 
 
@@ -325,3 +327,71 @@ def test_invalid_manual_path(points, labels, starts, message):
 def test_invalid_density(density):
     with pytest.raises(ValueError, match="line_density"):
         prepare_phonon_path(bulk("Al"), True, density, None, None, None)
+
+
+@pytest.mark.parametrize(
+    "atoms",
+    [Atoms(cell=[2, 3, 4], pbc=True), Atoms("H", cell=[2, 3, 0], pbc=True)],
+    ids=["no-atoms", "two-lattice-vectors"],
+)
+def test_invalid_cell(atoms):
+    with pytest.raises(ValueError, match="three lattice vectors"):
+        prepare_phonon_path(atoms, False, 20, [[0, 0, 0]], None, None)
+
+
+@pytest.mark.parametrize(
+    ("labels", "starts"), [(["G"], None), (None, [0])], ids=["labels", "starts"]
+)
+def test_manual_options_require_qpts(labels, starts):
+    with pytest.raises(ValueError, match="require qpts"):
+        prepare_phonon_path(bulk("Al"), True, 20, None, labels, starts)
+
+
+@pytest.mark.parametrize(
+    "change",
+    [
+        lambda structure: structure.make_supercell([2, 1, 1]),
+        lambda structure: Structure(
+            Lattice(1.1 * structure.lattice.matrix),
+            structure.species,
+            structure.frac_coords,
+        ),
+    ],
+    ids=["atom-count", "volume"],
+)
+def test_reduced_cell_must_match_scf_cell(monkeypatch, change):
+    """The path is generated on the SCF lattice in a reduced basis, never another cell."""
+    monkeypatch.setattr(
+        Structure,
+        "get_reduced_structure",
+        lambda self, reduction_algo: change(self.copy()),
+    )
+    with pytest.raises(ValueError, match="cell volume and atom count"):
+        prepare_phonon_path(bulk("Si"), True, 20, None, None, None)
+
+
+def test_generated_path_basis_must_match_reduced_cell(monkeypatch):
+    """A path generated for another reciprocal lattice is rejected."""
+
+    def strained_kpath(structure, **kwargs):
+        strained = structure.copy()
+        strained.scale_lattice(1.1 * structure.volume)
+        return HighSymmKpath(strained, **kwargs)
+
+    monkeypatch.setattr(phonons, "HighSymmKpath", strained_kpath)
+    with pytest.raises(ValueError, match="inconsistent reciprocal basis"):
+        prepare_phonon_path(bulk("Si"), True, 20, None, None, None)
+
+
+def test_generated_special_points_must_be_finite(monkeypatch):
+    """A non-finite special point from pymatgen is rejected with a clear message."""
+
+    def kpath_with_invalid_point(structure, **kwargs):
+        kpath = HighSymmKpath(structure, **kwargs)
+        label = next(iter(kpath.kpath["kpoints"]))
+        kpath.kpath["kpoints"][label] = np.full(3, np.nan)
+        return kpath
+
+    monkeypatch.setattr(phonons, "HighSymmKpath", kpath_with_invalid_point)
+    with pytest.raises(ValueError, match="non-finite special points"):
+        prepare_phonon_path(bulk("Si"), True, 20, None, None, None)
