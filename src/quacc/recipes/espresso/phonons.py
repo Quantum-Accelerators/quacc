@@ -524,8 +524,10 @@ def phonon_dispersion_flow(
     Generated paths therefore repeat each interior Gamma point, ending one
     segment with the incoming limit and starting the next with the outgoing
     limit. Where Gamma starts a segment after a break, an auxiliary Gamma point
-    is evaluated first and discarded. For manual paths, repeat Gamma to obtain
-    both limits.
+    is evaluated first and discarded. Manual paths are not split at Gamma; to
+    obtain both limits, repeat Gamma and start a new segment at the second copy
+    (a zero count on the first copy for endpoint paths, or its index in
+    segment_starts for explicit points).
     """
     if copy_files is None and prev_outdir is None:
         raise ValueError(

@@ -55,9 +55,9 @@ Without `qpts`, the flow generates pymatgen's Latimer–Munro path, as `bands_fl
 
 ## Manual paths
 
-Supply fractional reciprocal coordinates in the SCF basis through `qpts`. Three-column rows are an explicit ordered point list; the flow adds no intermediate points. Mark disconnected explicit segments with `segment_starts=[0, ...]`, and optionally provide one `qpoint_labels` string per input point, using empty strings for unlabeled points.
+Supply fractional reciprocal coordinates in the SCF basis through `qpts`, in one of the two forms below. Supplying `qpts` takes precedence over automatic path generation; `make_bandpath=False` requires a manual path. In both forms, `qpoint_labels` optionally gives one string per row of `qpts`; use empty strings for unlabeled rows. Labeled rows become the axis ticks.
 
-Four-column rows contain endpoints and QE interpolation counts. A count of `n` adds `n` intervals to the following endpoint, and the last count is ignored. For example, a continuous five-endpoint path with counts `[20, 20, 20, 20, 1]` has 81 output points. A zero count marks a break, retaining both endpoints without interpolating across the gap. Endpoint paths are expanded by the flow before `matdyn.x` runs. Supplying `qpts` takes precedence over automatic path generation; `make_bandpath=False` requires a manual path.
+**Endpoints with interpolation counts (four columns).** Each row is an endpoint followed by a QE interpolation count. A count of `n` adds `n` intervals to the following endpoint, and the last count is ignored. For example, a continuous five-endpoint path with counts `[20, 20, 20, 20, 1]` has 81 output points. A zero count marks a break: both endpoints are kept, and nothing is interpolated across the gap. In this form, breaks are set only by zero counts; `segment_starts` is rejected. The flow expands the endpoints before `matdyn.x` runs, and the interpolated points have empty labels.
 
 ASE gives the special points of a cell in its own reciprocal basis. Take all points from one call: symmetry-equivalent copies chosen by hand need not be neighbors on the zone boundary. A textbook path for the Si example:
 
@@ -65,21 +65,41 @@ ASE gives the special points of a cell in its own reciprocal basis. Take all poi
 special = atoms.cell.bandpath("GXWKGLUWLK,UX", npoints=0).special_points
 route = ["G", "X", "W", "K", "G", "L", "U", "W", "L", "K", "U", "X"]
 counts = [20, 10, 7, 21, 17, 13, 7, 14, 13, 0, 7, 1]  # 0: break between K and U
-qpts = [[*special[point], count] for point, count in zip(route, counts)]
+endpoints = [[*special[point], count] for point, count in zip(route, counts)]
 labels = ["Γ" if point == "G" else point for point in route]
 result = phonon_dispersion_flow(
-    atoms, prev_outdir=scf["dir_name"], qpts=qpts, qpoint_labels=labels
+    atoms, prev_outdir=scf["dir_name"], qpts=endpoints, qpoint_labels=labels
 )
 ```
 
-To evaluate another path without repeating `ph.x`, pass the force constants of a finished run to `matdyn_job`. It returns QE's raw output (Cartesian q-points in `2π/alat`, without labels or segments), does not apply the Gamma handling described below, and needs `asr` set explicitly:
+**Explicit points (three columns).** Each row is evaluated as given, and the flow adds no points. Without `segment_starts`, all points form one connected segment, so consecutive points are joined in plots and counted in `distances`. To break the path, pass `segment_starts`: the row index at which each segment begins, in increasing order and starting with 0. For example, Γ–X and L–Γ as two segments with 20 intervals each:
+
+```python
+import numpy as np
+
+gamma_x = np.linspace(special["G"], special["X"], 21)
+l_gamma = np.linspace(special["L"], special["G"], 21)
+points = np.vstack([gamma_x, l_gamma])
+labels = ["Γ", *[""] * 19, "X", "L", *[""] * 19, "Γ"]
+result = phonon_dispersion_flow(
+    atoms,
+    prev_outdir=scf["dir_name"],
+    qpts=points,
+    qpoint_labels=labels,
+    segment_starts=[0, 21],
+)
+```
+
+**Gamma in manual paths.** In polar insulators, the LO frequencies at Gamma depend on the direction from which q approaches Gamma (see [Sum rules and polar materials](#sum-rules-and-polar-materials)). The flow does not split manual paths at Gamma, so a single interior Gamma point gives only the limit from the incoming direction. To get both limits, repeat Gamma and start a new segment at the second copy. In the endpoint form, give the first copy a count of 0, for example `[..., [0, 0, 0, 0], [0, 0, 0, 20], ...]`; a nonzero count would instead interpolate between the two copies and add more Gamma points. In the explicit form, list Gamma twice and add the index of the second copy to `segment_starts`. Materials without LO-TO splitting, such as Si, do not need this.
+
+To evaluate another path without repeating `ph.x`, pass the force constants of a finished run to `matdyn_job`; the example below reuses the endpoint path above. It returns QE's raw output (Cartesian q-points in `2π/alat`, without labels or segments), does not apply the Gamma handling described below, and needs `asr` set explicitly:
 
 ```python
 from quacc.recipes.espresso.phonons import matdyn_job
 
 matdyn = matdyn_job(
     [{"source": result["q2r_job"]["dir_name"], "filenames": "q2r.fc*"}],
-    qpts=qpts,
+    qpts=endpoints,
     input_data={
         "input": {
             "asr": "crystal",
@@ -136,7 +156,7 @@ In a dispersion calculation, `ph.x` computes the dielectric tensor and Born effe
 
 `metadata` records `loto_disable` and `loto_2d` as passed to `matdyn.x`, and `has_zstar`, which is true when the force constants contain the dielectric tensor and Born effective charges. `has_zstar` is read from text force-constant files and is `None` otherwise. `matdyn.x` applies the LO-TO term at Gamma only when `has_zstar` is true and neither `loto_disable` nor `loto_2d` is set. `loto_disable` changes only the Gamma rows; elsewhere, the dipole-dipole term is still included whenever `has_zstar` is true.
 
-At Gamma, `matdyn.x` takes the direction of the non-analytic term from the preceding q-point, or from the following one when the preceding point is also Gamma. In anisotropic polar crystals the LO frequencies at Gamma depend on this direction. Generated paths therefore repeat every interior Gamma point: one copy ends the incoming segment and the next starts the outgoing segment, at the same distance. Where Gamma starts a segment after a break, the flow evaluates an auxiliary Gamma point first and omits it from `dispersion`, so the outgoing direction is used. Manual paths are evaluated as given, except for this auxiliary point; repeat Gamma to obtain both limits.
+At Gamma, `matdyn.x` takes the direction of the non-analytic term from the preceding q-point, or from the following one when the preceding point is also Gamma. In anisotropic polar crystals the LO frequencies at Gamma depend on this direction. Generated paths therefore repeat every interior Gamma point: one copy ends the incoming segment and the next starts the outgoing segment, at the same distance. Where Gamma starts a segment after a break, the flow evaluates an auxiliary Gamma point first and omits it from `dispersion`, so the outgoing direction is used. Manual paths are evaluated as given, except for this auxiliary point; to obtain both limits, repeat Gamma as described in [Manual paths](#manual-paths).
 
 ## Two-dimensional materials
 
