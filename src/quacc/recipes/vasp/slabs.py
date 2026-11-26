@@ -21,7 +21,8 @@ if TYPE_CHECKING:
 @job
 def static_job(
     atoms: Atoms,
-    preset: str | None = "SlabSetPBE",
+    preset: str | None = "DefaultSetGGA",
+    kpts_length_densities: tuple[float, float, float] | None = (50, 50, 1),
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
@@ -35,6 +36,13 @@ def static_job(
         Atoms object
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
+    kpts_length_densities
+        Number of k-points per inverse Angstrom of lattice-vector length along
+        the a, b, and c axes, used to build the k-point mesh (see
+        `length_densities` in [quacc.utils.kpts.convert_pmg_kpts][]). The default
+        of 1 along c assumes the vacuum is along the c axis. Set to `None` to use
+        the k-points from the preset instead. Ignored if `kpts` or `kspacing` is
+        passed in `calc_kwargs`.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -60,6 +68,9 @@ def static_job(
         "lwave": True,
         "nedos": 3001,
         "nsw": 0,
+        "pmg_kpts": {"length_densities": kpts_length_densities}
+        if kpts_length_densities
+        else None,
     }
     return run_and_summarize(
         atoms,
@@ -74,7 +85,8 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    preset: str | None = "SlabSetPBE",
+    preset: str | None = "DefaultSetGGA",
+    kpts_length_densities: tuple[float, float, float] | None = (50, 50, 1),
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
     **calc_kwargs: Any,
@@ -88,6 +100,13 @@ def relax_job(
         Atoms object
     preset
         Preset to use from `quacc.calculators.vasp.presets`.
+    kpts_length_densities
+        Number of k-points per inverse Angstrom of lattice-vector length along
+        the a, b, and c axes, used to build the k-point mesh (see
+        `length_densities` in [quacc.utils.kpts.convert_pmg_kpts][]). The default
+        of 1 along c assumes the vacuum is along the c axis. Set to `None` to use
+        the k-points from the preset instead. Ignored if `kpts` or `kspacing` is
+        passed in `calc_kwargs`.
     copy_files
         Files to copy (and decompress) from source to the runtime directory.
     additional_fields
@@ -113,6 +132,9 @@ def relax_job(
         "lcharg": False,
         "lwave": False,
         "nsw": 200,
+        "pmg_kpts": {"length_densities": kpts_length_densities}
+        if kpts_length_densities
+        else None,
         "symprec": 1e-8,
     }
     return run_and_summarize(
