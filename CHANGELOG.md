@@ -8,9 +8,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 
-- Added a `setups_vasp_recommended_oct2026.yaml` VASP setups preset with the current [VASP-recommended PBE potentials](https://vasp.at/wiki/Recommended_pseudopotentials#Current_recommendation) (potpaw.64, valid since October 2026). The existing `setups_vasp_recommended.yaml` is unchanged
+- Added a `setups_vasp_recommended_oct2026.yaml` VASP setups preset with the current [VASP-recommended PBE potentials](https://vasp.at/wiki/Recommended_pseudopotentials#Current_recommendation) (potpaw.64, valid since October 2026). The previous recommendations are available as `setups_vasp_recommended_preoct2026.yaml`
 - Added `RosenSetGGAOct2026`, `RosenSetMetaGGAOct2026`, and `RosenSetHybridOct2026` VASP presets. They match `DefaultSetGGA`, `DefaultSetMetaGGA`, and `DefaultSetHybrid` except for using `setups_vasp_recommended_oct2026`, ENCUT = 650 eV, EDIFF = 1e-6, Gamma-centered k-points, and D4 dispersion
 - Added a `kpts_length_densities` keyword argument to `quacc.recipes.vasp.slabs.static_job` and `relax_job` to set the k-point density along each lattice vector
+
+### Changed
+
+- Renamed the `setups_vasp_recommended.yaml` VASP setups preset to `setups_vasp_recommended_preoct2026.yaml` to distinguish it from the October 2026 recommendations. Update any direct references to the old name
 
 ### Removed
 
