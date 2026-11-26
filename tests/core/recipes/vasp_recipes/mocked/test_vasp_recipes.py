@@ -120,8 +120,9 @@ def test_mp_aloe_static_job(patch_metallic_taskdoc):
     }
 
 
+@pytest.mark.parametrize("recipe", [static_job, slab_static_job, slab_relax_job])
 @pytest.mark.parametrize("preset_type", ["name", "str", "path", "none"])
-def test_static_job_preset_setting(patch_metallic_taskdoc, preset_type, tmp_path):
+def test_job_preset_setting(patch_metallic_taskdoc, recipe, preset_type, tmp_path):
     if preset_type in ("str", "path"):
         preset_path = tmp_path / "CustomPreset.yaml"
         preset_path.write_text("inputs:\n  encut: 540\n")
@@ -134,14 +135,14 @@ def test_static_job_preset_setting(patch_metallic_taskdoc, preset_type, tmp_path
         preset = encut = None
 
     with change_settings({"VASP_PRESET": preset}):
-        output = static_job(bulk("Al"), xc="pbe", pp_version="64")
+        output = recipe(bulk("Al"), xc="pbe", pp_version="64")
         assert output["parameters"].get("encut") == encut
         assert output["parameters"].get("efermi") is None
 
-        output = static_job(bulk("Al"), preset="DefaultSetGGA")
+        output = recipe(bulk("Al"), preset="DefaultSetGGA")
         assert output["parameters"]["efermi"] == "midgap"
 
-        output = static_job(bulk("Al"), preset=None, xc="pbe", pp_version="64")
+        output = recipe(bulk("Al"), preset=None, xc="pbe", pp_version="64")
         assert "encut" not in output["parameters"]
 
 

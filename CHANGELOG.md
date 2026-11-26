@@ -14,9 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
-- Removed the `SlabSetPBE` VASP preset. The slab recipes in `quacc.recipes.vasp.slabs` now use `preset="DefaultSetGGA"` and a new `kpts_length_densities` keyword argument (default `(50, 50, 1)`; set to `None` to use the preset's k-points), alongside the existing `auto_dipole=True` default, so their default calculator parameters are unchanged. If you used `preset="SlabSetPBE"` directly, use `preset="DefaultSetGGA", auto_dipole=True, pmg_kpts={"length_densities": [50, 50, 1]}` instead
+- Removed the `SlabSetPBE` VASP preset. The slab recipes in `quacc.recipes.vasp.slabs` now use the `VASP_PRESET` setting (default `"DefaultSetGGA"`) and a new `kpts_length_densities` keyword argument (default `(50, 50, 1)`; set to `None` to use the preset's k-points), alongside the existing `auto_dipole=True` default, so their default calculator parameters are unchanged. If you used `preset="SlabSetPBE"` directly, use `preset="DefaultSetGGA", auto_dipole=True, pmg_kpts={"length_densities": [50, 50, 1]}` instead
 
-- Added a `VASP_PRESET` setting, defaulting to `DefaultSetGGA`, for the core and MD VASP recipes. Explicit presets take priority, including the specialized slab and QMOF presets, and passing `preset=None` disables the preset. Direct `Vasp` calculator calls default to `preset=None`.
+- Added a `VASP_PRESET` setting, defaulting to `DefaultSetGGA`, for the core, MD, and slab VASP recipes. Explicit presets take priority, including the specialized QMOF preset, and passing `preset=None` disables the preset. Direct `Vasp` calculator calls default to `preset=None`.
 
 ### Removed
 
@@ -37,7 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - BREAKING: `quacc.utils.dicts.recursive_dict_merge` now raises a `ValueError` if given fewer than two dictionaries, instead of returning `{}` for one dictionary or raising an `IndexError` for none
 - `quacc.recipes.vasp.core.double_relax_flow` now writes a WAVECAR in the first relaxation (`lwave=True`) so that it can be reused by the second relaxation, as documented. Pass `relax1_kwargs={"lwave": False}` to disable this
 - `merge_list_params`, which builds the ORCA and GULP inputs, now preserves the case of each entry. Duplicates and `#`-removals are still matched case-insensitively. As a result, the OMol25 ORCA input now uses fairchem's original keyword capitalization
-- `oc22_static_job` now initializes Co at 5 μB and keeps `LASPH = False`, matching the larger (82%) batch of the released OC22 trajectories. The docstring describes how to reproduce the later batch
+- `oc22_static_job` now initializes Co at 5 Î¼B and keeps `LASPH = False`, matching the larger (82%) batch of the released OC22 trajectories. The docstring describes how to reproduce the later batch
 - Documented that the cached MLIP calculators from `quacc.recipes.mlip._base.pick_calculator` are shared by all jobs in the same Python process, so MLIP jobs must not run concurrently in multiple threads of one process
 - Simplified the Materials Project section of the database recipes documentation
 
@@ -57,7 +57,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed ORCA blocks and GULP options containing file paths or quoted names being lowercased, e.g. `%moinp "/Data/Prev.gbw"`
 - Fixed the VASP Chargemol analysis storing the unserializable `ChargemolAnalysis` object in the task document instead of its summary dictionary
 - Fixed `mp_relax_set_job` using Monkhorst-Pack k-point grids for some structures. It is now Gamma-centered, like the Materials Project relaxations that MPtrj was drawn from
-- Fixed the `QMOFSet` initial magnetic moments to match the QMOF Database workflow: unlisted elements (e.g. H, C, N, O, Zn) now start at 0 μB instead of 0.5 μB, Cd, Hg, and Cn at 0 μB, and Ac at 7 μB
+- Fixed the `QMOFSet` initial magnetic moments to match the QMOF Database workflow: unlisted elements (e.g. H, C, N, O, Zn) now start at 0 Î¼B instead of 0.5 Î¼B, Cd, Hg, and Cn at 0 Î¼B, and Ac at 7 Î¼B
 - Fixed `quacc.recipes.orca.fairchem.omol_static_job` running open-shell singlets (`Vertical.Oss`) as restricted closed-shell calculations. They now use UKS with OMol25's spin-symmetry-breaking rotation
 - Fixed the FHI-aims recipes writing quacc's `kspacing` to `control.in` when `k_grid` or `k_grid_density` is also set. `kspacing` is not an FHI-aims keyword
 - Fixed the Espresso `static_job`, `relax_job`, and `ase_relax_job` modifying the module-level base settings, which could mix up the `calculation` of jobs running concurrently in threads
@@ -74,7 +74,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Added legacy Materials Project r2SCAN recipes (`mp_prerelax_job`, `mp_metagga_relax_job`, `mp_metagga_static_job`, and `mp_metagga_relax_flow`) to `quacc.recipes.vasp.mp_legacy`. They use the `MPScanRelaxSet`/`MPScanStaticSet` settings and PBE.54 pseudopotentials, which are compatible with the r2SCAN data currently in the Materials Project database
 - Added a `custodian_handlers` argument to the `Vasp` calculator to override the Custodian handlers for a single calculation
-- Added a calculator-agnostic equation of state workflow, `quacc.recipes.common.eos.eos_flow` and `eos_subflow`, which runs fixed-cell relaxations (and optionally static calculations) on isotropically strained structures and fits the energy–volume data with the Murnaghan, Birch, Birch–Murnaghan, and Vinet models. The strained structures come from the new `quacc.atoms.deformation.make_volume_strains_from_bulk` function
+- Added a calculator-agnostic equation of state workflow, `quacc.recipes.common.eos.eos_flow` and `eos_subflow`, which runs fixed-cell relaxations (and optionally static calculations) on isotropically strained structures and fits the energyâ€“volume data with the Murnaghan, Birch, Birchâ€“Murnaghan, and Vinet models. The strained structures come from the new `quacc.atoms.deformation.make_volume_strains_from_bulk` function
 
 ### Changed
 
@@ -82,7 +82,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - The Materials Project r2SCAN recipes now add Custodian's `KspacingMetalHandler`, matching atomate2's MP workflows
 - The MP24 and MP-ALOE recipes no longer try to apply the `MaterialsProject2020Compatibility` corrections, which only apply to GGA/GGA+U calculations and previously only logged a warning for r2SCAN and PBEsol calculations
 - Expanded the documentation on the Materials Project recipes, including the pseudopotential and parameter differences between the legacy r2SCAN and MP24 workflows
-- `quacc.recipes.espresso.phonons.phonon_dos_flow` now applies the acoustic sum rule by default (`zasr = "crystal"` for q2r.x and `asr = "crystal"` for matdyn.x), so the acoustic frequencies at Γ vanish. The defaults can be overridden through `job_params`
+- `quacc.recipes.espresso.phonons.phonon_dos_flow` now applies the acoustic sum rule by default (`zasr = "crystal"` for q2r.x and `asr = "crystal"` for matdyn.x), so the acoustic frequencies at Î“ vanish. The defaults can be overridden through `job_params`
 - `phonon_dos_flow` now only copies the files that each step reads (the `matdyn*` dynamical matrices to q2r.x and the `q2r.fc*` force constants to matdyn.x) instead of every file from the previous step
 
 ### Fixed

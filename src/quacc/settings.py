@@ -343,7 +343,7 @@ class QuaccSettings(BaseSettings):
         "DefaultSetGGA",
         description=(
             """
-            Default preset for the core and MD VASP recipes when their preset
+            Default preset for the core, MD, and slab VASP recipes when their preset
             argument is omitted. Use a bundled preset name (without the
             extension), a path to a YAML file, or None to disable the recipe
             default. Explicit recipe presets take precedence. Direct Vasp
