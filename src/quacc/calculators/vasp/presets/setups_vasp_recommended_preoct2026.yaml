@@ -1,4 +1,4 @@
-# VASP-recommended PAW PBE potentials
+# VASP-recommended PAW PBE potentials before October 2026
 # Last modified: 08-01-2023
 inputs:
   pp: pbe

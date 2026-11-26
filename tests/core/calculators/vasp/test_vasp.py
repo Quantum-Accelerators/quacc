@@ -1402,7 +1402,9 @@ def test_setups():
     assert calc.parameters["setups"]["Cu"] == "_sv"
 
     atoms = bulk("Cu")
-    calc = Vasp(atoms, setups="setups_vasp_recommended.yaml", preset="DefaultSetGGA")
+    calc = Vasp(
+        atoms, setups="setups_vasp_recommended_preoct2026.yaml", preset="DefaultSetGGA"
+    )
     assert calc.parameters["setups"]["Cu"] == ""
 
     atoms = bulk("Cu")
@@ -1985,7 +1987,9 @@ def test_rosen_oct2026_presets(preset, default):
 
 def test_rosen_oct2026_setups():
     preset_dir = Path(presets.__file__).parent
-    old = load_vasp_yaml_calc(preset_dir / "setups_vasp_recommended.yaml")["inputs"]
+    old = load_vasp_yaml_calc(preset_dir / "setups_vasp_recommended_preoct2026.yaml")[
+        "inputs"
+    ]
     new = load_vasp_yaml_calc(preset_dir / "setups_vasp_recommended_oct2026.yaml")[
         "inputs"
     ]
