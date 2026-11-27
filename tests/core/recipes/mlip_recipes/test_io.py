@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pytest
 from ase.build import bulk
 from ase.calculators.emt import EMT
 
@@ -20,6 +21,8 @@ def test_relax_job_without_files(tmp_path, monkeypatch):
 
     assert len(output["trajectory"]) == 1
     assert output["trajectory"][0] == output["atoms"]
+    assert output["input_atoms"]["atoms"].positions == pytest.approx(atoms.positions)
+    assert output["atoms"].positions != pytest.approx(atoms.positions)
     assert not list(tmp_path.rglob("opt.log*"))
     assert not list(tmp_path.rglob("opt.json*"))
     assert not list(tmp_path.rglob("opt.traj*"))
