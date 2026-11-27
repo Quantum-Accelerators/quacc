@@ -189,6 +189,8 @@ def customize_jobs(
     dict[str, Callable]
         Mapping of customized jobs in the same order as `jobs`.
     """
+    from quacc import get_settings
+
     param_defaults = param_defaults or {}
     param_swaps = param_swaps or {}
     decorators = decorators or {}
@@ -207,13 +209,14 @@ def customize_jobs(
             f"Invalid parameter keys: {bad_parameter_keys}. Valid keys are: {names}"
         )
 
+    # With Dask and Ray, update_parameters() replaces the decorator of a
+    # decorated function with the default one, so a custom decorator has to be
+    # applied after the parameters instead.
+    decorate_last = get_settings().WORKFLOW_ENGINE in ("dask", "ray")
+
     updated_jobs = {}
     for name, func in jobs.items():
         func_ = deepcopy(func)
-        if "all" in decorators:
-            func_ = redecorate(func_, decorators["all"])
-        if name in decorators:
-            func_ = redecorate(func_, decorators[name])
 
         # User swaps always take priority over the recipe defaults, so a swap
         # under "all" must also override a job-specific default.
@@ -223,8 +226,21 @@ def customize_jobs(
             param_swaps.get("all"),
             param_swaps.get(name),
         )
-        if params:
-            func_ = update_parameters(func_, params)
+
+        if decorate_last and (name in decorators or "all" in decorators):
+            decorator = decorators[name] if name in decorators else decorators["all"]
+            func_ = strip_decorator(func_)
+            if params:
+                func_ = update_parameters(func_, params, decorator=None)
+            if decorator is not None:
+                func_ = decorator(func_)
+        else:
+            if "all" in decorators:
+                func_ = redecorate(func_, decorators["all"])
+            if name in decorators:
+                func_ = redecorate(func_, decorators[name])
+            if params:
+                func_ = update_parameters(func_, params)
         updated_jobs[name] = func_
 
     return updated_jobs
