@@ -339,9 +339,17 @@ class QuaccSettings(BaseSettings):
             """
         ),
     )
-    VASP_PRESET_DIR: Path = Field(
-        Path(__file__).parent / "calculators" / "vasp" / "presets",
-        description="Path to the VASP preset directory",
+    VASP_PRESET: str | Path | None = Field(
+        "DefaultSetGGA",
+        description=(
+            """
+            Default preset for the core, MD, and slab VASP recipes when their preset
+            argument is omitted. Use a bundled preset name (without the
+            extension), a path to a YAML file, or None to disable the recipe
+            default. Explicit recipe presets take precedence. Direct Vasp
+            calculator calls default to preset=None.
+            """
+        ),
     )
 
     # VASP Settings: Custodian
@@ -472,7 +480,6 @@ class QuaccSettings(BaseSettings):
         "ESPRESSO_PSEUDO",
         "GULP_LIB",
         "QCHEM_LOCAL_SCRATCH",
-        "VASP_PRESET_DIR",
         "VASP_PP_PATH",
         "VASP_VDW",
     )

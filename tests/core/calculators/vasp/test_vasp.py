@@ -18,10 +18,10 @@ from ase.constraints import FixAtoms
 from ase.io import read
 from pymatgen.io.vasp.sets import MP24RelaxSet, MPRelaxSet, MPScanRelaxSet
 
-from quacc import change_settings, get_settings
+from quacc import QuaccDefault, change_settings, get_settings
 from quacc.calculators.vasp import Vasp, presets
 from quacc.calculators.vasp import vasp as vasp_module
-from quacc.calculators.vasp.io import load_vasp_yaml_calc
+from quacc.calculators.vasp.io import load_vasp_yaml_calc, resolve_vasp_yaml_path
 from quacc.calculators.vasp.params import MPtoASEConverter, get_param_swaps
 from quacc.schemas.prep import prep_next_run
 
@@ -48,7 +48,9 @@ def atoms_nospin():
 
 def test_vanilla_vasp():
     atoms = bulk("Cu")
-    calc = Vasp(atoms, incar_copilot_mode="off")
+    with change_settings({"VASP_PRESET": "DefaultSetGGA"}):
+        calc = Vasp(atoms, incar_copilot_mode="off")
+    assert calc.preset is None
     assert calc.asdict() == Vasp_().asdict()
 
     atoms = bulk("Cu")
@@ -1556,8 +1558,60 @@ def test_bad():
     with pytest.raises(ValueError, match="Unsupported k-point generation scheme"):
         Vasp(atoms, pmg_kpts={"test": [100]})
 
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(FileNotFoundError, match=r"Bundled options: .*DefaultSetGGA"):
         Vasp(atoms, preset="BadRelaxSet")
+
+    with pytest.raises(FileNotFoundError):
+        Vasp(atoms, setups="bad_setups.yaml")
+
+
+def test_resolve_vasp_yaml_path(monkeypatch, tmp_path):
+    preset_dir = Path(presets.__file__).parent
+    bundled = preset_dir / "DefaultSetGGA.yaml"
+
+    # Bundled names, with or without an extension
+    assert resolve_vasp_yaml_path("DefaultSetGGA") == bundled
+    assert resolve_vasp_yaml_path("DefaultSetGGA.yaml") == bundled
+    assert (
+        resolve_vasp_yaml_path("setups_vasp_recommended")
+        == preset_dir / "setups_vasp_recommended.yaml"
+    )
+
+    # Bundled presets take priority over a same-named file in the cwd, but a
+    # "./" prefix or a Path forces the local file
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "DefaultSetGGA.yaml").write_text("inputs:\n  encut: 1\n")
+    assert resolve_vasp_yaml_path("DefaultSetGGA.yaml") == bundled
+    assert resolve_vasp_yaml_path("./DefaultSetGGA.yaml") == Path(
+        "./DefaultSetGGA.yaml"
+    )
+    assert resolve_vasp_yaml_path(Path("DefaultSetGGA.yaml")) == Path(
+        "DefaultSetGGA.yaml"
+    )
+
+    # Local files with any (or no) extension, as str or Path
+    (tmp_path / "custom").write_text("inputs:\n  encut: 123\n")
+    assert resolve_vasp_yaml_path("custom") == Path("custom")
+    assert resolve_vasp_yaml_path(str(tmp_path / "custom")) == tmp_path / "custom"
+    assert resolve_vasp_yaml_path(tmp_path / "custom") == tmp_path / "custom"
+
+    atoms = bulk("Cu")
+    assert Vasp(atoms, preset="custom").parameters["encut"] == 123
+    assert Vasp(atoms, preset=tmp_path / "custom").parameters["encut"] == 123
+    assert Vasp(atoms, preset="./DefaultSetGGA.yaml").parameters["encut"] == 1
+
+    with pytest.raises(FileNotFoundError, match="Could not find VASP YAML"):
+        resolve_vasp_yaml_path("DefaultSetGGa")
+
+
+def test_preset_quacc_default():
+    atoms = bulk("Cu")
+    with change_settings({"VASP_PRESET": "QMOFSet"}):
+        assert Vasp(atoms).preset is None
+        assert Vasp(atoms, preset=QuaccDefault).preset == "QMOFSet"
+        assert Vasp(atoms, preset="DefaultSetGGA").preset == "DefaultSetGGA"
+    with change_settings({"VASP_PRESET": None}):
+        assert Vasp(atoms, preset=QuaccDefault).preset is None
 
 
 def test_preset_override():

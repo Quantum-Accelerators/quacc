@@ -12,12 +12,14 @@ from quacc.schemas.vasp import VaspSummarize
 from quacc.utils.dicts import recursive_dict_merge
 
 if TYPE_CHECKING:
+    from pathlib import Path
     from typing import Any, Literal
 
     from ase.atoms import Atoms
 
     from quacc.types import (
         CopyFiles,
+        DefaultSetting,
         OptParams,
         VaspASEOptSchema,
         VaspSchema,
@@ -49,7 +51,7 @@ def get_mp_kspacing_handlers() -> list[str]:
 
 def run_and_summarize(
     atoms: Atoms,
-    preset: str | None = None,
+    preset: str | Path | DefaultSetting | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     report_mp_corrections: bool = False,
@@ -64,7 +66,7 @@ def run_and_summarize(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Pass `QuaccDefault` to use `VASP_PRESET`.
     calc_defaults
         Default parameters for the recipe.
     calc_swaps
@@ -96,7 +98,7 @@ def run_and_summarize(
 
 def run_and_summarize_opt(
     atoms: Atoms,
-    preset: str | None = None,
+    preset: str | Path | DefaultSetting | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     opt_defaults: dict[str, Any] | None = None,
@@ -113,7 +115,7 @@ def run_and_summarize_opt(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Pass `QuaccDefault` to use `VASP_PRESET`.
     calc_defaults
         Default parameters for the recipe.
     calc_swaps
@@ -154,7 +156,7 @@ def run_and_summarize_vib_and_thermo(
     temperature: float = 298.15,
     pressure: float = 1.0,
     thermo_method: Literal["ideal_gas", "harmonic"] = "harmonic",
-    preset: str | None = None,
+    preset: str | Path | DefaultSetting | None = None,
     calc_defaults: dict[str, Any] | None = None,
     calc_swaps: dict[str, Any] | None = None,
     vib_kwargs: VibKwargs | None = None,
@@ -177,7 +179,7 @@ def run_and_summarize_vib_and_thermo(
     thermo_method
         Method to use for thermochemistry. Options are "harmonic" or "ideal_gas".
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Pass `QuaccDefault` to use `VASP_PRESET`.
     calc_defaults
         Default parameters for the recipe.
     calc_swaps

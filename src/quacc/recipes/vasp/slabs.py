@@ -4,24 +4,25 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from quacc import flow, job
+from quacc import QuaccDefault, flow, job
 from quacc.recipes.common.slabs import bulk_to_slabs_subflow, slab_to_ads_subflow
 from quacc.recipes.vasp._base import run_and_summarize
 from quacc.wflow_tools.customizers import customize_jobs
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from pathlib import Path
     from typing import Any
 
     from ase.atoms import Atoms
 
-    from quacc.types import CopyFiles, VaspSchema
+    from quacc.types import CopyFiles, DefaultSetting, VaspSchema
 
 
 @job
 def static_job(
     atoms: Atoms,
-    preset: str | None = "DefaultSetGGA",
+    preset: str | Path | DefaultSetting | None = QuaccDefault,
     kpts_length_densities: tuple[float, float, float] | None = (50, 50, 1),
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -35,7 +36,8 @@ def static_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Defaults to the `VASP_PRESET` setting.
+        Pass `None` to disable the preset.
     kpts_length_densities
         Number of k-points per inverse Angstrom of lattice-vector length along
         the a, b, and c axes, used to build the k-point mesh (see
@@ -85,7 +87,7 @@ def static_job(
 @job
 def relax_job(
     atoms: Atoms,
-    preset: str | None = "DefaultSetGGA",
+    preset: str | Path | DefaultSetting | None = QuaccDefault,
     kpts_length_densities: tuple[float, float, float] | None = (50, 50, 1),
     copy_files: CopyFiles | None = None,
     additional_fields: dict[str, Any] | None = None,
@@ -99,7 +101,8 @@ def relax_job(
     atoms
         Atoms object
     preset
-        Preset to use from `quacc.calculators.vasp.presets`.
+        Preset name or YAML file path. Defaults to the `VASP_PRESET` setting.
+        Pass `None` to disable the preset.
     kpts_length_densities
         Number of k-points per inverse Angstrom of lattice-vector length along
         the a, b, and c axes, used to build the k-point mesh (see
