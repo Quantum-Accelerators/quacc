@@ -138,8 +138,6 @@ def _make_omc_inputs(atoms: Atoms) -> dict:
     ----------
     atoms
         Atoms object
-    dataset
-        Dataset to use. Currently only "omc" is supported.
 
     Returns
     -------
