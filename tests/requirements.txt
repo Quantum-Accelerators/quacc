@@ -1,7 +1,4 @@
 ase @ git+https://gitlab.com/ase/ase.git
-# 3.1.3 replaces serialized source filenames with <dynamic-code>, hiding Dask coverage.
-# https://github.com/cloudpipe/cloudpickle/pull/560
-cloudpickle==3.1.2
 custodian==2026.10.21
 emmet-core==0.87.3
 frozendict==2.5.1
